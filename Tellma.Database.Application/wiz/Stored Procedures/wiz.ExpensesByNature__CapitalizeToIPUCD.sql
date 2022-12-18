@@ -56,6 +56,7 @@ AS
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.[State] = 4
 		AND A.[AccountTypeId] = @BSAccountTypeId
+		AND A.[ResourceId] IS NOT NULL -- MA: 2022-11-05 to exclude the deferred expense account
 		AND E.[CenterId] = @BusinessUnitId
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0
@@ -87,4 +88,5 @@ AS
 	JOIN dbo.Accounts A ON ED.[AccountId1] = A.[Id]
 	WHERE [MonetaryValue1] > 0.005 OR [Value1] > 0.005;
 
+	UPDATE @WideLines SET [ResourceId1] = NULL WHERE [ResourceId1] = -1;
 	SELECT * FROM @WideLines;

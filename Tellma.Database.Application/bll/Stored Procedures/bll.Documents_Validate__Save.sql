@@ -81,12 +81,12 @@ BEGIN
 			BEGIN TRY 
 				INSERT INTO @ValidationErrors
 				EXECUTE	dbo.sp_executesql @Script, N'
-					@DefinitionId INT,
+					@DefinitionId INT, @LineDefinitionId INT,
 					@Documents [dbo].[DocumentList] READONLY,
 					@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 					@Lines [dbo].[LineList] READONLY, 
 					@Entries [dbo].EntryList READONLY,
-					@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
+					@Top INT', 	@DefinitionId = @DefinitionId, @LineDefinitionId = @LineDefinitionId, @Documents = @Documents,
 					@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @L, @Entries = @E, @Top = @Top;
 			END TRY
 			BEGIN CATCH
@@ -97,6 +97,8 @@ BEGIN
 			END CATCH
 			FETCH NEXT FROM LineDefinition_Cursor INTO @LineDefinitionId;
 		END
+		CLOSE LineDefinition_Cursor
+		DEALLOCATE LineDefinition_Cursor
 	END
 
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
@@ -370,3 +372,4 @@ DONE:
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
+GO

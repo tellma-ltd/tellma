@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="{{ $Lang }}">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Banan IT Invoice</title>
+
+	<style>
+		.clearfix {
+			margin-bottom: 5px;
+		}
+
+		.purple {
+			color: rgb(168, 44, 168);
+		}
+
+		.boldPurple {
+			color: #79299d;
+		}
+
+		.purple-background {
+			background-color: #79299d;
+			color: white;
+		}
+
+		.lightGray {
+			color: #b6b6b6;
+		}
+
+		.gray {
+			color: #999999;
+		}
+
+		.noBorder {
+			border: none;
+		}
+
+		.marginTopBottom {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+
+		.right {
+			text-align: right;
+			padding-right: 15px;
+		}
+
+		.left {
+			text-align: left;
+			padding-left: 15px;
+		}
+
+		.topText {
+			vertical-align: top;
+			padding-top: 0;
+		}
+
+		td, th {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		* {
+			font-family: 'Tajawal', sans-serif;
+			margin: 0px;
+		}
+
+		.horizontal-border {
+			border-bottom: 1px solid #ddd;
+		}
+
+		.page {
+			break-after: page;
+		}
+
+		.position-bottom {
+			position: absolute;
+			left: 0px;
+			top: 42rem;
+			width: 45%;
+		}
+
+		.position-relative {
+			position: relative;
+		}
+
+		.under {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			z-index: -1;
+		}
+
+		.over {
+			position: absolute;
+			left: 88px;
+			top: 33px;
+			z-index: -1;
+		}
+
+		@page {
+			margin: 0.5in 0.5in 0.5in 0.5in;
+		}
+	</style>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+	{{ *define sellerVatRegistrationNumber as '310169549400003' }}
+	{{ *define sellerName as 'Banan Information Technologies Co. LTD' }}
+	{{ *define sellerRegistrationNumber as '4030020180' }}
+	{{ *define sellerTaxIdentificationNumber as '233377' }}
+	{{ *define Address as 'Maamoura, Khartoum, Sudan' }}
+
+	{{ *define managerRole as 'General Manager' }}
+	{{ *define managerName as 'Elamin Altayeb' }}
+	{{ *define managerEmail as 'elamin.altayeb@ebanan.com' }}
+	{{ *define managerPhone1 as '+249 (1) 2299-9997' }}
+	{{ *define managerPhone2 as '+249 (1) 2345-5555' }}
+	{{ *define logoUrl as 'https://i.imgur.com/aUVYbmX.png' }}
+	{{ *define stampUrl as 'https://i.imgur.com/LLUfK9l.png' }}
+	{{ *define handSign as 'https://i.imgur.com/AaIJqWL.png' }}
+
+	{{ *foreach $ in $ }}
+	<div class="container page ltr">
+		{{ *define salesInvoiceDate as $.PostingDate }}
+		{{ *define postedLines as Filter($.Lines, '$.State >= 0') }}
+		{{ *define postedEntries as SelectMany(postedLines, '$.Entries') }}
+		{{ *define receivableEntries as Filter(postedEntries, '$.Account.AccountType.Concept = ''CurrentTradeReceivables''') }}
+		{{ *define buyerName as receivableEntries#0.Agent.Agent1.Name }}
+		{{ *define buyerTaxIdentificationNumber as receivableEntries#0.Agent.Agent1.TaxIdentificationNumber }}
+		{{ *define buyerAddress as receivableEntries#0.Agent.Agent1.ContactAddress }}
+
+		{{ *define settlementEntries as Filter(postedEntries, '$.Account.AccountType.Concept = ''CashOnHand'' || $.Account.AccountType.Concept = ''BalancesWithBanks''') }}
+		{{ *define cashEntries as Filter(settlementEntries, '$.Account.EntryType.Concept <> ''EffectOfExchangeRateChangesOnCashAndCashEquivalents''') }}
+
+		<div class="row position-relative">
+			<div>
+				<div style="height: 60px; width: 1px; position: absolute;
+                    background: rgb(59, 55, 55); top: 5.5rem; margin-left: 7px;">
+				</div>
+				<table style="width: 100%;">
+					<thead>
+					<th class="left">
+						<h4 class="gray" style="font-weight: 500;">{{ sellerName }}</h4>
+						<h4 class="gray" style="font-weight: 500;">{{ Address }}</h4>
+						<h4 class="gray" style="font-weight: 500;">Tax ID: {{ sellerTaxIdentificationNumber }}</h4>
+						<h2><strong>RECEIPT {{ $.Code}}</strong></h2>
+						<h3 class="gray">{{ Format(salesInvoiceDate, 'dd.MM.yyyy')}}</h3>
+					</th>
+					<th style="text-align: right;">
+						<!-- I've hosted the Banan IT logo on a free website untill provided a personal link to work with -->
+						<img src="{{ logoUrl }}" alt="Banan IT" width="80" height="80">
+					</th>
+					</thead>
+				</table>
+			</div>
+
+			<!-- Body -->
+			<table class="marginTopBottom" style="border-collapse: collapse; margin-top: 50px; width: 100%;">
+				<thead class="left">
+				<th class="horizontal-border" style="width: 50%; border-bottom: 1px solid #999999;">
+					<label class="left boldPurple">Received From</label>
+				</th>
+				<th class="horizontal-border" style="width: 50%; border-bottom: 1px solid #999999;">
+					<label class="left boldPurple">Description</label>
+				</th>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="left topText">
+							<br>
+							<label><strong>{{ buyerName }}</strong></label>
+							<br>
+							<label>TIN: {{ buyerTaxIdentificationNumber }}</label>
+							<br>
+							<label>Address: {{ buyerAddress }}</label>
+						</td>
+						<td class="left topText">
+							<br>
+							<label>{{ $.Memo }}</label>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table class="table marginTopBottom" style="width: 100%; border-collapse: collapse; margin-top: 50px;">
+				<thead class="purple-background">
+				<th class="left">Invoice #</th>
+				<th class="left">Payment Method</th>
+				<th class="left">Check/Ref#</th>
+				<th class="right">Amount </th>
+				<th class="left">Currency</th>
+				</thead>
+				<tbody style="font-size: 0.9rem;">
+
+
+					{{ *foreach entry in cashEntries }}
+					{{ *define currency as entry.Currency }}
+					{{ *define amount as entry.Amount }}
+					{{ *define paymentMethod as entry.NotedResource }}
+					{{ *define reference as entry.ExternalReference }}
+
+					<tr>
+						<td class="left horizontal-border">{{ paymentMethod.Name }}</td>
+						<td class="left horizontal-border">{{ reference }}</td>
+						<td class="right horizontal-border">{{ format(amount, 'N2') }}</td>
+						<td class="left horizontal-border">{{ currency.Name }}</td>
+					</tr>
+					{{ *end}}
+
+					<tr>
+						<td colspan="3" class="noBorder"></td>
+						<td class="noBorder right" colspan="2">Thank you for your business!</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="position-bottom">
+				<table>
+					<tr>
+						<td>
+							<h4 class="purple" style="font-weight: bold;">{{ managerName }}</h4>
+							<strong>{{ managerRole }}</strong>
+							<br>
+							<strong>{{ sellerName }}</strong>
+							<br>
+							<a href="{{ managerEmail }}">{{ managerEmail }}</a>
+							<br>
+							<label>Phone1: {{ managerPhone1 }}</label>
+							<br>
+							<label>Phone2: {{ managerPhone2 }}</label>
+							<br>
+							<div class="position-relative">
+								<img class="under" src="{{ stampUrl }}" alt="Banan Stamp" style="width: 53%">
+								<img class="over" src="{{ handSign }}" alt="Elamin Hand Sign" style="width: 50%;">
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+	</div>
+	{{ *end }}
+</body>
+</html>

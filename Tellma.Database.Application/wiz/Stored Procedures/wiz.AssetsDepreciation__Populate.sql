@@ -38,26 +38,28 @@ AS
 		GROUP BY E.[AgentId], E.[ResourceId]
 	),
 	LastCostCenters AS (
-		SELECT E.[AgentId], E.[ResourceId], MAX(CenterId) AS [CostCenter]
+		SELECT E.[AgentId], --E.[ResourceId],
+		MAX(CenterId) AS [CostCenter]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 		JOIN LastDepreciationDates LDD
 			ON E.[AgentId] = LDD.[AgentId] 
-			AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
+		--	AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 			AND E.[Time2] = LDD.[LastDepreciationDate]
 		WHERE C.[IsLeaf] = 1
-		AND L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
+		--AND 
+		AND	L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
-		GROUP BY E.[AgentId], E.[ResourceId]
+		GROUP BY E.[AgentId]--, E.[ResourceId]
 	),
 	DepreciablePPEs AS (
 		SELECT E.[AgentId], E.[ResourceId], FDD.[FirstDepreciationDate], LDD.[LastDepreciationDate]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
-		JOIN FirstDepreciationDates FDD ON E.[AgentId] = FDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(FDD.[ResourceId], -1)
-		LEFT JOIN LastDepreciationDates LDD ON E.[AgentId] = LDD.[AgentId] AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
+		JOIN FirstDepreciationDates FDD ON E.[AgentId] = FDD.[AgentId]-- AND ISNULL(E.[ResourceId], -1) = ISNULL(FDD.[ResourceId], -1)
+		LEFT JOIN LastDepreciationDates LDD ON E.[AgentId] = LDD.[AgentId]-- AND ISNULL(E.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 		WHERE L.[State] = 4 AND L.PostingDate <= @DepreciationPeriodEnds
 		AND E.UnitId <> @PureUnitId
 		-- never depreciated for the period
@@ -80,12 +82,12 @@ AS
 			RL.[CurrencyId], RL.[CurrencyId], LCC.[CostCenter]
 	FROM DepreciablePPEs DPPE
 	JOIN dbo.[Agents] RL ON RL.[Id] = DPPE.[AgentId]
-	LEFT JOIN dbo.[Resources] R ON R.[Id] = DPPE.[ResourceId]
+--	LEFT JOIN dbo.[Resources] R ON R.[Id] = DPPE.[ResourceId]
 	LEFT JOIN LastDepreciationDates LDD
 		ON DPPE.[AgentId] = LDD.[AgentId]
-		AND ISNULL(DPPE.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
+	--	AND ISNULL(DPPE.[ResourceId], -1) = ISNULL(LDD.[ResourceId], -1)
 	LEFT JOIN LastCostCenters LCC
 		ON DPPE.[AgentId] = LCC.[AgentId]
-		AND ISNULL(DPPE.[ResourceId], -1) =  ISNULL(LCC.[ResourceId], -1)
+	--	AND ISNULL(DPPE.[ResourceId], -1) =  ISNULL(LCC.[ResourceId], -1)
 	SELECT * FROM @WideLines;
 GO

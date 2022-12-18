@@ -11,51 +11,49 @@ BEGIN
 	DECLARE @Documents [dbo].[DocumentList], @DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList],
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
-
-	-- cannot close if the document posting date falls in an archived period.
-	-- the logic is moved to the line level. MA 2022.06.28
-	/*
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SET @IsError = 0;
+	-- cannot close if the document posting date falls in an archived period. Logic repeated at line level
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-		N'Error_FallsinArchivedPeriod'
+		N'Error_FallsinArchivedPeriod', NULL
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	*/
+	UNION
 	-- cannot close if the lines posting date falls in an archived period.
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_FallsinArchivedPeriod'
+		N'Error_FallsinArchivedPeriod', NULL
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
 	AND LD.[LineType] >= 100
-	
+	UNION
 	-- Cannot close it if it is not draft
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentIsNotInState0',
 		N'localize:Document_State_0'
 	FROM @Ids FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[State] <> 0;
-
+	WHERE D.[State] <> 0
+	UNION
 	-- Cannot close it if it has no attachments while attachments are required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_DocumentHasNoAttachment'
+		N'Error_DocumentHasNoAttachment', NULL
 	FROM @Ids FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
 	JOIN [dbo].[DocumentDefinitions]  DD ON D.[DefinitionId] = DD.[Id]
 	LEFT JOIN [dbo].[Attachments] A ON D.[Id] = A.[DocumentId]
 	WHERE DD.[AttachmentVisibility] = N'Required'
-	AND A.[Id] IS NULL; --	AND DD.Prefix IN (N'RA', N'SA', N'CRSI', N'CRV', N'CSI', N'SRV', N'CPV' );
+	AND A.[Id] IS NULL;
 
 	-- Cannot close a document where there are no lines, or where all lines have negative state
 	-- So, we take all documents and remove from them those with positive states
@@ -88,59 +86,6 @@ BEGIN
 	JOIN [dbo].[Lines] L ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[LineDefinitions]() LD ON LD.[Id] = L.[DefinitionId]
 	WHERE LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND LD.[LastLineState] - 1;
-
-	-- For Agent lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
-	-- TODO: remove the (1=0) and test the logic to compare 
-	IF (1=0)
-	WITH FE_AB (EntryId, AccountBalanceId) AS (
-		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
-		FROM [dbo].[Entries] E
-		JOIN [dbo].[Lines] L ON E.[LineId] = L.[Id]
-		JOIN [map].[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
-		JOIN @Ids D ON L.[DocumentId] = D.[Id]
-		JOIN [dbo].[AccountBalances] AB ON
-			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[AgentId] IS NULL OR E.[AgentId] = AB.[AgentId])
-		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
-		AND (AB.[CurrencyId] = E.[CurrencyId])
-		AND (E.[AccountId] = AB.[AccountId])
-		WHERE AB.BalanceEnforcedState = 5
-		AND (L.[State] = 4 OR LD.[HasWorkflow] = 0 AND L.[State] >= 0)
-	),
-	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
-		SELECT DISTINCT TOP (@Top)
-			AB.[Id] AS [AccountBalanceId], 
-			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'G', 'en-us') AS NetBalance
-		FROM [dbo].[Documents] D
-		JOIN [dbo].[Lines] L ON L.DocumentId = D.[Id]
-		JOIN [map].[LineDefinitions] () LD ON L.[DefinitionId] = LD.[Id]
-		JOIN [dbo].[Entries] E ON L.[Id] = E.[LineId]
-		JOIN [dbo].[AccountBalances] AB ON
-			(E.[CenterId] = AB.[CenterId])
-		AND (AB.[AgentId] IS NULL OR E.[AgentId] = AB.[AgentId])
-		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
-		AND (AB.[CurrencyId] = E.[CurrencyId])
-		AND (E.[AccountId] = AB.[AccountId])
-		WHERE AB.[Id] IN (Select AccountBalanceId FROM FE_AB)
-		AND ((L.[State] = 4 AND D.[State] = 1) OR 
-			(D.[Id] IN (Select [Id] FROM @Ids)) AND 
-				(L.[State] = 4 OR LD.HasWorkflow = 0 AND L.[State] >= 0))
-		GROUP BY AB.[Id], AB.[MinMonetaryBalance], AB.[MaxMonetaryBalance], AB.[MinQuantity], AB.[MaxQuantity]
-		HAVING SUM(E.[Direction] * E.[MonetaryValue]) NOT BETWEEN AB.[MinMonetaryBalance] AND AB.[MaxMonetaryBalance]
-		OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheEntryCausesOffLimitBalance0' AS [ErrorName],
-		BE.NetBalance
-	FROM @Ids D
-	JOIN [dbo].[Lines] L ON L.[DocumentId] = D.[Id]
-	JOIN [dbo].[Entries] E ON E.[LineId] = L.[Id]
-	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
-	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId];
 
 	-- To do: cannot close a document with a control account having non zero balance
 	IF (@DefinitionId <> @ManualJV)
@@ -198,6 +143,7 @@ BEGIN
 	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 	-- Verify that workflow-less lines in Documents can be in their final state
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon], 
@@ -257,12 +203,24 @@ BEGIN
 	FROM [dbo].[Entries] E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
+	IF EXISTS(SELECT * FROM @Lines)
+--	INSERT INTO @ValidationErrors -- to avoid NESTED INSERT EXEC
+	EXEC [bll].[Lines_Validate__Transition_ToState]
+		@Documents = @Documents, 
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @ToState = 2, 
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
+	IF @IsError = 1 RETURN; -- to avoid NESTED INSERT EXEC
+
+	IF EXISTS(SELECT * FROM @Lines)
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, @Entries = @Entries, @State = 2,
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
+	IF @IsError = 1 GOTO DONE;
 
 	DELETE FROM @Lines; DELETE FROM @Entries;
 	-- Verify that lines whose last state = posted meet the conditions to be posted
@@ -274,6 +232,7 @@ BEGIN
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
 	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
 	WHERE LD.[LastLineState] = 4
+
 	INSERT INTO @Entries (
 		[Index], [LineIndex], [DocumentIndex], [Id],
 		[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [NotedResourceId], [CenterId],
@@ -289,25 +248,37 @@ BEGIN
 	FROM [dbo].[Entries] E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
-	INSERT INTO @ValidationErrors
+	IF EXISTS(SELECT * FROM @Lines)
+--	INSERT INTO @ValidationErrors -- to avoid NESTED INSERT EXEC
+	EXEC [bll].[Lines_Validate__Transition_ToState]
+		@Documents = @Documents, 
+		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
+		@Lines = @Lines, @Entries = @Entries, @ToState = 4, 
+		@Top = @Top, 
+		@IsError = @IsError OUTPUT;
+	IF @IsError = 1 RETURN; -- to avoid NESTED INSERT EXEC
+
+	IF EXISTS(SELECT * FROM @Lines)
+	INSERT INTO @ValidationErrors -- to avoid NESTED INSERT EXEC
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, @DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, @Entries = @Entries, @State = 4,
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
+	IF @IsError = 1 GOTO DONE;
 
 	DECLARE @CloseValidateScript NVARCHAR (MAX) = (SELECT [CloseValidateScript] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	IF @CloseValidateScript IS NOT NULL
 	BEGIN TRY
 		INSERT INTO @ValidationErrors
 		EXECUTE	dbo.sp_executesql @CloseValidateScript, N'
-					@DefinitionId INT,
-					@Documents [dbo].[DocumentList] READONLY,
-					@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
-					@Lines [dbo].[LineList] READONLY, 
-					@Entries [dbo].EntryList READONLY,
-					@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
-					@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+			@DefinitionId INT,
+			@Documents [dbo].[DocumentList] READONLY,
+			@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
+			@Lines [dbo].[LineList] READONLY, 
+			@Entries [dbo].EntryList READONLY,
+			@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
+			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
 	END TRY
 	BEGIN CATCH
 		DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
@@ -315,10 +286,9 @@ BEGIN
 		DECLARE @ErrorState TINYINT = 99;
 		THROW @ErrorNumber, @ErrorMessage, @ErrorState;
 	END CATCH
-
-
+DONE:
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
-
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
+GO

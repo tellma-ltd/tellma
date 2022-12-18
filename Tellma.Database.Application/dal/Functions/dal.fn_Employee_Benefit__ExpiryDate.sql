@@ -1,4 +1,5 @@
 ﻿CREATE FUNCTION [dal].[fn_Employee_Benefit__ExpiryDate] (
+-- Faulty logic. Better rely on [bll].[ft_Widelines_Period_EventFromModel__Generate] to check if the benefit appears in the said period
 	@EmployeeId INT,
 	@EmployeeBenefitId INT
 )

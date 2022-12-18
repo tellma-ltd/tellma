@@ -13,6 +13,18 @@ BEGIN
 	
 	-- (1) Validate
 	DECLARE @IsError BIT;
+
+	-- Once we fix the call to Lines_Validate__Transition_ToState in DOcuments_Validate_Open, we can remove this one
+	EXEC [bll].[Lines_Validate__Transition_ToDocumentState]
+		@Ids = @Ids, --documents
+		@ToDocumentState = 0, -- 0: Open, 1:Close
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
+
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
+		RETURN;
+
 	EXEC [bll].[Documents_Validate__Open]
 		@DefinitionId = @DefinitionId,
 		@Ids = @Ids,
@@ -30,3 +42,4 @@ BEGIN
 		@Ids = @Ids, 
 		@UserId = @UserId;
 END;
+GO

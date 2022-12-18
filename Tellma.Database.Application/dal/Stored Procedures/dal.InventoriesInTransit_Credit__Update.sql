@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[InventoriesInTransit_Credit__Update]
-@ArchiveDate DATE = N'2020-07-07'
+@ArchiveDate DATE
 AS
 DECLARE @E SMALLINT = (SELECT [E] FROM dbo.Currencies WHERE [Id] = [dal].fn_FunctionalCurrencyId());
 

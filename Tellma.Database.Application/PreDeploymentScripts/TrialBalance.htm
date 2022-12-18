@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{ 'Document' }}</title>
+	<style>
+        /* Printing CSS */
+        {{ *define $PageSize as 'A4' }} /* https://mzl.la/3d8twxF */
+        {{ *define $Orientation as 'Portrait' }} /* 'Portrait', 'Landscape' */
+        {{ *define $Margins as '0.5in' }} /* The page margins */
+        @media screen {
+            body { background-color: #F9F9F9; }
+            .page {
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                border: 1px solid lightgrey;
+                background-color: white;
+                box-shadow: rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+                box-sizing: border-box;
+                width: {{ PreviewWidth($PageSize, $Orientation) }};
+                min-height: {{ PreviewHeight($PageSize, $Orientation) }};
+                padding: {{ $Margins }};
+            }
+        }
+        @page {
+          margin: {{ $Margins }};
+          size: {{ $PageSize }} {{ $Orientation }};
+        }
+        .page { break-after: page; }
+        /* End Printing CSS */
+        * {
+            font-family: sans-serif;
+            box-sizing: border-box;
+        }
+        body { margin: 0; }
+        body.rtl { direction: rtl; }
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+	tr:hover {
+		background: rgba(0,0,0,0.15);
+	}
+	td, th {
+		text-align: left;
+		padding: 0.35rem;
+	    	font-size: 80%;
+	}
+	th {
+		background: lightblue;
+	}
+	.text-right {
+		text-align: right;
+	}
+	.bold {
+		font-weight: bold;
+	}
+        .d-flex {
+		display: flex;
+        }
+        .justify-content-between {
+		justify-content: space-between;
+        }
+        .company-logo {
+		width: 120px;
+		height: 100px;
+		margin: 0.90rem 0;
+        }
+
+	</style>
+</head>
+<body class="{{ IF($IsRtl, 'rtl', '') }}">
+	<div class="page">
+		<!-- Parameters -->
+		{{ *define FromDate as ToDateTime(FromDate) }}
+		{{ *define ToDate as ToDateTime(ToDate) }}
+
+		<!-- Query -->
+		{{ *define source as 'DetailsEntry' }}
+		{{ *define select as 'Account.Code,Account.Name,Sum(Direction * Value)' }}
+		{{ *define filter as 'Line.State = 4 and NOT (Account.AccountType.Concept DescOf ''StatisticalAccountsExtension'') and Line.PostingDate >= ' + QueryDateTime(FromDate) + ' and Line.PostingDate <= ' + QueryDateTime(ToDate) }}
+		{{ *define having as 'Sum(Direction * Value) <> 0' }}
+		{{ *define orderby as 'Account.Code, Account.Name' }}
+		{{ *define top as null }}
+		{{ *define data as Aggregate(source, select, filter, having, orderby, top) }}
+
+		<!-- Variables -->
+		{{ *define sumDebit as Sum(data, 'If($#2 > 0, $#2, 0.0)') }}
+		{{ *define sumCredit as Sum(data, 'If($#2 < 0, -$#2, 0.0)') }}
+
+		<div class="d-flex justify-content-between">
+			<div>
+				<h1> {{ $ShortCompanyName }} </h1>
+				<h3> From: {{ Format(FromDate, 'yyyy-MM-dd') }} &nbsp;&nbsp;&nbsp; To: {{ Format(ToDate, 'yyyy-MM-dd') }}</h3>
+			</div>
+			<img class="company-logo" src="https://i.imgur.com/LfyN1Ft.png" />
+		</div>
+		<br />
+		<table>
+			<thead>
+				<tr>
+					<th> Account </th>
+					<th class="text-right"> Debit </th>
+					<th class="text-right"> Credit </th>
+				</tr>
+			</thead>
+			<tbody>
+				{{ *foreach row in data }}
+				<tr>
+					<td>{{ row#0 + ' - ' + row#1 }}</td>
+					<td class="text-right">{{ If(row#2 > 0, Format(row#2, 'N2'), '') }}</td>
+					<td class="text-right">{{ If(row#2 < 0, Format(-row#2, 'N2'), '') }}</td>
+				</tr>
+				{{ *end }}
+
+				<tr class="bold">
+					<td> Total </td>
+					<td class="text-right">{{ Format(sumDebit , 'N2') }}</td>
+					<td class="text-right">{{ Format(sumCredit , 'N2') }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

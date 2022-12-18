@@ -1,5 +1,6 @@
 ﻿CREATE FUNCTION [bll].[ft_Widelines_OTEventFromModel__Generate]
 (-- If a model expires during the period, it still generates an event
+-- This is not generic enough. Replace with bll.ft_Widelines_Period_EventFromModel__Generate
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
 	@ContractTerminationLineDefinitionId INT,	

@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[NotedAgents_ToDate__Update]
+-- [dal].[Employees_ToDate__Update] used to depend on it but not anymore. So this one is not used now
 	@ContractLineDefinitionId INT,
 	@ContractAmendmentLineDefinitionId INT,
 	@ContractTerminationLineDefinitionId  INT,
@@ -38,12 +39,12 @@ AS
 	SET AG.ToDate = IIF(SS.[MonetaryValue0] IS NULL, NATD.ToDate, NULL)
 	FROM Agents AG
 	JOIN NotedAgentsToDates NATD ON NATD.[NotedAgentId] = AG.[Id]
-	OUTER APPLY  [bll].[ft_Widelines_PITEventFromModel__Generate]
+	OUTER APPLY  [bll].[ft_Widelines_Period_EventFromModel__Generate]
 	(
 		@ContractLineDefinitionId,
 		@ContractAmendmentLineDefinitionId,
 		@ContractTerminationLineDefinitionId,
-		DATEADD(DAY, 1, NATD.ToDate),
+		'0001-01-01', '9999-12-31',
 		@DurationUnitId,
 		@EntryIndex,
 		NULL, --@AgentId INT = NULL,

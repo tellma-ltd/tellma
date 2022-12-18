@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="{{ $Lang }}">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Banan IT Invoice</title>
+
+	<style>
+		.clearfix {
+			margin-bottom: 5px;
+		}
+
+		.purple {
+			color: rgb(168, 44, 168);
+		}
+
+		.boldPurple {
+			color: #79299d;
+		}
+
+		.purple-background {
+			background-color: #79299d;
+			color: white;
+		}
+
+		.lightGray {
+			color: #b6b6b6;
+		}
+
+		.gray {
+			color: #999999;
+		}
+
+		.noBorder {
+			border: none;
+		}
+
+		.marginTopBottom {
+			margin: 15px;
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+
+		.right {
+			text-align: right;
+			padding-right: 15px;
+		}
+
+		.left {
+			text-align: left;
+			padding-left: 15px;
+		}
+
+		.topText {
+			vertical-align: top;
+			padding-top: 0;
+		}
+
+		td, th {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		* {
+			font-family: 'Tajawal', sans-serif;
+			margin: 0px;
+		}
+
+		.horizontal-border {
+			border-bottom: 1px solid #ddd;
+		}
+
+		.page {
+			break-after: page;
+		}
+	</style>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+	<!-- Change per Tenant -->
+	{{ *define sellerVatRegistrationNumber as '310169549400003' }}
+	{{ *define sellerName as 'Banan Information Technologies PLC.' }}
+	{{ *define sellerRegistrationNumber as '4030020180' }}
+	{{ *define sellerTaxIdentificationNumber as '11223344' }}
+	{{ *define logoUrl as 'https://i.imgur.com/aUVYbmX.png' }}
+
+	{{ *foreach $ in $ }}
+	<div class="page ltr">
+
+		<!-- Does NOT Change per Tenant -->
+		{{ *define salesInvoiceCode as $.Code }}
+		{{ *define salesInvoiceDate as $.PostingDate }}
+		{{ *define buyerName as $.NotedAgent.Agent1.Name }}
+		{{ *define buyerTaxIdentificationNumber as $.NotedAgent.TaxIdentificationNumber }}
+		{{ *define postedLines as Filter($.Lines, '$.State >= 0') }}
+		{{ *define postedEntries as SelectMany(postedLines, '$.Entries') }}
+
+		{{ *define vatEntries as Filter(postedEntries, '$.Account.AccountType.Concept = ''CurrentValueAddedTaxPayables''') }}
+
+		{{ *define standardVatEntries as Filter(vatEntries, '$.MonetaryValue > 0.0') }}
+		{{ *define zeroVatEntries as Filter(vatEntries, '$.MonetaryValue = 0.0') }}
+
+		<!-- For the QR Code -->
+		{{ *define invoiceSubtotal as -Sum(vatEntries, '$.NotedAmount * $.Direction') }}
+		{{ *define invoiceVat as -Sum(vatEntries, '$.MonetaryValue * $.Direction') }}
+		{{ *define invoiceVatPercent as invoiceVAT / invoiceSubtotal }}
+		{{ *define invoiceTotal as invoiceSubtotal + invoiceVat }}
+
+		{{ *define settlementEntries as Filter(postedEntries, '$.Account.AccountType.Concept = ''CashOnHand'' || $.Account.AccountType.Concept = ''BalancesWithBanks'' || $.Account.AccountType.Concept = ''OtherCurrentReceivables''') }}
+		{{ *define totalPaid as Sum(settlementEntries, '$.MonetaryValue') }}
+		{{ *define totalRemaining as invoiceTotal - totalPaid }}
+
+		<!-- Header -->
+		<div class="container" style="padding: 5%; padding-top: 0%;">
+			<div class="row">
+				<div>
+					<div style="height: 78px; width: 1px; position: absolute;
+                    background: rgb(59, 55, 55); top: 5%; margin-left: 7px;">
+					</div>
+					<table style="width: 100%;">
+						<thead>
+						<th class="left">
+							<h4 class="gray" style="font-weight: 500;">{{ sellerName }}</h4>
+							<h2><strong>SALES INVOICE {{ salesInvoiceCode }}</strong></h2>
+							<h3 class="gray">{{ Format(salesInvoiceDate, 'dd.MM.yyyy')}}</h3>
+						</th>
+						<th style="text-align: right;">
+							<!-- I've hosted the Banan IT logo on a free website untill provided a personal link to work with -->
+							<img src="{{ logoUrl }}" alt="Banan IT" width="80" height="80">
+						</th>
+						</thead>
+					</table>
+				</div>
+
+				<!-- Body -->
+				<table class="marginTopBottom" style="border-collapse: collapse; margin-top: 80px; width: 100%;">
+					<thead class="left">
+					<th class="horizontal-border" style="width: 50%; border-bottom: 2px solid #999999;">
+						<label class="boldPurple"><strong style="font-weight: bolder; font-size: large">Bill To</strong></label>
+					</th>
+					<th class="horizontal-border" style="width: 50%; border-bottom: 2px solid #999999;">
+						<label class="boldPurple"><strong style="font-weight: bolder; font-size: large;">Description</strong></label>
+					</th>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="topText">
+								<label><strong> {{ buyerName }} </strong></label>
+								<br>
+								<label>TIN: {{ buyerTaxIdentificationNumber }} </label>
+							</td>
+							<td class="topText">
+								<label>
+									{{ $.Memo }}
+								</label>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table class="table marginTopBottom" style="width: 100%; border-collapse: collapse; margin-top: 50px;">
+					<thead class="purple-background">
+					<th class="left">ITEM</th>
+					<th class="right">Quantity</th>
+					<th class="left">Unit</th>
+					<th class="right">Unit Price</th>
+					<th class="right">Total (ETB)</th>
+					</thead>
+					<tbody style="font-size: 0.9rem;"
+						{{ *foreach entry in vatEntries }}
+						{{ *define item as entry.NotedResource }}
+						{{ *define quantity as entry.Quantity }}
+						{{ *define unit as entry.Unit }}
+						{{ *define amount as entry.NotedAmount }}
+						{{ *define price as If(quantity = 0, 0, amount / quantity) }}
+						<tr>
+						<td class="left horizontal-border">{{ item.Name }}</td>
+						<td class="right horizontal-border">{{ Format(quantity, 'N2') }}</td>
+						<td class="left horizontal-border">{{ unit.Name }}</td>
+						<td class="right horizontal-border">{{ Format(price, 'N2') }}</td>
+						<td class="right horizontal-border" style="font-weight: bold;">{{ Format(amount, 'N2') }}</td>
+						</tr>
+						{{ *end }}
+						<tr style="height: 25px;"></tr>
+						<tr class="right">
+						<td colspan="3" class="noBorder"></td>
+						<td class="horizontal-border">SUBTOTAL:</td>
+						<td class="right horizontal-border">{{ Format(invoiceSubtotal, 'N2') }}</td>
+						</tr>
+						<tr class="right">
+						<td colspan="3" class="noBorder"></td>
+						<td class="horizontal-border">VAT ({{ Format(invoiceVatPercent * 100, 'N0') }}%):</td>
+						<td class="right">{{ Format(invoiceVAT, 'N2') }}</td>
+						</tr>
+						<tr class="purple right">
+						<td colspan="3" class="noBorder"></td>
+						<td class="horizontal-border" style="font-weight: bold; background-color: #efefef;">TOTAL DUE:</td>
+						<td class="right horizontal-border" style="font-weight: bold; text-decoration: underline; background-color: #efefef;">{{ Format(invoiceTotal, 'N2') }}</td>
+						</tr>
+						<tr>
+						<td colspan="3" class="noBorder"></td>
+						<td class="noBorder right" colspan="2">Thank you for your business!</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="clearfix"></div>
+
+				<label class="marginTopBottom">Sincerely,</label>
+				<table class="marginTopBottom" style="margin-top: 100px;">
+					<tr>
+						<td>
+							<h4 class="purple" style="font-weight: bold;">Mohamad Akra</h4>
+							<strong>General Manager, Banan IT</strong>
+							<br>
+							<a href="mohamad.akra@banan-it.com">mohamad.akra@banan-it.com</a>
+							<br>
+							<label>Tel: + 251 944 278 238</label>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	{{ *end }}
+</body>
+</html>

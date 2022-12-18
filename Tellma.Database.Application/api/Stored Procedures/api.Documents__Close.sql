@@ -13,6 +13,17 @@ BEGIN
 	
 	-- (1) Validate
 	DECLARE @IsError BIT;
+	
+	EXEC [bll].[Lines_Validate__Transition_ToDocumentState]
+		@Ids = @Ids, --documents
+		@ToDocumentState = 1, -- 0: Open, 1:Close
+		@Top = @Top,
+		@IsError = @IsError OUTPUT;
+
+	-- If there are validation errors don't proceed
+	IF @IsError = 1 OR @ValidateOnly = 1
+		RETURN;
+		
 	EXEC [bll].[Documents_Validate__Close]
 		@DefinitionId = @DefinitionId,
 		@Ids = @Ids,
@@ -30,3 +41,4 @@ BEGIN
 		@Ids = @Ids, 
 		@UserId = @UserId;
 END;
+GO

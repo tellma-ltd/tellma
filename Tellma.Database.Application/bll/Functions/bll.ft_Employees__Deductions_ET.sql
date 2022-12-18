@@ -55,7 +55,7 @@ AS BEGIN
 
 	-- Income Tax Deduction
 	Update R
-	SET [EmployeeIncomeTax] = bll.[fn_EmployeeIncomeTax_ET]([TotalValueSubjectToEmployeeIncomeTax])
+	SET [EmployeeIncomeTax] = bll.fn_EmployeeIncomeTax_ET([TotalValueSubjectToEmployeeIncomeTax])
 	FROM @MyResult R
 	CROSS APPLY (
 		SELECT SUM([ValueSubjectToEmployeeIncomeTax]) -- - SUM([ValueSubjectToSocialSecurity]) * 0.08	

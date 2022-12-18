@@ -30,8 +30,20 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (1, N'en',  N'The employee has no dues to start with. Why pay this amount?'), 
 (1, N'ar',  N'الموظف لا يوجد عليه مستحقات أصلا، فلماذا دفع هدا المبلغ'),
 
+(2, N'en',  N'2:Fill the correct error message for VAT receivable in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(2, N'ar',  N'2:Fill the correct error message for VAT receivable in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
+(3, N'en',  N'3:Fill the correct error message for Accrued Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(3, N'ar',  N'3:Fill the correct error message for Accrued Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
 (4, N'en',  N'The employee has no installment balance for this loan type due on that date. Why defer this amount?'), 
 (4, N'ar',  N'الموظف ليس عنده أقساط مستحقة بهذا التاريخ، فما معنى إعادة تقسيط هدا المبلغ؟'),
+
+(5, N'en',  N'5:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(5, N'ar',  N'5:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
+(6, N'en',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(6, N'ar',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'),
 
 -- Errors corresponding to insufficient balance, handled by second code snippet
 (10, N'en',  N'The remaining unsettled invoice amount is {0}, which is less than this amount'), 
@@ -40,8 +52,20 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (11, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
 (11, N'ar',  N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ'),
 
+(12, N'en',  N'12:Fill the correct error message for VAT receivable in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(12, N'ar',  N'12:Fill the correct error message for VAT receivable in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
+(13, N'en',  N'13:Fill the correct error message for Accrued Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(13, N'ar',  N'13:Fill the correct error message for Accrued Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
 (14, N'en',  N'The net installment balance for this loan type is {0}, which is less than this amount'), 
-(14, N'ar',  N'القسط المستحق عن هذه السلفية هو {0}، وهو أقل من هدا المبلغ');
+(14, N'ar',  N'القسط المستحق عن هذه السلفية هو {0}، وهو أقل من هدا المبلغ'),
+
+(15, N'en',  N'15:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(15, N'ar',  N'15:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+
+(16, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
+(16, N'ar',   N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ');
 
 DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept IN (
@@ -56,6 +80,7 @@ DECLARE @ErrorIndex INT = CASE
 		N'RentDeferredIncomeClassifiedAsCurrent',
 		N'DeferredIncomeClassifiedAsCurrent'
 	) THEN 5
+	WHEN @ParentAccountTypeConcept = N'CurrentLiabilities' THEN 6
 	ELSE -1
 END;
 IF @ErrorIndex = -1 
@@ -105,5 +130,6 @@ WHERE E.[Index] = @AccountEntryIndex
 AND AP.[PriorBalance] IS NOT NULL
 AND SIGN(AP.[Amount] + AP.[PriorBalance]) = SIGN(@Direction)
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS (SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
 GO

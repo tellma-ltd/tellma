@@ -93,6 +93,7 @@ BEGIN
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
 	);
 
+	-- The PostingDate/Memo are required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		CASE
@@ -125,7 +126,18 @@ BEGIN
 		FL.Id = N'PostingDate'	AND L.[PostingDate] IS NULL OR
 		FL.Id = N'Memo'			AND L.[Memo] IS NULL
 	);
-	-- No Null account when in state >= 2
+
+	-- No inactive account, for any positive state
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
+		N'Error_TheAccount0IsInactive',
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
+	WHERE (A.[IsActive] = 0);
+
 	IF @State >= 2
 	BEGIN
 		DECLARE @ArchiveDate DATE;
@@ -149,7 +161,6 @@ BEGIN
 		JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.[Id]
 		JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = N'PostingDate'
 		LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
-
 		WHERE L.[PostingDate] IS NULL;
 
 		-- Currency Exchange Rate must be defined for that date
@@ -277,7 +288,7 @@ BEGIN
 		JOIN dbo.[EntryTypes] ET ON AC.[EntryTypeParentId] = ET.[Id]
 		WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 
--- The block below shall be deprecated after we migrate these DBs
+		-- The block below shall be deprecated after we migrate these DBs
 		IF DB_NAME() IN (N'Tellma.101', N'Tellma.200', N'Tellma.201', N'Tellma.1201')
 		BEGIN
 			--WITH PreBalances AS ( -- due to other past and future transactions
@@ -413,162 +424,10 @@ BEGIN
 			DROP TABLE #PreBalances; DROP TABLE #CurrentBalances;
 		END
 	END
-	-- cannot unpost (4=>1,2,3) if it causes negative quantity
-	IF @State < 4 and (1=0)
-	BEGIN
-		WITH InventoryAccounts AS (
-			SELECT A.[Id]
-			FROM dbo.Accounts A
-			JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-			JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-			WHERE ATP.[Concept] = N'Inventories'
-		),
-		NegativeBalancesDocuments AS (
-		SELECT
-			L.[DocumentIndex], L.[Index] AS [LineIndex], E.[Index], BD.Code, E.ResourceId, E.[AgentId],
-			SUM(BE.[Direction] * BE.[Quantity]) 
-				OVER (Partition BY BE.[ResourceId], BE.[AgentId] ORDER BY BL.[PostingDate], [LineId]) AS RunningTotal
-			FROM (
-				SELECT LFE.[Id], LFE.[PostingDate], LFE.[Index], LFE.[DocumentIndex], LBE.[DocumentId]
-				FROM @Lines LFE
-				JOIN dbo.Lines LBE ON LFE.[Id] = LBE.[Id]
-				WHERE LBE.[State] = 4
-			) L -- focus on lines that were posted and now are being unposted
-			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-			JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
-			JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[AgentId] = E.[AgentId]
-			JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
-			JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
-			WHERE BL.[State] = 4
-			AND (BL.[Id] NOT IN (SELECT [Id] FROM @Lines))
-		)
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-				N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
-				dbo.fn_Localize(RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-				dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-				dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
-				dbo.fn_Localize(RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
-				E.Code
-			FROM
-			NegativeBalancesDocuments E
-			JOIN dbo.Resources R ON E.ResourceId = R.[Id]
-			JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
-			JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
-			JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
-			WHERE E.RunningTotal < 0
-	END
-	-- cannot post (1,2,3=>4) if it causes negative anywhere
-	IF @State = 4 and (1=0)
-	BEGIN
-		WITH InventoryAccounts AS (
-			SELECT A.[Id]
-			FROM dbo.Accounts A
-			JOIN dbo.AccountTypes ATC ON A.[AccountTypeId] = ATC.[Id]
-			JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node])  = 1
-			WHERE ATP.[Concept] = N'Inventories'
-		),
-		NegativeBalancesDocuments AS (
-		SELECT
-			L.[DocumentIndex], L.[Index] AS LineIndex, E.[Index], BD.Code, E.ResourceId, E.[AgentId],
-			SUM(BE.[Direction] * BE.[Quantity]) 
-				OVER (Partition BY BE.[ResourceId], BE.[AgentId] ORDER BY MONTH(BL.[PostingDate]), BE.[Direction] DESC) AS RunningTotal
-			FROM @Lines L
-			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-			JOIN InventoryAccounts A ON A.[Id] = E.[AccountId]
-			JOIN dbo.Entries BE ON BE.[AccountId] = E.[AccountId] AND BE.[ResourceId] = E.[ResourceId] AND BE.[AgentId] = E.[AgentId]
-			JOIN dbo.Lines BL ON BE.LineId = BL.[Id]
-			JOIN map.Documents() BD ON BL.DocumentId = BD.[Id]
-			WHERE BL.[State] = 4
-		)
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1],[Argument2],[Argument3], [Argument4])
-		SELECT DISTINCT TOP (@Top)
-			'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index]  AS NVARCHAR (255))+ ']',
-				N'Error_Resource01AndAgent23AppearInLaterDocument4', -- cause negative quantity in document
-				[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinition,
-				[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS [Resource],
-				[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
-				[dbo].[fn_Localize](RL.[Name], RL.[Name2], RL.[Name3]) AS [Agent],
-				E.Code
-			FROM NegativeBalancesDocuments E
-			JOIN dbo.Resources R ON E.ResourceId = R.[Id]
-			JOIN dbo.ResourceDefinitions RD ON R.DefinitionId = RD.Id
-			JOIN dbo.[Agents] RL ON E.[AgentId] = RL.[Id]
-			JOIN dbo.[AgentDefinitions] AD ON RL.DefinitionId = AD.[Id]
-			WHERE E.[RunningTotal] < 0
-	END
-
-	IF @State > 0
-	BEGIN
-		-- No inactive account, for any positive state
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT DISTINCT TOP (@Top)
-			'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
-			N'Error_TheAccount0IsInactive',
-			[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
-		WHERE (A.[IsActive] = 0);
-		-- Cannot bypass the balance limits
-		WITH FE_AB (EntryId, AccountBalanceId) AS (
-			SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
-			FROM @Lines FE
-			JOIN @Entries E ON FE.[Index] = E.[LineIndex] AND FE.[DocumentIndex] = E.[DocumentIndex]
-			JOIN dbo.Lines L ON FE.[Id] = L.[Id]
-			JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
-			JOIN dbo.AccountBalances AB ON
-				(E.[CenterId] = AB.[CenterId])
-			AND (AB.[AgentId] IS NULL OR E.[AgentId] = AB.[AgentId])
-			AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
-			AND (AB.[CurrencyId] = E.[CurrencyId])
-			AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
-			WHERE AB.BalanceEnforcedState <= @State
-			AND AB.[BalanceEnforcedState] BETWEEN 1 AND 4
-			AND (L.[State] >= AB.[BalanceEnforcedState] OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
-		),
-		BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
-			SELECT DISTINCT TOP (@Top)
-				AB.[Id] AS [AccountBalanceId], 
-				FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
-			FROM dbo.Documents D
-			JOIN dbo.Lines L ON L.DocumentId = D.[Id]
-			JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
-			JOIN dbo.Entries E ON L.[Id] = E.[LineId]
-			JOIN dbo.AccountBalances AB ON
-				(E.[CenterId] = AB.[CenterId])
-			AND (AB.[AgentId] IS NULL OR E.[AgentId] = AB.[AgentId])
-			AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
-			AND (AB.[CurrencyId] = E.[CurrencyId])
-			AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
-			WHERE AB.Id IN (Select [AccountBalanceId] FROM FE_AB)
-			AND ((L.[State] >= AB.[BalanceEnforcedState]) OR 
-				L.[Id] IN (Select [Id] FROM @Lines)
-				AND LD.[HasWorkflow] = 0
-				AND L.[State] = 0)
-			GROUP BY AB.[Id], AB.[MinMonetaryBalance], AB.[MaxMonetaryBalance], AB.[MinQuantity], AB.[MaxQuantity]
-			HAVING SUM(E.[Direction] * E.[MonetaryValue]) NOT BETWEEN AB.[MinMonetaryBalance] AND AB.[MaxMonetaryBalance]
-			OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
-		)
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT
-			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-				CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-				CAST(E.[Index] AS NVARCHAR (255)) + ']',
-			N'Error_TheEntryCausesOffLimitBalance0' AS [ErrorName],
-			BE.NetBalance
-		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-		JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
-		JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
-	END
-
+	
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
-
-	SELECT TOP(@Top) * FROM @ValidationErrors;
+	
+	IF @IsError = 1 -- 
+		SELECT TOP(@Top) * FROM @ValidationErrors;
 END;
+GO

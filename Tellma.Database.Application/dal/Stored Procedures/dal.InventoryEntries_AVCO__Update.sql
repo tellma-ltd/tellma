@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] 0
+﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update] -- [dal].[InventoryEntries_AVCO__Update] @ArchiveDate = N'2021.07.07'
 -- TODO: Implement versions for weekly, monthly, and yearly
-@ArchiveDate DATE = N'2020.07.07',
-@ToDate DATE = N'2021.07.7',
-@VerifyLineDefinitions BIT = 1
+@ArchiveDate DATE,
+--@ToDate DATE = N'2022.07.7',
+@VerifyLineDefinitions BIT = 0
 AS
 	DECLARE @Epsilon DECIMAL (19,4) = 0.0001;
 
@@ -59,7 +59,7 @@ AS
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN @AffectedLineDefinitionEntries LD ON LD.LineDefinitionId = L.[DefinitionId] AND LD.[Index] = E.[Index]
 	WHERE L.[State] = 4
-	AND L.[PostingDate] <= @ToDate
+--	AND L.[PostingDate] <= @ToDate
 	GROUP BY LD.[LineDefinitionId]
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 	-- if not, then the assumption is wrong. Exit.
@@ -95,7 +95,7 @@ AS
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
 		AND L.[State] = 4
-		AND L.[PostingDate] <= @ToDate
+--		AND L.[PostingDate] <= @ToDate
 		GROUP BY E.[AccountId], E.[CenterId], E.[AgentId], E.[ResourceId], L.[PostingDate], E.[Direction]
 	)
 	INSERT INTO @T([AccountId], [CenterId], [AgentId], [ResourceId], [PostingDate], [Direction], 
@@ -218,6 +218,7 @@ WITH NewValues AS (
 	JOIN @AffectedLineDefinitionEntries LDE ON LDE.LineDefinitionId = L.[DefinitionId] AND LDE.[Index] = E.[Index]
 	WHERE T.[AlgebraicQuantity] <> 0
 	AND T.[Direction] = -1 AND E.[Direction] = -1
+	AND L.PostingDate > @ArchiveDate
 )
 UPDATE E
 SET

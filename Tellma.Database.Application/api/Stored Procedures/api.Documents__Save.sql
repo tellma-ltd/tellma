@@ -44,3 +44,4 @@ BEGIN
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;
+GO
