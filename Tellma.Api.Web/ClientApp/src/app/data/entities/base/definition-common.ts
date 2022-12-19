@@ -5,7 +5,7 @@ import { NumberPropDescriptor, ChoicePropDescriptor, NavigationPropDescriptor } 
 // tslint:disable:max-line-length
 export type DefinitionVisibility = 'None' | 'Optional' | 'Required';
 export type DefinitionCardinality = 'None' | 'Single' | 'Multiple';
-export type DefinitionState = 'Hidden' | 'Visible' | 'Archived';
+export type DefinitionState = 'Hidden' | 'Testing' | 'Visible' | 'Archived';
 export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie'; // TODO
 
@@ -37,18 +37,19 @@ export function cardinalityPropDescriptor(name: string, trx: TranslateService): 
     };
 }
 /**
- * Returns the PropDescriptor of a definition state property (Hidden, Visible or Archived)
+ * Returns the PropDescriptor of a definition state property (Hidden, Testing, Visible or Archived)
  */
 export function statePropDescriptor(trx: TranslateService): ChoicePropDescriptor {
     return {
         datatype: 'string',
         control: 'choice',
         label: () => trx.instant('Definition_State'),
-        choices: ['Hidden', 'Visible', 'Archived'],
+        choices: ['Hidden', 'Testing', 'Visible', 'Archived'],
         format: (c: string) => trx.instant('Definition_State_' + c),
         color: (c: string) => {
             switch (c) {
                 case 'Hidden': return '#6c757d';
+                case 'Testing': return '#ffc107';
                 case 'Visible': return '#28a745';
                 case 'Archived': return '#dc3545';
                 default: return null;

@@ -553,8 +553,14 @@
   <data name="Definition_State_Hidden" xml:space="preserve">
     <value>ተደብቋል</value>
   </data>
+  <data name="Definition_State_Testing" xml:space="preserve">
+    <value>ሙከራ</value>
+  </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>ይታያል</value>
+  </data>
+  <data name="Definition_Test" xml:space="preserve">
+    <value>ሙከራ</value>
   </data>
   <data name="Definition_ValidateScript" xml:space="preserve">
     <value>ትክክለኛ ስክሪፕት</value>

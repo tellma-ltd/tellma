@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tellma.Api.Behaviors;
 using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Email;

@@ -67,10 +67,12 @@ namespace Tellma.Model.Application
         [Required]
         [ChoiceList(new object[] {
                 DefStates.Hidden,
+                DefStates.Testing,
                 DefStates.Visible,
                 DefStates.Archived },
             new string[] {
                 DefStateNames.Hidden,
+                DefStateNames.Testing,
                 DefStateNames.Visible,
                 DefStateNames.Archived })]
         public string State { get; set; }

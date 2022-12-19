@@ -10,6 +10,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
+using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Common;
@@ -281,7 +282,23 @@ namespace Tellma.Api
             entities.ForEach(BaseUtil.SynchronizeWkbWithJson);
 
             // SQL Preprocessing
-            await _behavior.Repository.Agents__Preprocess(DefinitionId, entities, userId: UserId);
+            try
+            {
+                await _behavior.Repository.Agents__Preprocess(DefinitionId, entities, userId: UserId);
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
+            {
+                await _behavior.LogCustomScriptBug(
+                    ex,
+                    collection: nameof(Agent),
+                    definitionId: DefinitionId,
+                    defTitle: def.TitleSingular,
+                    scriptName: "Preprocess Script",
+                    entities: entities
+                    );
+
+                throw; // Bubble up to the client
+            }
             return entities;
         }
 
@@ -351,24 +368,40 @@ namespace Tellma.Api
             _blobsToSave.AddRange(BaseUtil.ExtractImages(entities, ImageBlobName));
             _blobsToSave.AddRange(BaseUtil.ExtractAttachments(entities, e => e.Attachments, AttachmentBlobName));
 
-            // Save the agents
-            (SaveWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Agents__Save(
+            try
+            {
+                // Save the agents
+                (SaveWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Agents__Save(
+                        definitionId: DefinitionId,
+                        entities: entities,
+                        returnIds: returnIds,
+                        validateOnly: ModelState.IsError,
+                        top: ModelState.RemainingErrors,
+                        userId: UserId);
+
+                // Validation
+                AddErrorsAndThrowIfInvalid(result.Errors);
+
+                // Add any attachment Ids that we must delete
+                _blobsToDelete = new List<string>();
+                _blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
+                _blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
+
+                return result.Ids;
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
+            {
+                await _behavior.LogCustomScriptBug(
+                    ex,
+                    collection: nameof(Resource),
                     definitionId: DefinitionId,
-                    entities: entities,
-                    returnIds: returnIds,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+                    defTitle: def.TitleSingular,
+                    scriptName: "Validate Script",
+                    entities: entities
+                    );
 
-            // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
-
-            // Add any attachment Ids that we must delete
-            _blobsToDelete = new List<string>();
-            _blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
-            _blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
-
-            return result.Ids;
+                throw; // Bubble up to the client
+            }
 
             #endregion
         }

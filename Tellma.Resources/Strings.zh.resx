@@ -308,7 +308,7 @@
     <value>取消</value>
   </data>
   <data name="Cardinality_Multiple" xml:space="preserve">
-    <value>多</value>
+    <value>多种的</value>
   </data>
   <data name="Cardinality_None" xml:space="preserve">
     <value>没有任何</value>
@@ -539,7 +539,7 @@
     <value>角色</value>
   </data>
   <data name="Definition_Show" xml:space="preserve">
-    <value>节目</value>
+    <value>展示</value>
   </data>
   <data name="Definition_ShowInMainMenu" xml:space="preserve">
     <value>显示在主菜单</value>
@@ -553,8 +553,14 @@
   <data name="Definition_State_Hidden" xml:space="preserve">
     <value>隐</value>
   </data>
+  <data name="Definition_State_Testing" xml:space="preserve">
+    <value>测试</value>
+  </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>可见的</value>
+  </data>
+  <data name="Definition_Test" xml:space="preserve">
+    <value>测试</value>
   </data>
   <data name="Definition_ValidateScript" xml:space="preserve">
     <value>验证脚本</value>
@@ -749,10 +755,10 @@
     <value>报告了垃圾邮件</value>
   </data>
   <data name="Email_Subject" xml:space="preserve">
-    <value>主题</value>
+    <value>学科</value>
   </data>
   <data name="Email_To" xml:space="preserve">
-    <value>至</value>
+    <value>到</value>
   </data>
   <data name="EmailAttachment_Content" xml:space="preserve">
     <value>内容</value>
@@ -2333,7 +2339,7 @@
     <value>日程</value>
   </data>
   <data name="NotificationTemplate_Subject" xml:space="preserve">
-    <value>主题</value>
+    <value>学科</value>
   </data>
   <data name="NotificationTemplate_Subscribers" xml:space="preserve">
     <value>订户</value>
@@ -2456,7 +2462,7 @@
     <value>请确认</value>
   </data>
   <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>价值的灰色比或相等</value>
+    <value>价值灰色比或平等</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>打印模板</value>
@@ -2837,7 +2843,7 @@
     <value>由用户</value>
   </data>
   <data name="RuleType_Public" xml:space="preserve">
-    <value>上市</value>
+    <value>民众</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>救</value>

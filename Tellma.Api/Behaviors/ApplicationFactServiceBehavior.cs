@@ -36,6 +36,7 @@ namespace Tellma.Api.Behaviors
         private readonly NotificationsQueue _notificationsQueue;
         private readonly ApplicationBehaviorHelper _behaviorHelper;
         private readonly IStringLocalizer<Strings> _localizer;
+        private readonly ITenantLogger _tenantLogger;
 
         protected int? DefinitionId { get; private set; }
 
@@ -50,7 +51,8 @@ namespace Tellma.Api.Behaviors
             IUserSettingsCache userSettingsCache,
             NotificationsQueue notificationsQueue,
             ApplicationBehaviorHelper behaviorHelper,
-            IStringLocalizer<Strings> localizer) : base(factory, versions, adminRepo, logger)
+            IStringLocalizer<Strings> localizer,
+            ITenantLogger tenantLogger) : base(factory, versions, adminRepo, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
@@ -59,6 +61,7 @@ namespace Tellma.Api.Behaviors
             _notificationsQueue = notificationsQueue;
             _behaviorHelper = behaviorHelper;
             _localizer = localizer;
+            this._tenantLogger = tenantLogger;
         }
 
         public IQueryFactory QueryFactory<TEntity>() where TEntity : Entity
@@ -835,6 +838,58 @@ namespace Tellma.Api.Behaviors
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Handy function to Log a <see cref="CustomScriptException"/>.
+        /// </summary>
+        public async Task LogCustomScriptBug(
+            CustomScriptException ex,
+            string collection, int? definitionId, string defTitle, string scriptName,
+            IEnumerable<int> entityIds)
+        {
+            try
+            {
+                using var _ = TransactionFactory.Suppress();
+                var settings = await Settings();
+                var user = await UserSettings();
+
+                var supportEmailsConcatenated = settings.SupportEmails ?? "";
+                var supportEmails = supportEmailsConcatenated
+                    .Split(";")
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim());
+
+                _tenantLogger.Log(new CustomScriptErrorLogEntry
+                {
+                    TenantId = TenantId,
+                    TenantName = settings.ShortCompanyName,
+                    TenantSupportEmails = supportEmails,
+                    Collection = collection,
+                    DefinitionId = definitionId,
+                    DefinitionName = defTitle,
+                    EntityIds = entityIds,
+                    UserEmail = user.Email,
+                    UserName = user.Name,
+                    ScriptName = scriptName,
+                    ErrorMessage = ex.Message,
+                    ErrorNumber = ex.Number,
+                });
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Handy function to Log a <see cref="CustomScriptException"/>.
+        /// </summary>
+        public async Task LogCustomScriptBug(
+            CustomScriptException ex,
+            string collection, int? definitionId, string defTitle, string scriptName,
+            IEnumerable<EntityWithKey<int>> entities)
+        {
+            var entityIds = entities.Select(e => e.Id).Where(id => id != 0);
+            await LogCustomScriptBug(ex, collection, definitionId, defTitle, scriptName, entityIds);
+        }
     }
 
     public class ApplicationBehaviorHelper

@@ -456,6 +456,14 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  public onMakeTesting = (model: AgentDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Testing') {
+      this.agentDefinitionsApi.updateState([model.Id], { state: 'Testing', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
   public onMakeVisible = (model: AgentDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
       this.agentDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
@@ -473,6 +481,7 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showMakeHidden = (model: AgentDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeTesting = (model: AgentDefinition) => !!model && model.State !== 'Testing';
   public showMakeVisible = (model: AgentDefinition) => !!model && model.State !== 'Visible';
   public showMakeArchived = (model: AgentDefinition) => !!model && model.State !== 'Archived';
 

@@ -202,8 +202,23 @@ namespace Tellma.Repository.Application
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
-        private static CustomScriptException ToCustomScriptException(SqlException ex) =>
-            new(ex.Message, ex.Number - 100000);
+        private static CustomScriptException ToCustomScriptException(SqlException ex)
+        {
+            int number = ex.Number - 100000;
+            if (!string.IsNullOrWhiteSpace(ex.Message))
+            {
+                const string separator = ":::";
+                var pieces = ex.Message.Split(separator);
+                if (int.TryParse(pieces.First().Trim(), out int lineDefId))
+                {
+                    // The definition Id is prepended in the message, 
+                    string msg = string.Join(separator, pieces.Skip(1));
+                    return new(msg, number, lineDefId);
+                }
+            }
+
+            return new(ex.Message, number);
+        }
 
         #endregion
 

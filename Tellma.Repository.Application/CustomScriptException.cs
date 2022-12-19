@@ -14,6 +14,10 @@ namespace Tellma.Repository.Application
         {
             Number = number;
         }
+        public CustomScriptException(string msg, int number, int lineDefId) : this(msg, number)
+        {
+            LineDefinitionId = lineDefId;
+        }
 
         /// <summary>
         /// SQL Server error number.
@@ -25,5 +29,10 @@ namespace Tellma.Repository.Application
         /// this error was not raised intentionally by the script author.
         /// </summary>
         public bool IsScriptBug => Number < 50000; // RAISERROR creates an error with a number of 50,000
+
+        /// <summary>
+        /// Optional: The Id of the definition that caused the error.
+        /// </summary>
+        public int? LineDefinitionId { get; set; }
     }
 }

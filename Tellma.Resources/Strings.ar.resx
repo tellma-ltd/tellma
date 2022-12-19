@@ -559,8 +559,14 @@
   <data name="Definition_State_Hidden" xml:space="preserve">
     <value>مخفى</value>
   </data>
+  <data name="Definition_State_Testing" xml:space="preserve">
+    <value>تجربة</value>
+  </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>ظاهر</value>
+  </data>
+  <data name="Definition_Test" xml:space="preserve">
+    <value>تجربة</value>
   </data>
   <data name="Definition_ValidateScript" xml:space="preserve">
     <value>كود التحقق</value>

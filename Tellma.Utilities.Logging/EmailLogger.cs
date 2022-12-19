@@ -58,17 +58,17 @@ namespace Tellma.Utilities.Logging
             var email = new EmailToSend(_provider.EmailAddress)
             {
                 Subject = subjectText,
-                Body = Htmlify(bodyText),
+                Body = Htmlify(bodyText, "'Courrier New', monospace"),
             };
 
             // Fire and forget the email (no need to await email logging)
             var _ = TrySendEmail(email);
         }
 
-        private static string Htmlify(string bodyText)
+        public static string Htmlify(string bodyText, string font)
         {
             var bldr = new StringBuilder();
-            bldr.Append(@"<span style=""font-family: 'Courier New', monospace; "">");
+            bldr.Append(@$"<span style=""font-family: {font}; "">");
             foreach (var line in bodyText.Split(Environment.NewLine).Select(e => e ?? ""))
             {
                 int i = 0;

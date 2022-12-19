@@ -9,127 +9,15 @@ using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
-using Tellma.Api.Notifications;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
+using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
 using Tellma.Utilities.Common;
-using Tellma.Utilities.Email;
 
 namespace Tellma.Api
 {
-    public class EmailTenantLogger : ITenantLogger
-    {
-        private readonly IClientProxy _clientProxy;
-        private readonly NotificationsQueue _notificationsQueue;
-
-        public EmailTenantLogger(IClientProxy clientProxy, NotificationsQueue notificationsQueue)
-        {
-            _clientProxy = clientProxy;
-            _notificationsQueue = notificationsQueue;
-        }
-
-        public void Log(TenantLogEntry entry)
-        {
-            EmailToSend email = _clientProxy.MakeTenantNotificationEmail(entry);
-            Task _ = _notificationsQueue.Enqueue(entry.TenantId, new List<EmailToSend> { email });
-        }
-    }
-
-    public interface ITenantLogger
-    {
-        void Log(TenantLogEntry entry);
-    }
-
-    public enum TenantLogLevel { Error, Warn, Info }
-
-    /// <summary>
-    /// Represents an event that the tenant administrator would like to know about.
-    /// </summary>
-    public abstract class TenantLogEntry
-    {
-        public TenantLogEntry(TenantLogLevel level)
-        {
-            Level = level;
-        }
-
-        /// <summary>
-        /// A unique idenifier of the log entry.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
-
-        /// <summary>
-        /// Log level (Error, Warning, etc...)
-        /// </summary>
-        public virtual TenantLogLevel Level { get; private set; }
-
-        /// <summary>
-        /// The tenant ID where the event occurred
-        /// </summary>
-        public int TenantId { get; set; }
-
-        /// <summary>
-        /// The name of the tenant
-        /// </summary>
-        public string TenantName { get; set; }
-    }
-
-    /// <summary>
-    /// Signifies a bug in one of the custom SQL scripts
-    /// </summary>
-    public class CustomScriptErrorLogEntry : TenantLogEntry
-    {
-        public CustomScriptErrorLogEntry() : base(TenantLogLevel.Error)
-        {
-        }
-
-        /// <summary>
-        /// Which entity caused a problem, e.g. "Document" or "Resource" etc...
-        /// </summary>
-        public string Collection { get; set; }
-
-        /// <summary>
-        /// The Id of the definition that has the problematic script.
-        /// </summary>
-        public int? DefinitionId { get; set; }
-
-        /// <summary>
-        /// The name of the definition that has the problematic script.
-        /// </summary>
-        public string DefinitionName { get; set; }
-
-        /// <summary>
-        /// Which script threw the error, e.g. "Preprocess Script".
-        /// </summary>
-        public string ScriptName { get; set; }
-
-        /// <summary>
-        /// Optional Id of the entity on which the operation was
-        /// performed (if the operation was done on a single entity).
-        /// </summary>
-        public int? EntityId { get; set; }
-
-        /// <summary>
-        /// The email of the user who triggered the error.
-        /// </summary>
-        public string UserEmail { get; set; }
-
-        /// <summary>
-        /// The username of the user who triggered the error.
-        /// </summary>
-        public string UserName { get; set; }
-
-        /// <summary>
-        /// The message of the SQL script error.
-        /// </summary>
-        public string ErrorMessage { get; set; }
-
-        /// <summary>
-        /// The SQL error number, should be between 0 and 49,999.
-        /// </summary>
-        public int ErrorNumber { get; set; }
-    }
-
     public class ResourcesService : CrudServiceBase<ResourceForSave, Resource, int>
     {
         private readonly ApplicationFactServiceBehavior _behavior;
@@ -144,12 +32,10 @@ namespace Tellma.Api
         public ResourcesService(
             ApplicationFactServiceBehavior behavior,
             CrudServiceDependencies deps,
-            IBlobService blobService,
-            ITenantLogger tenantLogger) : base(deps)
+            IBlobService blobService) : base(deps)
         {
             _behavior = behavior;
             _blobService = blobService;
-            _tenantLogger = tenantLogger;
             _localizer = deps.Localizer;
         }
 
@@ -279,38 +165,20 @@ namespace Tellma.Api
             entities.ForEach(BaseUtil.SynchronizeWkbWithJson);
 
             // SQL Preprocessing
-            // await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
             try
             {
                 await _behavior.Repository.Resources__Preprocess(DefinitionId, entities, UserId);
             }
-            catch (Repository.Application.CustomScriptException ex) when (ex.IsScriptBug)
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
             {
-                var supportEmailsConcatenated = settings.SupportEmails;
-                if (!string.IsNullOrWhiteSpace(supportEmailsConcatenated))
-                {
-                    var supportEmails = supportEmailsConcatenated
-                        .Split(";")
-                        .Where(e => !string.IsNullOrWhiteSpace(e))
-                        .Select(e => e.Trim());
-
-                    int entityId = entities.Select(e => e.Id).SingleOrDefault(id => id != 0);
-
-                    _tenantLogger.Log(new CustomScriptErrorLogEntry
-                    {
-                        TenantId = TenantId,
-                        TenantName = settings.ShortCompanyName,
-                        Collection = nameof(Resource),
-                        DefinitionId = DefinitionId,
-                        DefinitionName = def.TitleSingular,
-                        EntityId = entities.Select(e => e.Id).SingleOrDefault(id => id != 0),
-                        UserEmail = user.Email,
-                        UserName = user.Name,
-                        ScriptName = "Preprocess Script",
-                        ErrorMessage = ex.Message,
-                        ErrorNumber = ex.Number,
-                    });
-                }
+                await _behavior.LogCustomScriptBug(
+                    ex,
+                    collection: nameof(Resource),
+                    definitionId: DefinitionId,
+                    defTitle: def.TitleSingular,
+                    scriptName: "Preprocess Script",
+                    entities: entities
+                    );
 
                 throw; // Bubble up to the client
             }
@@ -364,22 +232,38 @@ namespace Tellma.Api
             // The new images
             _blobsToSave = BaseUtil.ExtractImages(entities, ImageBlobName).ToList();
 
-            // Save the Resources
-            SaveWithImagesOutput result = await _behavior.Repository.Resources__Save(
+            try
+            {
+                // Save the Resources
+                SaveWithImagesOutput result = await _behavior.Repository.Resources__Save(
+                        definitionId: DefinitionId,
+                        entities: entities,
+                        returnIds: returnIds,
+                        validateOnly: ModelState.IsError,
+                        top: ModelState.RemainingErrors,
+                        userId: UserId);
+
+                // Validation
+                AddErrorsAndThrowIfInvalid(result.Errors);
+
+                // Add any attachment Ids that we must delete
+                _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
+
+                return result.Ids;
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
+            {
+                await _behavior.LogCustomScriptBug(
+                    ex,
+                    collection: nameof(Resource),
                     definitionId: DefinitionId,
-                    entities: entities,
-                    returnIds: returnIds,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+                    defTitle: def.TitleSingular,
+                    scriptName: "Validate Script",
+                    entities: entities
+                    );
 
-            // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
-
-            // Add any attachment Ids that we must delete
-            _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
-
-            return result.Ids;
+                throw; // Bubble up to the client
+            }
         }
 
         protected override async Task NonTransactionalSideEffectsForSave(List<ResourceForSave> entities, IReadOnlyList<Resource> data)
