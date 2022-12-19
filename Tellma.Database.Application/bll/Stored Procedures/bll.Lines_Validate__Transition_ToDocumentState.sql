@@ -122,7 +122,8 @@ BEGIN
 			END TRY
 			BEGIN CATCH
 				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
-				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorMessage NVARCHAR (255) =
+					CAST(@LineDefinitionId AS NVARCHAR (50)) + N':::' + ERROR_MESSAGE();
 				DECLARE @ErrorState TINYINT = 99;
 			--	SELECT TOP(@Top) * FROM @ValidationErrors; -- needed or else C# fails to parse according to contract
 				THROW @ErrorNumber, @ErrorMessage, @ErrorState;

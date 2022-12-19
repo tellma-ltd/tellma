@@ -175,7 +175,7 @@
 	[Resource2Label2]					NVARCHAR (50),
 	[Resource2Label3]					NVARCHAR (50),
 
-	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_ResourceDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
+	[State]								NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_ResourceDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived', N'Testing')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4),
