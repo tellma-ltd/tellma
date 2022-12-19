@@ -91,7 +91,8 @@ BEGIN
 			END TRY
 			BEGIN CATCH
 				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
-				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorMessage NVARCHAR (255) = 
+					CAST(@LineDefinitionId AS NVARCHAR (50)) + N':::' + ERROR_MESSAGE();
 				DECLARE @ErrorState TINYINT = 99;
 				THROW @ErrorNumber, @ErrorMessage, @ErrorState;
 			END CATCH
