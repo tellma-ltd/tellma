@@ -38,19 +38,12 @@ JOIN dbo.Entries BE ON BE.[AccountId] = FE.[AccountId] AND BE.[AgentId] = FE.[Ag
 AND BE.[Direction] = FE.[Direction]
 JOIN dbo.Lines BL ON BL.[Id] = BE.[LineId]
 JOIN map.Documents() BD ON BD.[Id] = BL.[DocumentId] 
---JOIN dbo.Accounts A ON A.[Id] = BE.[AccountId]
---JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
---AND AC.[Concept] IN (
---	N'CurrentValueAddedTaxPayables',
---	N'NoncurrentValueAddedTaxPayables',
---	N'CurrentValueAddedTaxReceivables',
---	N'NoncurrentValueAddedTaxReceivables'
---)
 AND NAG.[Code] <> N'NullAgent'
 AND BL.[State] >= 4;
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS (SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
 GO

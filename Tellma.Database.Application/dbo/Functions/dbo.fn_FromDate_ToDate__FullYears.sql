@@ -7,11 +7,11 @@
 RETURNS INT
 AS
 BEGIN
-	DECLARE @Years INT;
+	DECLARE @FullYears INT;
 	IF @Calendar = N'GC'
 	BEGIN
 		SET @ToDate = DATEADD(DAY, 1, @ToDate);
-		SET @Years =
+		SET @FullYears =
 			CASE 
 				WHEN
 					DATEPART(YEAR, @FromDate) < DATEPART(YEAR, @ToDate)
@@ -24,8 +24,8 @@ BEGIN
 					THEN DATEDIFF(YEAR, @FromDate, @ToDate) - 1
 				WHEN DATEPART(YEAR, @FromDate) = DATEPART(YEAR, @ToDate)
 					THEN 0
-			END; --print N'Years = ' + cast(@years as nvarchar(50))
+			END;
 	END
-	RETURN @Years;
+	RETURN @FullYears;
 END
 GO

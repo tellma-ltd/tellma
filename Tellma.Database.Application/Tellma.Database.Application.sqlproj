@@ -911,6 +911,10 @@
     <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__SubscriptionMonths.sql" />
     <Build Include="bll\Functions\bll.ft_EmployeeProfile_Period_EventFromModel__Generate.sql" />
+    <Build Include="dal\Functions\dal.fn_Settings__GetCountryCurrency.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_Time1BeforePostingDate__Validate.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullMonths.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullDays.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -7,13 +7,13 @@
 	@Top INT,
 	@AccountEntryIndex INT,
 	@ErrorEntryIndex INT,
-	@ErrorFieldName NVARCHAR (255)
+	@ErrorFieldName NVARCHAR (255) -- ignored
 AS
 	DECLARE @ValidationErrors ValidationErrorList;
 	DECLARE @ErrorNames dbo.ErrorNameList;
 	SET NOCOUNT ON;
 	INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
-	(0, N'en',  N'Posting Date falls outside the period {0}--{1}'), (0, N'ar',  N'تاريخ القيد يقع خارج الفترة {0}--{1}');
+	(0, N'en',  N'Service Delivery Period {0}--{1} falls outside the posting date month'), (0, N'ar',  N'فترة تسليم الخدمة {0}--{1} يقع خارج نطاق الشهر الذي سجل فيه القيد');
 
 	DECLARE @CurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'CurrentAccruedIncome');
 	DECLARE @NoncurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'NoncurrentAccruedIncome');
@@ -23,11 +23,11 @@ AS
 	SELECT DISTINCT TOP (@Top)
 	CASE 
 	WHEN FD.[PostingDateIsCommon] = 1 AND FD.[PostingDate] IS NOT NULL THEN
-		'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].' + @ErrorFieldName
+		'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].PostingDate' --+ @ErrorFieldName
 	WHEN DLDE.[PostingDateIsCommon] = 1 AND DLDE.[PostingDate] IS NOT NULL THEN
-		'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].LineDefinitionEntries[' + CAST(DLDE.[Index]  AS NVARCHAR(255)) + '].' + @ErrorFieldName
+		'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].LineDefinitionEntries[' + CAST(DLDE.[Index]  AS NVARCHAR(255)) + '].PostingDate'-- + @ErrorFieldName
 	ELSE
-			'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(FL.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR (255)) + '].' + @ErrorFieldName
+			'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(FL.[Index]  AS NVARCHAR(255)) + '].PostingDate' --Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR (255)) + '].' + @ErrorFieldName
 	END,
 	dal.fn_ErrorNames_Index___Localize(@ErrorNames, 0) AS ErrorMessage,
 	FORMAT(FE.[Time1], 'd', 'de-de') AS [Time1],
@@ -43,5 +43,6 @@ AS
 		FE.[Time2] > dbo.fn_PeriodEnd(@PeriodUnitId, FL.[PostingDate])
 	);
 
-	SELECT * FROM @ValidationErrors;
+	IF EXISTS(SELECT * FROM @ValidationErrors)
+		SELECT * FROM @ValidationErrors;
 GO

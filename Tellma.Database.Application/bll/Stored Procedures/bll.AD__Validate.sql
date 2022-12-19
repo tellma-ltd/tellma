@@ -33,4 +33,5 @@ FROM @Entities FE
 JOIN dbo.Centers C ON C.[Id] = FE.[CenterId]
 WHERE C.[IsLeaf] = 0
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS(SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;

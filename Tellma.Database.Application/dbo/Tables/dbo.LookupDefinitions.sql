@@ -8,7 +8,7 @@
 	[TitlePlural]				NVARCHAR (50)	NOT NULL,
 	[TitlePlural2]				NVARCHAR (50),
 	[TitlePlural3]				NVARCHAR (50),
-	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_LookupDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
+	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CONSTRAINT [CK_LookupDefinitions__State] CHECK([State] IN (N'Hidden', N'Visible', N'Archived', N'Testing')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- Required when the state is "Deployed"
 	[MainMenuSortKey]			DECIMAL (9,4),

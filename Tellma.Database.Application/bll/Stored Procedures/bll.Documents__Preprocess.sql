@@ -173,7 +173,8 @@ BEGIN
 			END TRY
 			BEGIN CATCH
 				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
-				DECLARE @ErrorMessage NVARCHAR (255) = ERROR_MESSAGE();
+				DECLARE @ErrorMessage NVARCHAR (255) =
+					CAST(@LineDefinitionId AS NVARCHAR (50)) + N':::' + ERROR_MESSAGE();
 				DECLARE @ErrorState TINYINT = 99;
 				THROW @ErrorNumber, @ErrorMessage, @ErrorState;
 			END CATCH
@@ -287,6 +288,7 @@ BEGIN
 	AND R.[CenterId] IS NOT NULL
 
 	-- for all lines, get currency from resource, and monetary value, if any
+/*  MA: 2022-11-30, it was clashing with the currency update from Agent
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
@@ -294,7 +296,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];
-
+*/
 	-- for smart lines, Get center from Agents if available.
 	UPDATE E 
 	SET
@@ -391,20 +393,21 @@ BEGIN
 				[NotedResourceDefinitionId] INT,
 				[NotedResourceId] INT,
 				[CenterId] INT,
-				[CurrencyId] NCHAR (3)
+				[CurrencyId] NCHAR (3),
+				[EntryTypeId] INT
 			)
 	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId],
 					[AgentDefinitionId], [AgentId],
 					[NotedAgentDefinitionId], [NotedAgentId],
 					[ResourceDefinitionId], [ResourceId], 
 					[NotedResourceDefinitionId], [NotedResourceId],
-					[CenterId], [CurrencyId])
+					[CenterId], [CurrencyId], [EntryTypeId])
 	SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId],
 			RL.[DefinitionId] AS AgentDefinitionId, E.[AgentId],
 			NRL.[DefinitionId] AS NotedAgentDefinitionId, E.[NotedAgentId],
 			R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
 			NR.[DefinitionId] AS NotedResourceDefinitionId, E.[NotedResourceId],
-			E.[CenterId], E.[CurrencyId]
+			E.[CenterId], E.[CurrencyId], E.[EntryTypeId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
@@ -453,6 +456,7 @@ BEGIN
 			(A.[IsActive] = 1) AND (A.[IsAutoSelected] = 1)
 		AND	(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+		AND (A.[EntryTypeId] IS NULL OR A.[EntryTypeId] = LE.[EntryTypeId])
 		AND (
 			LE.[AgentDefinitionId] IS NULL AND NOT EXISTS (SELECT * FROM dbo.AccountTypeAgentDefinitions ATAD WHERE ATAD.AccountTypeId = LE.AccountTypeId)
 			OR LE.[AgentDefinitionId] = A.[AgentDefinitionId]
@@ -524,3 +528,4 @@ END
 	 [✓] For Manual Lines: If CurrencyId == functional set MonetaryValue = Value
 
 	*/
+GO

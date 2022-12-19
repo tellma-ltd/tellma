@@ -7,19 +7,19 @@
 RETURNS INT
 AS
 BEGIN
-	DECLARE @Months INT;
+	DECLARE @FullYears INT, @FullMonths INT;
 	IF @Calendar = N'GC'
 	BEGIN
+		--SET @FullYears= [dbo].[fn_FromDate_ToDate__FullYears](@Calendar, @FromDate, @ToDate);
+		--SET @FromDate = DATEADD(YEAR, @FullYears, @FromDate);
 		SET @ToDate = DATEADD(DAY, 1, @ToDate);
-		DECLARE @Years INT = dbo.fn_FromDate_ToDate__FullYears(@Calendar, @FromDate, @ToDate)
-		SET @FromDate = DATEADD(YEAR, @Years, @FromDate); --print @fromDate
-		SET @Months =
+		SET @FullMonths =
 			CASE 
 				WHEN DATEPART(DAY, @FromDate) > DATEPART(DAY, @ToDate)
 					THEN DATEDIFF(MONTH, @FromDate, @ToDate) - 1
 				ELSE DATEDIFF(MONTH, @FromDate, @ToDate)
-			END; --print N'Months = ' + cast(@Months as nvarchar(50))
+			END;
 	END
-	RETURN @Months;
+	RETURN @FullMonths;
 END
 GO

@@ -39,8 +39,8 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (4, N'en',  N'The employee has no installment balance for this loan type due on that date. Why defer this amount?'), 
 (4, N'ar',  N'الموظف ليس عنده أقساط مستحقة بهذا التاريخ، فما معنى إعادة تقسيط هدا المبلغ؟'),
 
-(5, N'en',  N'5:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
-(5, N'ar',  N'5:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+(5, N'en',  N'There is no balance on the selected sales invoice that justifies this payment'), 
+(5, N'ar',  N'لا يوجد رصيد للفاتورة المذكورة يستدعي دفع هذا المبلغ'),
 
 (6, N'en',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
 (6, N'ar',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'),
@@ -70,7 +70,8 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept IN (
 		N'CurrentPrepaidExpenses', N'CurrentAdvancesToSuppliers',
-		N'CurrentTradeReceivables',  N'TradeAndOtherCurrentPayablesToTradeSuppliers'
+		N'CurrentTradeReceivables',  N'TradeAndOtherCurrentPayablesToTradeSuppliers',
+		N'CurrentPrepayments'
 	) THEN 0
 	WHEN @ParentAccountTypeConcept = N'ShorttermEmployeeBenefitsAccruals' THEN 1 
 	WHEN @ParentAccountTypeConcept = N'CurrentValueAddedTaxReceivables' THEN 2

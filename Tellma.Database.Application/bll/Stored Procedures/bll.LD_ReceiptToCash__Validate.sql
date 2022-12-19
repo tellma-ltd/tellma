@@ -91,4 +91,7 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 		AND (AR.[InternalReference] IS NULL AND E.[InternalReference] IS NULL	OR AR.[InternalReference] = E.[InternalReference])
 		AND (AR.[ExternalReference] IS NULL AND E.[ExternalReference] IS NULL	OR AR.[ExternalReference] = E.[ExternalReference])
 	WHERE AR.[Receipt] + AR.[DueBalance] < 0
-SELECT * FROM @ValidationErrors;
+
+IF EXISTS (SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
+GO
