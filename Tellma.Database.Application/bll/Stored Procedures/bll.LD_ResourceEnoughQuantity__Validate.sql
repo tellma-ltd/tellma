@@ -54,4 +54,7 @@ JOIN Excesses S ON S.[CenterId] = E.[CenterId] AND S.[AgentId] = E.[AgentId] AND
 JOIN dbo.Centers C ON C.[Id] = E.[CenterId]
 JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
-SELECT * FROM @ValidationErrors;
+
+IF EXISTS (SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
+GO

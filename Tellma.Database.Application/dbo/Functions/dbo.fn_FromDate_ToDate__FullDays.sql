@@ -7,17 +7,16 @@
 RETURNS INT
 AS
 BEGIN
-	DECLARE @Days INT;
+	DECLARE @FullYears INT, @FullMonths INT, @FullDays INT;
 	IF @Calendar = N'GC'
 	BEGIN
+		--SET @FullYears= [dbo].[fn_FromDate_ToDate__FullYears](@Calendar, @FromDate, @ToDate); PRINT @FullYears;
+		--SET @FromDate = DATEADD(YEAR, @FullYears, @FromDate);
+		--SET @FullMonths = [dbo].[fn_FromDate_ToDate__FullMonths](@Calendar, @FromDate, @ToDate); PRINT @FullMonths;
+		--SET @FromDate = DATEADD(MONTH, @FullMonths, @FromDate);
 		SET @ToDate = DATEADD(DAY, 1, @ToDate);
-		DECLARE @Years INT = dbo.fn_FromDate_ToDate__FullYears(@Calendar, @FromDate, @ToDate);
-		SET @FromDate = DATEADD(YEAR, @Years, @FromDate); --print @fromDate
-		DECLARE @Months INT = dbo.fn_FromDate_ToDate__FullMonths(@Calendar, @FromDate, @ToDate);
-		SET @FromDate = DATEADD(MONTH, @Months, @FromDate); --print @fromDate
---		SET @ToDate = DATEADD(DAY, -1, @ToDate);
-		SET @Days = DATEDIFF(DAY, @FromDate, @ToDate); --print N'Days = ' + cast(@Days as nvarchar(50))
+		SET @FullDays = DATEDIFF(DAY, @FromDate, @ToDate);
 	END
-	RETURN @Days;
+	RETURN @FullDays;
 END
 GO

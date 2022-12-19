@@ -1,8 +1,9 @@
 ﻿CREATE FUNCTION [bll].[ft_Widelines_Period_EventFromModel__Generate]
+-- TODO: Add version 2, and move everyting to it
 (
 --DECLARE
 	@ContractLineDefinitionId INT,
-	@ContractAmendmentLineDefinitionId INT,
+	@ContractAmendmentLineDefinitionId INT, -- This was a mistake. Need to be removed.
 	@ContractTerminationLineDefinitionId INT,
 	@FromDate DATE,
 	@ToDate DATE,
@@ -13,6 +14,10 @@
 	@NotedAgentId INT = NULL,
 	@NotedResourceId INT = NULL,
 	@CenterId INT = NULL
+	-- Should be adding also
+	-- Quantity DECIMAL (19, 6) = 1, -- to work as multiplying factor for PIT
+	-- CurrencyId NCHAR (3) = NULL
+	-- EntryTypeId INT = NULL
 	--SELECT @FromDate = '2022-11-01', @ToDate = '2022-11-30', @DurationUnitId = dal.fn_UnitCode__Id('mo');
 	--SET @ContractLineDefinitionId  = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccruals.M');
 	--SET @ContractAmendmentLineDefinitionId  = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsAmended.M');
@@ -449,7 +454,7 @@
 		[DurationUnitId] INT, [Decimal1] DECIMAL (19, 6), [Time1] DATE, [Time2] DATE,
 		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
 		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
-		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
+		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
 		PRIMARY KEY([LineKey], [EntryIndex], [Time1])
 	);
 	WITH FilteredLines AS (
@@ -458,9 +463,9 @@
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
 		AND (L.[State] = 2)
-		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId) -- Should be moved to the line level
+		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId) -- Should be moved to the line level, and renamed to @FrequencyId
 		-- next line is needed when terminating contracts but not when ag salaries
-		--AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day)) -- Since we are dealing with OT, a period must be at least one week, one month, one quarter or one year
+		--AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day))
 		AND (E.[Index] = @EntryIndex) -- Primary entry whose data needs to be filtered
 		AND (E.[Time1] <= @ToDate)
 		AND (ISNULL(E.[Time2], '9999-12-31') >= @FromDate)
@@ -474,8 +479,8 @@
 		SELECT FL.[LineKey], E.[Index] , E.[DurationUnitId], FL.[Decimal1],
 			IIF(E.[Time1]<= @FromDate, @FromDate, E.[Time1]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			[MonetaryValue], [Value], [NotedAmount]
-		FROM dbo.Entries E
+			[Quantity], [MonetaryValue], [Value], [NotedAmount]
+		FROM dbo.Entries E -- MA: Should it be BaseQuantity, to allow entering templates of different unit?
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
@@ -484,7 +489,7 @@
 		SELECT FL.[LineKey], E.[Index], E.[DurationUnitId], FL.[Decimal1],
 			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			- [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
+			- [Quantity] AS [Quantity], - [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
@@ -493,11 +498,11 @@
 	) --  select * from FilteredEntries
 	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], [Decimal1], [Time1], [Time2],
 		[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[MonetaryValue], [Value], [NotedAmount])
+		[Quantity], [MonetaryValue], [Value], [NotedAmount])
 	SELECT [LineKey], [Index], [DurationUnitId], MAX([Decimal1]) AS [Decimal1], 
 		[Time1], [Time2], [Direction], 
 		[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		SUM([MonetaryValue]), SUM([Value]), SUM([NotedAmount])
+		SUM([Quantity]), SUM([MonetaryValue]), SUM([Value]), SUM([NotedAmount])
 	FROM FilteredEntries
 	GROUP BY [LineKey], [Index], [DurationUnitId],--[Decimal1], 
 		[Time1], [Time2], [Direction], 
@@ -508,15 +513,19 @@
 		[LineKey] INT, [EntryIndex] INT, [Decimal1] DECIMAL (19, 6), [Time1] DATE, [Time2] DATE, [DurationUnitId] INT,
 		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
 		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
-		[MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
+		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
 		PRIMARY KEY([LineKey], [EntryIndex], [Time1])
 		);
 	INSERT INTO @T2	([LineKey], [Decimal1], [Time1], [Time2], [DurationUnitId],
 		[EntryIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[MonetaryValue], [Value], [NotedAmount]
+		[Quantity], [MonetaryValue], [Value], [NotedAmount]
 		 )
 	SELECT [LineKey], [Decimal1], [Time1], '9999-12-31', [DurationUnitId],
 		[EntryIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+		SUM([Quantity]) OVER (
+			PARTITION BY [LineKey], [EntryIndex]
+			ORDER BY [Time1]
+		) AS [Quantity],
 		SUM([MonetaryValue]) OVER (
 			PARTITION BY [LineKey], [EntryIndex]
 			ORDER BY [Time1]

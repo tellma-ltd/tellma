@@ -12,7 +12,7 @@ BEGIN
 	DECLARE @FullMonths INT = dbo.fn_FromDate_ToDate__FullMonths(@Calendar, @FromDate, @ToDate); 
 	SET @FromDate = DATEADD(MONTH, @FullMonths, @FromDate);
 	DECLARE @FullDays INT =  dbo.fn_FromDate_ToDate__FullDays(@Calendar, @FromDate, @ToDate); 
-	RETURN 
+	RETURN
 	IIF(
 	-- If employee has been with company more than 5 years
 		@FullYears > = 5,

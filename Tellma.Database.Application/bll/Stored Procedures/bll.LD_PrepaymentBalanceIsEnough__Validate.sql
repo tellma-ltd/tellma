@@ -54,4 +54,6 @@ INSERT INTO @ValidationErrors([Key], [ErrorName])
 		AND (AP.[ExternalReference] IS NULL AND E.[ExternalReference] IS NULL	OR AP.[ExternalReference] = E.[ExternalReference])
 	WHERE AP.[Payment] + AP.[DueBalance] > 0
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS (SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
+GO

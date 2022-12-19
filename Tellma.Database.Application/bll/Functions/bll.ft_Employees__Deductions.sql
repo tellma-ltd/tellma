@@ -11,6 +11,8 @@ RETURNS @MyResult TABLE (
 	[DeductionAgentId] INT,
 	[MonetaryValue] DECIMAL (19, 6),
 	[CurrencyId] NCHAR (3)
+	-- To be Added, the taxable income, or the amount based on which the deduction was calculated
+	-- [NotedAmount] DECIMAL (19, 6)
 )
 AS
 BEGIN
@@ -20,7 +22,6 @@ BEGIN
 	
 	IF @Country = N'SD'
 	BEGIN
-		
 		DECLARE @T_SD TABLE (
 			[EmployeeId] INT,
 			[SocialSecurityDeduction] DECIMAL (19, 6),
@@ -39,7 +40,6 @@ BEGIN
 		FROM @T_SD
 
 		RETURN
-
 	END
 
 	ELSE IF @Country = N'ET'

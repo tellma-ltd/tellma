@@ -11,5 +11,7 @@ AS
 	FROM dbo.LineDefinitions
 	WHERE [GenerateScript] LIKE N'%' + @Script + N'%'
 	OR [PreprocessScript] LIKE N'%' + @Script + N'%'
-	OR [ValidateScript] LIKE N'%' + @Script + N'%';
+	OR [ValidateScript] LIKE N'%' + @Script + N'%'
+	OR [SignValidateScript] LIKE N'%' + @Script + N'%'
+	OR [UnsignValidateScript] LIKE N'%' + @Script + N'%';
 GO

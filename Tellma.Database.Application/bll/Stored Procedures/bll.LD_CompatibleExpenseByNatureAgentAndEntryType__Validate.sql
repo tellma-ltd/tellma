@@ -64,4 +64,5 @@ AND FE.AgentId <> @NullAgent
 AND AD.[Code] <> N'TradeReceivableAccount'
 AND ET.[Concept] <> N'CapitalizationExpenseByNatureExtension';
 
-SELECT * FROM @ValidationErrors;
+IF EXISTS(SELECT * FROM @ValidationErrors)
+	SELECT * FROM @ValidationErrors;
