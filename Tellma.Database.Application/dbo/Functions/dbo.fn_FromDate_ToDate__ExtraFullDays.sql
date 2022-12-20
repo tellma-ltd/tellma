@@ -14,7 +14,6 @@ BEGIN
 		SET @FromDate = DATEADD(YEAR, @FullYears, @FromDate);
 		SET @ExtraFullMonths = [dbo].[fn_FromDate_ToDate__ExtraFullMonths](@Calendar, @FromDate, @ToDate);
 		SET @FromDate = DATEADD(MONTH, @ExtraFullMonths, @FromDate);
-		SET @ToDate = DATEADD(DAY, 1, @ToDate);
 	END
 	RETURN  [dbo].[fn_FromDate_ToDate__FullDays](@Calendar, @FromDate, @ToDate);
 END

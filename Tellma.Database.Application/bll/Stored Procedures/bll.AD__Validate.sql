@@ -35,3 +35,4 @@ WHERE C.[IsLeaf] = 0
 
 IF EXISTS(SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;
+GO

@@ -42,8 +42,11 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (5, N'en',  N'There is no balance on the selected sales invoice that justifies this payment'), 
 (5, N'ar',  N'لا يوجد رصيد للفاتورة المذكورة يستدعي دفع هذا المبلغ'),
 
-(6, N'en',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
-(6, N'ar',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+(6, N'en',  N'This supplier account has no accrued expenses to start with. Why this invoice?'), 
+(6, N'ar',  N'حساب هذا المورد لا يوجد عليه مصروفات مستحقة أصلا، فلماذاهذه الفاتورة'),
+
+(9, N'en',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
+(9, N'ar',  N'6:Fill the correct error message for Current Liabilities in [bll].[LD_AccountHasEnoughBalance__Validate]'),
 
 -- Errors corresponding to insufficient balance, handled by second code snippet
 (10, N'en',  N'The remaining unsettled invoice amount is {0}, which is less than this amount'), 
@@ -61,11 +64,14 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (14, N'en',  N'The net installment balance for this loan type is {0}, which is less than this amount'), 
 (14, N'ar',  N'القسط المستحق عن هذه السلفية هو {0}، وهو أقل من هدا المبلغ'),
 
-(15, N'en',  N'15:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'), 
-(15, N'ar',  N'15:Fill the correct error message for Deferred Income in [bll].[LD_AccountHasEnoughBalance__Validate]'),
+(15, N'en',  N'Sales invoice balance is less than the amount paid'), 
+(15, N'ar',  N'رصيد الفاتورة المتبقي أقل من المبلغ المدفوع'),
 
-(16, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
-(16, N'ar',   N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ');
+(16, N'en',  N'The supplier account accrued expenses are less than the invoiced amount'), 
+(16, N'ar',  N'المصروفات المستجقة لهذا المورد أقل من قيمة الفاتورة'),
+
+(19, N'en',  N'The remaining unsettled balance for that month is {0}, which is less than this amount'), 
+(19, N'ar',   N'الرصيد المتبقي غير المدفوع من هذا الشهر هو {0}، وهو أقل من هدا المبلغ');
 
 DECLARE @ErrorIndex INT = CASE
 	WHEN @ParentAccountTypeConcept IN (
@@ -81,7 +87,8 @@ DECLARE @ErrorIndex INT = CASE
 		N'RentDeferredIncomeClassifiedAsCurrent',
 		N'DeferredIncomeClassifiedAsCurrent'
 	) THEN 5
-	WHEN @ParentAccountTypeConcept = N'CurrentLiabilities' THEN 6
+	WHEN @ParentAccountTypeConcept = N'AccrualsClassifiedAsCurrent' THEN 6
+	WHEN @ParentAccountTypeConcept = N'CurrentLiabilities' THEN 9
 	ELSE -1
 END;
 IF @ErrorIndex = -1 

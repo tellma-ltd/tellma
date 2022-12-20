@@ -915,6 +915,7 @@
     <Build Include="bll\Stored Procedures\bll.LD_Time1BeforePostingDate__Validate.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullMonths.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullDays.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.ToEmployeeBenefitsAccrualsFromCash.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
