@@ -16,6 +16,9 @@ using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 using Tellma.Services.Utilities;
 using Tellma.Api.Dto;
+using Tellma.Utilities.Logging;
+using Tellma.Model.Application;
+using Tellma.Api.Behaviors;
 
 namespace Tellma.Services.ClientProxy
 {
@@ -187,6 +190,45 @@ namespace Tellma.Services.ClientProxy
         {
             // TODO
             return null;
+        }
+
+        public EmailToSend MakeTenantNotificationEmail(TenantLogEntry le)
+        {
+            var result = new EmailToSend
+            {
+                TenantId = le.TenantId,
+                To = le.TenantSupportEmails
+            };
+
+            if (le is CustomScriptErrorLogEntry cle)
+            {
+                result.Subject = $@"{cle.TenantName}: {cle.Collection} Definition ""{cle.DefinitionName}"" {cle.ScriptName} Error: {cle.ErrorMessage.Truncate(50, appendEllipses: true)}";
+
+                var entityIds = cle.EntityIds.ToList() ?? new List<int>();
+                var entityIdsMax = 20;
+
+                StringBuilder bldr = new($@"<span>An unhandled error occured while running the {HtmlEncode(cle.Collection)} Definition ""{HtmlEncode(cle.DefinitionName)}"" {HtmlEncode(cle.ScriptName)} in Tenant {HtmlEncode(cle.TenantName)}.</span><br/>
+<span style=""font-weight: bold"">Log Entry Id:</span><span> {cle.Id}</span><br/>
+<span style=""font-weight: bold"">Tenant Id:</span><span> {cle.TenantId}</span><br/>
+<span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(cle.TenantName)}</span><br/>
+<span style=""font-weight: bold"">Collection:</span><span> {HtmlEncode(cle.Collection)}</span><br/>
+<span style=""font-weight: bold"">Definition Id:</span><span> {cle.DefinitionId}</span><br/>
+<span style=""font-weight: bold"">{HtmlEncode(cle.Collection)} Definition:</span><span> <a href=""{DefinitionUrl(cle)}"">{HtmlEncode(cle.DefinitionName)}</a></span><br/>
+<span style=""font-weight: bold"">Script:</span><span> {HtmlEncode(cle.ScriptName)}</span><br/>
+<span style=""font-weight: bold"">{HtmlEncode(cle.DefinitionName)} Id{(entityIds.Count > 1 ? "s" : "")}:</span><span> {string.Join(", ", entityIds.Take(entityIdsMax).Select(id => id.ToString()))}{(entityIds.Count > entityIdsMax ? "..." : "")}</span><br/>
+<span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(cle.UserEmail)}</span><br/>
+<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(cle.UserName)}</span><br/>
+<span style=""font-weight: bold"">SQL Error Number:</span><span> {cle.ErrorNumber}</span><br/>
+<span style=""font-weight: bold"">SQL Error Message:</span><span> {HtmlEncode(cle.ErrorMessage)}</span><br/>");
+
+                result.Body = bldr.ToString();
+            }
+            else
+            {
+                // Generic email
+            }
+
+            return result;
         }
 
         #region Email Making
@@ -370,7 +412,7 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
-      
+
         private string AdminUrl()
         {
             var urlBuilder = new UriBuilder(ClientAppUri());
@@ -379,7 +421,7 @@ namespace Tellma.Services.ClientProxy
 
             return url;
         }
-       
+
         private string AssignmentUrl(int tenantId, NotifyDocumentAssignmentArguments args)
         {
             // Prepare the document/inbox link
@@ -397,7 +439,59 @@ namespace Tellma.Services.ClientProxy
             string linkUrl = clientAppUriBldr.Uri.ToString();
             return linkUrl;
         }
-       
+
+        //private string EntityUrl(CustomScriptErrorLogEntry entry, int id)
+        //{
+
+        //    // Prepare the document/inbox link
+        //    var clientAppUriBldr = new UriBuilder(ClientAppUri());
+        //    var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
+        //    string collectionSegment = entry.Collection switch
+        //    {
+        //        nameof(Document) => "d",
+        //        nameof(Agent) => "agents",
+        //        nameof(Resource) => "resources",
+        //        nameof(Lookup) => "lookups",
+        //        _ => null,
+        //    };
+
+        //    if (collectionSegment == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    clientAppUriBldr.Path = $"{basePath}/a/{entry.TenantId}/{collectionSegment}/{entry.DefinitionId}/{id}";
+
+        //    string linkUrl = clientAppUriBldr.Uri.ToString();
+        //    return linkUrl;
+        //}
+
+        private string DefinitionUrl(CustomScriptErrorLogEntry entry)
+        {
+            // Prepare the document/inbox link
+            var clientAppUriBldr = new UriBuilder(ClientAppUri());
+            var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
+            string collectionDefSegment = entry.Collection switch
+            {
+                nameof(Document) => "document-definitions",
+                nameof(Agent) => "agent-definitions",
+                nameof(Resource) => "resource-definitions",
+                nameof(Lookup) => "lookup-definitions",
+                nameof(Line) => "line-definitions",
+                _ => null,
+            };
+
+            if (collectionDefSegment == null)
+            {
+                return null;
+            }
+
+            clientAppUriBldr.Path = $"{basePath}/a/{entry.TenantId}/{collectionDefSegment}/{entry.DefinitionId}";
+
+            string linkUrl = clientAppUriBldr.Uri.ToString();
+            return linkUrl;
+        }
+
         private string ClientAppUri() => _clientUriResolver.Resolve();
 
         #endregion

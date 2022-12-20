@@ -220,6 +220,14 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  public onMakeTesting = (model: LookupDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Testing') {
+      this.lookupDefinitionsApi.updateState([model.Id], { state: 'Testing', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
   public onMakeVisible = (model: LookupDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
       this.lookupDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
@@ -237,6 +245,7 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showMakeHidden = (model: LookupDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeTesting = (model: LookupDefinition) => !!model && model.State !== 'Testing';
   public showMakeVisible = (model: LookupDefinition) => !!model && model.State !== 'Visible';
   public showMakeArchived = (model: LookupDefinition) => !!model && model.State !== 'Archived';
 

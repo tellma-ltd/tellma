@@ -34,5 +34,20 @@ namespace Tellma
         {
             return new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled);
         }
+
+        /// <summary>
+        /// Creates a <see cref="TransactionScope"/> with the same isolation level as the ambient transaction (if one exists) 
+        /// or a ReadCommitted isolation level otherwise in addition to the given <paramref name="scopeOption"/>.
+        /// </summary>
+        /// <param name="scopeOption">The <see cref="TransactionScopeOption"/> of the created <see cref="TransactionScope"/>.</param>
+        public static TransactionScope SameIsolationLevelOrReadCommitted(TransactionScopeOption scopeOption = TransactionScopeOption.Required)
+        {
+            var opt = new TransactionOptions
+            {
+                IsolationLevel = Transaction.Current != null ? Transaction.Current.IsolationLevel : IsolationLevel.ReadCommitted
+            };
+
+            return new TransactionScope(scopeOption, opt, TransactionScopeAsyncFlowOption.Enabled);
+        }
     }
 }

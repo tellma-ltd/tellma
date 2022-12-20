@@ -365,6 +365,7 @@ namespace Tellma.Api
         public async Task<DocumentsResult> SignLines(List<int> lineIds, SignArguments args)
         {
             await Initialize();
+            var def = await Definition();
             var returnEntities = args.ReturnEntities ?? false;
 
             // C# Validation 
@@ -374,78 +375,162 @@ namespace Tellma.Api
             }
 
             // Action
-            using var trx = TransactionFactory.ReadCommitted();
-            SignOutput result = await _behavior.Repository.Lines__Sign(
-                lineIds,
-                args.ToState,
-                args.ReasonId,
-                args.ReasonDetails,
-                args.OnBehalfOfUserId,
-                args.RuleType,
-                args.RoleId,
-                args.SignedAt ?? DateTimeOffset.Now,
-                returnIds: returnEntities,
-                validateOnly: ModelState.IsError,
-                top: ModelState.RemainingErrors,
-                userId: UserId);
-
-            // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
-
-            var documentIds = result.DocumentIds;
-            if (returnEntities)
+            try
             {
-                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+                using var trx = TransactionFactory.ReadCommitted();
+                SignOutput result = await _behavior.Repository.Lines__Sign(
+                    lineIds,
+                    args.ToState,
+                    args.ReasonId,
+                    args.ReasonDetails,
+                    args.OnBehalfOfUserId,
+                    args.RuleType,
+                    args.RoleId,
+                    args.SignedAt ?? DateTimeOffset.Now,
+                    returnIds: returnEntities,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
-                trx.Complete();
-                return response;
+                // Validation
+                AddErrorsAndThrowIfInvalid(result.Errors);
+
+                var documentIds = result.DocumentIds;
+                if (returnEntities)
+                {
+                    var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+
+                    trx.Complete();
+                    return response;
+                }
+                else
+                {
+                    trx.Complete();
+                    return DocumentsResult.Empty();
+                }
             }
-            else
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
             {
-                trx.Complete();
-                return DocumentsResult.Empty();
+                string lineDefName = "(Unkown)";
+                if (ex.LineDefinitionId != null)
+                {
+                    var lineDef = await LineDefinition(ex.LineDefinitionId.Value);
+                    lineDefName = lineDef.TitleSingular;
+                }
+
+                await _behavior.LogCustomScriptBug(
+                                ex,
+                                collection: nameof(Line),
+                                definitionId: ex.LineDefinitionId,
+                                defTitle: lineDefName,
+                                scriptName: "Validate Sign Script",
+                                entityIds: lineIds
+                            );
+
+                throw; // Bubble up to the client
             }
         }
 
         public async Task<DocumentsResult> UnsignLines(List<int> signatureIds, ActionArguments args)
         {
             await Initialize();
+            var def = await Definition();
             var returnEntities = args.ReturnEntities ?? false;
 
             // C# Validation 
             // Goes here
 
             // Action
-            using var trx = TransactionFactory.ReadCommitted();
-            SignOutput result = await _behavior.Repository.LineSignatures__Delete(
-                ids: signatureIds,
-                returnIds: returnEntities,
-                validateOnly: ModelState.IsError,
-                top: ModelState.RemainingErrors,
-                userId: UserId);
-
-            // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
-
-            // Load Result
-            var documentIds = result.DocumentIds;
-            if (returnEntities)
+            try
             {
-                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+                using var trx = TransactionFactory.ReadCommitted();
+                SignOutput result = await _behavior.Repository.LineSignatures__Delete(
+                    ids: signatureIds,
+                    returnIds: returnEntities,
+                    validateOnly: ModelState.IsError,
+                    top: ModelState.RemainingErrors,
+                    userId: UserId);
 
-                trx.Complete();
-                return response;
+                // Validation
+                AddErrorsAndThrowIfInvalid(result.Errors);
+
+                // Load Result
+                var documentIds = result.DocumentIds;
+                if (returnEntities)
+                {
+                    var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+
+                    trx.Complete();
+                    return response;
+                }
+                else
+                {
+                    trx.Complete();
+                    return DocumentsResult.Empty();
+                }
             }
-            else
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
             {
-                trx.Complete();
-                return DocumentsResult.Empty();
+                string lineDefName = "(Unkown)";
+                if (ex.LineDefinitionId != null)
+                {
+                    var lineDef = await LineDefinition(ex.LineDefinitionId.Value);
+                    lineDefName = lineDef.TitleSingular;
+                }
+
+                await _behavior.LogCustomScriptBug(
+                                ex,
+                                collection: nameof(Line), 
+                                definitionId: ex.LineDefinitionId,
+                                defTitle: lineDefName,
+                                scriptName: "Validate Unsign Script",
+                                entityIds: Enumerable.Empty<int>() // we don't know the line Ids unfortunately
+                            );
+
+                throw; // Bubble up to the client
             }
         }
 
         public async Task<DocumentsResult> Close(List<int> ids, ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Close));
+            try
+            {
+                return await UpdateDocumentState(ids, args, nameof(Close));
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug)
+            {
+                var def = await Definition();
+                if (def.State == DefStates.Visible)
+                {
+                    // The stored procedure runs both document and line scripts
+                    // We can tell by checking if this property is set
+                    if (ex.LineDefinitionId != null)
+                    {
+                        var lineDef = await LineDefinition(ex.LineDefinitionId.Value);
+                        await _behavior.LogCustomScriptBug(
+                            ex,
+                            collection: nameof(Line),
+                            definitionId: ex.LineDefinitionId.Value,
+                            defTitle: lineDef.TitleSingular,
+                            scriptName: "Sign Script",
+                            entityIds: Enumerable.Empty<int>()
+                            );
+                    }
+                    else
+                    {
+                        await _behavior.LogCustomScriptBug(
+                            ex,
+                            collection: nameof(Document),
+                            definitionId: DefinitionId,
+                            defTitle: def.TitleSingular,
+                            scriptName: "Validate Close Script",
+                            entityIds: ids
+                            );
+                    }
+                }
+
+                throw; // Bubble up to the client
+            }
         }
 
         public async Task<DocumentsResult> Open(List<int> ids, ActionArguments args)
@@ -642,6 +727,7 @@ namespace Tellma.Api
             await UserPermissionsFilter(PermissionActions.Update, cancellation: default);
             // ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
+            var def = await Definition(cancellation);
             var lineDef = await LineDefinition(lineDefId, cancellation);
 
             // Better args will contain only the defined parameter keys and all the defined parameter keys (with possible null values)
@@ -665,11 +751,27 @@ namespace Tellma.Api
             // The SP uses those to create the TVPs
             SetOriginalIndices(docs);
 
-            // Call the SP
-            var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) =
-                await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
+            try
+            {
+                // Call the SP
+                var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) =
+                    await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
 
-            return new LinesResult(lines, accounts, resources, agents, entryTypes, centers, currencies, units);
+                return new LinesResult(lines, accounts, resources, agents, entryTypes, centers, currencies, units);
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && def.State == DefStates.Visible)
+            {
+                await _behavior.LogCustomScriptBug(
+                    ex,
+                    collection: nameof(Line),
+                    definitionId: lineDefId,
+                    defTitle: lineDef.TitleSingular,
+                    scriptName: "Auto-Generate Script",
+                    entityIds: Enumerable.Empty<int>()
+                    );
+
+                throw; // Bubble up to the client
+            }
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -1209,7 +1311,32 @@ namespace Tellma.Api
             });
 
             // SQL server preprocessing
-            await _behavior.Repository.Documents__Preprocess(DefinitionId, docs);
+            try
+            {
+                await _behavior.Repository.Documents__Preprocess(DefinitionId, docs);
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && docDef.State == DefStates.Visible)
+            {
+                string lineDefName = "(Unkown)";
+                var entities = Enumerable.Empty<LineForSave>();
+                if (ex.LineDefinitionId != null)
+                {
+                    var lineDef = await LineDefinition(ex.LineDefinitionId.Value);
+                    lineDefName = lineDef.TitleSingular;
+                    entities = docs.SelectMany(doc => doc.Lines).Where(line => line.DefinitionId == ex.LineDefinitionId.Value);
+                }
+
+                await _behavior.LogCustomScriptBug(
+                                ex,
+                                collection: nameof(Line),
+                                definitionId: ex.LineDefinitionId,
+                                defTitle: lineDefName,
+                                scriptName: "Preprocess Script",
+                                entities: entities
+                            );
+
+                throw; // Bubble up to the client
+            }
 
             var tabEntryDesc = TypeDescriptor.Get<DocumentLineDefinitionEntryForSave>();
 
@@ -2089,23 +2216,46 @@ namespace Tellma.Api
 
             _blobsToSave = BaseUtil.ExtractAttachments(docs, e => e.Attachments, AttachmentBlobName).ToList();
 
-            // Save the documents
-            var (result, notificationInfos, fileIdsToDelete) = await _behavior.Repository.Documents__Save(
-                    DefinitionId,
-                    documents: docs,
-                    returnIds: returnIds,
-                    validateOnly: ModelState.IsError,
-                    top: ModelState.RemainingErrors,
-                    userId: UserId);
+            try
+            {
+                // Save the documents
+                var (result, notificationInfos, fileIdsToDelete) = await _behavior.Repository.Documents__Save(
+                        DefinitionId,
+                        documents: docs,
+                        returnIds: returnIds,
+                        validateOnly: ModelState.IsError,
+                        top: ModelState.RemainingErrors,
+                        userId: UserId);
 
-            // Validation
-            AddErrorsAndThrowIfInvalid(result.Errors);
+                // Validation
+                AddErrorsAndThrowIfInvalid(result.Errors);
 
-            _notificationInfos = notificationInfos;
-            _blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName).ToList();
+                _notificationInfos = notificationInfos;
+                _blobsToDelete = fileIdsToDelete.Select(AttachmentBlobName).ToList();
 
-            // Return the new Ids
-            return result.Ids;
+                // Return the new Ids
+                return result.Ids;
+            }
+            catch (CustomScriptException ex) when (ex.IsScriptBug && docDef.State == DefStates.Visible)
+            {
+                string lineDefName = "(Unkown)";
+                if (ex.LineDefinitionId != null)
+                {
+                    var lineDef = await LineDefinition(ex.LineDefinitionId.Value);
+                    lineDefName = lineDef.TitleSingular;
+                }
+
+                await _behavior.LogCustomScriptBug(
+                                ex,
+                                collection: nameof(Line),
+                                definitionId: ex.LineDefinitionId,
+                                defTitle: lineDefName,
+                                scriptName: "Validate Script",
+                                entities: docs
+                            );
+
+                throw; // Bubble up to the client
+            }
         }
 
         protected override async Task NonTransactionalSideEffectsForSave(List<DocumentForSave> entities, IReadOnlyList<Document> data)

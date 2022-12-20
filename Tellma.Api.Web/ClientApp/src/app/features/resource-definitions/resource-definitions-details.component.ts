@@ -440,6 +440,14 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
     }
   }
 
+  public onMakeTesting = (model: ResourceDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Testing') {
+      this.resourceDefinitionsApi.updateState([model.Id], { state: 'Testing', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
   public onMakeVisible = (model: ResourceDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
       this.resourceDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
@@ -457,6 +465,7 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
   }
 
   public showMakeHidden = (model: ResourceDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeTesting = (model: ResourceDefinition) => !!model && model.State !== 'Testing';
   public showMakeVisible = (model: ResourceDefinition) => !!model && model.State !== 'Visible';
   public showMakeArchived = (model: ResourceDefinition) => !!model && model.State !== 'Archived';
 

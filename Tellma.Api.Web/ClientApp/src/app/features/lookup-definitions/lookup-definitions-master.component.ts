@@ -50,6 +50,22 @@ export class LookupDefinitionsMasterComponent extends MasterBaseComponent {
     });
   }
 
+  public onMakeTesting = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.lookupsDefinitionsApi.updateState(ids, { state: 'Testing', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
+
+    // The master template handles any errors
+    return obs$;
+  }
+
+  public showMakeTesting = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('LookupDefinition', id) as LookupDefinition;
+      return !!def && def.State !== 'Testing';
+    });
+  }
+
   public onMakeVisible = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.lookupsDefinitionsApi.updateState(ids, { state: 'Visible', returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))

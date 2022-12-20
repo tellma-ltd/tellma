@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tellma.Api.Behaviors;
 using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Email;
@@ -83,6 +84,17 @@ namespace Tellma.Api
         /// <param name="tenantId">The Id of the company where the document assignment happened.</param>
         /// <param name="args">All the information needed to create the <see cref="PushToSend"/>.</param>
         public PushToSend MakeDocumentAssignmentPush(int tenantId, NotifyDocumentAssignmentArguments args);
+
+        #endregion
+
+        #region Custom Script Logging
+
+        /// <summary>
+        /// Create an email that notifies the tenant admin about an error in 
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        public EmailToSend MakeTenantNotificationEmail(TenantLogEntry ex);
 
         #endregion
     }

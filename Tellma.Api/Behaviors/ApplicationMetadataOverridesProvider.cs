@@ -301,14 +301,7 @@ namespace Tellma.Api.Behaviors
                     break;
                 case nameof(Resource.VatRate):
                     display = PropertyDisplay(def.VatRateVisibility, display);
-                    if (def.VatRateVisibility == null)
-                    {
-                        display = null;
-                    }
-                    else if (def.DefaultVatRate == null)
-                    {
-                        isRequired = true;
-                    }
+                    isRequired = def.VatRateVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Units):
                     if (def.UnitCardinality != Cardinality.Multiple)

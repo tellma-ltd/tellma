@@ -193,9 +193,32 @@ namespace Tellma.Repository.Application
 
         /// <summary>
         /// Determines whether the given <see cref="SqlException"/> originated from a custom script,
-        /// we currently use a special state value to convey this.
+        /// those errors are captured in SQL and rethrown after 100,000 to their number.
         /// </summary>
-        public static bool IsCustomScriptError(SqlException ex) => ex.Number >= 50000;
+        private static bool IsCustomScriptError(SqlException ex) => ex.Number >= 100000;
+
+        /// <summary>
+        /// Custom script errors are always returned with 100,000 added to 
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private static CustomScriptException ToCustomScriptException(SqlException ex)
+        {
+            int number = ex.Number - 100000;
+            if (!string.IsNullOrWhiteSpace(ex.Message))
+            {
+                const string separator = ":::";
+                var pieces = ex.Message.Split(separator);
+                if (int.TryParse(pieces.First().Trim(), out int lineDefId))
+                {
+                    // The definition Id is prepended in the message, 
+                    string msg = string.Join(separator, pieces.Skip(1));
+                    return new(msg, number, lineDefId);
+                }
+            }
+
+            return new(ex.Message, number);
+        }
 
         #endregion
 
@@ -3705,7 +3728,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Documents__Preprocess));
@@ -3771,7 +3794,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Documents__Save));
@@ -4067,7 +4090,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Lines__Generate), cancellation);
@@ -4336,7 +4359,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Lines__Sign));
@@ -4637,7 +4660,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Documents__Close));
@@ -7067,7 +7090,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Agents__Preprocess));
@@ -7124,7 +7147,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Agents__Save));
@@ -7687,7 +7710,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Resources__Preprocess));
@@ -7731,7 +7754,7 @@ namespace Tellma.Repository.Application
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
-                    throw new CustomScriptException(ex.Message, ex.Number);
+                    throw ToCustomScriptException(ex);
                 }
             },
             DatabaseName(connString), nameof(Resources__Save));

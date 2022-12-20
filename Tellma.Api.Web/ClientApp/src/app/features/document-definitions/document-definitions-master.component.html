@@ -4,6 +4,7 @@
   selectDefault="Code,State" selectForTiles="Code,State" theme="dark"
   [multiselectActions]="[
               { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
+              { template: makeTesting, action: onMakeTesting, showAction: showMakeTesting, canAction: hasStatePermission, actionTooltip: stateTooltip },
               { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
               { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
   ]" [filterDefinition]="{
@@ -12,6 +13,7 @@
             ],
             'State' : [
               { template: hidden, expression: 'State eq \'Hidden\'' },
+              { template: testing, expression: 'State eq \'Testing\'' },
               { template: visible, expression: 'State eq \'Visible\'' },
               { template: archived, expression: 'State eq \'Archived\'' }
             ]
@@ -47,10 +49,12 @@
 <ng-template #savedByMe> {{ 'SavedByMe' | translate }} </ng-template>
 
 <ng-template #hidden> {{ 'Definition_State_Hidden' | translate }} </ng-template>
+<ng-template #testing> {{ 'Definition_State_Testing' | translate }} </ng-template>
 <ng-template #visible> {{ 'Definition_State_Visible' | translate }} </ng-template>
 <ng-template #archived> {{ 'Definition_State_Archived' | translate }} </ng-template>
 
 <!-- Actions -->
 <ng-template #makeHidden> {{ 'Definition_Hide' | translate }} </ng-template>
+<ng-template #makeTesting> {{ 'Definition_Test' | translate }} </ng-template>
 <ng-template #makeVisible> {{ 'Definition_Show' | translate }} </ng-template>
 <ng-template #makeArchived> {{ 'Definition_Archive' | translate }} </ng-template>

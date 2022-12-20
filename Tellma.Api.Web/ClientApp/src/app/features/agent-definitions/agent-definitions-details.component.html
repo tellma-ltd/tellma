@@ -2,6 +2,7 @@
     [additionalSelect]="additionalSelect" [masterCrumb]="'AgentDefinitions' | translate"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen" [actions]="[
         { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
+        { template: makeTesting, action: onMakeTesting, showAction: showMakeTesting, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
         { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
     ]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
@@ -9,6 +10,7 @@
 
 <!-- Actions -->
 <ng-template #makeHidden> {{ 'Definition_Hide' | translate }} </ng-template>
+<ng-template #makeTesting> {{ 'Definition_Test' | translate }} </ng-template>
 <ng-template #makeVisible> {{ 'Definition_Show' | translate }} </ng-template>
 <ng-template #makeArchived> {{ 'Definition_Archive' | translate }} </ng-template>
 
@@ -629,6 +631,12 @@
                     <div class="p-2 px-3" [class.t-pointer]="model.State !== 'Hidden'"
                         [class.t-less-dark]="model.State === 'Hidden'" (click)="onMakeHidden(model)">
                         <span class="t-vertical-align-middle">{{ 'Definition_State_Hidden' | translate }}</span>
+                    </div>
+                    
+                    <!-- Testing -->
+                    <div class="p-2 px-3" [class.t-pointer]="model.State !== 'Testing'"
+                        [class.t-less-dark]="model.State === 'Testing'" (click)="onMakeTesting(model)">
+                        <span class="t-vertical-align-middle">{{ 'Definition_State_Testing' | translate }}</span>
                     </div>
 
                     <!-- Visible -->

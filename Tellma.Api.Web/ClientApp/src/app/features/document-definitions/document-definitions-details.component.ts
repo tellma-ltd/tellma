@@ -774,6 +774,14 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  public onMakeTesting = (model: DocumentDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Testing') {
+      this.documentDefinitionsApi.updateState([model.Id], { state: 'Testing', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
   public onMakeVisible = (model: DocumentDefinition): void => {
     if (!!model && !!model.Id && model.State !== 'Visible') {
       this.documentDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
@@ -791,6 +799,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showMakeHidden = (model: DocumentDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeTesting = (model: DocumentDefinition) => !!model && model.State !== 'Testing';
   public showMakeVisible = (model: DocumentDefinition) => !!model && model.State !== 'Visible';
   public showMakeArchived = (model: DocumentDefinition) => !!model && model.State !== 'Archived';
 
