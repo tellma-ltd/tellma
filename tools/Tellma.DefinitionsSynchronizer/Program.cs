@@ -22,12 +22,12 @@ namespace Tellma.DefinitionsSynchronizer
         /// <summary>
         /// In any definition script, if this line is present don't sync what's before it.
         /// </summary>
-        const string commonSeparatorBegin = "-----<<";
+        const string commonSeparatorBegin = "--<<";
 
         /// <summary>
         /// In any definition script, if this line is present don't sync what's after it.
         /// </summary>
-        const string commonSeparatorEnd = "----->>";
+        const string commonSeparatorEnd = "-->>";
 
         static async Task Main(string[] args)
         {
