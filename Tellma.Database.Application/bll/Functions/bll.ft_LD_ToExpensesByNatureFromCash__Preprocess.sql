@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ft_LD_ToExpensesByNatureFromCash__Preprocess] (
+﻿CREATE OR ALTER FUNCTION [bll].[ft_LD_ToExpensesByNatureFromCash__Preprocess] (
 	@WideLines [WidelineList] READONLY
 )
 RETURNS @ProcessedWidelines TABLE
@@ -429,6 +429,8 @@ BEGIN
 	UPDATE @ProcessedWidelines
 	SET
 		[AgentId0]			= ISNULL([AgentId0], @NullAgent),
+		[NotedAgentId0]		= ISNULL([NotedAgentId0], @NullAgent),
+		[EntryTypeId0]		= ISNULL([EntryTypeId0], dal.fn_EntryTypeConcept__Id(N'AdministrativeExpense')),
 		[NotedResourceId0]	= ISNULL([NotedResourceId0], @NullResource);
 
 	UPDATE @ProcessedWidelines

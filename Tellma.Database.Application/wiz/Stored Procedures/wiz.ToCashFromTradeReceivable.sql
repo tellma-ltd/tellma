@@ -30,7 +30,7 @@ AS
 	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
 	WHERE SI.[Agent1Id] = @TradeReceivableAccountId
 	AND SS.[Balance] > 0
-	AND (@DueOnOrBefore IS NULL OR [NotedDate] <= @DueOnOrBefore);
+	AND (@DueOnOrBefore IS NULL OR SI.[ToDate] <= @DueOnOrBefore);
 
 	SELECT * FROM @WideLines;
 GO

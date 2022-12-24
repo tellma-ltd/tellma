@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[LD_Time2AfterTIme1__Validate]
+﻿CREATE PROCEDURE [bll].[LD_Time2AfterTime1__Validate]
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
@@ -20,8 +20,8 @@ SELECT DISTINCT TOP (@Top)
 CASE 
 WHEN FD.[Time1IsCommon] = 1 AND FD.[Time1] IS NOT NULL THEN
 	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].' + @ErrorFieldName
-WHEN DLDE.[Time1IsCommon] = 1 AND DLDE.[Time1] IS NOT NULL THEN
-	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].LineDefinitionEntries[' + CAST(DLDE.[Index]  AS NVARCHAR(255)) + '].' + @ErrorFieldName
+--WHEN DLDE.[Time1IsCommon] = 1 AND DLDE.[Time1] IS NOT NULL THEN
+--	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].LineDefinitionEntries[' + CAST(DLDE.[Index]  AS NVARCHAR(255)) + '].' + @ErrorFieldName
 ELSE
 	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(FL.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR (255)) + '].' + @ErrorFieldName
 END,

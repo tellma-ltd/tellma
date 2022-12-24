@@ -187,7 +187,7 @@ BEGIN
 			[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
 		FROM @Entities FE 
 		JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
-		WHERE (FE2.Id IN (SELECT [Id] FROM dbo.Entries));
+		WHERE (FE2.Id IN (SELECT [CenterId] FROM dbo.Entries));
 
 		-- The parent center in the db is used in Entries
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -197,7 +197,7 @@ BEGIN
 			[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
 		FROM @Entities FE 
 		JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
-		WHERE (BE.Id IN (SELECT [Id] FROM dbo.Entries));
+		WHERE (BE.Id IN (SELECT [CenterId] FROM dbo.Entries));
 	END
 
 	-- Set @IsError
@@ -206,3 +206,4 @@ BEGIN
 	-- Return Errors
 	SELECT TOP(@Top) * FROM @ValidationErrors;
 END;
+GO

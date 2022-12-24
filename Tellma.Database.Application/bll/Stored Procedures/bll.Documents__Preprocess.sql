@@ -32,8 +32,9 @@ BEGIN
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
-	DECLARE @ExchangeVarianceLineLD INT = (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ExchangeVariance');
-
+	DECLARE @CurrentAssetsNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'CurrentAssets');
+	DECLARE @CurrentLiabilitiesNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'CurrentLiabilities');
+	DECLARE @EquityNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'Equity');
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
 	DECLARE @ProcessedWideLines WideLineList;
@@ -53,28 +54,36 @@ BEGIN
 	INSERT INTO @E SELECT * FROM @Entries;
 
 	DECLARE @BusinessUnitId INT;
-	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
-		IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
+	IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1) = 1
+	BEGIN
+		SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1;
+		UPDATE @D SET [CenterId] = @BusinessUnitId;
+		UPDATE @DLDE SET [CenterId] = @BusinessUnitId WHERE [CenterIsCommon] = 1;
+		UPDATE @E SET [CenterId] = @BusinessUnitId
+	END;
+	ELSE BEGIN
+		IF (dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0 OR dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 1)
+		AND (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
 		BEGIN
 			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1;
 			UPDATE @D SET [CenterId] = @BusinessUnitId
 		END
-	ELSE IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 1
-	BEGIN
-		IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1) = 1
-		BEGIN
-			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1;
-			UPDATE @D SET [CenterId] = @BusinessUnitId
-		END;
-
-		-- Better have code like this in Document Preprocess.
-		--IF @DefinitionId = dal.fn_DocumentDefinitionCode__Id(N'CashReceiptVoucher') -- OR  @DefinitionId = dal.fn_DocumentDefinition__Code(N'CashPaymentVoucher')
-		--UPDATE @D
-		--SET 
-		--	[CenterId] = ISNULL([CenterId], dal.fn_Agent__CenterId([AgentId]))
-		--	WHERE [CenterIsCommon] = 1 AND [AgentIsCommon] = 1 AND [AgentId] IS NOT NULL
-
 	END;
+/* -- Moved the logic after processing
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 1
+	UPDATE E
+	SET
+		E.[CenterId] = dal.fn_BusinessUnit__FundResponsibilityCenterId(D.[CenterId]) -- if Not BU, we get the BU
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @D D ON E.[DocumentIndex] = D.[Index] AND L.[DocumentIndex] = D.[Index]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
+	WHERE AC.[Node].IsDescendantOf(@CurrentAssetsNode) = 1
+	OR AC.[Node].IsDescendantOf(@EquityNode) = 1
+	OR AC.[Node].IsDescendantOf(@CurrentLiabilitiesNode) = 1
+	OR dal.fn_Center__IsLeaf(D.[CenterId]) = 1; -- When the business unit is a leaf, all entries take the same center
+*/
 	-- TODO:  Remove labels, etc.
 
 	-- Overwrite input with DB data that is read only
@@ -133,7 +142,6 @@ BEGIN
 	SELECT E.*
 	FROM @E E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-
 
 	-- Populate PreprocessedLines and PreprocessedEntries using script
 
@@ -197,7 +205,7 @@ BEGIN
 	-- Remove Residuals after processing
 	IF  [dal].[fn_FeatureCode__IsEnabled](N'AccountNullDefinitionsIncludeAll') = 0
 	BEGIN
-	UPDATE E
+		UPDATE E
 		SET E.[AgentId] = NULL
 		FROM @E E
 		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
@@ -276,6 +284,7 @@ BEGIN
 	-- or an admin center (when the same product is used for internal consumption)
 	-- So it is not always clear. However, we can copy the center's business unit in case the account type
 	-- was a balance sheet account
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 0
 	UPDATE E
 	SET
 		E.[CenterId] = dal.fn_Center__BusinessUnit(R.[CenterId]) -- if Not BU, we get the BU
@@ -298,6 +307,7 @@ BEGIN
 	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];
 */
 	-- for smart lines, Get center from Agents if available.
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 0
 	UPDATE E 
 	SET
 		E.[CenterId]		= dal.fn_Center__BusinessUnit(AG.[CenterId])
@@ -310,8 +320,9 @@ BEGIN
 	AND AG.[CenterId] IS NOT NULL
 
 	-- for JV, Get Center from Agents if available
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 0
 	UPDATE E 
-	SET
+	SET -- will be overridden towards the end of the SProc
 		E.[CenterId]		= COALESCE(dal.fn_Center__BusinessUnit(AG.[CenterId]), E.[CenterId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
@@ -378,24 +389,39 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	AND L.[DefinitionId] IN (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [GenerateScript] IS NULL);
+
+	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 1
+	UPDATE E
+	SET
+		E.[CenterId] = dal.fn_BusinessUnit__FundResponsibilityCenterId(D.[CenterId]) -- if Not BU, we get the BU
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @D D ON E.[DocumentIndex] = D.[Index] AND L.[DocumentIndex] = D.[Index]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
+	WHERE D.[CenterId] IS NOT NULL
+	AND (AC.[Node].IsDescendantOf(@CurrentAssetsNode) = 1
+	OR AC.[Node].IsDescendantOf(@EquityNode) = 1
+	OR AC.[Node].IsDescendantOf(@CurrentLiabilitiesNode) = 1
+	OR dal.fn_Center__IsLeaf(D.[CenterId]) = 1);
 	
 	DECLARE @LineEntries TABLE (
-				[Index] INT, 
-				[LineIndex] INT, 
-				[DocumentIndex] INT,  
-				[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
-				[AgentDefinitionId] INT,
-				[AgentId] INT,
-				[NotedAgentDefinitionId] INT,
-				[NotedAgentId] INT,
-				[ResourceDefinitionId] INT,
-				[ResourceId] INT,
-				[NotedResourceDefinitionId] INT,
-				[NotedResourceId] INT,
-				[CenterId] INT,
-				[CurrencyId] NCHAR (3),
-				[EntryTypeId] INT
-			)
+			[Index] INT, 
+			[LineIndex] INT, 
+			[DocumentIndex] INT,  
+			[AccountTypeId] INT, PRIMARY KEY ([Index], [LineIndex], [DocumentIndex], [AccountTypeId]),
+			[AgentDefinitionId] INT,
+			[AgentId] INT,
+			[NotedAgentDefinitionId] INT,
+			[NotedAgentId] INT,
+			[ResourceDefinitionId] INT,
+			[ResourceId] INT,
+			[NotedResourceDefinitionId] INT,
+			[NotedResourceId] INT,
+			[CenterId] INT,
+			[CurrencyId] NCHAR (3),
+			[EntryTypeId] INT
+		)
 	INSERT INTO @LineEntries([Index], [LineIndex], [DocumentIndex], [AccountTypeId],
 					[AgentDefinitionId], [AgentId],
 					[NotedAgentDefinitionId], [NotedAgentId],
@@ -529,3 +555,5 @@ END
 
 	*/
 GO
+
+
