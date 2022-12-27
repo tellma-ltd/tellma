@@ -213,6 +213,10 @@ namespace Tellma.DefinitionsSynchronizer
 
             ConcurrentDictionary<int, Task<string>> masterAccountTypeMap = new();
             ConcurrentDictionary<int, Task<string>> masterEntryTypeMap = new();
+            ConcurrentDictionary<int, Task<string>> masterDocumentDefinitionMap = new();
+            ConcurrentDictionary<int, Task<string>> masterAgentDefinitionMap = new();
+            ConcurrentDictionary<int, Task<string>> masterResourceDefinitionMap = new();
+            ConcurrentDictionary<int, Task<string>> masterLookupDefinitionMap = new();
 
             // Do all tenants in parallel
             await Task.WhenAll(tenantCodeToIdMaps.Select(async pair =>
@@ -239,31 +243,15 @@ namespace Tellma.DefinitionsSynchronizer
                     return;
                 }
 
-                DefinitionsForClient tenantDefs;
-                try
-                {
-                    tenantDefs = (await client
-                        .Application(tenantId)
-                        .Definitions
-                        .DefinitionsForClient()).Data;
-                }
-                catch (Exception ex)
-                {
-                    report.Errors.Add($"Failed to load tenant definitions: {ex.Message}");
-                    return;
-                }
-
                 #region Id Mapper Functions
 
                 // Map concepts to ids
                 ConcurrentDictionary<string, Task<int>> tenantAccountTypeMap = new(StringComparer.OrdinalIgnoreCase);
                 ConcurrentDictionary<string, Task<int>> tenantEntryTypeMap = new(StringComparer.OrdinalIgnoreCase);
-
-                // Map codes to ids
-                Dictionary<string, int> tenantDocumentDefinitionMap = tenantDefs.Documents.Where(p => p.Value.Code != null).ToDictionary(p => p.Value.Code, p => p.Key);
-                Dictionary<string, int> tenantAgentDefinitionMap = tenantDefs.Agents.Where(p => p.Value.Code != null).ToDictionary(p => p.Value.Code, p => p.Key);
-                Dictionary<string, int> tenantResourceDefinitionMap = tenantDefs.Resources.Where(p => p.Value.Code != null).ToDictionary(p => p.Value.Code, p => p.Key);
-                Dictionary<string, int> tenantLookupDefinitionMap = tenantDefs.Lookups.Where(p => p.Value.Code != null).ToDictionary(p => p.Value.Code, p => p.Key);
+                ConcurrentDictionary<string, Task<int>> tenantDocumentDefinitionMap = new(StringComparer.OrdinalIgnoreCase);
+                ConcurrentDictionary<string, Task<int>> tenantAgentDefinitionMap = new(StringComparer.OrdinalIgnoreCase);
+                ConcurrentDictionary<string, Task<int>> tenantResourceDefinitionMap = new(StringComparer.OrdinalIgnoreCase);
+                ConcurrentDictionary<string, Task<int>> tenantLookupDefinitionMap = new(StringComparer.OrdinalIgnoreCase);
 
 
                 async Task<int?> GetTenantAccountTypeId(int? idInMaster)
@@ -358,88 +346,188 @@ namespace Tellma.DefinitionsSynchronizer
                     });
                 }
 
-                int? GetTenantDocumentId(int? idInMaster)
+                async Task<int?> GetTenantDocumentId(int? idInMaster)
                 {
                     if (idInMaster == null)
-                    {
                         return null;
-                    }
 
-                    string code = masterDefs.Documents[idInMaster.Value].Code;
-                    if (string.IsNullOrWhiteSpace(code))
+                    string code = await masterDocumentDefinitionMap
+                        .GetOrAdd(idInMaster.Value, async id =>
+                        {
+                            var result = await client
+                                .Application(masterId)
+                                .DocumentDefinitions
+                                .GetById(id, new GetByIdArguments
+                                {
+                                    Select = nameof(DocumentDefinition.Code),
+                                });
+                            return result.Entity.Code;
+                        });
+
+                    return await tenantDocumentDefinitionMap.GetOrAdd(code, async c =>
                     {
-                        throw new SynchronizerException($"Master {nameof(DocumentDefinition)} with Id = {idInMaster} has no code.");
-                    }
+                        var response = await client
+                           .Application(tenantId)
+                           .DocumentDefinitions
+                           .GetEntities(new GetArguments
+                           {
+                               Select = nameof(DocumentDefinition.Id),
+                               Filter = nameof(DocumentDefinition.Code) + $" eq '{c.Replace("'", "''")}'",
+                               Top = 1,
+                               CountEntities = true,
+                           });
 
-                    if (!tenantDocumentDefinitionMap.TryGetValue(code, out int res))
-                    {
-                        throw new SynchronizerException($"Did not find a {nameof(DocumentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
-                    }
-
-                    return res;
+                        if (response.Count == 0)
+                        {
+                            throw new SynchronizerException($"Did not find an {nameof(DocumentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else if (response.Count > 1)
+                        {
+                            throw new SynchronizerException($"Found more than one {nameof(DocumentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else
+                        {
+                            return response.Data[0].Id;
+                        }
+                    });
                 }
 
-                int? GetTenantAgentId(int? idInMaster)
+                async Task<int?> GetTenantAgentId(int? idInMaster)
                 {
                     if (idInMaster == null)
-                    {
                         return null;
-                    }
 
-                    string code = masterDefs.Agents[idInMaster.Value].Code;
-                    if (string.IsNullOrWhiteSpace(code))
+                    string code = await masterAgentDefinitionMap
+                        .GetOrAdd(idInMaster.Value, async id =>
+                        {
+                            var result = await client
+                                .Application(masterId)
+                                .AgentDefinitions
+                                .GetById(id, new GetByIdArguments
+                                {
+                                    Select = nameof(AgentDefinition.Code),
+                                });
+                            return result.Entity.Code;
+                        });
+
+                    return await tenantAgentDefinitionMap.GetOrAdd(code, async c =>
                     {
-                        throw new SynchronizerException($"Master {nameof(AgentDefinition)} with Id = {idInMaster} has no code.");
-                    }
+                        var response = await client
+                           .Application(tenantId)
+                           .AgentDefinitions
+                           .GetEntities(new GetArguments
+                           {
+                               Select = nameof(AgentDefinition.Id),
+                               Filter = nameof(AgentDefinition.Code) + $" eq '{c.Replace("'", "''")}'",
+                               Top = 1,
+                               CountEntities = true,
+                           });
 
-                    if (!tenantAgentDefinitionMap.TryGetValue(code, out int res))
-                    {
-                        throw new SynchronizerException($"Did not find an {nameof(AgentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
-                    }
-
-                    return res;
+                        if (response.Count == 0)
+                        {
+                            throw new SynchronizerException($"Did not find an {nameof(AgentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else if (response.Count > 1)
+                        {
+                            throw new SynchronizerException($"Found more than one {nameof(AgentDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else
+                        {
+                            return response.Data[0].Id;
+                        }
+                    });
                 }
 
-                int? GetTenantResourceId(int? idInMaster)
+                async Task<int?> GetTenantResourceId(int? idInMaster)
                 {
                     if (idInMaster == null)
-                    {
                         return null;
-                    }
 
-                    string code = masterDefs.Resources[idInMaster.Value].Code;
-                    if (string.IsNullOrWhiteSpace(code))
+                    string code = await masterResourceDefinitionMap
+                        .GetOrAdd(idInMaster.Value, async id =>
+                        {
+                            var result = await client
+                                .Application(masterId)
+                                .ResourceDefinitions
+                                .GetById(id, new GetByIdArguments
+                                {
+                                    Select = nameof(ResourceDefinition.Code),
+                                });
+                            return result.Entity.Code;
+                        });
+
+                    return await tenantResourceDefinitionMap.GetOrAdd(code, async c =>
                     {
-                        throw new SynchronizerException($"Master {nameof(ResourceDefinition)} with Id = {idInMaster} has no code.");
-                    }
+                        var response = await client
+                           .Application(tenantId)
+                           .ResourceDefinitions
+                           .GetEntities(new GetArguments
+                           {
+                               Select = nameof(ResourceDefinition.Id),
+                               Filter = nameof(ResourceDefinition.Code) + $" eq '{c.Replace("'", "''")}'",
+                               Top = 1,
+                               CountEntities = true,
+                           });
 
-                    if (!tenantResourceDefinitionMap.TryGetValue(code, out int res))
-                    {
-                        throw new SynchronizerException($"Did not find a {nameof(ResourceDefinition)} in tenant ID = {tenantId} where code = '{code}'");
-                    }
-
-                    return res;
+                        if (response.Count == 0)
+                        {
+                            throw new SynchronizerException($"Did not find an {nameof(ResourceDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else if (response.Count > 1)
+                        {
+                            throw new SynchronizerException($"Found more than one {nameof(ResourceDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else
+                        {
+                            return response.Data[0].Id;
+                        }
+                    });
                 }
 
-                int? GetTenantLookupId(int? idInMaster)
+                async Task<int?> GetTenantLookupId(int? idInMaster)
                 {
                     if (idInMaster == null)
-                    {
                         return null;
-                    }
 
-                    string code = masterDefs.Lookups[idInMaster.Value].Code;
-                    if (string.IsNullOrWhiteSpace(code))
+                    string code = await masterLookupDefinitionMap
+                        .GetOrAdd(idInMaster.Value, async id =>
+                        {
+                            var result = await client
+                                .Application(masterId)
+                                .LookupDefinitions
+                                .GetById(id, new GetByIdArguments
+                                {
+                                    Select = nameof(LookupDefinition.Code),
+                                });
+                            return result.Entity.Code;
+                        });
+
+                    return await tenantLookupDefinitionMap.GetOrAdd(code, async c =>
                     {
-                        throw new SynchronizerException($"Master {nameof(LookupDefinition)} with Id = {idInMaster} has no code.");
-                    }
+                        var response = await client
+                           .Application(tenantId)
+                           .LookupDefinitions
+                           .GetEntities(new GetArguments
+                           {
+                               Select = nameof(LookupDefinition.Id),
+                               Filter = nameof(LookupDefinition.Code) + $" eq '{c.Replace("'", "''")}'",
+                               Top = 1,
+                               CountEntities = true,
+                           });
 
-                    if (!tenantLookupDefinitionMap.TryGetValue(code, out int res))
-                    {
-                        throw new SynchronizerException($"Did not find an {nameof(LookupDefinition)} in tenant ID = {tenantId} where code = '{code}'");
-                    }
-
-                    return res;
+                        if (response.Count == 0)
+                        {
+                            throw new SynchronizerException($"Did not find an {nameof(LookupDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else if (response.Count > 1)
+                        {
+                            throw new SynchronizerException($"Found more than one {nameof(LookupDefinition)} in tenant ID = {tenantId} where code = '{code}'");
+                        }
+                        else
+                        {
+                            return response.Data[0].Id;
+                        }
+                    });
                 }
 
                 #endregion
@@ -583,7 +671,7 @@ namespace Tellma.DefinitionsSynchronizer
                                     var masterRow = masterEntry.AgentDefinitions[j];
                                     var tenantRow = tenantEntry.AgentDefinitions[j];
 
-                                    tenantRow.AgentDefinitionId = GetTenantAgentId(masterRow.AgentDefinitionId);
+                                    tenantRow.AgentDefinitionId = await GetTenantAgentId(masterRow.AgentDefinitionId);
                                 }
                             }
                             catch (Exception ex)
@@ -601,7 +689,7 @@ namespace Tellma.DefinitionsSynchronizer
                                     var masterRow = masterEntry.ResourceDefinitions[j];
                                     var tenantRow = tenantEntry.ResourceDefinitions[j];
 
-                                    tenantRow.ResourceDefinitionId = GetTenantResourceId(masterRow.ResourceDefinitionId);
+                                    tenantRow.ResourceDefinitionId = await GetTenantResourceId(masterRow.ResourceDefinitionId);
                                 }
                             }
                             catch (Exception ex)
@@ -619,7 +707,7 @@ namespace Tellma.DefinitionsSynchronizer
                                     var masterRow = masterEntry.NotedAgentDefinitions[j];
                                     var tenantRow = tenantEntry.NotedAgentDefinitions[j];
 
-                                    tenantRow.NotedAgentDefinitionId = GetTenantAgentId(masterRow.NotedAgentDefinitionId);
+                                    tenantRow.NotedAgentDefinitionId = await GetTenantAgentId(masterRow.NotedAgentDefinitionId);
                                 }
                             }
                             catch (Exception ex)
@@ -637,7 +725,7 @@ namespace Tellma.DefinitionsSynchronizer
                                     var masterRow = masterEntry.NotedResourceDefinitions[j];
                                     var tenantRow = tenantEntry.NotedResourceDefinitions[j];
 
-                                    tenantRow.NotedResourceDefinitionId = GetTenantResourceId(masterRow.NotedResourceDefinitionId);
+                                    tenantRow.NotedResourceDefinitionId = await GetTenantResourceId(masterRow.NotedResourceDefinitionId);
                                 }
                             }
                             catch (Exception ex)
@@ -779,16 +867,16 @@ namespace Tellma.DefinitionsSynchronizer
                                         switch (masterGenerateParam.Control)
                                         {
                                             case nameof(Document):
-                                                navOptions.definitionId = GetTenantDocumentId(navOptions.definitionId);
+                                                navOptions.definitionId = await GetTenantDocumentId(navOptions.definitionId);
                                                 break;
                                             case nameof(Agent):
-                                                navOptions.definitionId = GetTenantAgentId(navOptions.definitionId);
+                                                navOptions.definitionId = await GetTenantAgentId(navOptions.definitionId);
                                                 break;
                                             case nameof(Resource):
-                                                navOptions.definitionId = GetTenantResourceId(navOptions.definitionId);
+                                                navOptions.definitionId = await GetTenantResourceId(navOptions.definitionId);
                                                 break;
                                             case nameof(Lookup):
-                                                navOptions.definitionId = GetTenantLookupId(navOptions.definitionId);
+                                                navOptions.definitionId = await GetTenantLookupId(navOptions.definitionId);
                                                 break;
                                         }
                                     }
