@@ -201,6 +201,8 @@ BEGIN
 			FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+		WHERE LD.[LineType] > 40
 		GROUP BY L.[DocumentIndex], L.[Index]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 

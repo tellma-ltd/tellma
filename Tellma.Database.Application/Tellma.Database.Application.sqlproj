@@ -916,6 +916,7 @@
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullMonths.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullDays.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToEmployeeBenefitsAccrualsFromCash.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__SocialSecurities.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

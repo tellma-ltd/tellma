@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER FUNCTION [bll].[ft_LD_ToExpensesByNatureFromCash__Preprocess] (
+﻿CREATE FUNCTION [bll].[ft_LD_ToExpensesByNatureFromCash__Preprocess] (
 	@WideLines [WidelineList] READONLY
 )
 RETURNS @ProcessedWidelines TABLE
