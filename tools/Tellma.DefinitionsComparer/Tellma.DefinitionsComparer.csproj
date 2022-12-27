@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Tellma.Client\Tellma.Client.csproj" />
+    <ProjectReference Include="..\Tellma.DefinitionsSynchronizer\Tellma.DefinitionsSynchronizer.csproj" />
   </ItemGroup>
 
 </Project>

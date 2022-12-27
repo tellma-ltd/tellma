@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -480,7 +481,7 @@ namespace Tellma.Api
 
                 await _behavior.LogCustomScriptBug(
                                 ex,
-                                collection: nameof(Line), 
+                                collection: nameof(Line),
                                 definitionId: ex.LineDefinitionId,
                                 defTitle: lineDefName,
                                 scriptName: "Validate Unsign Script",
@@ -717,6 +718,71 @@ namespace Tellma.Api
             return result;
         }
 
+        public async Task<LinesResult> AutoGenerateLinesForMultipleDefinitions(List<int> lineDefIds, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            ConcurrentBag<LinesResult> results = new();
+            await Task.WhenAll(lineDefIds.Select(async lineDefId =>
+            {
+                var linesResult = await AutoGenerateLines(lineDefId, docs, args, cancellation);
+
+                results.Add(linesResult);
+            }));
+
+            // Merge the line results together
+            List<LineForSave> lines = new();
+            Dictionary<int, Account> accounts = new();
+            Dictionary<int, Resource> resources = new();
+            Dictionary<int, Agent> agents = new();
+            Dictionary<int, EntryType> entryTypes = new();
+            Dictionary<int, Center> centers = new();
+            Dictionary<string, Currency> currencies = new();
+            Dictionary<int, Unit> units = new();
+
+            foreach (var r in results)
+            {
+                lines.AddRange(r.Data);
+                foreach (var entity in r.Accounts)
+                {
+                    accounts.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.Resources)
+                {
+                    resources.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.Agents)
+                {
+                    agents.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.EntryTypes)
+                {
+                    entryTypes.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.Centers)
+                {
+                    centers.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.Currencies)
+                {
+                    currencies.TryAdd(entity.Id, entity);
+                }
+                foreach (var entity in r.Units)
+                {
+                    units.TryAdd(entity.Id, entity);
+                }
+            }
+
+            return new LinesResult(lines,
+                accounts.Values.ToList(),
+                resources.Values.ToList(),
+                agents.Values.ToList(),
+                entryTypes.Values.ToList(),
+                centers.Values.ToList(),
+                currencies.Values.ToList(),
+                units.Values.ToList());
+        }
+
         public async Task<LinesResult> AutoGenerateLines(int lineDefId, List<DocumentForSave> docs, Dictionary<string, string> args, CancellationToken cancellation)
         {
             await Initialize(cancellation);
@@ -728,7 +794,11 @@ namespace Tellma.Api
             // ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             var def = await Definition(cancellation);
-            var lineDef = await LineDefinition(lineDefId, cancellation);
+            var lineDef = await LineDefinition(lineDefId, cancellation);            
+            if (!lineDef.GenerateScript)
+            {
+                throw new ServiceException(@$"Line definition ""{lineDef.TitleSingular}"" does not have an auto-generate script.");
+            }
 
             // Better args will contain only the defined parameter keys and all the defined parameter keys (with possible null values)
             var betterArgs = new Dictionary<string, string>();
@@ -756,6 +826,11 @@ namespace Tellma.Api
                 // Call the SP
                 var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) =
                     await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
+
+                foreach (var line in lines)
+                {
+                    line.DefinitionId = lineDefId;
+                }
 
                 return new LinesResult(lines, accounts, resources, agents, entryTypes, centers, currencies, units);
             }
@@ -1375,7 +1450,7 @@ namespace Tellma.Api
                 // (1) All non-manual entries have the same non-functional currency
                 // (2) Monetary Value of non-manual entries is balanced
                 // (3) Value of non-manual is not balanced
-                // => Take the difference and distribute it evenly on the entries
+                // => Take the difference and add it to the entry with the biggest value
                 foreach (var line in doc.Lines.Where(e => e.DefinitionId != manualLineDefId && e.Entries.Count > 0))
                 {
                     var firstCurrencyId = line.Entries[0].CurrencyId;

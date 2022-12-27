@@ -112,27 +112,27 @@ namespace Tellma.DefinitionsComparer
 
                                 // Compare
                                 List<string> diffsList = new();
-                                if (lineDef.GenerateScript != masterLineDef.GenerateScript)
+                                if ((lineDef.GenerateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.GenerateScript, lineDef.GenerateScript) ?? ""))
                                 {
                                     diffsList.Add("Generate Script");
                                 }
 
-                                if (lineDef.PreprocessScript != masterLineDef.PreprocessScript)
+                                if ((lineDef.PreprocessScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.PreprocessScript, lineDef.PreprocessScript) ?? ""))
                                 {
                                     diffsList.Add("Preprocess Script");
                                 }
 
-                                if (lineDef.ValidateScript != masterLineDef.ValidateScript)
+                                if ((lineDef.ValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.ValidateScript, lineDef.ValidateScript) ?? ""))
                                 {
                                     diffsList.Add("Validate Script");
                                 }
 
-                                if (lineDef.SignValidateScript != masterLineDef.SignValidateScript)
+                                if ((lineDef.SignValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.SignValidateScript, lineDef.SignValidateScript) ?? ""))
                                 {
                                     diffsList.Add("Sign Validate Script");
                                 }
 
-                                if (lineDef.UnsignValidateScript != masterLineDef.UnsignValidateScript)
+                                if ((lineDef.UnsignValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.UnsignValidateScript, lineDef.UnsignValidateScript) ?? ""))
                                 {
                                     diffsList.Add("Unsign Validate Script");
                                 }

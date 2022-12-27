@@ -1157,6 +1157,32 @@ export class ApiService {
         return obs$;
       },
 
+      autoGenerateForMultipleDefs: (ids: number[], docs: DocumentForSave[]) => {
+        const paramsArray: string[] = [];
+        for (const id of ids) {
+          paramsArray.push(`i=${id}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/generate-lines?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<LineForSave>>(url, docs, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
       autoGenerate: (lineDefId: number, docs: DocumentForSave[], args: { [key: string]: any }) => {
 
         const paramsArray: string[] = [];
