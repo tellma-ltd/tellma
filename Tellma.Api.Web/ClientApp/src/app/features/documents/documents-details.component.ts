@@ -4708,7 +4708,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return; // Can't call the API unless all required params are set
     }
 
-
     // Call the API and retrieve the generated lines
     this.documentsApi.autoGenerate(lineDefId, [clone], this.autoGenerateArgs).pipe(
       tap((res: EntitiesResponse<LineForSave>) => {
@@ -4717,25 +4716,66 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           modal.close();
         }
 
-        if (res.Result.length > 0) {
-          // Add related entities to workspace
-          mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
-          this.workspace.notifyStateChanged();
-
-          for (const line of res.Result) {
-            line._flags = { isModified: true };
-          }
-
-          // Add the new lines to the doc and refresh the grids
-          doc.Lines.push(...res.Result);
-          this._computeEntriesModel = null;
-          this._linesModel = null;
-        } else {
-          const msg = this.translate.instant('Message_AutoGenerateReturnedNothing');
-          this.details.displaySuccessMessage(msg);
-        }
+        // Handle the result
+        this.handleAutoGenerateResult(res, doc);
       }),
     ).subscribe({ error: this.details.handleActionError });
+  }
+
+  /**
+   * Runs auto-generate for all line definitions that have no required params
+   */
+  public onAutoGenerateAll(doc: Document, isEdit: boolean): void {
+    if (!isEdit) {
+      return;
+    }
+
+    const lineDefIds = this.generatableLineDefIdsWithoutRequiredParams();
+
+    // Call the API and retrieve the generated lines
+    const clone = this.clone(doc, false); // Do not remove the Ids
+    this.documentsApi.autoGenerateForMultipleDefs(lineDefIds, [clone]).pipe(
+      tap((res: EntitiesResponse<LineForSave>) => this.handleAutoGenerateResult(res, doc)),
+    ).subscribe({ error: this.details.handleActionError });
+  }
+
+  public showAutoGenerateAll = (): boolean => {
+    return this.generatableLineDefIdsWithoutRequiredParams().length > 0;
+  }
+
+  private generatableLineDefIdsWithoutRequiredParams = (): number[] => {
+    // Get the line def Ids that have a generate script and no required params.
+    const def = this.definition;
+    const lineDefIds = def.LineDefinitions
+      .map(e => e.LineDefinitionId)
+      .filter(lineDefId => {
+        const lineDef = this.lineDefinition(lineDefId);
+        return lineDef.GenerateScript &&
+          lineDef.GenerateParameters
+            .every(e => e.Visibility !== 'Required');
+      });
+
+    return lineDefIds;
+  }
+
+  private handleAutoGenerateResult = (res: EntitiesResponse<LineForSave>, doc: Document) => {
+    if (res.Result.length > 0) {
+      // Add related entities to workspace
+      mergeEntitiesInWorkspace(res.RelatedEntities, this.workspace);
+      this.workspace.notifyStateChanged();
+
+      for (const line of res.Result) {
+        line._flags = { isModified: true };
+      }
+
+      // Add the new lines to the doc and refresh the grids
+      doc.Lines.push(...res.Result);
+      this._computeEntriesModel = null;
+      this._linesModel = null;
+    } else {
+      const msg = this.translate.instant('Message_AutoGenerateReturnedNothing');
+      this.details.displaySuccessMessage(msg);
+    }
   }
 
   public get autoGenerateRequiredParamsAreSet(): boolean {

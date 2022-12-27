@@ -187,12 +187,39 @@ namespace Tellma.Controllers
             }
         }
 
+        [HttpPut("generate-lines")]
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> AutoGenerateLinesForMultipleDefinitions(
+            [FromQuery] List<int> i, 
+            [FromBody] List<DocumentForSave> entities, 
+            CancellationToken cancellation)
+        {
+            var serverTime = DateTimeOffset.UtcNow;
+            var result = await GetService().AutoGenerateLinesForMultipleDefinitions(i, entities, new(), cancellation);
+
+            var response = MapToResponse(result, serverTime);
+
+            // Return
+            return Ok(response);
+        }
+
         [HttpPut("generate-lines/{lineDefId:int}")]
-        public async Task<ActionResult<EntitiesResponse<LineForSave>>> AutoGenerateLines([FromRoute] int lineDefId, [FromBody] List<DocumentForSave> entities, [FromQuery] Dictionary<string, string> args, CancellationToken cancellation)
+        public async Task<ActionResult<EntitiesResponse<LineForSave>>> AutoGenerateLines(
+            [FromRoute] int lineDefId, 
+            [FromBody] List<DocumentForSave> entities, 
+            [FromQuery] Dictionary<string, string> args, 
+            CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
             var result = await GetService().AutoGenerateLines(lineDefId, entities, args, cancellation);
 
+            var response = MapToResponse(result, serverTime);
+
+            // Return
+            return Ok(response);
+        }
+
+        private EntitiesResponse<LineForSave> MapToResponse(LinesResult result, DateTimeOffset serverTime)
+        {
             // Related entitiess
             var relatedEntities = new RelatedEntities
             {
@@ -214,8 +241,7 @@ namespace Tellma.Controllers
                 ServerTime = serverTime,
             };
 
-            // Return
-            return Ok(response);
+            return response;
         }
 
         [HttpGet("email-entities-preview/{templateId:int}")]

@@ -25,6 +25,21 @@
 
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
+    <!-- Actions -->
+    <div *ngIf="isEdit && showAutoGenerateAll()" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
+        <button type="button" class="btn btn-sm t-toolbar-button dropdown-toggle btn-light text-primary t-white-button"
+            ngbDropdownToggle>
+            <span>{{ 'Actions' | translate }}</span>
+        </button>
+        <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+            <div *ngIf="true" container="body">
+                <button type="button" class="dropdown-item t-transparent-background btn-light"
+                    ngbDropdownItem (click)="onAutoGenerateAll(model, isEdit)" [disabled]="false">
+                    {{ 'AutoGenerate' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Email Menu -->
     <t-email-button class="btn-group" *ngIf="model?.Id && !isEdit" [emailTemplates]="emailTemplates"
@@ -772,7 +787,8 @@
                         <span *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             dateFormat }}</span>
                         <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
-                        <span *ngSwitchCase="'Boolean1'">{{ (getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes' :
+                        <span *ngSwitchCase="'Boolean1'">{{ (getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes'
+                            :
                             'No') | translate }}</span>
                         <span *ngSwitchCase="'Decimal1'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
                             accounting:'1.0-4' }}</span>
