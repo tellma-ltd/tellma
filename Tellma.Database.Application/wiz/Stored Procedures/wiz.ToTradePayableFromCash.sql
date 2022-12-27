@@ -22,14 +22,14 @@ AS
 	INSERT INTO @WideLines([Index], [DocumentIndex],
 		[CenterId0], [AgentId0], [MonetaryValue0], [NotedAmount0], [CurrencyId0], [NotedDate0],
 		[MonetaryValue1], [CurrencyId1])
-	SELECT ROW_NUMBER() OVER(ORDER BY SI.[Id], SS.[NotedDate]) - 1, 0,
+	SELECT ROW_NUMBER() OVER(ORDER BY [PI].[Id], SS.[NotedDate]) - 1, 0,
 		SS.[CenterId], SS.[AgentId], -SS.[Balance], -SS.[Balance], SS.[CurrencyId], [NotedDate],
 		-bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId1, SS.[Balance]) AS [MonetaryValue1], @CurrencyId1
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'TradeAndOtherCurrentPayablesToTradeSuppliers', NULL) SS
-	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
-	WHERE SI.[Agent1Id] = @TradePayableAccountId
+	JOIN dbo.Agents [PI] ON [PI].[Id] = SS.[AgentId]
+	WHERE [PI].[Agent1Id] = @TradePayableAccountId
 	AND SS.[Balance] < 0
-	AND (@DueOnOrBefore IS NULL OR [NotedDate] <= @DueOnOrBefore);
+	AND (@DueOnOrBefore IS NULL OR [PI].[ToDate] <= @DueOnOrBefore);
 
 	SELECT * FROM @WideLines;
 GO

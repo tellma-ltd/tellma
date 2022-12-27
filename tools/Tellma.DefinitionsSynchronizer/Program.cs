@@ -812,7 +812,7 @@ namespace Tellma.DefinitionsSynchronizer
                             try
                             {
                                 // Save it
-                               //  await client.Application(tenantId).LineDefinitions.Save(new() { tenantDef });
+                                await client.Application(tenantId).LineDefinitions.Save(new() { tenantDef });
                                 report.SyncedDefs++;
                                 WriteLine($"Success syncing {tenantId}: '{defCode}'", ConsoleColor.Green);
                             }
