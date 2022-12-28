@@ -158,13 +158,16 @@ BEGIN
 		[NotedDate], [NotedDateIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [ReferenceSourceId], [ReferenceSourceIsCommon],
 		[InternalReference], [InternalReferenceIsCommon]	
 	)
-	SELECT Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+	SELECT-- Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon], 
 		[ResourceId], [ResourceIsCommon], [NotedResourceId], [NotedResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Duration], [DurationIsCommon], [DurationUnitId], [DurationUnitIsCommon], [Time2], [Time2IsCommon],
 		[NotedDate], [NotedDateIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [ReferenceSourceId], [ReferenceSourceIsCommon],
 		[InternalReference], [InternalReferenceIsCommon]
-	FROM [dbo].[Documents] D JOIN @Ids Ids ON D.[Id] = Ids.[Id]
+	--FROM [dbo].[Documents] D JOIN @Ids Ids ON D.[Id] = Ids.[Id] -- MA: Commented 2022-12-28, @Ids has lines not documents!
+	FROM [dbo].[Documents] WHERE [Id] IN
+		(SELECT [DocumentId] FROM dbo.Lines WHERE [Id] IN (SELECT [Id] FROM @Ids))
 
 	INSERT INTO @DocumentLineDefinitionEntries(
 		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
@@ -174,21 +177,24 @@ BEGIN
 		[NotedDate], [NotedDateIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [ReferenceSourceId], [ReferenceSourceIsCommon],
 		[InternalReference], [InternalReferenceIsCommon]
 	)
-	SELECT 	DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+	SELECT 	--DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+		[Id], [DocumentId], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon], 
 		[ResourceId], [ResourceIsCommon], [NotedResourceId], [NotedResourceIsCommon], [Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Duration], [DurationIsCommon], [DurationUnitId], [DurationUnitIsCommon], [Time2], [Time2IsCommon],
 		[NotedDate], [NotedDateIsCommon], [ExternalReference], [ExternalReferenceIsCommon], [ReferenceSourceId], [ReferenceSourceIsCommon],
 		[InternalReference], [InternalReferenceIsCommon]
-	FROM DocumentLineDefinitionEntries DLDE
-	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
+	FROM DocumentLineDefinitionEntries --DLDE
+--	JOIN @Ids Ids ON DLDE.[DocumentId] = Ids.[Id]
+	WHERE [DocumentId] IN (SELECT [Id] FROM @Documents)
 	AND [LineDefinitionId]  IN (SELECT [Id] FROM [map].[LineDefinitions]() WHERE [HasWorkflow] = 1);
 
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo])
-	SELECT	[Index],	[DocumentId],	[Id], [DefinitionId], [PostingDate], [Memo]
+	SELECT	Ids.[Index],	[DocumentId], L.[Id], [DefinitionId], [PostingDate], [Memo]
 	FROM [dbo].[Lines] L
-	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
+--	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
+	JOIN @Ids Ids ON L.[Id] = Ids.[Id]
 	AND [DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 1)
 
 	INSERT INTO @Entries (

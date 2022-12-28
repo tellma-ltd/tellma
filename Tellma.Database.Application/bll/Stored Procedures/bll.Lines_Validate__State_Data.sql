@@ -138,6 +138,28 @@ BEGIN
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsActive] = 0);
 
+	-- No future date for Completed and Posted state
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		CASE
+			WHEN LDC.InheritsFromHeader >= 2 AND D.[PostingDateIsCommon] = 1
+			THEN
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].PostingDate'
+			WHEN LDC.InheritsFromHeader >= 1 AND LD.ViewDefaultsToForm = 0 AND DLDE.[PostingDateIsCommon] = 1
+			THEN
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].LineDefinitionEntries[0].PostingDate'
+			ELSE
+				N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + CAST(L.[Index] AS NVARCHAR (255)) + N'].PostingDate'
+			END,
+		N'Error_PostingDateFallsinFuture'
+	FROM @Lines L
+	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+	JOIN dbo.LineDefinitions LD ON L.DefinitionId = LD.[Id]
+	LEFT JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = N'PostingDate'
+	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
+	WHERE @State >= 3
+	AND L.[PostingDate] >= DATEADD(DAY, 1, GETDATE())
+
 	IF @State >= 2
 	BEGIN
 		DECLARE @ArchiveDate DATE;
