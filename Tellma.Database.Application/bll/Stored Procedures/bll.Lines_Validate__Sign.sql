@@ -145,8 +145,8 @@ BEGIN
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 	BEGIN
 		SET @IsError = 1;
-		SELECT TOP (@Top) * FROM @ValidationErrors;
-		RETURN
+		GOTO DONE -- SELECT TOP (@Top) * FROM @ValidationErrors; MA: Commented Dec 28, 2022
+		-- RETURN, MA: Commented Dec 28, 2022
 	END;
 
 	DECLARE @Documents DocumentList, @DocumentLineDefinitionEntries DocumentLineDefinitionEntryList, @Lines LineList, @Entries EntryList;
@@ -212,15 +212,16 @@ BEGIN
 	FROM [dbo].[Entries] E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
-	INSERT INTO @ValidationErrors -- MA: Added Oct 21, 2022
+	--INSERT INTO @ValidationErrors -- MA: Added Oct 21, 2022, Commented Dec 28, 2022, to avoid nested Insert Exec
 	EXEC [bll].[Lines_Validate__Transition_ToState]
 		@Documents = @Documents, 
 		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
 		@Lines = @Lines, @Entries = @Entries, @ToState = 2, 
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
+	IF @IsError = 1 GOTO DONE;
 
-	INSERT INTO @ValidationErrors -- MA: Added Oct 21, 2022. There was no Insert statement!!!!
+	--INSERT INTO @ValidationErrors -- MA: Added Oct 21, 2022. There was no Insert statement!!!!  Commented Dec 28, 2022, to avoid nested Insert Exec
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents,
 		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
@@ -228,10 +229,12 @@ BEGIN
 		@Entries = @Entries, 
 		@State = @ToState,
 		@IsError = @IsError OUTPUT;
-
+	IF @IsError = 1 GOTO DONE
+	
 	-- Set @IsError
-	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
+	-- SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END; -- MA: Commented Dec 28, 2022
 
+DONE:
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
 GO
