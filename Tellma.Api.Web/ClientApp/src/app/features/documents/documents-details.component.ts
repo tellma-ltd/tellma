@@ -3600,6 +3600,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           break;
 
         case 'MonetaryValue':
+        case 'NotedAmount':
           if (!lines || lines.length <= 1) {
             result.push(i);
           } else {
@@ -3653,6 +3654,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         break;
       case 'MonetaryValue':
         getter = (e: Entry) => e.MonetaryValue;
+        break;
+      case 'NotedAmount':
+        getter = (e: Entry) => e.NotedAmount;
         break;
       case 'Quantity':
         getter = (e: Entry) => e.Quantity;

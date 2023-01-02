@@ -1196,7 +1196,7 @@
     <value>属性{0}无效，因为关键属性，关键属性必须为type int或string</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>需要一个密钥属性来设置“ {0}”字段，关键属性将在减去标志后添加到字段标签中，例如：'雇员 - 名称'。</value>
+    <value>需要一个密钥属性来设置“ {0}”字段，关键属性被添加到负号之后的字段标签中，例如：'雇员 - 名称'。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签'{0}'与类型{1}上的任何集合不匹配。</value>
@@ -1275,6 +1275,9 @@
   </data>
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>只有新的附件可以包括文件的字节</value>
+  </data>
+  <data name="Error_PostingDateFallsinFuture" xml:space="preserve">
+    <value>文件日期不能在将来。</value>
   </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>属性{0}用作关键属性，因此需要更新模式</value>
@@ -1361,7 +1364,7 @@
     <value>在{1} {2}中使用了帐户'{0}'，带有不兼容的输入类型'{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
-    <value>Account'{0}'在{1} {2}中使用代理'{3}'中使用。</value>
+    <value>{1} {2}中使用Actim' {2}，用代理'{3}'使用帐户'{0}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>在{1} {2}中使用中心'{3}'中的帐户'{0}'。</value>
@@ -1370,7 +1373,7 @@
     <value>帐户'{0}'在{1} {2}中使用货币'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>{1} {2}中使用了account' {0}'，带有资源'{3}'。</value>
+    <value>{1} {2}中使用资源'{3}'中的帐户'{0}'。</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>帐户分类'{0}'具有非零余额的帐户'{1}'。</value>
@@ -3314,7 +3317,7 @@
     <value>{0}发送了您{1} {2}。</value>
   </data>
   <data name="User0SentYouDocument12" xml:space="preserve">
-    <value>{0}已发送您{1}数字{2}。</value>
+    <value>{0}已发送您{1} number {2}。</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
     <value>用户已经设置密码。</value>

@@ -1393,6 +1393,9 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>Only new attachments can include file bytes.</value>
   </data>
+  <data name="Error_PostingDateFallsinFuture" xml:space="preserve">
+    <value>Document date cannot be in the future.</value>
+  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>Property {0} is used as key property and is therefore required for update mode</value>
   </data>

@@ -1297,6 +1297,9 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف.</value>
   </data>
+  <data name="Error_PostingDateFallsinFuture" xml:space="preserve">
+    <value>تاريخ المستند لا يمكن أن يكون في المستقبل.</value>
+  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>ألحقل {0} مستخدم كحقل مفتاحي وبالتالي مطلوب من أجل الاستيراد للتعديل</value>
   </data>
