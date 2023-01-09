@@ -1273,6 +1273,9 @@
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
     <value>አዲስ ብቻ አባሪዎችን ፋይል ባይቶች ሊያካትት ይችላል</value>
   </data>
+  <data name="Error_PostingDateFallsinFuture" xml:space="preserve">
+    <value>የሰነድ ቀን ወደፊት ሊሆን አይችልም.</value>
+  </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
     <value>ንብረት {0} እንደ ቁልፍ ንብረት ጥቅም ላይ ይውላል እናም ስለሆነም ለዝማኔ ሁኔታ ያስፈልጋል</value>
   </data>
