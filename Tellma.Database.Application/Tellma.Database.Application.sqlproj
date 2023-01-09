@@ -917,6 +917,9 @@
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__ExtraFullDays.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToEmployeeBenefitsAccrualsFromCash.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__SocialSecurities.sql" />
+    <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource__Balance.sql" />
+    <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_NotedAgent_Balance.sql" />
+    <Build Include="dal\Functions\dal.ft_BankAccounts__Unreconciled.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -953,6 +956,7 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
+    <None Include="TrialBalance.htm" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

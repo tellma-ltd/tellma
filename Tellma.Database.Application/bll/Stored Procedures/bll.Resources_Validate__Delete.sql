@@ -19,9 +19,8 @@ BEGIN
 	FROM [dbo].[Resources] R 
 	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.[Id]
 	JOIN @Ids FE ON FE.[Id] = R.[Id]
-	JOIN [dbo].[Accounts] A ON A.[ResourceId] = R.[Id];
-
-	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	JOIN [dbo].[Accounts] A ON A.[ResourceId] = R.[Id]
+	UNION
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_The01IsUsedInAccount2',
@@ -48,8 +47,7 @@ BEGIN
 	JOIN [dbo].[Lines] L ON E.[LineId] = L.[Id]
 	JOIN [map].[Documents]() D ON L.[DocumentId] = D.[Id]
 	JOIN [map].[DocumentDefinitions]() DD ON D.[DefinitionId] = DD.[Id]
-
-	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
+	UNION
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_The01IsUsedInDocument23',
@@ -63,7 +61,7 @@ BEGIN
 	JOIN [dbo].[Entries] E ON E.[NotedResourceId] = R.Id
 	JOIN [dbo].[Lines] L ON E.[LineId] = L.[Id]
 	JOIN [map].[Documents]() D ON L.[DocumentId] = D.[Id]
-	JOIN [map].[DocumentDefinitions]() DD ON D.[DefinitionId] = DD.[Id]
+	JOIN [map].[DocumentDefinitions]() DD ON D.[DefinitionId] = DD.[Id];
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
