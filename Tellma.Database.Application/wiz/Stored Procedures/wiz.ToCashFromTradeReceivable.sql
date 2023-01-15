@@ -29,8 +29,9 @@ AS
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'CurrentTradeReceivables', NULL) SS
 	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
 	WHERE SI.[Agent1Id] = @TradeReceivableAccountId
-	AND SS.[Balance] > 0
-	AND (@DueOnOrBefore IS NULL OR SI.[ToDate] <= @DueOnOrBefore);
+	AND (@DueOnOrBefore IS NULL OR SI.[ToDate] <= @DueOnOrBefore)
+	GROUP BY SI.[Id], SS.[NotedDate], SS.[CenterId], SS.[AgentId], SS.[CurrencyId]
+	HAVING SUM(SS.[Balance]) > 0
 
 	SELECT * FROM @WideLines;
 GO
