@@ -17,7 +17,7 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Document_Clearance")]
         [Required]
-        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
+        [ChoiceList(new object[] { Clearances.Public, Clearances.Secret, Clearances.TopSecret },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
         public byte? Clearance { get; set; }
 
@@ -295,5 +295,12 @@ namespace Tellma.Model.Application
         [Display(Name = "Document_StatesHistory")]
         [ForeignKey(nameof(DocumentStateChange.DocumentId))]
         public List<DocumentStateChange> StatesHistory { get; set; }
+    }
+
+    public static class Clearances
+    {
+        public const byte Public = 0;
+        public const byte Secret = 1;
+        public const byte TopSecret = 2;
     }
 }
