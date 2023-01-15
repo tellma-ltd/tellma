@@ -112,31 +112,26 @@ namespace Tellma.DefinitionsComparer
 
                                 // Compare
                                 List<string> diffsList = new();
-                                if ((lineDef.GenerateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.GenerateScript, lineDef.GenerateScript) ?? ""))
+                                if (!AreScriptsSynced(masterLineDef.GenerateScript, lineDef.GenerateScript))
                                 {
                                     diffsList.Add("Generate Script");
                                 }
-
-                                if ((lineDef.PreprocessScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.PreprocessScript, lineDef.PreprocessScript) ?? ""))
+                                if (!AreScriptsSynced(masterLineDef.PreprocessScript, lineDef.PreprocessScript))
                                 {
                                     diffsList.Add("Preprocess Script");
                                 }
-
-                                if ((lineDef.ValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.ValidateScript, lineDef.ValidateScript) ?? ""))
+                                if (!AreScriptsSynced(masterLineDef.ValidateScript, lineDef.ValidateScript))
                                 {
                                     diffsList.Add("Validate Script");
                                 }
-
-                                if ((lineDef.SignValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.SignValidateScript, lineDef.SignValidateScript) ?? ""))
+                                if (!AreScriptsSynced(masterLineDef.SignValidateScript, lineDef.SignValidateScript))
                                 {
                                     diffsList.Add("Sign Validate Script");
                                 }
-
-                                if ((lineDef.UnsignValidateScript ?? "") != (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterLineDef.UnsignValidateScript, lineDef.UnsignValidateScript) ?? ""))
+                                if (!AreScriptsSynced(masterLineDef.UnsignValidateScript, lineDef.UnsignValidateScript))
                                 {
-                                    diffsList.Add("Unsign Validate Script");
+                                    diffsList.Add("Unsign  Validate Script");
                                 }
-
                                 if (lineDef.Columns.Count != masterLineDef.Columns.Count || lineDef.Columns.Select((col, i) => (col, i)).Any(pair =>
                                 {
                                     var col = pair.col;
@@ -203,6 +198,19 @@ namespace Tellma.DefinitionsComparer
             WriteLine();
             WriteLine("Press any key to exit...", ConsoleColor.DarkYellow);
             Console.ReadLine();
+        }
+
+        static bool AreScriptsSynced(string? masterScript, string? tenantScript)
+        {
+            string actualTenantScript  = (tenantScript ?? "")
+                .Trim('\r', '\n')
+                .Replace("\r", "");
+
+            string expectedTenantScript  = (DefinitionsSynchronizer.SynchronizerUtils.SyncedScript(masterScript, tenantScript) ?? "")
+                .Trim('\r', '\n')
+                .Replace("\r", "");
+
+            return expectedTenantScript == actualTenantScript;
         }
     }
 
