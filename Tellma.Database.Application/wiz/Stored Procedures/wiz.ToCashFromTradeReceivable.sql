@@ -24,8 +24,8 @@ AS
 		[MonetaryValue0],
 		[CurrencyId0])
 	SELECT ROW_NUMBER() OVER(ORDER BY SI.[Id], SS.[NotedDate]) - 1, 0,
-		SS.[CenterId], SS.[AgentId], SS.[Balance], SS.[Balance], SS.[CurrencyId], [NotedDate],
-		bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId0, SS.[Balance]) AS [MonetaryValue0], @CurrencyId0
+		SS.[CenterId], SS.[AgentId], SUM(SS.[Balance]), SUM(SS.[Balance]), SS.[CurrencyId], [NotedDate],
+		bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId0, SUM(SS.[Balance])) AS [MonetaryValue0], @CurrencyId0
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'CurrentTradeReceivables', NULL) SS
 	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
 	WHERE SI.[Agent1Id] = @TradeReceivableAccountId

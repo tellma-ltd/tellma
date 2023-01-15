@@ -13,7 +13,7 @@ AS
 	DECLARE @ErrorNames dbo.ErrorNameList;
 	SET NOCOUNT ON;
 	INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
-	(0, N'en',  N'Delivery Date must be after posting date'), (0, N'ar',  N'تاريخ التسليم يفترض أن يكون بعد تاريخ القيد');
+	(0, N'en',  N'Delivery Date should not precede the posting period'), (0, N'ar',  N'تاريخ التسليم يفترض ألا يكون قبل فترة القيد');
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -32,7 +32,8 @@ AS
 	LEFT JOIN @DocumentLineDefinitionEntries DLDE 
 		ON DLDE.[DocumentIndex] = FL.[DocumentIndex] AND DLDE.[LineDefinitionId] = FL.[DefinitionId] AND DLDE.[EntryIndex] = FE.[Index]
 	WHERE FE.[Index] = @AccountEntryIndex
-	AND (FE.[Time1] < FL.[PostingDate]);
+	--AND (FE.[Time1] < FL.[PostingDate]);
+	AND (EOMONTH(FE.[Time1]) < FL.[PostingDate]); -- will allow time1 to be up to beginning of the month for convenience.
 
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 		SELECT * FROM @ValidationErrors;

@@ -102,9 +102,17 @@ FROM @Documents D
 JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 WHERE E.[Index] = @AccountEntryIndex
-AND ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
+-- We may have to uncomment the lines below. Just doing some testing
+--AND (@ErrorIndex = 0 AND ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource__Balance](
+--		E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId
+--	), 0) = 0
+--OR @ErrorIndex <> 0 
+AND
+ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
 		E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate
-	), 0) = 0;
+	), 0) = 0
+--)
+;
 
 WITH AccountPriorBalance AS (
 	SELECT
