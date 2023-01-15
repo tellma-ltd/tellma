@@ -297,15 +297,17 @@ BEGIN
 	AND R.[CenterId] IS NOT NULL
 
 	-- for all lines, get currency from resource, and monetary value, if any
-/*  MA: 2022-11-30, it was clashing with the currency update from Agent
+	--  MA: 2022-11-30, Commented code below, as it was clashing with the currency update from Agent
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id];
-*/
+	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
+--  MA: 2023-01-12, unCommented code above, as commenting it introduced a bug in JV. 
+	WHERE L.DefinitionId = @ManualLineLD;
+
 	-- for smart lines, Get center from Agents if available.
 	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 0
 	UPDATE E 

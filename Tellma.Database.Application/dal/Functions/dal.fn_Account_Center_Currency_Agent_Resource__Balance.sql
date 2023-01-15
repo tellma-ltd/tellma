@@ -20,3 +20,4 @@ BEGIN
 		AND (E.[ResourceId]	= @ResourceId	OR E.[ResourceId] IS NULL AND @ResourceId IS NULL)
 	)
 END
+GO

@@ -19,6 +19,9 @@ BEGIN
 		AND (E.[CurrencyId]	= @CurrencyId)
 		AND (E.[AgentId]	= @AgentId		OR E.AgentId IS NULL AND @AgentId IS NULL)
 		AND (E.[ResourceId]	= @ResourceId	OR E.[ResourceId] IS NULL AND @ResourceId IS NULL)
-		AND (E.[NotedDate]	= @NotedDate	OR E.[NotedDate] IS NULL AND @NotedDate IS NULL)
+		-- E.[NotedDate] is null is always included in the balance
+		-- If @NotedDate is null, then only include Null E.NotedDate
+		AND (E.[NotedDate]	= @NotedDate	OR E.[NotedDate] IS NULL)-- AND @NotedDate IS NULL)
 	)
 END
+GO
