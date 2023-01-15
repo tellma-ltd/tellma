@@ -33,7 +33,7 @@ using Tellma.Model.Application;
 int tenantId = 123;
 int agentDefinitionId = 456;
 
-// Create the client
+// Create the client (See Pre-Requisites)
 TellmaClient client = ...;
 
 // Get Agents
@@ -62,8 +62,8 @@ int tenantId = 123;
 int resourceDefinitionId = 456;
 int resourceId = 789;
 
-// Create the client
-TellmaClient client = ...
+// Create the client (See Pre-Requisites)
+TellmaClient client = ...;
 
 // Get the Resource
 EntityResult<Resource> result = await client
@@ -126,7 +126,7 @@ DocumentForSave document = new DocumentForSave
     }
 };
 
-// Create the client
+// Create the client (See Pre-Requisites)
 TellmaClient client = ...;
 
 // Save the Document
@@ -147,7 +147,7 @@ int tenantId = 123;
 int documentDefinitionId = 456;
 int documentId = 789;
 
-// Create the client
+// Create the client (See Pre-Requisites)
 TellmaClient client = ...;
 
 // Get the Document
@@ -177,7 +177,7 @@ int tenantId = 123;
 int lookupDefinitionId = 456;
 int lookupId = 789;
 
-// Create the client
+// Create the client (See Pre-Requisites)
 TellmaClient client = ...;
 
 // Delete the Lookup
