@@ -790,10 +790,15 @@
                         <span *ngSwitchCase="'Boolean1'">{{ (getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes'
                             :
                             'No') | translate }}</span>
-                        <span *ngSwitchCase="'Decimal1'" class="t-right-aligned">{{ getFieldValue(lineDefId, columnIndex, line, model) |
-                            accounting:'1.0-4' }}</span>
-                        <span *ngSwitchCase="'Decimal2'" class="t-right-aligned">{{ getFieldValue(lineDefId, columnIndex, line, model) |
-                            accounting:'1.0-4' }}</span>
+                            
+                        <div *ngSwitchCase="'Decimal1'" class="t-right-aligned">
+                            <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                accounting:'1.0-4' }}</span>
+                        </div>
+                        <div *ngSwitchCase="'2'" class="t-right-aligned">
+                            <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                accounting:'1.0-4' }}</span>
+                        </div>
                         <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span *ngSwitchCase="'Text2'">{{ getFieldValue(lineDefId, columnIndex, line, model) }}</span>
                         <span *ngSwitchCase="'PostingDate'">{{ getFieldValue(lineDefId, columnIndex, line, model) |
@@ -883,10 +888,14 @@
                                     }}&zwnj;</span>
                                 <span *ngSwitchCase="'Boolean1'">{{ getFieldValue(lineDefId, columnIndex, line, model) ?
                                     'Yes' : 'No' | translate }}&zwnj;</span>
-                                <span *ngSwitchCase="'Decimal1'" class="t-right-aligned">{{ getFieldValue(lineDefId, columnIndex, line, model) |
-                                    accounting:'1.0-4' }}&zwnj;</span>
-                                <span *ngSwitchCase="'Decimal2'" class="t-right-aligned">{{ getFieldValue(lineDefId, columnIndex, line, model) |
-                                    accounting:'1.0-4' }}&zwnj;</span>
+                                <div *ngSwitchCase="'Decimal1'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                        accounting:'1.0-4' }}&zwnj;</span>
+                                </div>
+                                <div *ngSwitchCase="'Decimal2'" class="t-right-aligned">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                        accounting:'1.0-4' }}&zwnj;</span>
+                                </div>
                                 <span *ngSwitchCase="'Text1'">{{ getFieldValue(lineDefId, columnIndex, line, model)
                                     }}&zwnj;</span>
                                 <span *ngSwitchCase="'Text2'">{{ getFieldValue(lineDefId, columnIndex, line, model)
