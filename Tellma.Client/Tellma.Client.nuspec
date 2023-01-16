@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Tellma.Client</id>
+    <version>0.1.1</version>
+    <title>Tellma.Client</title>
+    <readme>README.md</readme>
+    <authors>Tellma</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <icon>tellma.png</icon>
+    <projectUrl>https://www.tellma.com/</projectUrl>
+    <repository type="git" url="https://github.com/tellma-ltd/tellma/tree/master/Tellma.Client"></repository>
+    <description>A .NET client library to simplify the interaction with the Tellma web API.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright (c) Tellma 2023.</copyright>
+    <tags>Tellma; ERP; Client; Web API</tags>
+  </metadata>
+  <files>
+      <file src="tellma.png" target="" />
+      <file src="README.MD" target="" />
+  </files>
+</package>
