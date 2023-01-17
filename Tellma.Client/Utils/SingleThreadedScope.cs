@@ -1,42 +1,21 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using AsyncKeyedLock;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Client
 {
-    public class SingleThreadedScope : IDisposable
+    public class SingleThreadedScope
     {
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private readonly string _name;
-
-        /// <summary>
-        /// Can only create an instance using the Create method.
-        /// </summary>
-        private SingleThreadedScope(string name)
+        private static readonly AsyncKeyedLocker<string> _asyncKeyedLocker = new AsyncKeyedLocker<string>(o =>
         {
-            _name = name;
-        }
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
-        public static async Task<SingleThreadedScope> Create(string name, CancellationToken cancellation = default)
+        public static async ValueTask<IDisposable> Create(string name, CancellationToken cancellation = default)
         {
-            var semaphore = _semaphores.GetOrAdd(name, _ => new SemaphoreSlim(1));
-            await semaphore.WaitAsync(cancellation);
-
-            return new SingleThreadedScope(name);
-        }
-
-        public void Dispose()
-        {
-            if (_semaphores.TryGetValue(_name, out SemaphoreSlim semaphore))
-            {
-                semaphore.Release();
-            }
-            else
-            {
-                // Should never reach here
-                throw new InvalidOperationException($"[Bug] Could not find semaphore with name {_name}.");
-            }
+            return await _asyncKeyedLocker.LockAsync(name, cancellation).ConfigureAwait(false);
         }
     }
 }
