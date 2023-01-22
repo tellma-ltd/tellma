@@ -429,26 +429,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       if (!!clone.Lines) {
-        clone.Lines.forEach(line => {
-          // Standard
-          if (removeIds) {
-            delete line.Id;
-          }
-          delete line.EntityMetadata;
-          delete line.serverErrors;
-
-          // Non savable
-          delete line.DocumentId;
-          delete line.State;
-          delete line.CreatedAt;
-          delete line.CreatedById;
-          delete line.ModifiedAt;
-          delete line.ModifiedById;
-
-          if (!!line.Entries) {
-            line.Entries.forEach(e => this.processEntryClone(e, removeIds));
-          }
-        });
+        clone.Lines.forEach(line => this.processLineClone(line));
       }
 
       return clone;
@@ -457,6 +438,29 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       console.error('Cloning a non existing item');
       return null;
     }
+  }
+
+  private processLineClone(line: Line, removeIds = true): Line {
+    // Standard
+    if (removeIds) {
+      delete line.Id;
+    }
+    delete line.EntityMetadata;
+    delete line.serverErrors;
+
+    // Non savable
+    delete line.DocumentId;
+    delete line.State;
+    delete line.CreatedAt;
+    delete line.CreatedById;
+    delete line.ModifiedAt;
+    delete line.ModifiedById;
+
+    if (!!line.Entries) {
+      line.Entries.forEach(e => this.processEntryClone(e, removeIds));
+    }
+
+    return line;
   }
 
   private processEntryClone(clone: Entry, removeIds = true): Entry {
@@ -3164,6 +3168,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public tabCount(lineDefId: number, model: DocumentForSave): number {
+    return this.isManualLine(lineDefId)
+      ? this.manualEntries(model).length
+      : this.lines(lineDefId, model).length;
+  }
+
   private _lines: { [defId: number]: LineForSave[] };
   private _linesModel: DocumentForSave;
 
@@ -4627,9 +4637,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const entry = pair.entry;
     const clone = this.processEntryClone(JSON.parse(JSON.stringify(entry)));
 
-    // Insert the reversed entry in the manual line
+    // Insert the entry in the manual line
     this.addManualEntry(clone, doc);
     this._computeEntriesModel = null; // To refresh the manual entries grid
+  }
+
+  public onCloneSmartLine(line: LineForSave, doc: DocumentForSave) {
+
+    // Clone and remove unsavable properties
+    const clone = this.processLineClone(JSON.parse(JSON.stringify(line)));
+
+    // Insert the cloned line in the smart grid
+    this.onInsertSmartLine(clone, doc);
   }
 
   public showAutoGenerate(lineDefId: number, isEdit: boolean): boolean {

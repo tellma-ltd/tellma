@@ -33,8 +33,8 @@
         </button>
         <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
             <div *ngIf="true" container="body">
-                <button type="button" class="dropdown-item t-transparent-background btn-light"
-                    ngbDropdownItem (click)="onAutoGenerateAll(model, isEdit)" [disabled]="false">
+                <button type="button" class="dropdown-item t-transparent-background btn-light" ngbDropdownItem
+                    (click)="onAutoGenerateAll(model, isEdit)" [disabled]="false">
                     {{ 'AutoGenerate' | translate }}
                 </button>
             </div>
@@ -497,9 +497,13 @@
                     <fa-icon icon="exclamation">
                     </fa-icon>&nbsp;
                 </span>
-                <span class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model?.Id ||
-                    model?.EntityMetadata?.Lines === 2 ? ' (' + (isManualLine(lineDefId) ? manualEntries(model).length :
-                    lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                <span class="small t-slightly-bold">
+                    <span>{{ tabTitle(lineDefId, model) }}</span>
+                    <ng-container *ngIf="(!model?.Id ||
+                    model?.EntityMetadata?.Lines === 2) && tabCount(lineDefId, model) > 0">&nbsp;&nbsp;<span>({{
+                            tabCount(lineDefId, model) | number }})</span>
+                    </ng-container>
+                </span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
@@ -790,7 +794,7 @@
                         <span *ngSwitchCase="'Boolean1'">{{ (getFieldValue(lineDefId, columnIndex, line, model) ? 'Yes'
                             :
                             'No') | translate }}</span>
-                            
+
                         <div *ngSwitchCase="'Decimal1'" class="t-right-aligned">
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
                                 accounting:'1.0-4' }}</span>
@@ -1356,6 +1360,9 @@
                     <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                         {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
                     </button>
+                    <button ngbDropdownItem class="t-transparent-background" (click)="onCloneSmartLine(line, model)">
+                        {{ 'Clone' | translate }}
+                    </button>
                 </div>
             </div>
         </ng-template>
@@ -1377,7 +1384,8 @@
                 [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
                     <fa-icon icon="book"></fa-icon>
-                    <span>&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Lines === 2 ? '(' + (entriesCount(model)
+                    <span *ngIf="entriesCount(model) > 0">&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Lines ===
+                        2 ? '(' + (entriesCount(model)
                         | number) + ')' : '')}}</span>
                 </span>
             </a>
@@ -1451,7 +1459,8 @@
                     </span>
                     <span>
                         <fa-icon icon="paperclip"></fa-icon>
-                        <span>&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Attachments === 2 ? '(' +
+                        <span *ngIf="model?.Attachments?.length > 0">&nbsp;&nbsp;{{ (!model?.Id ||
+                            model?.EntityMetadata?.Attachments === 2 ? '(' +
                             (model?.Attachments?.length | number) + ')' : '')}}</span>
                     </span>
                 </span>
