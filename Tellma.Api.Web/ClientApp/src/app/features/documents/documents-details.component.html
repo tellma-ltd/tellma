@@ -518,7 +518,7 @@
                                 <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
                                     <div class="col-12 d-flex justify-content-end">
                                         <ng-container
-                                            *ngTemplateOutlet="smartCommands;context: { item: lines(lineDefId, model)[0] }">
+                                            *ngTemplateOutlet="smartCommands;context: { item: lines(lineDefId, model)[0], isEdit: isEdit }">
                                         </ng-container>
 
                                         &nbsp;&nbsp;
@@ -1350,7 +1350,7 @@
         </ng-template>
 
         <!-- The dropdown menu for smart lines -->
-        <ng-template #smartCommands let-line="item">
+        <ng-template #smartCommands let-line="item" let-isEdit="isEdit">
             <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="!line.PH">
                 <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
                     ngbDropdownToggle tabindex="-1"><span class="small">
@@ -1360,7 +1360,7 @@
                     <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                         {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
                     </button>
-                    <button ngbDropdownItem class="t-transparent-background" (click)="onCloneSmartLine(line, model)">
+                    <button *ngIf="isEdit" ngbDropdownItem class="t-transparent-background" (click)="onCloneSmartLine(line, model, isEdit)">
                         {{ 'Clone' | translate }}
                     </button>
                 </div>

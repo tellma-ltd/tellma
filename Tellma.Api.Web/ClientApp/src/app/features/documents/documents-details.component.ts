@@ -4642,7 +4642,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._computeEntriesModel = null; // To refresh the manual entries grid
   }
 
-  public onCloneSmartLine(line: LineForSave, doc: DocumentForSave) {
+  public onCloneSmartLine(line: LineForSave, doc: DocumentForSave, isEdit: boolean) {
+    if (!isEdit) {
+      return;
+    }
 
     // Clone and remove unsavable properties
     const clone = this.processLineClone(JSON.parse(JSON.stringify(line)));
