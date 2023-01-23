@@ -81,14 +81,14 @@ namespace Tellma.ApplicationDbCloner
 
             while (string.IsNullOrWhiteSpace(opt.Source))
             {
-                Write("Enter Source DB Name: ");
+                Write("Enter Source DB Name (e.g. Tellma.123): ");
                 opt.Source = ReadLine();
                 WriteLine();
             }
 
             while (string.IsNullOrWhiteSpace(opt.Destination))
             {
-                Write("Enter Destination DB Name: ");
+                Write("Enter Destination DB Name (e.g. Tellma.456): ");
                 opt.Destination = ReadLine();
                 WriteLine();
             }

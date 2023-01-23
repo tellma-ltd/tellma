@@ -1038,6 +1038,7 @@ namespace Tellma.Api
                 // Defaults that make the code simpler later
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
+                doc.LineDefinitionEntries ??= new List<DocumentLineDefinitionEntryForSave>();
 
                 doc.Lines.ForEach(line =>
                 {
@@ -1219,7 +1220,7 @@ namespace Tellma.Api
                                         }
                                         else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, defaultsToForm))
                                         {
-                                            entry.CenterId = tabEntry.CenterId;
+                                            entry.CenterId = tabEntry.CenterId ?? settings.SingleBusinessUnitId;
                                         }
                                         break;
 
@@ -1559,7 +1560,7 @@ namespace Tellma.Api
                                     continue;
                                 }
 
-                                // Copy the common values
+                                // Check that an invisible inheriting value has not been overridden without the visible parent value
                                 var entry = line.Entries[colDef.EntryIndex];
                                 var tabEntry = tabEntries[colDef.EntryIndex] ?? DefaultTabEntryForSave;
 
@@ -1694,7 +1695,7 @@ namespace Tellma.Api
                                         }
                                         else if (CopyFromTab(colDef, tabEntry.CenterIsCommon, defaultsToForm))
                                         {
-                                            if (entry.CenterId != tabEntry.CenterId)
+                                            if (entry.CenterId != (tabEntry.CenterId ?? settings.SingleBusinessUnitId))
                                             {
                                                 throw new InvalidOperationException($"[Bug] IsCommon = true, but {nameof(entry.CenterId)} of EntryIndex = {colDef.EntryIndex} of line of type {lineDef.TitleSingular} was changed in preprocess from {tabEntry.CenterId} to {entry.CenterId}");
                                             }

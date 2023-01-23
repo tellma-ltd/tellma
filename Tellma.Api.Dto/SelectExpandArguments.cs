@@ -14,7 +14,9 @@ namespace Tellma.Api.Dto
     {
         /// <summary>
         /// A comma-separated list of simple property paths to hydrate on the returned principal entities
-        /// or their related entities.
+        /// or their related entities. Example: 
+        ///     <code>"Name,Code,RelatedEntity.Name,RelatedCollection.Name"</code>
+        /// The Id of the principal entities an any related entities is always selected.
         /// </summary>
         /// <remarks>
         /// This is analogous to LINQ's "Select". If left empty then all simple properties will be hydrated
@@ -26,7 +28,8 @@ namespace Tellma.Api.Dto
         public string Select { get; set; }
 
         /// <summary>
-        /// A comma separated list of navigation property paths to hydrate with related entities.
+        /// A comma separated list of navigation property paths to hydrate with related entities. Example:
+        /// <code>"RelatedEntity,RelatedCollection"</code>
         /// </summary>
         /// <remarks>
         /// This is analogous to LINQ's "Include". If left empty then only the principal entities are
