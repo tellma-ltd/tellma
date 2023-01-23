@@ -920,6 +920,7 @@
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource__Balance.sql" />
     <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_NotedAgent_Balance.sql" />
     <Build Include="dal\Functions\dal.ft_BankAccounts__Unreconciled.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_EOSDate__RemainingAnnualLeaveDays.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -973,5 +974,8 @@
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="TellmaAPI.cs" />
   </ItemGroup>
 </Project>
