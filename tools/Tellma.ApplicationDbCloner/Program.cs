@@ -64,6 +64,12 @@ namespace Tellma.ApplicationDbCloner
 
         private static async Task CloneDatabase(string[] args, CancellationToken cancellation)
         {
+            // For some reason we're getting a weird error on some machine:
+            //      "4096 (0x1000) is an invalid culture identifier."
+            // So following might be a workaround according to: https://github.com/dotnet/runtime/issues/60296
+            System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+
             #region Arguments
 
             // Build the configuration root based on project user secrets
