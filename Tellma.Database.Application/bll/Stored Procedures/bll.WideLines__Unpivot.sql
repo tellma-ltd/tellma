@@ -7,7 +7,7 @@ AS
 	INSERT INTO @LD(LineDefinitionId, EntryCount)
 	SELECT LineDefinitionId, COUNT(*) AS EntryCount
 	FROM dbo.LineDefinitionEntries
-	WHERE LineDefinitionId IN (SELECT DISTINCT LineDefinitionId FROM @WideLines)
+	WHERE LineDefinitionId IN (SELECT DISTINCT DefinitionId FROM @WideLines)
 	GROUP BY LineDefinitionId;
 	
 	INSERT INTO @AllEntries

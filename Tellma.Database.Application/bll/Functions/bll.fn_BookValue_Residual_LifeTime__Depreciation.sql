@@ -2,14 +2,14 @@
 	@DepreciationMethodCode NVARCHAR (50),
 	@BookMinusResidualValue DECIMAL (19, 4),
 	@ResidualValue DECIMAL (19, 4),
-	@LifeTime SMALLINT
+	@LifeTime DECIMAL (19, 4)
 )
 RETURNS DECIMAL (19, 4) AS
 BEGIN
 	RETURN
 	CASE
 		WHEN @DepreciationMethodCode = N'NA' THEN 0
-		WHEN @DepreciationMethodCode = N'SL' THEN @BookMinusResidualValue / @LifeTime -- Straight line
+		WHEN @DepreciationMethodCode = N'SL' THEN IIF(@LifeTime < 1, @BookMinusResidualValue, @BookMinusResidualValue / @LifeTime) -- Straight line
 		WHEN @DepreciationMethodCode = N'SOP' THEN @BookMinusResidualValue * 2 / (1.0 + @LifeTime) -- Sum of period digits
 		WHEN @DepreciationMethodCode = N'DD' THEN -- Double decline
 			IIF (

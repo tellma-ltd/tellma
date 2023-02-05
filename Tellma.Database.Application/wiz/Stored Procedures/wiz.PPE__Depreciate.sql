@@ -9,7 +9,7 @@ AS
 	DECLARE @WideLines [WidelineList];
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
 	DECLARE @DepreciationAndAmortisationExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'DepreciationAndAmortisationExpense');
-	DECLARE @DepreciatedLife SMALLINT = 1 + DATEDIFF(MONTH, @DepreciationPeriodStarts, @DepreciationPeriodEnds);
+	DECLARE @DepreciatedLife DECIMAL (19, 4) = 1 + DATEDIFF(MONTH, @DepreciationPeriodStarts, @DepreciationPeriodEnds);
 
 	WITH PPEAccountIds AS (
 		SELECT [Id] FROM dbo.[Accounts]
@@ -39,9 +39,8 @@ AS
 		WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 		AND E.Time1 < @DepreciationPeriodStarts
 		GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId]
-		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
-		OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0
-	), --select * from OpeningBalances
+		HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
+	),--select * from OpeningBalances
 	LastDepreciationDates AS (
 		SELECT E.[ResourceId], MAX(L.[PostingDate]) AS LastDepreciationDate
 		FROM map.DetailsEntries() E
@@ -51,7 +50,7 @@ AS
 		WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 		AND L.PostingDate < @DepreciationPeriodStarts
 		GROUP BY E.[ResourceId]
-	),
+	),-- select * from LastDepreciationDates ,
 	OpeningAgentNotedResourceNotedAgentEntryTypes AS (
 		SELECT E.[ResourceId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], E.[EntryTypeId]
 		FROM map.DetailsEntries() E
@@ -79,29 +78,15 @@ AS
 		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 		WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 		AND E.Time1 Between @DepreciationPeriodStarts AND @DepreciationPeriodEnds
-		AND ET.[Concept] IN (N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment')
+		AND ET.[Concept] IN (N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',
+							N'InternalTransferPropertyPlantAndEquipmentExtension')
 		GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId]
+		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
+		OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 	),--select * from PeriodAdditions
-	PostedPeriodDepreciation AS (
-		SELECT E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId],
-			SUM(E.[Direction] * E.[BaseQuantity]) AS [NetLife],
-			SUM(E.[Direction] * E.[MonetaryValue]) AS [NetMonetaryValue],
-			SUM(E.[Direction] * E.[Value]) AS [NetValue],
-			0  AS [NetResidualMonetaryValue],
-			0  AS [NetResidualValue]
-		FROM map.DetailsEntries() E
-		JOIN dbo.Lines L ON E.LineId = L.Id
-		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
-		JOIN PPEAccountIds A ON E.AccountId = A.[Id]
-		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
-		WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
-		AND L.PostingDate Between @DepreciationPeriodStarts AND @DepreciationPeriodEnds
-		AND ET.[Concept] IN (N'DepreciationPropertyPlantAndEquipment')
-		GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId]
-	),--select * from PostedPeriodDepreciation
 	TargetPeriodDepreciation AS (
 		SELECT OB.[ResourceId], OB.[BaseUnitId], OB.[CurrencyId], OB.[CenterId], OB.[AgentId], OB.[NotedAgentId], OB.[NotedResourceId],
-			@DepreciatedLife AS [NetLife],
+			IIF(OB.[NetLife] < @DepreciatedLife, OB.[NetLife], @DepreciatedLife) AS [NetLife], --<< need review
 			@DepreciatedLife * bll.fn_BookValue_Residual_LifeTime__Depreciation(LK.[Code],
 				OB.[NetMonetaryValue] - OB.[NetResidualMonetaryValue], OB.[NetResidualMonetaryValue], OB.[NetLife]
 			) AS [NetMonetaryValue],
@@ -123,25 +108,7 @@ AS
 		FROM PeriodAdditions PA
 		JOIN dbo.Resources PPE ON PPE.[Id] = PA.[ResourceId]
 		LEFT JOIN dbo.Lookups LK ON LK.Id = PPE.[Lookup4Id] -- assuming we use last lookup for dep methods
-	),--select * from TargetPeriodDepreciation
-	NetPeriodDepreciation AS (
-		SELECT TPD.[ResourceId], TPD.[BaseUnitId], TPD.[CurrencyId], TPD.[CenterId], TPD.[AgentId], TPD.[NotedAgentId], TPD.[NotedResourceId],
-			TPD.[NetLife] - ISNULL(PPD.[NetLife], 0) AS [NetLife],
-			TPD.[NetMonetaryValue] - ISNULL(PPD.[NetMonetaryValue], 0) AS [NetMonetaryValue],
-			TPD.[NetValue] - ISNULL(PPD.[NetValue], 0) AS [NetValue]
-		FROM TargetPeriodDepreciation TPD
-		LEFT JOIN PostedPeriodDepreciation PPD
-		ON TPD.[ResourceId] = PPD.[ResourceId]
-		AND TPD.[BaseUnitId] = PPD.[BaseUnitId]
-		AND TPD.[CurrencyId] = PPD.[CurrencyId]
-		AND TPD.[CenterId] = PPD.[CenterId]
-		AND TPD.[AgentId] = PPD.[AgentId]
-		AND TPD.[NotedAgentId] = PPD.[NotedAgentId]
-		AND TPD.[NotedResourceId] = PPD.[NotedResourceId]
-		WHERE TPD.[NetLife] - ISNULL(PPD.[NetLife], 0) <> 0
-		OR TPD.[NetMonetaryValue] - ISNULL(PPD.[NetMonetaryValue], 0) <> 0
-		OR TPD.[NetValue] - ISNULL(PPD.[NetValue], 0) <> 0
-	)	--select * from NetPeriodDepreciation
+	)--select * from TargetPeriodDepreciation
 	INSERT INTO @WideLines([Index],
 		[DocumentIndex], 
 		[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
@@ -150,10 +117,10 @@ AS
 	SELECT ROW_NUMBER() OVER(ORDER BY NPD.[ResourceId]) - 1,
 			@DocumentIndex,
 			NPD.[CenterId], NPD.[CurrencyId], OANRNAET.[AgentId], NPD.[ResourceId],	NPD.[NotedAgentId], OANRNAET.[NotedResourceId],
-			[NetLife], R.[UnitId], [NetMonetaryValue], [NetValue], @DepreciationPeriodStarts, @DepreciationPeriodEnds,OANRNAET.[EntryTypeId],
+			[NetLife], R.[UnitId], [NetMonetaryValue], [NetValue], @DepreciationPeriodStarts, @DepreciationPeriodEnds, OANRNAET.[EntryTypeId],
 			NPD.[CenterId], NPD.[CurrencyId], NPD.[AgentId], NPD.[ResourceId], NPD.[NotedAgentId], NPD.[NotedResourceId],
 			[NetLife], R.[UnitId], [NetMonetaryValue], [NetValue], @DepreciationPeriodStarts, @DepreciationPeriodEnds
-	FROM NetPeriodDepreciation NPD
+	FROM TargetPeriodDepreciation NPD
 	JOIN dbo.Resources R ON R.[Id] = NPD.[ResourceId]
 	LEFT JOIN OpeningAgentNotedResourceNotedAgentEntryTypes OANRNAET ON OANRNAET.[ResourceId] = NPD.[ResourceId]
 

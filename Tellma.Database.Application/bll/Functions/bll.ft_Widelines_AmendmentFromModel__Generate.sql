@@ -452,7 +452,7 @@ BEGIN
 		--ROW_NUMBER () OVER(PARTITION BY E.[Index] ORDER BY [LineKey], E.[Index] ASC) - 1 AS [LineIndex],
 		L.[LineKey] AS [LineIndex],
 		E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],
-		[NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], [Decimal1],
+		[NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], MAX([Decimal1]),
 		IIF(ISNULL(@AmendmentTill, N'9999-12-31') < ISNULL(MIN([Time2]), N'9999-12-31'), @AmendmentTill, MIN([Time2])) AS [Time2],
 		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
 	FROM dbo.Entries E
@@ -463,7 +463,7 @@ BEGIN
 	AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)
 	AND E.[Time1] <= @AmendmentDate
 	AND (E.[Time2] IS NULL OR E.[Time2] >= @AmendmentDate)
-	GROUP BY [LineKey], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], [Decimal1]
+	GROUP BY [LineKey], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId]--, [Decimal1]
 	--HAVING SUM([MonetaryValue]) <> 0; With weak currencies such as SDG, this will cause some entries of the same line to disappear!!
 	
 	INSERT INTO @Entries([LineIndex],
