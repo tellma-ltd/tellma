@@ -51,7 +51,7 @@ namespace Tellma.ApplicationDbCloner
             }
             catch (Exception ex)
             {
-                WriteLine(ex.Message, ConsoleColor.Red);
+                WriteLine(ex.ToString(), ConsoleColor.Red);
             }
 
             if (!cancellation.IsCancellationRequested)

@@ -66,31 +66,6 @@ namespace Tellma.Client
 
         #endregion
 
-        #region TenantId
-
-        private readonly object _defaultTenantIdLock = new object();
-        private int _defaultTenantId;
-
-        public int DefaultTenantId
-        {
-            get
-            {
-                lock (_defaultTenantIdLock)
-                {
-                    return _defaultTenantId;
-                }
-            }
-            set
-            {
-                lock (_defaultTenantIdLock)
-                {
-                    _defaultTenantId = value;
-                }
-            }
-        }
-
-        #endregion
-
         #region Access Token
 
         public Task<string> GetValidAccessToken(CancellationToken cancellation = default)
