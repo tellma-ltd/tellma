@@ -135,6 +135,10 @@ namespace Tellma.ApplicationDbCloner
             string bacpacPath = $"{Guid.NewGuid():N}.bacpac";
             try
             {
+                WriteLine();
+                WriteLine("Version 1.4");
+                WriteLine();
+
                 // Exporting package from source
                 {
                     WriteLine();
