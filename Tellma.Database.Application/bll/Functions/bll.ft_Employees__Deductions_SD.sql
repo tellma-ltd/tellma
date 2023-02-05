@@ -1,6 +1,4 @@
 ﻿CREATE FUNCTION [bll].[ft_Employees__Deductions_SD](
-	--@EmployeeIds dbo.IdList READONLY,
-	--@LineIds dbo.IdList READONLY,
 	@PeriodBenefitsEntries dbo.PeriodBenefitsList READONLY,
 	@PeriodStart DATE,
 	@PeriodEnd DATE
@@ -22,30 +20,36 @@ AS BEGIN
 		[ValueSubjectToEmployeeIncomeTax] DECIMAL (19, 6)
 	);
 
-	--INSERT INTO @T -- 
-	--SELECT [EmployeeId], [ResourceCode], SUM([Value]), SUM([Value]), SUM([Value]), SUM([Value])
-	--FROM bll.ft_Employees__MonthlyBenefits(@EmployeeIds, @LineIds, @PeriodStart, @PeriodEnd)
-	--GROUP BY [EmployeeId], [ResourceCode]
-
 	INSERT INTO @T
 	SELECT [EmployeeId], [ResourceCode], SUM([Value]), SUM([Value]), SUM([Value]), SUM([Value])
-	--FROM bll.ft_Employees__MonthlyBenefits(@EmployeeIds, @LineIds, @PeriodStart, @PeriodEnd)
 	FROM @PeriodBenefitsEntries
 	GROUP BY [EmployeeId], [ResourceCode]
-	
+
+	DECLARE @Hourly INT = dal.fn_UnitCode__Id(N'hr');
+	DECLARE @Daily INT = dal.fn_UnitCode__Id(N'd');
+	DECLARE @Monthly INT = dal.fn_UnitCode__Id(N'mo');
 	UPDATE @T
 	SET
 		[ValueSubjectToSocialSecurity] = 0
-	WHERE [ResourceCode]  IN (N'EndOfService', N'SocialSecurityContribution');
+	WHERE [ResourceCode]  IN (N'EndOfService', N'SocialSecurityContribution')
+	-- in SD, non monthly benefits are not included in SS calculation, MA 2023-01-29
+	OR [ResourceCode] IN (SELECT [Code] FROM dbo.[Resources] WHERE [Code] IS NOT NULL AND [UnitId] <> @Monthly);
 
 	UPDATE @T
 	SET [ValueSubjectToZakaat] = 0
-	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'TransportationAllowance', N'MealAllowance');
+	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'TransportationAllowance', N'MealAllowance'--,
+--		N'PerformanceBonus' -- added MA 2021-01-29 then commented out. Since all income need to be subject to Zakat
+		,N'PerformanceBonus' -- added MA 2021-01-30 again, hoping people will pay their zakaat properly.
+	);
 
 	UPDATE @T
 	SET [ValueSubjectToEmployeeIncomeTax] = 0
 	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'IncomeTaxReimbursement',
-		N'BookAllowance', N'DetectiveAllowance', N'ReadinessAllowance', N'EnvoyAllowance', N'SecurityAllowance');
+		N'BookAllowance', N'DetectiveAllowance', N'ReadinessAllowance', N'EnvoyAllowance', N'SecurityAllowance',
+		N'PerformanceBonus' -- added MA 2021-01-29 to allow company to define the tax for it
+		)
+	-- IN SD, EIT in ESV will be called on hourly, daily, and monthly benefits. Other benefits are assumed to be entered in a separate tab
+--	OR [ResourceCode] IN (SELECT [Code] FROM dbo.[Resources] WHERE [Code] IS NOT NULL AND [UnitId] NOT IN (@Hourly, @Daily, @Monthly));
 
 --	The following formula, while faster, is not accurate.
 --	UPDATE @T SET [ValueSubjectToEmployeeIncomeTax] = 0.95 * [ValueSubjectToEmployeeIncomeTax]
@@ -109,3 +113,4 @@ AS BEGIN
 
 	RETURN
 END
+GO
