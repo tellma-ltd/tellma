@@ -557,13 +557,13 @@
 	DECLARE @Lines LineList, @Entries EntryList;
 
 	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Quantity], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2], [DurationUnitId])
+		[Quantity], [UnitId], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2], [DurationUnitId])
 	SELECT
 		ROW_NUMBER () OVER(PARTITION BY [EntryIndex]
 			ORDER BY [Time1], [LineKey], [EntryIndex]
 		) - 1 AS [LineIndex],
 		[EntryIndex] AS [Index], 0 AS [DocumentIndex],  0 AS [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		1, [MonetaryValue], [Value], [NotedAmount], [Time1], ISNULL([Time2], @ToDate) AS [Time2], [DurationUnitId]
+		1, [UnitId], [MonetaryValue], [Value], [NotedAmount], [Time1], ISNULL([Time2], @ToDate) AS [Time2], [DurationUnitId]
 	FROM @T2
 	WHERE [MonetaryValue] <> 0;
 --	select * from @Entries order by [LineIndex], [Index];
