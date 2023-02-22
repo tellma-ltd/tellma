@@ -10,7 +10,7 @@
 	@PostingDate DATE
 AS
 	DECLARE @CurrencyId1 NCHAR (3) = dal.fn_Agent__CurrencyId(@CashAccountId);
-	--SET @PostingDate = ISNULL(@PostingDAte, GETDATE());
+	--SET @PostingDate = ISNULL(@PostingDate, GETDATE());
 
 	IF @CashAccountId IS NULL
 	BEGIN
@@ -33,9 +33,10 @@ AS
 		[CenterId0], [AgentId0], [MonetaryValue0],
 		[NotedAmount0], [CurrencyId0], [NotedDate0],
 		[MonetaryValue1], [CurrencyId1])
-	SELECT ROW_NUMBER() OVER(ORDER BY SUM(SS.[Balance]), Emp.[Code], SS.[CurrencyId], SS.[NotedDate]) - 1, 0,
+	SELECT ROW_NUMBER() OVER(ORDER BY SUM(SS.[Balance]), Emp.[Code], SS.[CurrencyId]--, SS.[NotedDate]
+	) - 1, 0,
 		SS.[CenterId], SS.[AgentId], -ROUND(SUM(SS.[Balance]), @PaymentSignificantDigits, @TruncatePayment) AS [MonetaryValue0],
-		-SUM(SS.[Balance]) AS [NotedAmount0], SS.[CurrencyId], SS.[NotedDate],
+		-SUM(SS.[Balance]) AS [NotedAmount0], SS.[CurrencyId], @PostingDate, --SS.[NotedDate],
 		-bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId1, SUM(SS.[Balance])) AS [MonetaryValue1], @CurrencyId1
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'ShorttermEmployeeBenefitsAccruals', NULL) SS
 	JOIN dbo.Agents Emp ON Emp.[Id] = SS.[AgentId]
@@ -44,7 +45,8 @@ AS
 	AND (@DueOnOrBefore IS NULL OR SS.[NotedDate] <= @DueOnOrBefore)
 	AND (@DutyStation IS NULL OR Emp.[Agent2Id] = @DutyStation)
 	AND (@PaymentMechanism IS NULL OR Emp.[Lookup8Id] = @PaymentMechanism)
-	GROUP BY SS.[CenterId], SS.[AgentId], SS.[CurrencyId], SS.[NotedDate], Emp.[Code]
+	GROUP BY SS.[CenterId], SS.[AgentId], SS.[CurrencyId], --SS.[NotedDate], 
+		Emp.[Code]
 	HAVING (SUM(SS.[Balance]) < 0)
 
 	SELECT * FROM @WideLines;
