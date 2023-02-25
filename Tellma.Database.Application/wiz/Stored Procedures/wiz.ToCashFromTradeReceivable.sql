@@ -5,7 +5,7 @@
 	@PostingDate DATE = NULL
 AS
 	DECLARE @CurrencyId0 NCHAR (3) = dal.fn_Agent__CurrencyId(@CashAccountId);
-	SET @PostingDate = ISNULL(@PostingDAte, GETDATE());
+	SET @PostingDate = ISNULL(@PostingDate, GETDATE());
 	
 	IF @CashAccountId IS NULL
 	BEGIN
@@ -20,10 +20,10 @@ AS
 
 	DECLARE @WideLines WideLineList;
 	INSERT INTO @WideLines([Index], [DocumentIndex],
-		[AccountId1], [CenterId1], [AgentId1], [MonetaryValue1], [NotedAmount1], [CurrencyId1], 
+		[AccountId1], [CenterId1], [AgentId1], [MonetaryValue1], [NotedAmount1], [CurrencyId1], [NotedDate1],
 		[MonetaryValue0], [CurrencyId0], [Value1])
 	SELECT ROW_NUMBER() OVER(ORDER BY SI.[Id]) - 1, 0,
-		SS.[AccountId], SS.[CenterId], SS.[AgentId], SUM(SS.[Balance]), SUM(SS.[Balance]), SS.[CurrencyId],
+		SS.[AccountId], SS.[CenterId], SS.[AgentId], SUM(SS.[Balance]), SUM(SS.[Balance]), SS.[CurrencyId], MAX(SI.[ToDate]) AS [NotedDate1],
 		bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId0, SUM(SS.[Balance])) AS [MonetaryValue0], @CurrencyId0,
 		bll.fn_ConvertToFunctional(@PostingDate, SS.[CurrencyId], SUM(SS.[Balance]))
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'CurrentTradeReceivables', NULL) SS

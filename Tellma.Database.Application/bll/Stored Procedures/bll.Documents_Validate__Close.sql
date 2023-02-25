@@ -14,13 +14,13 @@ BEGIN
 	SET @IsError = 0;
 	-- cannot close if the document posting date falls in an archived period. Logic repeated at line level
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-		N'Error_FallsinArchivedPeriod', NULL
-	FROM @Ids FE
-	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	UNION
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
+	--	N'Error_FallsinArchivedPeriod', NULL
+	--FROM @Ids FE
+	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	--WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	--UNION
 	-- cannot close if the lines posting date falls in an archived period.
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
