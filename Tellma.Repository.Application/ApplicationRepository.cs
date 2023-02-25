@@ -3851,6 +3851,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
+                AddCultureAndNeutralCulture(cmd);
 
                 // Execute
                 try
