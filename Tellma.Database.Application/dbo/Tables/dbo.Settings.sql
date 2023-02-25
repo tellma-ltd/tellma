@@ -16,7 +16,7 @@
 	[DateFormat]							NVARCHAR (50)		NOT NULL DEFAULT N'yyyy-MM-dd',
 	[TimeFormat]							NVARCHAR (50)		NOT NULL DEFAULT N'HH:mm:ss',
 	[BrandColor]							NCHAR (7),
-	[SupportEmails]							NVARCHAR (50),
+	[SupportEmails]							NVARCHAR (4000),
 	[SmsEnabled]							BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
 	[DefinitionsVersion]					UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[SettingsVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
