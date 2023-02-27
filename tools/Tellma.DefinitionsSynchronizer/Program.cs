@@ -665,6 +665,7 @@ namespace Tellma.DefinitionsSynchronizer
                             // Agent definitions
                             try
                             {
+                                tenantEntry.AgentDefinitions ??= new List<LineDefinitionEntryAgentDefinitionForSave>();
                                 MatchCount(tenantEntry.AgentDefinitions, masterEntry.AgentDefinitions.Count);
                                 for (int j = 0; j < tenantEntry.AgentDefinitions.Count; j++)
                                 {
@@ -683,6 +684,7 @@ namespace Tellma.DefinitionsSynchronizer
                             // Resource definitions
                             try
                             {
+                                tenantEntry.ResourceDefinitions ??= new List<LineDefinitionEntryResourceDefinitionForSave>();
                                 MatchCount(tenantEntry.ResourceDefinitions, masterEntry.ResourceDefinitions.Count);
                                 for (int j = 0; j < tenantEntry.ResourceDefinitions.Count; j++)
                                 {
@@ -701,6 +703,7 @@ namespace Tellma.DefinitionsSynchronizer
                             // Noted Agent definitions
                             try
                             {
+                                tenantEntry.NotedAgentDefinitions ??= new List<LineDefinitionEntryNotedAgentDefinitionForSave>();
                                 MatchCount(tenantEntry.NotedAgentDefinitions, masterEntry.NotedAgentDefinitions.Count);
                                 for (int j = 0; j < tenantEntry.NotedAgentDefinitions.Count; j++)
                                 {
@@ -719,6 +722,7 @@ namespace Tellma.DefinitionsSynchronizer
                             // Noted Resource definitions
                             try
                             {
+                                tenantEntry.NotedResourceDefinitions ??= new List<LineDefinitionEntryNotedResourceDefinitionForSave>();
                                 MatchCount(tenantEntry.NotedResourceDefinitions, masterEntry.NotedResourceDefinitions.Count);
                                 for (int j = 0; j < tenantEntry.NotedResourceDefinitions.Count; j++)
                                 {
