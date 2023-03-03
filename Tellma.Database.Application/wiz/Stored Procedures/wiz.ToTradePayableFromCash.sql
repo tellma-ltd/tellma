@@ -20,10 +20,10 @@ AS
 
 	DECLARE @WideLines WideLineList;
 	INSERT INTO @WideLines([Index], [DocumentIndex],
-		[AccountId0], [CenterId0], [AgentId0], [MonetaryValue0], [NotedAmount0], [CurrencyId0],
+		[AccountId0], [CenterId0], [AgentId0], [MonetaryValue0], [NotedAmount0], [CurrencyId0], [NotedDate0],
 		[MonetaryValue1], [CurrencyId1], [Value0])
 	SELECT ROW_NUMBER() OVER(ORDER BY [PI].[Id]) - 1, 0,
-		SS.[AccountId], SS.[CenterId], SS.[AgentId], -SUM(SS.[Balance]), -SUM(SS.[Balance]), SS.[CurrencyId],
+		SS.[AccountId], SS.[CenterId], SS.[AgentId], -SUM(SS.[Balance]), -SUM(SS.[Balance]), SS.[CurrencyId], MAX([PI].[ToDate]) AS [NotedDate0],
 		-bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId1, SUM(SS.[Balance])) AS [MonetaryValue1], @CurrencyId1,
 		bll.fn_ConvertToFunctional(@PostingDate, SS.[CurrencyId], -SUM(SS.[Balance]))
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'TradeAndOtherCurrentPayablesToTradeSuppliers', NULL) SS
