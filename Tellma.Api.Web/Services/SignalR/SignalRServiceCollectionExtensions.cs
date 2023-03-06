@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using System;
+using Tellma.Api.Dto;
 using Tellma.Services.SignalR;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddJsonProtocol(opt =>
             {
                 // Keep property names unchanged when sending payloads
-                opt.PayloadSerializerOptions.PropertyNamingPolicy = null;
+                JsonUtil.ConfigureOptionsForWeb(opt.PayloadSerializerOptions);
             });
 
             // Add azure service if a connection string is supplied

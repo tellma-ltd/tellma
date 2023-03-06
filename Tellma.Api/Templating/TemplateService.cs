@@ -1803,12 +1803,12 @@ namespace Tellma.Api.Templating
             {
                 using QRCodeGenerator qrGenerator = new();
                 using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
-                using QRCode qrCode = new(qrCodeData);
-                using System.Drawing.Bitmap img = qrCode.GetGraphic(pixelsPerModule: 8);
+                using PngByteQRCode qrCode = new(qrCodeData);
+
+                byte[] img = qrCode.GetGraphic(pixelsPerModule: 8);
                 using var memoryStream = new System.IO.MemoryStream();
 
-                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+                return "data:image/png;base64," + Convert.ToBase64String(img);
             }
             catch (Exception e)
             {
@@ -2250,12 +2250,10 @@ namespace Tellma.Api.Templating
             {
                 using QRCodeGenerator qrGenerator = new();
                 using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
-                using QRCode qrCode = new(qrCodeData);
-                using System.Drawing.Bitmap img = qrCode.GetGraphic(pixelsPerModule: 8);
-                using var memoryStream = new System.IO.MemoryStream();
+                using PngByteQRCode qrCode = new(qrCodeData);
+                byte[] img = qrCode.GetGraphic(pixelsPerModule: 8);
 
-                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
+                return "data:image/png;base64," + Convert.ToBase64String(img);
             }
             catch (Exception e)
             {
