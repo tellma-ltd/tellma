@@ -22,7 +22,7 @@ AS
     LEFT OUTER JOIN 
         sys.schemas s ON t.schema_id = s.schema_id
     WHERE 
-        t.NAME NOT LIKE 'dt%' 
+        t.Name NOT LIKE 'dt%' 
         AND t.is_ms_shipped = 0
         AND i.OBJECT_ID > 255 
     GROUP BY 

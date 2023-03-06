@@ -444,6 +444,13 @@ BEGIN
 		[Time2] DATE,
 		[Quantity] DECIMAL (19, 6), [MonetaryValue] DECIMAL (19, 6), [Value] DECIMAL (19, 6)
 	);
+	DECLARE @OldContractAmendmentLineDefinitionId INT;
+	IF @ContractAmendmentLineDefinitionId <> 0
+	BEGIN
+		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
+		--IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
+		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
+	END
 
 	INSERT INTO @T( [LineIndex], E.[Index], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId],
 		[NotedAgentId], [NotedResourceId], [EntryTypeId], [DurationUnitId], [Decimal1], [Time2],
@@ -457,7 +464,8 @@ BEGIN
 		SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
+	WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
+														@OldContractAmendmentLineDefinitionId)
 	AND L.[State] = 2
 	AND L.[Decimal1] IS NOT NULL -- Decimal1 can be null when migrating from old design
 	AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)

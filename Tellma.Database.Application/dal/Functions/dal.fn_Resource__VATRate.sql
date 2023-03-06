@@ -5,7 +5,7 @@ RETURNS DECIMAL (19, 4)
 AS
 BEGIN
 	RETURN 	(
-		SELECT [VATRate] FROM [dbo].[Resources]
+		SELECT [VatRate] FROM [dbo].[Resources]
 		WHERE [Id] = @ResourceId
 	)
 END

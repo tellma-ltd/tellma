@@ -16,13 +16,22 @@
 	--@EmployeeAD INT = dal.fn_AgentDefinitionCode__Id(N'Employee');
 	--@DurationUnitId INT = dal.fn_UnitCode__Id(N'mo');
 AS
+	DECLARE @OldContractAmendmentLineDefinitionId INT;
+	IF @ContractAmendmentLineDefinitionId <> 0
+	BEGIN
+		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
+		IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
+		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
+	END;
+
 	With NotedAgentsToDates AS (
 		SELECT E.[NotedAgentId],-- dal.fn_Agent__Name(E.[NotedAgentId]) AS Employee, 
 			MAX(ISNULL(E.[Time2], DATEADD(DAY, -1, E.[Time1]))) AS ToDate
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
+														@OldContractAmendmentLineDefinitionId)
 		AND (@ResourceDefinitionId IS NULL OR R.DefinitionId = @ResourceDefinitionId)
 		AND (@ResourceId IS NULL OR E.[ResourceId] = @ResourceId)
 		AND E.[Value] <> 0
@@ -54,3 +63,4 @@ AS
 		NULL --@CenterId INT = NULL
 	) SS
 	WHERE AG.[DefinitionId] = @NotedAgentDefinitionId;
+GO

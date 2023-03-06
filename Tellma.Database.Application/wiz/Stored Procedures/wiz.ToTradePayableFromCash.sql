@@ -18,7 +18,7 @@ AS
 		RETURN
 	END
 
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines WidelineList;
 	INSERT INTO @WideLines([Index], [DocumentIndex],
 		[AccountId0], [CenterId0], [AgentId0], [MonetaryValue0], [NotedAmount0], [CurrencyId0], [NotedDate0],
 		[MonetaryValue1], [CurrencyId1], [Value0])
