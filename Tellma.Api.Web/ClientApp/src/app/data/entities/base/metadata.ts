@@ -474,13 +474,47 @@ export function entityDescriptorImpl(
         } else {
 
             const coll = propDesc.control;
-            const definition = propDesc.definitionId;
+            const definitionId = propDesc.definitionId;
 
-            currentEntityDesc = metadata[coll](wss, trx, definition);
+            currentEntityDesc = metadata[coll](wss, trx, definitionId);
         }
     }
 
     return currentEntityDesc;
+}
+
+/**
+ * Determines if the given path points to a valid property
+ */
+export function isValidPath(
+    pathArray: string[], baseCollection: string, baseDefinition: number,
+    wss: WorkspaceService, trx: TranslateService): boolean {
+
+    if (!baseCollection) {
+        return false;
+    }
+
+    const metadataFn = metadata[baseCollection];
+    if (!metadataFn) {
+        return false;
+    }
+
+    let currentEntityDesc = metadataFn(wss, trx, baseDefinition);
+    const lastStep = pathArray[pathArray.length - 1];
+    for (const step of pathArray) {
+        const propDesc = currentEntityDesc.properties[step];
+
+        if (!propDesc) {
+            return false;
+
+        } else if (propDesc.datatype !== 'entity') {
+            return step === lastStep;
+        } else {
+            const coll = propDesc.control;
+            const definitionId = propDesc.definitionId;
+            currentEntityDesc = metadata[coll](wss, trx, definitionId);
+        }
+    }
 }
 
 //////// Helper functions

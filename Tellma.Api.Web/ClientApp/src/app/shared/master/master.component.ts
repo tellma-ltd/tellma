@@ -35,7 +35,8 @@ import {
   entityDescriptorImpl,
   NavigationPropDescriptor,
   PropDescriptor,
-  Collection
+  Collection,
+  isValidPath
 } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
@@ -719,6 +720,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       } catch {
         // If a path is not valid, don't send it to the server, this allows
         // the query to succeed but the bad column will simply show "Error"
+        if (isValidPath(steps, this.collection,
+          this.definitionId, this.workspace, this.translate)) {
+          resultPaths[path] = true;
+        }
       }
     });
 

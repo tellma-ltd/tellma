@@ -7,7 +7,7 @@ For the time being, this document will contain instructions for developers on Wi
 Follow the steps below to set up the solution for the first time.
 
 ### Environment
-- Install Visual Studio 2019 Community Edition with the "ASP.NET and web development" workload
+- Install Visual Studio 2019 (or later) Community Edition with the "ASP.NET and web development" workload
 - Install Visual Studio Code from the [official website](https://code.visualstudio.com/) with the Angular Language Service extension
 - Install SQL Server 2017 (or later) Developer Edition and make sure it is accessible on "." with Windows authentication
 - Install NodeJS (LTS edition) from the [official website](https://nodejs.org/en/)
@@ -15,7 +15,7 @@ Follow the steps below to set up the solution for the first time.
 - Install typescript globally by running the following in cmd: `npm install -g typescript`
 
 ### IDEs
-- Use Visual Studio 2019 to open Tellma.sln
+- Use Visual Studio to open Tellma.sln
 - Use Visual Studio Code to open the Angular project in (SolutionDir)/Tellma.Api.Web/ClientApp/
 
 ### Database Tier
@@ -67,7 +67,7 @@ Follow these steps to run the solution on your development machine:
 - Make sure you pull the latest version of the solution from GitHub
 - Make sure the latest version of the admin and app databases are published to `[Tellma]` and `[Tellma.101]`
 - Make sure the latest ClientApp npm dependencies are installed: Go inside "(SolutionDir)/Tellma.Api.Web/ClientApp/" and run: `npm install`
-- Start the backend server on https://localhost:5001/ as follows: VS2019 -> Debug -> Start Without Debugging. This should launch a debug console similar to this:
+- Start the backend server on https://localhost:5001/ as follows: Visual Studio -> Debug -> Start Without Debugging. This should launch a debug console similar to this:
 
 ![image](https://user-images.githubusercontent.com/43896758/130597027-e125ca6f-b197-4854-9f1a-9fc69a090fce.png)
 
