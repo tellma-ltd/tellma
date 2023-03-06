@@ -717,7 +717,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}.${descSelect}`] = true);
       } catch {
-        resultPaths[path] = true;
+        // If a path is not valid, don't send it to the server, this allows
+        // the query to succeed but the bad column will simply show "Error"
       }
     });
 
