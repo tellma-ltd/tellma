@@ -921,6 +921,8 @@
     <Build Include="dal\Functions\dal.ft_NotedDate__Center_Agent_NotedAgent_Balance.sql" />
     <Build Include="dal\Functions\dal.ft_BankAccounts__Unreconciled.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_EOSDate__RemainingAnnualLeaveDays.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center__TradeAgents_Balances.sql" />
+    <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_TradeAgent__Balance.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
