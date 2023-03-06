@@ -10,7 +10,7 @@
 	@PostingDate DATE
 AS
 	DECLARE @CurrencyId1 NCHAR (3) = dal.fn_Agent__CurrencyId(@CashAccountId);
-	SET @DueOnOrBefore = ISNULL(@DueOnOrBefore, @PostingDate);
+	--SET @PostingDate = ISNULL(@PostingDate, GETDATE());
 
 	IF @CashAccountId IS NULL
 	BEGIN
@@ -36,7 +36,7 @@ AS
 	SELECT ROW_NUMBER() OVER(ORDER BY SUM(SS.[Balance]), Emp.[Code], SS.[CurrencyId]--, SS.[NotedDate]
 	) - 1, 0,
 		SS.[CenterId], SS.[AgentId], -ROUND(SUM(SS.[Balance]), @PaymentSignificantDigits, @TruncatePayment) AS [MonetaryValue0],
-		-SUM(SS.[Balance]) AS [NotedAmount0], SS.[CurrencyId], MAX(SS.[NotedDate]) AS [NotedDate0], --@DueOnOrBefore, --SS.[NotedDate],
+		-SUM(SS.[Balance]) AS [NotedAmount0], SS.[CurrencyId], @PostingDate, --SS.[NotedDate],
 		-bll.fn_ConvertCurrencies(@PostingDate, SS.[CurrencyId], @CurrencyId1, SUM(SS.[Balance])) AS [MonetaryValue1], @CurrencyId1
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'ShorttermEmployeeBenefitsAccruals', NULL) SS
 	JOIN dbo.Agents Emp ON Emp.[Id] = SS.[AgentId]
