@@ -167,9 +167,13 @@ namespace Tellma.Repository.Application
         private string _lastConnString = null;
         private string _dbName = null; // Caches the DB Name
 
-        private Task<string> GetConnectionString(CancellationToken cancellation = default) =>
-            _shardResolver.GetConnectionString(_tenantId, cancellation) ??
+        private async Task<string> GetConnectionString(CancellationToken cancellation = default) =>
+            (await _shardResolver.GetConnectionString(_tenantId, cancellation)) ??
             throw new InvalidOperationException($"Connection string for database with Id {_tenantId} could not be resolved.");
+
+        private async Task<string> TryGetConnectionString(CancellationToken cancellation = default) =>
+            await _shardResolver.GetConnectionString(_tenantId, cancellation);
+
 
         private string DatabaseName(string connString)
         {
@@ -242,10 +246,10 @@ namespace Tellma.Repository.Application
             bool setLastActive,
             CancellationToken cancellation)
         {
-            var connString = await GetConnectionString(cancellation);
-            if (connString == null)
+            var connString = await TryGetConnectionString(cancellation);
+            if (string.IsNullOrWhiteSpace(connString))
             {
-                // No shard found
+                // No connection string available found
                 return OnConnectOutput.Empty;
             }
 

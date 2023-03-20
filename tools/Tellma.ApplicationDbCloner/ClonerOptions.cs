@@ -8,21 +8,21 @@
         /// <remarks>
         /// This parameter is required.
         /// </remarks>
-        public string ConnectionString { get; set; }
+        public string AdminConnection { get; set; }
 
         /// <summary>
-        /// The name of the source database, e.g. Tellma.101.
+        /// The Id of the source database, e.g. 101.
         /// </summary>
-        public string Source { get; set; }
+        public int SourceId { get; set; }
 
         /// <summary>
-        /// The name of the destination database.
+        /// The Id of the destination database, e.g. 1101.
         /// </summary>
-        public string Destination { get; set; }
+        public int DestinationId { get; set; }
 
         /// <summary>
-        /// The URL to launch when done.
+        /// If true, does not add the new company to the memberships of the users.
         /// </summary>
-        public string LaunchUrl { get; set; }
+        public bool SkipDirectoryUserMemberships { get; set; }
     }
 }
