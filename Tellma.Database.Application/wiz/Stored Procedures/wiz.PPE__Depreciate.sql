@@ -87,10 +87,10 @@ AS
 	TargetPeriodDepreciation AS (
 		SELECT OB.[ResourceId], OB.[BaseUnitId], OB.[CurrencyId], OB.[CenterId], OB.[AgentId], OB.[NotedAgentId], OB.[NotedResourceId],
 			IIF(OB.[NetLife] < @DepreciatedLife, OB.[NetLife], @DepreciatedLife) AS [NetLife], --<< need review
-			@DepreciatedLife * bll.fn_BookValue_Residual_LifeTime__Depreciation(LK.[Code],
+			@DepreciatedLife * bll.fn_BookValue_Residual_LifeTime__Depreciation(ISNULL(LK.[Code], N'SL'),
 				OB.[NetMonetaryValue] - OB.[NetResidualMonetaryValue], OB.[NetResidualMonetaryValue], OB.[NetLife]
 			) AS [NetMonetaryValue],
-			@DepreciatedLife * bll.fn_BookValue_Residual_LifeTime__Depreciation(LK.[Code],
+			@DepreciatedLife * bll.fn_BookValue_Residual_LifeTime__Depreciation(ISNULL(LK.[Code], N'SL'),
 				OB.[NetValue] - OB.[NetResidualValue], OB.[NetResidualValue], OB.[NetLife]
 			) AS [NetValue]
 		FROM OpeningBalances OB
@@ -99,10 +99,10 @@ AS
 		UNION
 		SELECT PA.[ResourceId], PA.[BaseUnitId], PA.[CurrencyId], PA.[CenterId], PA.[AgentId], PA.[NotedAgentId], PA.[NotedResourceId],	
 			PA.[DepreciableLife] AS [NetLife],
-			PA.[DepreciableLife] * bll.fn_BookValue_Residual_LifeTime__Depreciation(LK.[Code],
+			PA.[DepreciableLife] * bll.fn_BookValue_Residual_LifeTime__Depreciation(ISNULL(LK.[Code], N'SL'),
 				PA.[NetMonetaryValue] - PA.[NetResidualMonetaryValue], PA.[NetResidualMonetaryValue], PA.[NetLife]
 			) AS [NetMonetaryValue],
-			PA.[DepreciableLife] * bll.fn_BookValue_Residual_LifeTime__Depreciation(LK.[Code],
+			PA.[DepreciableLife] * bll.fn_BookValue_Residual_LifeTime__Depreciation(ISNULL(LK.[Code], N'SL'),
 				PA.[NetValue] - PA.[NetResidualValue], PA.[NetResidualValue], PA.[NetLife]
 			) AS [NetValue]
 		FROM PeriodAdditions PA
