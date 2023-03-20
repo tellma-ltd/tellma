@@ -27,7 +27,7 @@ AS
 	SET @ShowBalancesInPaymentCurrency = ISNULL(@ShowBalancesInPaymentCurrency, 0);
 	SET @PaymentSignificantDigits = ISNULL(@PaymentSignificantDigits, dal.fn_Currency__E(@CurrencyId1));
 
-	DECLARE @WideLines WideLineList;
+	DECLARE @WideLines WidelineList;
 
 	INSERT INTO @WideLines([Index], [DocumentIndex],
 		[CenterId0], [AgentId0], [MonetaryValue0],

@@ -10,7 +10,7 @@ WHERE Id in
 	SELECT NotedAgentId FROM dbo.Entries)
 	) --	17
 
-SELECT * from resourcedefinitions 
+SELECT * from dbo.ResourceDefinitions 
 WHERE Id in (
 SELECT DefinitionId FROM dbo.Resources WHERE Id in (
 	SELECT ResourceId FROM dbo.Entries

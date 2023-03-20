@@ -445,6 +445,13 @@
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
 	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 	IF ISNULL(@ToDate,  N'9999-12-31') = N'9999-12-31' SET @ToDate = N'9999-12-30';
+	DECLARE @OldContractAmendmentLineDefinitionId INT;
+	IF @ContractAmendmentLineDefinitionId <> 0
+	BEGIN
+		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
+		--IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
+		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
+	END
 
 	DECLARE @Hour INT = dal.fn_UnitCode__Id(N'hr'), @Day INT = dal.fn_UnitCode__Id(N'd');
 
@@ -461,7 +468,8 @@
 		SELECT DISTINCT L.[LineKey], L.[Decimal1]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
+															@OldContractAmendmentLineDefinitionId)
 		AND (L.[State] = 2)
 		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId) -- Should be moved to the line level, and renamed to @FrequencyId
 		-- next line is needed when terminating contracts but not when ag salaries
@@ -483,7 +491,8 @@
 		FROM dbo.Entries E -- MA: Should it be BaseQuantity, to allow entering templates of different unit?
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
+															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		UNION ALL
 		SELECT FL.[LineKey], E.[Index], E.[DurationUnitId], FL.[Decimal1],
@@ -493,7 +502,8 @@
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId)
+		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
+															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 	) --  select * from FilteredEntries
 	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], [Decimal1], [Time1], [Time2],

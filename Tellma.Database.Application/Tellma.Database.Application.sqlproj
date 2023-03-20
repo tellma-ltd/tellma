@@ -855,7 +855,6 @@
     <Build Include="dal\Functions\dal.fn_AccountType__Concept.sql" />
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionLineKeys.sql" />
-    <Build Include="dal\Functions\dal.fn_LineDefinition_Agent_Resource_Currency__Id.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines_LineKey__Update.sql" />
     <Build Include="dal\Stored Procedures\dal.ContractAndAmendment_LineKeys__Update.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_PostingPeriodCoversTime1AndTime2__Validate.sql" />
@@ -923,6 +922,7 @@
     <Build Include="bll\Functions\bll.fn_Employee_EOSDate__RemainingAnnualLeaveDays.sql" />
     <Build Include="dal\Functions\dal.ft_Concept_Center__TradeAgents_Balances.sql" />
     <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_TradeAgent__Balance.sql" />
+    <Build Include="dal\Functions\dal.fn_LineDefinition__Code.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -959,7 +959,6 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
-    <None Include="TrialBalance.htm" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -976,8 +975,5 @@
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Application.refactorlog" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TellmaAPI.cs" />
   </ItemGroup>
 </Project>
