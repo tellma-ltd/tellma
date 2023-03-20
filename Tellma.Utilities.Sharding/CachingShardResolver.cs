@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,6 +74,7 @@ namespace Tellma.Utilities.Sharding
                         var connInfo = await _resolver.Load(databaseId, cancellation);
 
                         // (2) Prepare the connection string
+                        DateTimeOffset expiryTime;
                         if (IsValid(connInfo))
                         {
                             var shardConnStringBuilder = new SqlConnectionStringBuilder
@@ -87,15 +90,16 @@ namespace Tellma.Utilities.Sharding
                             };
 
                             shardConnString = shardConnStringBuilder.ConnectionString;
+                            expiryTime = DateTimeOffset.Now.AddMinutes(CacheExpirationInMinutes);
                         }
                         else
                         {
                             // Invalid info
                             shardConnString = null;
+                            expiryTime = DateTimeOffset.Now.AddSeconds(1); // Just enough to prevent a DDoS on the admin DB
                         }
 
-                        // Set the cache, with an expiry
-                        var expiryTime = DateTimeOffset.Now.AddMinutes(CacheExpirationInMinutes);
+                        // Set the cache, with an expiry time
                         _cache.Set(CacheKey(databaseId), shardConnString, expiryTime);
 
                         // NOTE: Shard connection strings are very frequently read, yet very rarely if never updated so we have decided to rely
