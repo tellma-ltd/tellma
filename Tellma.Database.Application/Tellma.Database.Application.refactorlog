@@ -63,4 +63,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Tables__Statistics]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6db14edc-f18d-4837-b418-fcd201840972" ChangeDateTime="03/22/2023 09:46:51">
+    <Property Name="ElementName" Value="[wiz].[EmployeeBenefits_MIC__TaxAndDeduct]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[wiz]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[EmployeeBenefits__TaxAndDeduct_MIC]" />
+  </Operation>
 </Operations>

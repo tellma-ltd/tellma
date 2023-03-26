@@ -923,6 +923,9 @@
     <Build Include="dal\Functions\dal.ft_Concept_Center__TradeAgents_Balances.sql" />
     <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_TradeAgent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_LineDefinition__Code.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Deductions_MIC.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.EmployeeBenefits_MIC__TaxAndDeduct.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.EmployeeBenefits__TaxAndDeduct.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
