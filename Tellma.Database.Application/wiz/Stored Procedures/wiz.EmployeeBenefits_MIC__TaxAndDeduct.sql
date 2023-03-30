@@ -18,8 +18,8 @@ DECLARE @PeriodStart DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @PostingDate
 DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
 
 DECLARE @WagesAndSalariesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'WagesAndSalaries');
-DECLARE @WideLines WidelineList;
-INSERT INTO @WideLines
+DECLARE @Widelines WidelineList;
+INSERT INTO @Widelines
 SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
 	@ContractLineDefinitionId,
 	@ContractAmendmentLineDefinitionId,
@@ -98,7 +98,7 @@ FROM @T_SD;
 UPDATE WL
 SET 	[CurrencyId1] 	= SS.[CurrencyId],
 	[MonetaryValue1] = SS.[MonetaryValue]
-FROM @WideLines WL
+FROM @Widelines WL
 JOIN @MyResult SS
 ON WL.[NotedAgentId1] = SS.[EmployeeId] AND WL.[AgentId1] = SS.[DeductionAgentId];
 DELETE @Widelines WHERE [MonetaryValue1] = 0;
@@ -115,4 +115,4 @@ SET
 FROM @Widelines WL
 JOIN WideLinesSorted  WLS ON WLS.[Index] = WL.[Index];
 
-SELECT * FROM @WideLines;
+SELECT * FROM @Widelines;
