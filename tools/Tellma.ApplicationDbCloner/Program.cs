@@ -51,7 +51,7 @@ namespace Tellma.ApplicationDbCloner
             }
             catch (Exception ex)
             {
-                WriteLine(ex.Message, ConsoleColor.Red);
+                WriteLine(ex.ToString(), ConsoleColor.Red);
             }
 
             if (!cancellation.IsCancellationRequested)
@@ -64,6 +64,12 @@ namespace Tellma.ApplicationDbCloner
 
         private static async Task CloneDatabase(string[] args, CancellationToken cancellation)
         {
+            // For some reason we're getting a weird error on some machine:
+            //      "4096 (0x1000) is an invalid culture identifier."
+            // So following might be a workaround according to: https://github.com/dotnet/runtime/issues/60296
+            System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+
             #region Arguments
 
             // Build the configuration root based on project user secrets
@@ -81,14 +87,14 @@ namespace Tellma.ApplicationDbCloner
 
             while (string.IsNullOrWhiteSpace(opt.Source))
             {
-                Write("Enter Source DB Name: ");
+                Write("Enter Source DB Name (e.g. Tellma.123): ");
                 opt.Source = ReadLine();
                 WriteLine();
             }
 
             while (string.IsNullOrWhiteSpace(opt.Destination))
             {
-                Write("Enter Destination DB Name: ");
+                Write("Enter Destination DB Name (e.g. Tellma.456): ");
                 opt.Destination = ReadLine();
                 WriteLine();
             }
@@ -129,6 +135,10 @@ namespace Tellma.ApplicationDbCloner
             string bacpacPath = $"{Guid.NewGuid():N}.bacpac";
             try
             {
+                WriteLine();
+                WriteLine("Version 1.4");
+                WriteLine();
+
                 // Exporting package from source
                 {
                     WriteLine();

@@ -4,10 +4,13 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].[EntryList] READONLY
+	@Entries [dbo].[EntryList] READONLY,
+	@Culture NVARCHAR(50) = N'en',
+	@NeutralCulture NVARCHAR(50) = N'en'
 AS
 BEGIN
 	SET NOCOUNT ON;
+	EXEC [dbo].[SetSessionCulture] @Culture = @Culture, @NeutralCulture = @NeutralCulture;
 	DECLARE @Script NVARCHAR (MAX);
 	DECLARE @WideLines [WidelineList];
 	DECLARE @LinesResult LineList, @EntriesResult EntryList;

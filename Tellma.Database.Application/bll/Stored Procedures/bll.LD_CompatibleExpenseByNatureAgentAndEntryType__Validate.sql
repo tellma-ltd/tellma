@@ -46,7 +46,7 @@ WHERE FE.[Index] = @AccountEntryIndex
 AND FE.AgentId = @NullAgent
 AND ET.[Concept] NOT IN (N'DistributionCosts', N'AdministrativeExpense', N'OtherExpenseByFunction');
 
-INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
+INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 SELECT DISTINCT TOP (@Top)
 	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(FL.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR(255)) + '].' + @ErrorFieldName,
 dal.fn_ErrorNames_Index___Localize(@ErrorNames, 2) AS ErrorMessage,
@@ -61,7 +61,7 @@ JOIN dbo.AgentDefinitions AD ON AD.[Id] = AG.[DefinitionId]
 JOIN dbo.EntryTypes ET ON ET.[Id] = FE.[EntryTypeId]
 WHERE FE.[Index] = @AccountEntryIndex
 AND FE.AgentId <> @NullAgent
-AND AD.[Code] <> N'TradeReceivableAccount'
+AND AD.[Code] NOT IN (N'Donor', N'TradeReceivableAccount')
 AND ET.[Concept] <> N'CapitalizationExpenseByNatureExtension';
 
 IF EXISTS(SELECT * FROM @ValidationErrors)

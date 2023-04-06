@@ -207,48 +207,77 @@ BEGIN
 	BEGIN
 		UPDATE E
 		SET E.[AgentId] = NULL
-		FROM @E E
-		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+		--FROM @E E
+		--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		FROM @PreprocessedEntries E
+		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
+
 		WHERE A.[AgentDefinitionId] IS NULL
 
 		UPDATE E
 		SET E.[ResourceId] = NULL--, E.Quantity = NULL, E.UnitId = NULL
-		FROM @E E
-		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+		--FROM @E E
+		--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		FROM @PreprocessedEntries E
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		WHERE  A.ResourceDefinitionId IS NULL
 
 		UPDATE E
 		SET E.[NotedAgentId] = NULL
-		FROM @E E
-		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+		--FROM @E E
+		--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		FROM @PreprocessedEntries E
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		WHERE A.[NotedAgentDefinitionId] IS NULL
 
 		UPDATE E
 		SET E.[NotedResourceId] = NULL
-		FROM @E E
-		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+		--FROM @E E
+		--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		FROM @PreprocessedEntries E
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		WHERE A.[NotedResourceDefinitionId] IS NULL
 	END
 	ELSE -- in the new design
 		UPDATE E
 		SET E.[EntryTypeId] = bll.fn_Center__EntryType(E.[CenterId], E.[EntryTypeId])
-		FROM @E E
+		-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+		--FROM @E E
+		FROM @PreprocessedEntries E
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
 		WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
-	FROM @E E
-	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+	--FROM @E E
+	--JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	FROM @PreprocessedEntries E
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 	JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
 	WHERE AC.EntryTypeParentId IS NULL
 
+	-- MA: 2023-02-14, when changing an account, set entry type to null. Especially important in JVs
+	--declare @AccountId int = (select AccountId from @entries); Throw 50000, @AccountId, 1
+
+	UPDATE FE
+	SET FE.[EntryTypeId] = NULL
+	-- MA:2023-02-14 @E and @L has been transferred to @PreprocessedEntries and @PreprocessedLines, so no point modifying them anymore.
+	--FROM @E E
+	FROM @PreprocessedEntries FE
+	JOIN dbo.Entries BE ON BE.[Id] = FE.[Id]
+	JOIN [dbo].[Accounts] FA ON FA.[Id] = FE.[AccountId]
+	JOIN [dbo].[AccountTypes] FAC ON FAC.[Id] = FA.[AccountTypeId]
+	JOIN [dbo].[Accounts] BA ON BA.[Id] = BE.[AccountId]
+	JOIN [dbo].[AccountTypes] BAC ON BAC.[Id] = BA.[AccountTypeId]
+	WHERE (FAC.EntryTypeParentId IS NULL OR (FAC.EntryTypeParentId <> BAC.EntryTypeParentId))
+		
 	-- Copy information from Account to entries in Manual JV
 	-- In Smart screens, we do not, otherwise changing the resource to one
 	-- incompatible with the account will cause unit clashes
@@ -556,6 +585,3 @@ END
 	 [✓] For Manual Lines: If CurrencyId == functional set MonetaryValue = Value
 
 	*/
-GO
-
-

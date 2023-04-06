@@ -136,7 +136,7 @@ namespace Tellma.Api.Templating
         {
             string[] splits = Number.ToString().Split('.');
 
-            _intergerValue = Convert.ToInt32(splits[0]);
+            _intergerValue = Convert.ToInt64(splits[0]);
 
             if (splits.Length > 1)
                 _decimalValue = GetDecimalValue(splits[1]);

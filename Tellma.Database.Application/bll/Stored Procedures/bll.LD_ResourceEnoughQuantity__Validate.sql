@@ -13,7 +13,7 @@ DECLARE @ErrorNames dbo.ErrorNameList;
 SET NOCOUNT ON;
 INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'Not Enough Quantity of {0} in {1} that belongs to {2}'),
-(0, N'ar',  N'لا يوجد ما يكفي من {0} في {1} ما بخص مركز المسؤولية {2}');
+(0, N'ar',  N'لا يوجد ما يكفي من {0} في {1} ما يخص وحدة الأعمال {2}');
 
 -- Summarize Quantity from this document
 With CurrentDocs AS (
@@ -21,7 +21,7 @@ With CurrentDocs AS (
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	WHERE E.[Index] = 4
+	WHERE E.[Index] = 4 -- this only works for sales!!
 	GROUP BY L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
 ),
 Excesses AS (
@@ -52,8 +52,10 @@ JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 JOIN Excesses S ON S.[CenterId] = E.[CenterId] AND S.[AgentId] = E.[AgentId] AND S.[ResourceId] = E.[ResourceId]
 JOIN dbo.Centers C ON C.[Id] = E.[CenterId]
+JOIN dbo.Centers P ON C.[Node].IsDescendantOf(P.[Node]) = 1
 JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
+WHERE P.[CenterType] = N'BusinessUnit'
 
 IF EXISTS (SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;

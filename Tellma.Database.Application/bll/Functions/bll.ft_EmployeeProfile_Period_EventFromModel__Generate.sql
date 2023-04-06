@@ -20,7 +20,9 @@
 	@ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsTerminated.M'),
 	@DurationUnitId INT = dal.fn_UnitCode__Id('mo'),
 	@EntryIndex INT = 0, @AgentId INT = NULL, @NotedResourceId INT = NULL, @CenterId INT = NULL,
-	@ResourceId INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary');
+	@BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary'),
+	@DailyWageRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'DailyWage'),
+	@HourlyWageRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'HourlyWage');
 
 	INSERT INTO @EmployeeProfiles([EmployeeId], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId], [CurrencyId])
 	SELECT [NotedAgentId0], [CenterId0], [AgentId0], [NotedResourceId0], [EntryTypeId0], [CurrencyId1]
@@ -33,12 +35,47 @@
 		@DurationUnitId,
 		@EntryIndex,
 		@AgentId,
-		@ResourceId,
+		@BasicSalaryRS,
 		@EmployeeId, -- @NotedAgentId,
 		@NotedResourceId,
 		@CenterId
 	);
-
+	IF @@ROWCOUNT = 0
+	BEGIN
+		INSERT INTO @EmployeeProfiles([EmployeeId], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId], [CurrencyId])
+		SELECT [NotedAgentId0], [CenterId0], [AgentId0], [NotedResourceId0], [EntryTypeId0], [CurrencyId1]
+		FROM  [bll].[ft_Widelines_Period_EventFromModel__Generate] (
+			@ContractLineDefinitionId,
+			@ContractAmendmentLineDefinitionId,
+			@ContractTerminationLineDefinitionId,
+			@AsOfDate,
+			@AsOfDate,
+			@DurationUnitId,
+			@EntryIndex,
+			@AgentId,
+			@DailyWageRS,
+			@EmployeeId, -- @NotedAgentId,
+			@NotedResourceId,
+			@CenterId
+		);
+		IF @@ROWCOUNT = 0
+		INSERT INTO @EmployeeProfiles([EmployeeId], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId], [CurrencyId])
+		SELECT [NotedAgentId0], [CenterId0], [AgentId0], [NotedResourceId0], [EntryTypeId0], [CurrencyId1]
+		FROM  [bll].[ft_Widelines_Period_EventFromModel__Generate] (
+			@ContractLineDefinitionId,
+			@ContractAmendmentLineDefinitionId,
+			@ContractTerminationLineDefinitionId,
+			@AsOfDate,
+			@AsOfDate,
+			@DurationUnitId,
+			@EntryIndex,
+			@AgentId,
+			@HourlyWageRS,
+			@EmployeeId, -- @NotedAgentId,
+			@NotedResourceId,
+			@CenterId
+		);
+	END
 	RETURN
 END
 GO
