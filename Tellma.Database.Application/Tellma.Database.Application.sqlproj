@@ -856,7 +856,6 @@
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionLineKeys.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines_LineKey__Update.sql" />
-    <Build Include="dal\Stored Procedures\dal.ContractAndAmendment_LineKeys__Update.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_PostingPeriodCoversTime1AndTime2__Validate.sql" />
     <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_Agent__Value.sql" />
     <Build Include="bll\Functions\bll.ft_Widelines_OTEventFromModel__Generate.sql" />
@@ -884,7 +883,6 @@
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__FullMonths.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__FullDays.sql" />
     <Build Include="bll\Functions\bll.fn_Salary_DateParts__EOS_SA.sql" />
-    <Build Include="dal\Stored Procedures\dal.ContractAmendmentTermination_LineKeys__Update.sql" />
     <Build Include="dbo\Functions\dbo.fn_DB_Name__Country.sql" />
     <Build Include="dal\Functions\dal.fn_Settings__GetCountry.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Citizenship.sql" />

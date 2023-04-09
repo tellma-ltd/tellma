@@ -140,6 +140,7 @@ BEGIN
 	WHERE (A.[IsActive] = 0);
 
 	-- No unassignable entry type, for any positive state
+	IF @State > 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + N']' +
