@@ -130,13 +130,27 @@ BEGIN
 	-- No inactive account, for any positive state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
-		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
+		N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + N']' +
+		N'.Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AccountId',
 		N'Error_TheAccount0IsInactive',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsActive] = 0);
+
+	-- No unassignable entry type, for any positive state
+	IF @State > 0
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		N'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + N']' +
+		N'.Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].EntryTypeId', 
+		N'Error_TheEntryType0IsUnassignable',
+		[dbo].[fn_Localize](ET.[Name], ET.[Name2], ET.[Name3]) AS Account
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.[EntryTypes] ET ON ET.[Id] = E.[EntryTypeId]
+	WHERE (ET.[IsAssignable] = 0);
 
 	-- No future date for Completed and Posted state
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

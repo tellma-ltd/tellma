@@ -20,7 +20,7 @@ BEGIN
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheAccountType0IsUsedInAccount1',
 		dbo.fn_Localize(BE.[Name], BE.[Name2], BE.[Name3]),
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[NAme3])
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
 	FROM @Ids FE
     JOIN dbo.AccountTypes BE ON FE.[Id] = BE.[Id]
     JOIN dbo.Accounts A ON FE.[Id] = A.[AccountTypeId]

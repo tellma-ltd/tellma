@@ -12,7 +12,7 @@ UPDATE [dbo].[Settings] SET
 
 -- Change all Users to New, and update versions
 UPDATE [dbo].[Users] SET 
-	[ExternalId] = NULL, 
+	[ExternalId] = IIF([IsService] = 1, [ExternalId], NULL), 
 	[InvitedAt] = NULL, 
 	[LastAccess] = NULL,
 	[LastInboxCheck] = NULL,

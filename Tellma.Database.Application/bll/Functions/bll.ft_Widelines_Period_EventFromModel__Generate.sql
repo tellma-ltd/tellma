@@ -457,15 +457,18 @@
 
 	-- @T splits any time limited line into two lines
 	DECLARE @T TABLE (
+		[Id]	INT IDENTITY PRIMARY KEY,
 		[LineKey] INT, [EntryIndex] INT, 
-		[DurationUnitId] INT, [Decimal1] DECIMAL (19, 6), [Time1] DATE, [Time2] DATE,
+		[DurationUnitId] INT, --[Decimal1] DECIMAL (19, 6), 
+		[Time1] DATE, [Time2] DATE,
 		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
 		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
 		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
-		PRIMARY KEY([LineKey], [EntryIndex], [Time1])
+		UNIQUE ([LineKey], [EntryIndex], [Time1], 
+		[CenterId], [AgentId], [NotedResourceId], [EntryTypeId]) -- MA: added 2023-03-24 because they were changing after contract termination
 	);
 	WITH FilteredLines AS (
-		SELECT DISTINCT L.[LineKey], L.[Decimal1]
+		SELECT DISTINCT L.[LineKey]--, L.[Decimal1]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
@@ -484,7 +487,7 @@
 		AND (@CenterId IS NULL OR CenterId = @CenterId)
 	),--select * from FilteredLines
 	FilteredEntries AS  (
-		SELECT FL.[LineKey], E.[Index] , E.[DurationUnitId], FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index] , E.[DurationUnitId], --FL.[Decimal1],
 			IIF(E.[Time1]<= @FromDate, @FromDate, E.[Time1]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			[Quantity], [MonetaryValue], [Value], [NotedAmount]
@@ -495,7 +498,7 @@
 															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		UNION ALL
-		SELECT FL.[LineKey], E.[Index], E.[DurationUnitId], FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index], E.[DurationUnitId], --FL.[Decimal1],
 			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			- [Quantity] AS [Quantity], - [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
@@ -506,10 +509,11 @@
 															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 	) --  select * from FilteredEntries
-	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], [Decimal1], [Time1], [Time2],
+	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], --[Decimal1], 
+		[Time1], [Time2],
 		[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Quantity], [MonetaryValue], [Value], [NotedAmount])
-	SELECT [LineKey], [Index], [DurationUnitId], MAX([Decimal1]) AS [Decimal1], 
+	SELECT [LineKey], [Index], [DurationUnitId], --MAX([Decimal1]) AS [Decimal1], 
 		[Time1], [Time2], [Direction], 
 		[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		SUM([Quantity]), SUM([MonetaryValue]), SUM([Value]), SUM([NotedAmount])
@@ -520,32 +524,37 @@
 --	select * from @T order by LineKey, entryIndex, time1;
 	
 	DECLARE @T2 TABLE (
-		[LineKey] INT, [EntryIndex] INT, [Decimal1] DECIMAL (19, 6), [Time1] DATE, [Time2] DATE, [DurationUnitId] INT,
+		[Id]	INT IDENTITY PRIMARY KEY,
+		[LineKey] INT, [EntryIndex] INT, --[Decimal1] DECIMAL (19, 6), 
+		[Time1] DATE, [Time2] DATE, [DurationUnitId] INT,
 		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
 		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
 		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4),
-		PRIMARY KEY([LineKey], [EntryIndex], [Time1])
+		UNIQUE([LineKey], [EntryIndex], [Time1], 
+		[CenterId], [AgentId], [NotedResourceId], [EntryTypeId]) -- MA: added 2023-03-24 because they were changing after contract termination
 		);
-	INSERT INTO @T2	([LineKey], [Decimal1], [Time1], [Time2], [DurationUnitId],
+	INSERT INTO @T2	([LineKey],-- [Decimal1],
+		[Time1], [Time2], [DurationUnitId],
 		[EntryIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Quantity], [MonetaryValue], [Value], [NotedAmount]
 		 )
-	SELECT [LineKey], [Decimal1], [Time1], '9999-12-31', [DurationUnitId],
+	SELECT [LineKey], -- [Decimal1], 
+		[Time1], '9999-12-31', [DurationUnitId],
 		[EntryIndex], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		SUM([Quantity]) OVER (
-			PARTITION BY [LineKey], [EntryIndex]
+			PARTITION BY [LineKey], [EntryIndex], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]
 			ORDER BY [Time1]
 		) AS [Quantity],
 		SUM([MonetaryValue]) OVER (
-			PARTITION BY [LineKey], [EntryIndex]
+			PARTITION BY [LineKey], [EntryIndex], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]
 			ORDER BY [Time1]
 		) AS [MonetaryValue],
 		SUM([Value]) OVER (
-			PARTITION BY [LineKey], [EntryIndex]
+			PARTITION BY [LineKey], [EntryIndex], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]
 			ORDER BY [Time1]
 		) AS [Value],
 		SUM([NotedAmount]) OVER (
-			PARTITION BY [LineKey], [EntryIndex]
+			PARTITION BY [LineKey], [EntryIndex], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]
 			ORDER BY [Time1]
 		) AS [NotedAmount]
 	FROM @T
@@ -555,13 +564,14 @@
 	SET [Time2] = DATEADD(DAY, -1, WT2.[Time2])
 	FROM @T2
 	JOIN (
-		SELECT [LineKey], [EntryIndex], [Time1], LEAD([Time1])
+		SELECT [LineKey], [EntryIndex], [Time1], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId], LEAD([Time1])
 		OVER (
-			PARTITION BY [LineKey], [EntryIndex]
+			PARTITION BY [LineKey], [EntryIndex], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]
 			ORDER BY [Time1]
 		)  AS [Time2]
 		FROM @T2
-	) WT2 ON [@T2].[LineKey] = WT2.[LineKey] AND [@T2].[EntryIndex] = WT2.[EntryIndex] AND [@T2].[Time1] = WT2.[Time1];
+	) WT2 ON [@T2].[LineKey] = WT2.[LineKey] AND [@T2].[EntryIndex] = WT2.[EntryIndex] AND [@T2].[Time1] = WT2.[Time1]
+	AND [@T2].[CenterId] = WT2.[CenterId] AND [@T2].[AgentId] = WT2.[AgentId] AND ISNULL([@T2].[NotedResourceId], 0) = ISNULL(WT2.[NotedResourceId], 0) AND ISNULL([@T2].[EntryTypeId], 0) = ISNULL(WT2.[EntryTypeId], 0) 
 --	select * from @T2 order by LineKey, entryIndex, time1;
 
 	DECLARE @Lines LineList, @Entries EntryList;
@@ -578,12 +588,21 @@
 	WHERE [MonetaryValue] <> 0;
 --	select * from @Entries order by [LineIndex], [Index];
 
+	--INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
+	--SELECT
+	--	ROW_NUMBER () OVER(--PARTITION BY [EntryIndex]
+	--		ORDER BY [Time1], [LineKey]--, [EntryIndex]
+	--	) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], [Decimal1]
+	--FROM @T2
+	-- MA: Commented above and replaces with below, 2023.04.05
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
-	SELECT
-		ROW_NUMBER () OVER(--PARTITION BY [EntryIndex]
-			ORDER BY [Time1], [LineKey]--, [EntryIndex]
-		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], [Decimal1]
-	FROM @T2
+	SELECT DISTINCT
+		ROW_NUMBER () OVER(PARTITION BY T2.[EntryIndex]
+			ORDER BY T2.[Time1], T2.[LineKey], T2.[EntryIndex]
+		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], LDLK.[Decimal1]
+	FROM @T2 T2
+	JOIN dbo.[LineDefinitionLineKeys] LDLK ON T2.[LineKey] = LDLK.[Id]
+	WHERE T2.[MonetaryValue] <> 0;
 
 	INSERT INTO @Widelines
 	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries);
