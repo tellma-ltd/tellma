@@ -14,6 +14,8 @@ AS
 SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
 SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
 DECLARE @OldContractAmendmentLineDefinitionId INT;
+DECLARE @FunctionalCurrencyId NCHAR (3) = dal.fn_FunctionalCurrencyId();
+
 IF @ContractAmendmentLineDefinitionId <> 0
 BEGIN
 	DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
@@ -40,8 +42,8 @@ USING (
 	AND E.[Index] = @EntryIndex
 ) AS s ON (
 		(t.[LineDefinitionId]			= s.[LineDefinitionId])
-	AND	(t.[CenterId]					= s.[CenterId]						OR @CenterIsIncluded = 0)
-	AND	(t.[CurrencyId]					= s.[CurrencyId]					OR @CurrencyIsIncluded = 0)
+	AND	(ISNULL(t.[CenterId], -1)		= ISNULL(s.[CenterId], -1)			OR @CenterIsIncluded = 0)
+	AND	(ISNULL(t.[CurrencyId], -1)		= ISNULL(s.[CurrencyId], -1)		OR @CurrencyIsIncluded = 0)
 	AND (ISNULL(t.[AgentId], -1)		= ISNULL(s.[AgentId], -1)			OR @AgentIsIncluded = 0)
 	AND (ISNULL(t.[ResourceId], -1)		= ISNULL(s.[ResourceId], -1)		OR @ResourceIsIncluded = 0)
 	AND (ISNULL(t.[NotedAgentId], -1)	= ISNULL(s.[NotedAgentId], -1)		OR @NotedAgentIsIncluded = 0)
@@ -74,8 +76,8 @@ SET [LineKey] = T.[Id]
 FROM VLines V
 JOIN [LineDefinitionLineKeys] T
 ON T.[LineDefinitionId]				= V.[LineDefinitionId]
-AND	(T.[CenterId]					= V.[CenterId]						OR @CenterIsIncluded = 0)
-AND	(T.[CurrencyId]					= V.[CurrencyId]					OR @CurrencyIsIncluded = 0)
+AND	(ISNULL(T.[CenterId], -1)		= ISNULL(V.[CenterId], -1)			OR @CenterIsIncluded = 0)
+AND	(ISNULL(T.[CurrencyId], -1)		= ISNULL(V.[CurrencyId], -1)		OR @CurrencyIsIncluded = 0)
 AND (ISNULL(T.[AgentId], -1)		= ISNULL(V.[AgentId], -1)			OR @AgentIsIncluded = 0)
 AND (ISNULL(T.[ResourceId], -1)		= ISNULL(V.[ResourceId], -1)		OR @ResourceIsIncluded = 0)
 AND (ISNULL(T.[NotedAgentId], -1)	= ISNULL(V.[NotedAgentId], -1)		OR @NotedAgentIsIncluded = 0)

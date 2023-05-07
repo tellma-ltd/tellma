@@ -2,7 +2,9 @@
 RETURNS NCHAR(2)
 AS
 BEGIN
-	DECLARE @Hundreds SMALLINT = CAST(RIGHT(DB_NAME(),3) as SMALLINT) / 100;
+	DECLARE @PointPosition INT = CHARINDEX('.', DB_NAME());
+	DECLARE @TenantIdLength TINYINT = LEN(DB_NAME()) - @PointPosition;
+	DECLARE @Hundreds SMALLINT = CAST(RIGHT(DB_NAME(), @TenantIdLength) as SMALLINT) % 1000 / 100;
 	RETURN CASE
 		WHEN @Hundreds = 0 THEN N'SA' -- for Master
 		WHEN @Hundreds = 1 THEN N'SD'

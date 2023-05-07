@@ -12,7 +12,7 @@ BEGIN
 	BEGIN
 		SET @FullYears= [dbo].[fn_FromDate_ToDate__FullYears](@Calendar, @FromDate, @ToDate);
 		SET @FromDate = DATEADD(YEAR, @FullYears, @FromDate);
-		SET @ToDate = DATEADD(DAY, 1, @ToDate);
+--		SET @ToDate = DATEADD(DAY, 1, @ToDate); Commented, MA 2023-04-29
 	END
 	RETURN [dbo].[fn_FromDate_ToDate__FullMonths](@Calendar, @FromDate, @ToDate)
 END

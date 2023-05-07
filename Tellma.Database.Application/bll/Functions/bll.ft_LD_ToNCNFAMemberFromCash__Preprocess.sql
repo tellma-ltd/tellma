@@ -431,9 +431,7 @@ BEGIN
 	DECLARE @InvestmentPropertyNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'InvestmentProperty');
 	DECLARE @GoodwillNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'Goodwill');
 	DECLARE @IntangibleAssetsOtherThanGoodwillNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'IntangibleAssetsOtherThanGoodwill');
-
 	
-	DECLARE @Ownership INT = dal.fn_ResourceDefinition_Code__Id(N'FixedAssetsClaims',N'Ownership');
 	-- TODO: verify that the codes for VAT and ownership exist, before proceeding
 	UPDATE PWL
 	SET
@@ -442,7 +440,7 @@ BEGIN
 		[ResourceId0] = [NotedResourceId1],
 		[Quantity0] = [Quantity1],
 		[UnitId0] = dal.fn_Resource__UnitId([NotedResourceId1]),
-		[NotedResourceId0] = @Ownership,
+		[NotedResourceId0] = NULL,
 		
 		[EntryTypeId0] = CASE
 			WHEN AC.[Node].IsDescendantOf(@PropertyPlantAndEquipmentNode) = 1 THEN

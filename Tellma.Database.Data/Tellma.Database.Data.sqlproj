@@ -130,4 +130,33 @@
   <ItemGroup>
     <PostDeploy Include="Provisioning\__Main.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <SqlCmdVariable Include="DeployeEmail">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ShortCompanyName">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ShortCompanyName2">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__3)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ShortCompanyName3">
+      <DefaultValue>
+      </DefaultValue>
+      <Value>$(SqlCmdVar__4)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+  </ItemGroup>
 </Project>

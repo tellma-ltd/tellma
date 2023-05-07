@@ -439,7 +439,6 @@
 		[NotedDate15]				DATE,
 		[NotedResourceId15]			INT
 	)
-
 	AS
 	BEGIN
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
@@ -454,6 +453,7 @@
 	END
 
 	DECLARE @Hour INT = dal.fn_UnitCode__Id(N'hr'), @Day INT = dal.fn_UnitCode__Id(N'd');
+	DECLARE @LdEntryCount INT = (SELECT COUNT(*) FROM LineDefinitionEntries WHERE [LineDefinitionId] = @ContractLineDefinitionId);
 
 	-- @T splits any time limited line into two lines
 	DECLARE @T TABLE (
@@ -487,7 +487,7 @@
 		AND (@CenterId IS NULL OR CenterId = @CenterId)
 	),--select * from FilteredLines
 	FilteredEntries AS  (
-		SELECT FL.[LineKey], E.[Index] , E.[DurationUnitId], --FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index] , E.[DurationUnitId], --FL.[Decimal1],
 			IIF(E.[Time1]<= @FromDate, @FromDate, E.[Time1]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			[Quantity], [MonetaryValue], [Value], [NotedAmount]
@@ -498,7 +498,7 @@
 															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		UNION ALL
-		SELECT FL.[LineKey], E.[Index], E.[DurationUnitId], --FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index], E.[DurationUnitId], --FL.[Decimal1],
 			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			- [Quantity] AS [Quantity], - [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
@@ -516,6 +516,7 @@
 	SELECT [LineKey], [Index], [DurationUnitId], --MAX([Decimal1]) AS [Decimal1], 
 		[Time1], [Time2], [Direction], 
 		[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+	--	SUM([Direction] * [Quantity]), SUM([Direction] * [MonetaryValue]), SUM([Direction] * [Value]), SUM([Direction] * [NotedAmount])
 		SUM([Quantity]), SUM([MonetaryValue]), SUM([Value]), SUM([NotedAmount])
 	FROM FilteredEntries
 	GROUP BY [LineKey], [Index], [DurationUnitId],--[Decimal1], 
@@ -585,7 +586,7 @@
 		[EntryIndex] AS [Index], 0 AS [DocumentIndex],  0 AS [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		1, [UnitId], [MonetaryValue], [Value], [NotedAmount], [Time1], ISNULL([Time2], @ToDate) AS [Time2], [DurationUnitId]
 	FROM @T2
-	WHERE [MonetaryValue] <> 0;
+--	WHERE [MonetaryValue] <> 0; -- This causes an issue when the entry does not have a value but still part of line where other entries have values
 --	select * from @Entries order by [LineIndex], [Index];
 
 	--INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
@@ -597,15 +598,24 @@
 	-- MA: Commented above and replaces with below, 2023.04.05
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
 	SELECT DISTINCT
-		ROW_NUMBER () OVER(PARTITION BY T2.[EntryIndex]
-			ORDER BY T2.[Time1], T2.[LineKey], T2.[EntryIndex]
+		ROW_NUMBER () OVER(--PARTITION BY T2.[EntryIndex]
+			ORDER BY T2.[Time1], T2.[LineKey] --, T2.[EntryIndex]
 		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], LDLK.[Decimal1]
 	FROM @T2 T2
 	JOIN dbo.[LineDefinitionLineKeys] LDLK ON T2.[LineKey] = LDLK.[Id]
-	WHERE T2.[MonetaryValue] <> 0;
+	WHERE T2.[EntryIndex] = @EntryIndex
+--	AND T2.[MonetaryValue] <> 0; -- it is causing intermixing of resources here.
 
 	INSERT INTO @Widelines
-	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries);
+	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries) WHERE [MonetaryValue0] <> 0;
+
+	DECLARE @WidelinesSequencing TABLE ([Index] INT PRIMARY KEY IDENTITY (0, 1), [WLIndex] INT, UNIQUE([WLIndex]))
+	INSERT INTO @WidelinesSequencing ([WLIndex]) SELECT [Index] FROM @Widelines;
+
+	UPDATE WL
+	SET WL.[Index] = WS.[Index]
+	FROM @Widelines WL
+	JOIN @WidelinesSequencing WS ON WS.[WLIndex] = WL.[Index]
 
 	RETURN
 END

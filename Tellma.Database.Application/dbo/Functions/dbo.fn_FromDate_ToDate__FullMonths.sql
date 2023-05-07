@@ -10,8 +10,6 @@ BEGIN
 	DECLARE @FullYears INT, @FullMonths INT;
 	IF @Calendar = N'GC'
 	BEGIN
-		--SET @FullYears= [dbo].[fn_FromDate_ToDate__FullYears](@Calendar, @FromDate, @ToDate);
-		--SET @FromDate = DATEADD(YEAR, @FullYears, @FromDate);
 		SET @ToDate = DATEADD(DAY, 1, @ToDate);
 		SET @FullMonths =
 			CASE 
