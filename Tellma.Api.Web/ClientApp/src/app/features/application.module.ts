@@ -319,6 +319,8 @@ import { EmailComponent } from './email/email.component';
 import { EmailPreviewerComponent } from './email-previewer/email-previewer.component';
 import { EmailButtonComponent } from './email-button/email-button.component';
 import { EmailStandaloneComponent } from './email-standalone/email-standalone.component';
+import { LinkyModule } from 'ngx-linky';
+
 const routes: Routes = [
   {
     path: ':tenantId',
@@ -936,6 +938,7 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes),
     EllipsisModule,
+    LinkyModule
   ],
 })
 export class ApplicationModule {

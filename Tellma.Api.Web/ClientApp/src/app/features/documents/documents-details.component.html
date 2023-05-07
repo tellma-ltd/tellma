@@ -452,7 +452,7 @@
     <t-form-group *ngIf="showDocumentMemo(model)" class="t-form-group" [label]="'Memo' | translate"
         [labelContextMenu]="documentIsCommonMenu" labelContext="MemoIsCommon"
         [disableLabelMenu]="!(isEdit && showDocumentMemoIsCommon(model))" [serverErrors]="model?.serverErrors?.Memo">
-        <div *ngIf="!isEdit">{{ model?.Memo }}</div>
+        <div *ngIf="!isEdit" [innerHTML]="model?.Memo | linky"></div>
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="requireDocumentMemo(model)" [disabled]="readonlyDocumentMemo(model)">
         </t-text-editor>
@@ -1618,7 +1618,7 @@
             <t-form-group class="t-form-group" *ngIf="!showDocumentMemo(model)" [label]="'Memo' | translate"
                 [serverErrors]="manualLine(model)?.serverErrors?.Memo">
                 <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.Memo">
-                    <div>{{ manualLine(model)?.Memo }}</div>
+                    <div [innerHTML]="manualLine(model)?.Memo | linky"></div>
                 </t-restricted>
                 <t-text-editor *ngIf="isEdit" required [(ngModel)]="manualLine(model).Memo"
                     [ngModelOptions]="{ updateOn: 'blur' }">
@@ -2137,7 +2137,7 @@
         let-bookkeeping="argument">
         <t-form-group-dynamic class="t-form-group" [serverErrors]="line.serverErrors?.Memo">
             <div *ngIf="!isEdit || bookkeeping">
-                <t-restricted [metadata]="line.EntityMetadata?.Memo">{{ line.Memo }}</t-restricted>
+                <t-restricted [metadata]="line.EntityMetadata?.Memo"><span [innerHTML]="model?.Memo | linky"></span></t-restricted>
             </div>
             <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="line.Memo"
                 (ngModelChange)="update.call(null, pair)" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -2324,8 +2324,7 @@
                             </div>
                             <div *ngIf="!!reassignment(event).comment && !reassignment(event).isEdit"
                                 class="pt-1 pb-2 px-2" [style.margin-left.px]="marginLeft"
-                                [style.margin-right.px]="marginRight">
-                                {{ reassignment(event).comment }}
+                                [style.margin-right.px]="marginRight" [innerHTML]="reassignment(event).comment | linky">
                             </div>
                             <div *ngIf="reassignment(event).isEdit" class="pt-1 pb-2 px-2"
                                 [style.margin-left.px]="marginLeft" [style.margin-right.px]="marginRight">
