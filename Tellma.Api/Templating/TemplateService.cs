@@ -105,6 +105,7 @@ namespace Tellma.Api.Templating
                 [nameof(SA_InvoiceQrCode)] = SA_InvoiceQrCode(),
                 [nameof(Fact)] = Fact(env),
                 [nameof(Aggregate)] = Aggregate(env),
+                [nameof(Image)] = Image(env),
                 [nameof(PreviewWidth)] = PreviewWidth(),
                 [nameof(PreviewHeight)] = PreviewHeight(),
                 [nameof(List)] = List(),
@@ -281,6 +282,11 @@ namespace Tellma.Api.Templating
 
         private static async IAsyncEnumerable<Path> EntitiesPaths(TemplexBase[] args, EvaluationContext ctx)
         {
+            if (args.Length < 1 || args.Length > 5)
+            {
+                throw new TemplateException($"Function '{FuncNames.Entities}' expects arguments: (source, filter?, orderby?, top?, skip?).");
+            }
+
             int i = 0;
 
             var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
@@ -295,18 +301,12 @@ namespace Tellma.Api.Templating
 
         private static QueryEntitiesInfo QueryEntitiesInfo(params object[] args)
         {
-            int argCount = 5;
-            if (args.Length != argCount)
-            {
-                throw new TemplateException($"Function '{FuncNames.Entities}' expects {argCount} arguments.");
-            }
-
             int i = 0;
-            var sourceObj = args[i++];
-            var filterObj = args[i++];
-            var orderbyObj = args[i++];
-            var topObj = args[i++];
-            var skipObj = args[i++];
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var filterObj = args.Length > i ? args[i++] : null;
+            var orderbyObj = args.Length > i ? args[i++] : null;
+            var topObj = args.Length > i ? args[i++] : null;
+            var skipObj = args.Length > i ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.Entities);
 
@@ -376,6 +376,11 @@ namespace Tellma.Api.Templating
 
         private static async IAsyncEnumerable<Path> EntitiesByIdsPaths(TemplexBase[] args, EvaluationContext ctx)
         {
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{FuncNames.EntitiesByIds}' expects arguments: (source, ids).");
+            }
+
             int i = 0;
 
             var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
@@ -387,15 +392,9 @@ namespace Tellma.Api.Templating
 
         private static QueryEntitiesByIdsInfo QueryEntitiesByIdsInfo(params object[] args)
         {
-            int argCount = 2;
-            if (args.Length < argCount)
-            {
-                throw new TemplateException($"Function '{FuncNames.EntitiesByIds}' expects {argCount} arguments.");
-            }
-
             int i = 0;
-            var sourceObj = args[i++];
-            var idsObj = args[i++];
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var idsObj = args.Length > i ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.EntitiesByIds);
 
@@ -432,6 +431,11 @@ namespace Tellma.Api.Templating
 
         private static async IAsyncEnumerable<Path> EntityByIdPaths(TemplexBase[] args, EvaluationContext ctx)
         {
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{FuncNames.EntityById} ' expects arguments: (source, id).");
+            }
+
             int i = 0;
 
             var sourceObj = args.Length > i ? await args[i++].Evaluate(ctx) : null;
@@ -443,14 +447,10 @@ namespace Tellma.Api.Templating
 
         private static QueryEntityByIdInfo QueryByIdInfo(params object[] args)
         {
-            int argCount = 2;
-            if (args.Length != argCount)
-            {
-                throw new TemplateException($"Function '{FuncNames.EntityById}' expects {argCount} arguments.");
-            }
 
-            var sourceObj = args[0];
-            var id = args[1];
+            int i = 0;
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var id = args.Length > i ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, FuncNames.EntityById);
 
@@ -492,7 +492,7 @@ namespace Tellma.Api.Templating
             }
             else
             {
-                throw new TemplateException($"Function '{funcName}' requires a 1st parameter source of type string.");
+                throw new TemplateException($"Function '{funcName}' expects a 1st parameter source of type string.");
             }
 
             return (collection, definitionId);
@@ -512,24 +512,23 @@ namespace Tellma.Api.Templating
 
         private async Task<object> FactImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
         {
-            int argCount = 6;
-            if (args.Length != argCount)
+            if (args.Length < 2 || args.Length > 6)
             {
-                throw new TemplateException($"Function '{nameof(Fact)}' expects {argCount} arguments: (source, select, filter, orderby, top, skip).");
+                throw new TemplateException($"Function '{nameof(Fact)}' expects arguments: (source, select, filter?, orderby?, top?, skip?).");
             }
 
             int i = 0;
-            var sourceObj = args[i++];
-            var selectObj = args[i++];
-            var filterObj = args[i++];
-            var orderbyObj = args[i++];
-            var topObj = args[i++];
-            var skipObj = args[i++];
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var selectObj = args.Length > i ? args[i++] : null;
+            var filterObj = args.Length > i ? args[i++] : null;
+            var orderbyObj = args.Length > i ? args[i++] : null;
+            var topObj = args.Length > i ? args[i++] : null;
+            var skipObj = args.Length > i ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Fact));
 
             string select;
-            if (selectObj is null || selectObj is string) // Optional
+            if (selectObj is string) // Required
             {
                 select = selectObj as string;
             }
@@ -538,7 +537,7 @@ namespace Tellma.Api.Templating
                 throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter select of type string.");
             }
 
-            string filter;
+            string filter = null;
             if (filterObj is null || filterObj is string) // Optional
             {
                 filter = filterObj as string;
@@ -593,25 +592,23 @@ namespace Tellma.Api.Templating
 
         private async Task<object> AggregateImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
         {
-            int minArgCount = 2;
-            int maxArgCount = 6;
-            if (args.Length < minArgCount || args.Length > maxArgCount)
+            if (args.Length < 2 || args.Length > 6)
             {
-                throw new TemplateException($"Function '{nameof(Aggregate)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (source, select, filter, having, orderby, top).");
+                throw new TemplateException($"Function '{nameof(Aggregate)}' expects arguments: (source, select, filter?, having?, orderby?, top?).");
             }
 
             int i = 0;
-            var sourceObj = args[i++];
-            var selectObj = args[i++];
-            var filterObj = i < args.Length ? args[i++] : null;
-            var havingObj = i < args.Length ? args[i++] : null;
-            var orderbyObj = i < args.Length ? args[i++] : null;
-            var topObj = i < args.Length ? args[i++] : null;
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var selectObj = args.Length > i ? args[i++] : null;
+            var filterObj = args.Length > i ? args[i++] : null;
+            var havingObj = args.Length > i ? args[i++] : null;
+            var orderbyObj = args.Length > i ? args[i++] : null;
+            var topObj = args.Length > i ? args[i++] : null;
 
             var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Aggregate));
 
             string select;
-            if (selectObj is null || selectObj is string) // Optional
+            if (selectObj is string) // Required
             {
                 select = selectObj as string;
             }
@@ -661,6 +658,45 @@ namespace Tellma.Api.Templating
             }
 
             return await env.Client.GetAggregate(collection, definitionId, select, filter, having, orderby, top, env.Now, env.Cancellation);
+        }
+
+        #endregion
+
+        #region Image
+
+        private EvaluationFunction Image(TemplateEnvironment env)
+        {
+            return new EvaluationFunction(
+                functionAsync: (args, ctx) => ImageImpl(args, ctx, env));
+        }
+
+        private async Task<object> ImageImpl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{nameof(Image)}' expects arguments: (source, id).");
+            }
+
+            int i = 0;
+            var sourceObj = args.Length > i ? args[i++] : null;
+            var idObj = args.Length > i ? args[i++] : null;
+
+            var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Fact));
+
+            if(idObj is not int id)
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter select of type string.");
+            }
+
+            try
+            {
+                var imageResult = await env.Client.GetImage(collection, definitionId, id, env.Cancellation);
+                return "data:image/png;base64," + Convert.ToBase64String(imageResult.ImageBytes);
+            }
+            catch (NotFoundException)
+            {
+                return null;
+            }
         }
 
         #endregion
@@ -1282,7 +1318,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 3; // date, format, calendar
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(FormatDate)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (date, format, calendar).");
+                throw new TemplateException($"Function '{nameof(FormatDate)}' expects arguments: (date, format, calendar?).");
             }
 
             object dateObj = args[0];
@@ -1657,7 +1693,7 @@ namespace Tellma.Api.Templating
             int maxArgCount = 5;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(Barcode)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (value, barcodeType, includeLabel, height, barWidth).");
+                throw new TemplateException($"Function '{nameof(Barcode)}' expects at least {minArgCount} and at most {maxArgCount} arguments: (value, barcodeType?, includeLabel?, height?, barWidth?).");
             }
 
             // value
@@ -1831,7 +1867,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(ToInteger)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(ToInteger)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -1871,7 +1907,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(ToDecimal)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(ToDecimal)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -1911,7 +1947,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(ToDateTime)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(ToDateTime)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -1951,7 +1987,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(ToDateTimeOffset)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(ToDateTimeOffset)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -1991,7 +2027,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(ToBoolean)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(ToBoolean)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -2031,7 +2067,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(QueryQuote)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(QueryQuote)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -2064,7 +2100,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(QueryDateTime)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(QueryDateTime)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -2097,7 +2133,7 @@ namespace Tellma.Api.Templating
             int argCount = 1;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(QueryDateTimeOffset)}' expects a single argument value.");
+                throw new TemplateException($"Function '{nameof(QueryDateTimeOffset)}' expects {argCount} argument: (value).");
             }
 
             object val = args[0];
@@ -2131,7 +2167,7 @@ namespace Tellma.Api.Templating
             int argCount = 5;
             if (args.Length != argCount)
             {
-                throw new TemplateException($"Function '{nameof(SA_InvoiceQrCode)}' expects {argCount} parameters.");
+                throw new TemplateException($"Function '{nameof(SA_InvoiceQrCode)}' expects {argCount} arguments: (sellerName, vatNumber, timestamp, total, vat).");
             }
 
             // Seller name

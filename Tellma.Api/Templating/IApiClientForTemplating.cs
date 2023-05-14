@@ -1,8 +1,11 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2013.Excel;
+using SixLabors.ImageSharp.Processing;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tellma.Api.Dto;
 using Tellma.Model.Common;
 
 namespace Tellma.Api.Templating
@@ -76,5 +79,14 @@ namespace Tellma.Api.Templating
         /// <param name="cancellation">The cancellation instruction.</param>
         /// <returns>A list of aggregated <see cref="DynamicRow"/>s based on the arguments.</returns>
         Task<IReadOnlyList<DynamicRow>> GetAggregate(string collection, int? definitionId, string select, string filter, string having, string orderby, int? top, DateTimeOffset? now, CancellationToken cancellation);
+
+        /// <summary>
+        /// Invokes the API that retrieves the image of the entity with the given collection, definitionId, and Id.
+        /// </summary>
+        /// <param name="collection">The collection from which to get the entity.</param>
+        /// <param name="definitionId">The definition Id of the entity.</param>
+        /// <param name="id">The id of the entity whose image to retrieve.</param>
+        /// <returns>The <see cref="ImageResult"/> of the entity with the given collection, definitionId and Id.</returns>
+        Task<ImageResult> GetImage(string collection, int? definitionId, int id, CancellationToken cancellation);
     }
 }

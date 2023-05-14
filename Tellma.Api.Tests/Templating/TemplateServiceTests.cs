@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Tellma.Model.Common;
 using System.Threading;
 using System.Collections;
+using Tellma.Api.Dto;
 
 namespace Tellma.Api.Tests
 {
@@ -81,6 +82,11 @@ namespace Tellma.Api.Tests
             }
 
             public Task<IReadOnlyList<DynamicRow>> GetFact(string collection, int? definitionId, string select, string filter, string orderby, int? top, int? skip, DateTimeOffset? now, CancellationToken cancellation)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<ImageResult> GetImage(string collection, int? definitionId, int id, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }

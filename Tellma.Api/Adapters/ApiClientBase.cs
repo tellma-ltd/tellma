@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -158,6 +160,22 @@ namespace Tellma.Api
             };
         }
 
+        /// <summary>
+        /// Retrieves the <see cref="IImageGetter"/> implementation associated with a certain <see cref="Entity"/> type.
+        /// </summary>
+        protected virtual IImageGetter ImageGetterByCollectionName(IServiceProvider services, string collection, int? definitionId = null)
+        {
+            return collection switch
+            {
+                nameof(Agent) => definitionId != null ? services.GetRequiredService<AgentsService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Agent)} requires a definition Id"),
+                nameof(Resource) => definitionId != null ? services.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value) : throw new RequiredDefinitionIdException($"Collection {nameof(Resource)} requires a definition Id"),
+                nameof(User) => services.GetRequiredService<UsersService>(),
+
+                _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IImageGetter)} implementation.")
+            };
+
+        }
+
         #endregion
     }
 
@@ -298,6 +316,15 @@ namespace Tellma.Api
             return result.Data;
         }
 
+        public async Task<ImageResult> GetImage(string collection, int? definitionId, int entityId, CancellationToken cancellation)
+        {
+            using var scope = _services.CreateScope();
+
+            var service = ImageGetterByCollectionName(scope.ServiceProvider, collection, definitionId);
+            var result = await service.GetImage(entityId, cancellation);
+
+            return result;
+        }
     }
 
     /// <summary>

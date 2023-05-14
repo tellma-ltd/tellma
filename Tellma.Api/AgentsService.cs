@@ -17,7 +17,7 @@ using Tellma.Utilities.Common;
 
 namespace Tellma.Api
 {
-    public class AgentsService : CrudServiceBase<AgentForSave, Agent, int>
+    public class AgentsService : CrudServiceBase<AgentForSave, Agent, int>, IImageGetter
     {
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
@@ -47,6 +47,12 @@ namespace Tellma.Api
         /// <exception cref="InvalidOperationException"></exception>
         private new int DefinitionId => base.DefinitionId ??
             throw new InvalidOperationException($"DefinitionId was not set in {nameof(AgentsService)}.");
+
+        public new AgentsService SetDefinitionId(int definitionId)
+        {
+            base.SetDefinitionId(definitionId);
+            return this;
+        }
 
         /// <summary>
         /// The current TenantId.
