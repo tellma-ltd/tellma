@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -134,7 +135,7 @@ namespace Tellma.Client
         public virtual string ExpandForSave
             => _expandForSave ??= ClientUtil.ExpandForSave<TEntityForSave>();
 
-        private HttpContent ToJsonContent(object payload)
+        protected HttpContent ToJsonContent(object payload)
         {
             return JsonContent.Create(payload, options: new JsonSerializerOptions
             {
@@ -156,7 +157,7 @@ namespace Tellma.Client
                 IsSilent = request.IsSilent
             };
 
-            return await SetIsActive("activate", ids, req, cancellation);
+            return await PutAction("activate", ids, req, AddActionArgumentsToUrl, cancellation).ConfigureAwait(false);
         }
 
         protected async Task<EntitiesResult<TEntity>> DeactivateImpl(List<TKey> ids, Request<DeactivateArguments> request, CancellationToken cancellation = default)
@@ -168,10 +169,23 @@ namespace Tellma.Client
                 IsSilent = request.IsSilent
             };
 
-            return await SetIsActive("deactivate", ids, req, cancellation);
+            return await PutAction("deactivate", ids, req, AddActionArgumentsToUrl, cancellation).ConfigureAwait(false);
         }
 
-        private async Task<EntitiesResult<TEntity>> SetIsActive(string action, List<TKey> ids, Request<ActionArguments> request, CancellationToken cancellation = default)
+        protected void AddActionArgumentsToUrl(UriBuilder uri, ActionArguments args)
+        {
+            args ??= new ActionArguments();
+            uri.AddQueryParameter(nameof(args.Select), args.Select);
+            uri.AddQueryParameter(nameof(args.Expand), args.Expand);
+            uri.AddQueryParameter(nameof(args.ReturnEntities), args.ReturnEntities?.ToString());
+        }
+
+        protected async Task<EntitiesResult<TEntity>> PutAction<TArgs>(
+            string action, 
+            List<TKey> ids, 
+            Request<TArgs> request, 
+            Action<UriBuilder, TArgs> addArgs, 
+            CancellationToken cancellation = default) where TArgs : ActionArguments
         {
             if (ids == null || !ids.Any())
             {
@@ -182,10 +196,8 @@ namespace Tellma.Client
             var urlBldr = GetActionUrlBuilder(action);
 
             // Add query parameters
-            var args = request?.Arguments ?? new ActivateArguments();
-            urlBldr.AddQueryParameter(nameof(args.Select), args.Select);
-            urlBldr.AddQueryParameter(nameof(args.Expand), args.Expand);
-            urlBldr.AddQueryParameter(nameof(args.ReturnEntities), args.ReturnEntities?.ToString());
+            var args = request.Arguments;
+            addArgs(urlBldr, args); // Any other custom configuration
 
             // Prepare the message
             var method = HttpMethod.Put;
