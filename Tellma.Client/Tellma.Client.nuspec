@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Tellma.Client</id>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <title>Tellma.Client</title>
     <readme>README.md</readme>
     <authors>Tellma</authors>

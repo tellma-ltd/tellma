@@ -575,6 +575,7 @@ export interface DimensionInfo {
     label: () => string; // Mostly used when converting to a chart
 
     keyIndex?: number; // Value used for navigating the pivot hash (Id for entities or the value for value)
+    defIdIndex?: number; // Stores the index of the definition Id for definitioned dimensions
     parentKeyIndex?: number;
     indices?: number[]; // Either entity, multilingual or scalar
 

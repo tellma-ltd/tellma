@@ -109,7 +109,8 @@
                                     <td *ngIf="col.isVisible" class="t-report-dimension" [rowSpan]="col.rowSpan"
                                         [colSpan]="col.colSpan" [ngbPopover]="attributes" container="body"
                                         placement="bottom-left" triggers="click"
-                                        [disablePopover]="col.attributes.length === 0">
+                                        [disablePopover]="col.attributes.length === 0"
+                                        [class.t-drillable]="canDimensionClick(col)" (click)="onDimensionClick(col)">
                                         <ng-container *ngIf="hasChildren(col)">
                                             <button class="border-0 px-2 h-100 font-weight-normal"
                                                 style="background-color: transparent" (click)="onExpandColumn(col)">
@@ -182,7 +183,8 @@
                             <!-- Row Cell -->
                             <td class="t-report-dimension" [ngbPopover]="attributes" container="body"
                                 [placement]="rowAttributePlacement" triggers="mouseenter:mouseleave"
-                                [disablePopover]="row.attributes.length === 0 || !!singleRowDimension">
+                                [disablePopover]="row.attributes.length === 0 || !!singleRowDimension"
+                                [class.t-drillable]="canDimensionClick(row)" (click)="onDimensionClick(row)">
                                 <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
                                     style="background-color: transparent" [style.margin-left]="paddingLeft(row)"
                                     [style.margin-right]="paddingRight(row)" [style.opacity]="!hasChildren(row) ? 0 : 1"
@@ -297,7 +299,8 @@
 
                 <!-- Card -->
                 <ng-container *ngSwitchCase="'Card'">
-                    <div class="h-100 d-flex justify-content-center align-items-center py-4" *ngIf="supportsPoint;else notsupported">
+                    <div class="h-100 d-flex justify-content-center align-items-center py-4"
+                        *ngIf="supportsPoint;else notsupported">
                         <h1 class="display-4 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point
                             }} </h1>
                     </div>

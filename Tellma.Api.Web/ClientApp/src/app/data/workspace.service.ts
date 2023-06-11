@@ -740,6 +740,7 @@ export interface DimensionCell {
   info: DimensionInfo;
   value: any;
   valueId: any;
+  defId?: number;
   sortValue?: any; // Used for sorting if needed
   isExpanded: boolean; // When false, all children are hidden
   level: number; // Level in the dimension tree

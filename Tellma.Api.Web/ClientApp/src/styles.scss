@@ -1757,6 +1757,14 @@ table.t-report-table {
     color: $dark-primary;
   }
 
+  td.t-report-dimension.t-drillable {
+    cursor: pointer;
+  }
+
+  td.t-report-dimension.t-drillable:hover {
+    color: $dark-primary;
+  }
+
   td.t-report-measure.t-disable-drilldown {
     color: $gray-600;
   }
