@@ -1757,11 +1757,11 @@ table.t-report-table {
     color: $dark-primary;
   }
 
-  td.t-report-dimension.t-drillable {
+  td.t-report-dimension .t-drillable {
     cursor: pointer;
   }
 
-  td.t-report-dimension.t-drillable:hover {
+  td.t-report-dimension .t-drillable:hover {
     color: $dark-primary;
   }
 

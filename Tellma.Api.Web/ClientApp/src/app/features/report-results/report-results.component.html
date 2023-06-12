@@ -109,8 +109,7 @@
                                     <td *ngIf="col.isVisible" class="t-report-dimension" [rowSpan]="col.rowSpan"
                                         [colSpan]="col.colSpan" [ngbPopover]="attributes" container="body"
                                         placement="bottom-left" triggers="click"
-                                        [disablePopover]="col.attributes.length === 0"
-                                        [class.t-drillable]="canDimensionClick(col)" (click)="onDimensionClick(col)">
+                                        [disablePopover]="col.attributes.length === 0">
                                         <ng-container *ngIf="hasChildren(col)">
                                             <button class="border-0 px-2 h-100 font-weight-normal"
                                                 style="background-color: transparent" (click)="onExpandColumn(col)">
@@ -119,13 +118,17 @@
                                                 </fa-icon>
                                             </button>&nbsp;
                                         </ng-container>
-                                        <ng-container *ngTemplateOutlet="autocell; context: { 
+
+                                        <span [class.t-drillable]="canDimensionClick(col)"
+                                            (click)="onDimensionClick(col)">
+                                            <ng-container *ngTemplateOutlet="autocell; context: { 
                                                 value: col.value, 
                                                 desc: col.info.desc, 
                                                 isUndefined: !isDefined(col), 
                                                 entityDesc: col.info.entityDesc 
                                             }">
-                                        </ng-container>
+                                            </ng-container>
+                                        </span>
                                     </td>
                                     <ng-template #attributes>
                                         <ng-container *ngTemplateOutlet="dimattribtues; context: { dim: col }">
@@ -183,8 +186,7 @@
                             <!-- Row Cell -->
                             <td class="t-report-dimension" [ngbPopover]="attributes" container="body"
                                 [placement]="rowAttributePlacement" triggers="mouseenter:mouseleave"
-                                [disablePopover]="row.attributes.length === 0 || !!singleRowDimension"
-                                [class.t-drillable]="canDimensionClick(row)" (click)="onDimensionClick(row)">
+                                [disablePopover]="row.attributes.length === 0 || !!singleRowDimension">
                                 <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
                                     style="background-color: transparent" [style.margin-left]="paddingLeft(row)"
                                     [style.margin-right]="paddingRight(row)" [style.opacity]="!hasChildren(row) ? 0 : 1"
@@ -192,13 +194,15 @@
                                     <fa-icon icon="angle-right" [flip]="flipArrow(row)" [rotate]="rotateArrow(row)">
                                     </fa-icon>
                                 </button>&nbsp;
-                                <ng-container *ngTemplateOutlet="autocell; context: { 
-                                        value: row.value, 
-                                        desc: row.info.desc, 
-                                        isUndefined: !isDefined(row), 
-                                        entityDesc: row.info.entityDesc 
-                                    }">
-                                </ng-container>
+                                <span [class.t-drillable]="canDimensionClick(row)" (click)="onDimensionClick(row)">
+                                    <ng-container *ngTemplateOutlet="autocell; context: { 
+                                            value: row.value, 
+                                            desc: row.info.desc, 
+                                            isUndefined: !isDefined(row), 
+                                            entityDesc: row.info.entityDesc 
+                                        }">
+                                    </ng-container>
+                                </span>
                             </td>
 
                             <ng-template #attributes>
