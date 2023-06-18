@@ -823,7 +823,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     const def = this.definition;
     if (def.CenterFilter) {
-      return `${prefix} or (${def.CenterFilter})`;
+      return `${prefix} and (${def.CenterFilter})`;
     } else {
       return prefix;
     }

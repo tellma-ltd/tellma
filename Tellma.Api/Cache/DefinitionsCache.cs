@@ -750,7 +750,7 @@ namespace Tellma.Api
                     Label3 = p.Label3,
                     Control = p.Control,
                     ControlOptions = p.ControlOptions,
-                    Visibility = p.Visibility // This one can't be 'None'
+                    Visibility = MapVisibility(p.Visibility)
                 })?.ToList() ?? new List<LineDefinitionGenerateParameterForClient>(),
             };
 
@@ -842,7 +842,7 @@ namespace Tellma.Api
             var unitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var durationUnitFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var lineDef in documentLineDefinitions)
+            foreach (var lineDef in documentLineDefinitions.Where(e => e.Code != ManualLine))
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader == InheritsFrom.DocumentHeader))
                 {
@@ -1271,11 +1271,11 @@ namespace Tellma.Api
                                 // Accumulate all the filter atoms in the hash set
                                 if (string.IsNullOrWhiteSpace(colDef.Filter))
                                 {
-                                    unitFilters = null; // It means no filters will be added
+                                    durationUnitFilters = null; // It means no filters will be added
                                 }
-                                else if (unitFilters != null)
+                                else if (durationUnitFilters != null)
                                 {
-                                    unitFilters.Add(colDef.Filter);
+                                    durationUnitFilters.Add(colDef.Filter);
                                 }
                             }
                             break;
