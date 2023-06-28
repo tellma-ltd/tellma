@@ -23,7 +23,7 @@ using Tellma.Utilities.Sms;
 
 namespace Tellma.Api
 {
-    public class UsersService : CrudServiceBase<UserForSave, User, int>
+    public class UsersService : CrudServiceBase<UserForSave, User, int>, IImageGetter
     {
         private static readonly Random _rand = new();
         private static readonly PhoneAttribute phoneAtt = new();

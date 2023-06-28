@@ -313,8 +313,7 @@
         *ngIf="showDocumentUnit(model)">
         <ng-container *ngIf="model?.UnitIsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.UnitId">
-                <t-view-link [link]="'../../../units/' + ws.get('Unit', model?.UnitId)?.DefinitionId"
-                    [itemId]="model?.UnitId">
+                <t-view-link link="../../../units/" [itemId]="model?.UnitId">
                     {{ ws.getMultilingualValue('Unit', model?.UnitId, 'Name') }}
                 </t-view-link>
             </t-restricted>
@@ -359,8 +358,7 @@
         [serverErrors]="model?.serverErrors?.DurationUnitId" *ngIf="showDocumentDurationUnit(model)">
         <ng-container *ngIf="model?.DurationUnitIsCommon; else perTab">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DurationUnitId">
-                <t-view-link [link]="'../../../units/' + ws.get('Unit', model?.DurationUnitId)?.DefinitionId"
-                    [itemId]="model?.DurationUnitId">
+                <t-view-link link="../../../units/" [itemId]="model?.DurationUnitId">
                     {{ ws.getMultilingualValue('Unit', model?.DurationUnitId, 'Name') }}
                 </t-view-link>
             </t-restricted>
@@ -766,9 +764,12 @@
                         <div *ngSwitchCase="'Duration'" class="t-right-aligned">
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4' }}</span>
                         </div>
-                        <span *ngSwitchCase="'DurationUnitId'">{{ ws.getMultilingualValue('Unit',
-                            getFieldValue(lineDefId,
-                            columnIndex, line, model), 'Name') }}</span>
+
+                        <t-view-link *ngSwitchCase="'DurationUnitId'" link="../../../units"
+                            [itemId]="getFieldValue(lineDefId, columnIndex, line, model)">
+                            {{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line, model),
+                            'Name') }}
+                        </t-view-link>
 
                         <span *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line, model) | dateFormat
                             }}</span>
@@ -796,6 +797,10 @@
                             'No') | translate }}</span>
 
                         <div *ngSwitchCase="'Decimal1'" class="t-right-aligned">
+                            <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
+                                accounting:'1.0-4' }}</span>
+                        </div>
+                        <div *ngSwitchCase="'Decimal2'" class="t-right-aligned">
                             <span>{{ getFieldValue(lineDefId, columnIndex, line, model) |
                                 accounting:'1.0-4' }}</span>
                         </div>
@@ -1360,7 +1365,8 @@
                     <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                         {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
                     </button>
-                    <button *ngIf="isEdit" ngbDropdownItem class="t-transparent-background" (click)="onCloneSmartLine(line, model, isEdit)">
+                    <button *ngIf="isEdit" ngbDropdownItem class="t-transparent-background"
+                        (click)="onCloneSmartLine(line, model, isEdit)">
                         {{ 'Clone' | translate }}
                     </button>
                 </div>
@@ -2137,7 +2143,8 @@
         let-bookkeeping="argument">
         <t-form-group-dynamic class="t-form-group" [serverErrors]="line.serverErrors?.Memo">
             <div *ngIf="!isEdit || bookkeeping">
-                <t-restricted [metadata]="line.EntityMetadata?.Memo"><span [innerHTML]="model?.Memo | linky"></span></t-restricted>
+                <t-restricted [metadata]="line.EntityMetadata?.Memo"><span
+                        [innerHTML]="line?.Memo | linky"></span></t-restricted>
             </div>
             <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="line.Memo"
                 (ngModelChange)="update.call(null, pair)" [ngModelOptions]="{ updateOn: 'blur' }">
@@ -2471,12 +2478,14 @@
 
     <!-- body -->
     <div class="modal-body">
-        <t-form-group *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey"
-            class="t-form-group" style="margin-top:0!important" [label]="parameterLabel(param)">
-            <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
-                [ngModelOptions]="{ updateOn: updateOn(param) }" [showCreate]="true">
-            </t-editor>
-        </t-form-group>
+        <ng-container *ngFor="let param of autoGenerateLineDef.GenerateParameters; trackBy: trackByKey">
+            <t-form-group *ngIf="!!param.Visibility && param.Visibility !== 'None'" class="t-form-group"
+                style="margin-top:0!important" [label]="parameterLabel(param)">
+                <t-editor [(ngModel)]="autoGenerateArgs[param.Key]" [desc]="parameterDesc(param)"
+                    [ngModelOptions]="{ updateOn: updateOn(param) }" [showCreate]="true">
+                </t-editor>
+            </t-form-group>
+        </ng-container>
     </div>
 
     <!-- footer -->

@@ -1,5 +1,6 @@
 ﻿using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,28 +27,32 @@ namespace Tellma.IntegrationTests.Scenario_01
         }
 
 
-        [Fact(DisplayName = "Retrieve top 5 accounts ordered by Id")]
-        public async Task RetrieveTop5Accounts()
+        [Fact(DisplayName = "Assign document by Id")]
+        public async Task RetrieveTop5Entries()
         {
+            var builder = new ConfigurationBuilder().AddUserSecrets<Scenario_01_Tests>();
+            var config = builder.Build();
+            var options = new TellmaOptions();
+            config.GetSection("Tellma").Bind(options);
+
             var client = new TellmaClient(
                 baseUrl: "https://web.tellma.com",
                 authorityUrl: "https://web.tellma.com",
-                clientId: "<your-client-id>",
-                clientSecret: "<your-client-secret>");
+                clientId: options.ClientId,
+                clientSecret: options.ClientSecret);
 
             var response = await client
-                .Application(tenantId: 201)
-                .Accounts
-                .GetEntities(new GetArguments
-                    {
-                        Select = "Id,Name,Name2,Code",
-                        OrderBy = "Id",
-                        Top = 5
-                    });
+                .Application(tenantId: 100)
+                .Documents(1)
+                .Assign(new List<int> { 5302 }, new AssignArguments
+                {
+                    AssigneeId = 5,
+                    Comment = "For your care"
+                });
 
-            var accounts = response.Data;
+            var entries = response.Data;
 
-            // Do something with accounts
+            // Do something with entries
         }
 
         [Fact(DisplayName = "Pinging general settings succeeds")]
@@ -486,5 +491,11 @@ namespace Tellma.IntegrationTests.Scenario_01
                 return Task.FromResult(_accessToken);
             }
         }
+    }
+
+    public class TellmaOptions
+    {
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
     }
 }

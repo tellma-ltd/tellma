@@ -768,6 +768,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const keyString = QueryexUtil.stringify(keyExp, args, infos);
       if (!!entityDesc) {
         dimInfo.keyIndex = addAtom(keyString + '.Id');
+        
+        if (!entityDesc.definitionId && !!entityDesc.definitionIds) {
+          // Add the definitionId to support drill-through
+          dimInfo.defIdIndex = addAtom(keyString + '.DefinitionId');
+        }
 
         if (!!dispExp) {
           let indices: number[] = [];
@@ -1200,6 +1205,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  private extractDefinitionId(g: DynamicRow, dimension: DimensionInfo, offset = 0): number {
+    return !!dimension.defIdIndex ? g[dimension.defIdIndex - offset] : null;
+  }
+
   public get pivot(): PivotTable {
     // The various parts of the pivot table bind to what is returned by this property
     const s = this.state;
@@ -1259,6 +1268,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             if (!parent) {
               const gAncestor = ancestorGroup.ancestors[parentId]; // if this is undefined, the server didn't do its job right
               const valueParent = this.extractValue(gAncestor, dimInfo, ancestorGroup.minIndex);
+              const defIdParent = this.extractDefinitionId(gAncestor, dimInfo, ancestorGroup.minIndex);
               const grandParentId = gAncestor[dimInfo.parentKeyIndex - ancestorGroup.minIndex];
               const grandParent = addAncestor(grandParentId, dimInfo, prevHash, ancestorGroup);
               const prevHashLevel = prevHash.cell ? prevHash.cell.level : -1;
@@ -1267,6 +1277,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 info: dimInfo,
                 value: valueParent,
                 valueId: parentId,
+                defId: defIdParent,
                 isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
                 level: grandParent ? grandParent.level + 1 : 0,
                 index: 0, // computed later in flatten()
@@ -1316,6 +1327,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             for (const dimInfo of dimensionInfos) {
               const valueId = g[dimInfo.keyIndex];
               const value = this.extractValue(g, dimInfo); // Could be array
+              const defId = this.extractDefinitionId(g, dimInfo);
               let currentHash: PivotHash;
 
               // Either go down the values or the undefined route
@@ -1361,6 +1373,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                   info: dimInfo,
                   value,
                   valueId,
+                  defId,
                   isExpanded: dimInfo.autoExpandLevel > (level - prevHashLevel) - 1, // adjusted in flatten
                   level,
                   index: 0, // Computed later in flatten()
@@ -2137,6 +2150,28 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     // Drilldown with the filter
     this.drilldown(filter);
+  }
+
+  public canDimensionClick(cell: DimensionCell): boolean {
+    return !!cell.info.entityDesc;
+  }
+
+  public onDimensionClick(cell: DimensionCell) {
+    if (this.canDimensionClick(cell)) {
+        // Drilldown to the default entity details screen
+        const tenantId = this.workspace.ws.tenantId;
+        const entityId = cell.valueId;
+        const screenUrlSegments = cell.info.entityDesc.masterScreenUrl.split('/');
+        
+        if (!!cell.info.entityDesc.definitionIds) {
+          // A definitioned dimension
+          const definitionId = cell.defId || cell.info.entityDesc.definitionId;
+          this.router.navigate(['app', tenantId + '', ...screenUrlSegments, definitionId, entityId]);
+        } else {
+          // A non-definitioned dimension
+          this.router.navigate(['app', tenantId + '', ...screenUrlSegments, entityId]);
+        }
+    }
   }
 
   private drilldown(cellFilter: string) {

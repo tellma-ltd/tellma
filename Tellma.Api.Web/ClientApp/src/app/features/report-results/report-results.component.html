@@ -118,13 +118,17 @@
                                                 </fa-icon>
                                             </button>&nbsp;
                                         </ng-container>
-                                        <ng-container *ngTemplateOutlet="autocell; context: { 
+
+                                        <span [class.t-drillable]="canDimensionClick(col)"
+                                            (click)="onDimensionClick(col)">
+                                            <ng-container *ngTemplateOutlet="autocell; context: { 
                                                 value: col.value, 
                                                 desc: col.info.desc, 
                                                 isUndefined: !isDefined(col), 
                                                 entityDesc: col.info.entityDesc 
                                             }">
-                                        </ng-container>
+                                            </ng-container>
+                                        </span>
                                     </td>
                                     <ng-template #attributes>
                                         <ng-container *ngTemplateOutlet="dimattribtues; context: { dim: col }">
@@ -190,13 +194,15 @@
                                     <fa-icon icon="angle-right" [flip]="flipArrow(row)" [rotate]="rotateArrow(row)">
                                     </fa-icon>
                                 </button>&nbsp;
-                                <ng-container *ngTemplateOutlet="autocell; context: { 
-                                        value: row.value, 
-                                        desc: row.info.desc, 
-                                        isUndefined: !isDefined(row), 
-                                        entityDesc: row.info.entityDesc 
-                                    }">
-                                </ng-container>
+                                <span [class.t-drillable]="canDimensionClick(row)" (click)="onDimensionClick(row)">
+                                    <ng-container *ngTemplateOutlet="autocell; context: { 
+                                            value: row.value, 
+                                            desc: row.info.desc, 
+                                            isUndefined: !isDefined(row), 
+                                            entityDesc: row.info.entityDesc 
+                                        }">
+                                    </ng-container>
+                                </span>
                             </td>
 
                             <ng-template #attributes>
@@ -297,7 +303,8 @@
 
                 <!-- Card -->
                 <ng-container *ngSwitchCase="'Card'">
-                    <div class="h-100 d-flex justify-content-center align-items-center py-4" *ngIf="supportsPoint;else notsupported">
+                    <div class="h-100 d-flex justify-content-center align-items-center py-4"
+                        *ngIf="supportsPoint;else notsupported">
                         <h1 class="display-4 t-report-measure mx-5 {{ pointClass }}" (click)="onPointSelect()"> {{ point
                             }} </h1>
                     </div>

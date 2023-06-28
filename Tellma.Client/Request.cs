@@ -41,6 +41,7 @@ namespace Tellma.Client
         /// </summary>
         public static implicit operator Request<T>(T args) => new Request<T> { Arguments = args };
     }
+
     public enum Calendar
     {
         /// <summary>
