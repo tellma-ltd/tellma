@@ -421,20 +421,21 @@ BEGIN
 	WHERE L.[DefinitionId] <> @ManualLineLD
 	AND L.[DefinitionId] IN (SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [GenerateScript] IS NULL);
 
-	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 1
-	UPDATE E
-	SET
-		E.[CenterId] = dal.fn_BusinessUnit__FundResponsibilityCenterId(D.[CenterId]) -- if Not BU, we get the BU
-	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN @D D ON E.[DocumentIndex] = D.[Index] AND L.[DocumentIndex] = D.[Index]
-	JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
-	JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
-	WHERE D.[CenterId] IS NOT NULL
-	AND (AC.[Node].IsDescendantOf(@CurrentAssetsNode) = 1
-	OR AC.[Node].IsDescendantOf(@EquityNode) = 1
-	OR AC.[Node].IsDescendantOf(@CurrentLiabilitiesNode) = 1
-	OR dal.fn_Center__IsLeaf(D.[CenterId]) = 1);
+	-- MA: Commented 2023-06-03. It calls a function that does not even exist
+	--IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitAsSecurityZone') = 1
+	--UPDATE E
+	--SET
+	--	E.[CenterId] = dal.fn_BusinessUnit__FundResponsibilityCenterId(D.[CenterId]) -- if Not BU, we get the BU
+	--FROM @PreprocessedEntries E
+	--JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	--JOIN @D D ON E.[DocumentIndex] = D.[Index] AND L.[DocumentIndex] = D.[Index]
+	--JOIN [dbo].[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND LDE.[Index] = E.[Index]
+	--JOIN [dbo].[AccountTypes] AC ON LDE.[ParentAccountTypeId] = AC.[Id]
+	--WHERE D.[CenterId] IS NOT NULL
+	--AND (AC.[Node].IsDescendantOf(@CurrentAssetsNode) = 1
+	--OR AC.[Node].IsDescendantOf(@EquityNode) = 1
+	--OR AC.[Node].IsDescendantOf(@CurrentLiabilitiesNode) = 1
+	--OR dal.fn_Center__IsLeaf(D.[CenterId]) = 1);
 	
 	DECLARE @LineEntries TABLE (
 			[Index] INT, 

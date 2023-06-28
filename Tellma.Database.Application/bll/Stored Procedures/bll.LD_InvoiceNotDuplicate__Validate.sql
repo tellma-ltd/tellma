@@ -26,22 +26,22 @@ SELECT DISTINCT TOP (@Top)
 			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].LineDefinitionEntries[' + CAST(FDLDE.[Index] AS NVARCHAR (255)) + N'].' + @ErrorFieldName
 		ELSE
 			N'[' + CAST(FD.[Index] AS NVARCHAR (255)) + N'].Lines[' + CAST(FL.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR (255)) + '].' + @ErrorFieldName
-	END,
-	dal.fn_ErrorNames_Index___Localize(@ErrorNames, 0)  AS ErrorMessage,
-	BD.[Code]
+	END AS [Key],
+	dal.fn_ErrorNames_Index___Localize(@ErrorNames, 0)  AS [ErrorName],
+	BD.[Code] AS [Argument0]
 FROM @Documents FD
 JOIN @Lines FL ON FL.[DocumentIndex] = FD.[Index]
 JOIN @Entries FE ON FE.[LineIndex] = FL.[Index] AND FE.[DocumentIndex] = FL.[DocumentIndex]
 LEFT JOIN @DocumentLineDefinitionEntries FDLDE 
 	ON FDLDE.[DocumentIndex] = FD.[Index] AND FDLDE.[LineDefinitionId] = FL.[DefinitionId] AND FDLDE.[EntryIndex] = FE.[Index]
-JOIN dbo.Entries BE ON BE.[AccountId] = FE.[AccountId] AND BE.[AgentId] = FE.[AgentId] AND BE.[NotedAgentId] = FE.[NotedAgentId]
+JOIN dbo.Entries BE ON BE.[AccountId] = FE.[AccountId] AND BE.[NotedAgentId] = FE.[NotedAgentId] --AND BE.[AgentId] = FE.[AgentId]
 AND BE.[Direction] = FE.[Direction]
 JOIN dbo.Lines BL ON BL.[Id] = BE.[LineId]
 JOIN map.Documents() BD ON BD.[Id] = BL.[DocumentId] 
 JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
-AND NAG.[Code] <> N'NullAgent'
+AND NAG.[Code] <> N'Null'
 AND BL.[State] >= 4;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)

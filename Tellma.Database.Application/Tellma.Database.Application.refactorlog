@@ -70,4 +70,10 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[EmployeeBenefits__TaxAndDeduct_MIC]" />
   </Operation>
+  <Operation Name="Move Schema" Key="68a07fd3-8db5-41ee-8b18-6c6643d3d090" ChangeDateTime="06/23/2023 15:06:36">
+    <Property Name="ElementName" Value="[dbo].[fn_CenterType__EntryType]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

@@ -133,7 +133,6 @@ BEGIN
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.IsActive = 0);
 
-
 	IF dal.fn_FeatureCode__IsEnabled(N'BusinessUnitGoneWithTheWind') = 0
 	BEGIN
 		-- The parent center in the uploaded list cannot have children
@@ -178,6 +177,14 @@ BEGIN
 		WHERE FE.[CenterType] = N'BusinessUnit' AND FE2.[CenterType] = N'BusinessUnit'
 	END
 	ELSE BEGIN
+		DECLARE @ControlAccountsExtensionNode HIERARCHYID = 
+			(SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'ControlAccountsExtension');
+		WITH ControlAccounts AS (
+			SELECT A.[Id]
+			FROM dbo.Accounts A
+			JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+			WHERE AC.[Node].IsDescendantOf(@ControlAccountsExtensionNode) = 1
+		)
 		-- Cannot have parent who is used in Entries
 		-- The parent center in the uploaded list cannot have children
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -187,17 +194,17 @@ BEGIN
 			[dbo].[fn_Localize](FE2.[Name], FE2.[Name2], FE2.[Name3]) AS ParentCenter
 		FROM @Entities FE 
 		JOIN @Entities FE2 ON FE.[ParentIndex] = FE2.[Index]
-		WHERE (FE2.Id IN (SELECT [CenterId] FROM dbo.Entries));
-
+		WHERE (FE2.Id IN (SELECT [CenterId] FROM dbo.Entries WHERE [AccountId] NOT IN (SELECT [Id] FROM ControlAccounts)))
+		UNION
 		-- The parent center in the db is used in Entries
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
 			N'Error_TheParentCenter0CannotHaveDescendants',
 			[dbo].[fn_Localize](BE.[Name], BE.[Name2], BE.[Name3]) AS ParentCenter
 		FROM @Entities FE 
 		JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
-		WHERE (BE.Id IN (SELECT [CenterId] FROM dbo.Entries));
+		WHERE (BE.Id IN (SELECT [CenterId] FROM dbo.Entries WHERE [AccountId] NOT IN (SELECT [Id] FROM ControlAccounts)));
 	END
 
 	-- Set @IsError

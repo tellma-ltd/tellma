@@ -11,9 +11,9 @@ BEGIN
 	DECLARE @JoiningDate DATE = dal.fn_Agent__FromDate(@EmployeeId);
 
 	DECLARE @AnnualLeaveRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'AnnualLeave');
-	DECLARE @TotalUsed DECIMAL (19, 6), @TotalAccruedLeaveDays DECIMAL (19, 6),	@AdditionalDays DECIMAL (19, 6)
+	DECLARE @TotalProvisioned DECIMAL (19, 6), @TotalAccruedLeaveDays DECIMAL (19, 6),	@AdditionalDays DECIMAL (19, 6)
 
-	SELECT	@TotalUsed = SUM(IIF(E.[Direction] = +1, E.[MonetaryValue], 0))
+	SELECT	@TotalProvisioned = SUM(IIF(E.[Direction] = -1, E.[Quantity], 0))
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
@@ -25,7 +25,7 @@ BEGIN
 	AND L.[PostingDate] <= @EndOfServiceDate;
 
 	SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays(@CountryId, @Calendar, @JoiningDate, @EndOfServiceDate);
-	SELECT @AdditionalDays = ISNULL(@TotalAccruedLeaveDays, 0) - ISNULL(@TotalUsed, 0)
+	SELECT @AdditionalDays = ISNULL(@TotalAccruedLeaveDays, 0) - ISNULL(@TotalProvisioned, 0)
 
 	RETURN @AdditionalDays
 END
