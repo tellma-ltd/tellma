@@ -172,6 +172,7 @@ BEGIN
 	LEFT JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[ColumnName] = N'PostingDate'
 	LEFT JOIN @DocumentLineDefinitionEntries DLDE ON D.[Index] = DLDE.[DocumentIndex] AND L.[DefinitionId] = DLDE.[LineDefinitionId] AND DLDE.[EntryIndex] = 0
 	WHERE @State >= 3
+	AND LD.LineType >= 100
 	AND L.[PostingDate] >= DATEADD(DAY, 1, GETDATE())
 
 	IF @State >= 2

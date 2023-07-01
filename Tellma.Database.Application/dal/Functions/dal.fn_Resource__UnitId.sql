@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dal].[fn_Resource__UnitId] (
+﻿oCREATE FUNCTION [dal].[fn_Resource__UnitId] (
 	@ResourceId INT
 )
 RETURNS INT
@@ -8,4 +8,4 @@ BEGIN
 		SELECT [UnitId] FROM [dbo].[Resources]
 		WHERE [Id] = @ResourceId
 	)
-END
+ENDm

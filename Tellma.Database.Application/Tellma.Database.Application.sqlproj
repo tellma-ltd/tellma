@@ -935,6 +935,7 @@
     <Build Include="dal\Functions\dal.fn_Account__Name2.sql" />
     <Build Include="bll\Functions\bll.fn_ResourceDefinitionPurchase__EntryType.sql" />
     <Build Include="dal\Functions\dal.fn_CenterType__EntryType.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__FromDate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
