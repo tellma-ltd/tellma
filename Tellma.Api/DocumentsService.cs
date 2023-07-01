@@ -2034,7 +2034,7 @@ namespace Tellma.Api
                                )
                             {
                                 // Line date cannot be in the future unless the document is of type Plan
-                                if (lineDef.LineType != LineTypes.Plan && line.PostingDate > DateTime.Today.AddDays(1))
+                                if (lineDef.LineType >= LineTypes.Event && line.PostingDate > DateTime.Today.AddDays(1))
                                 {
                                     ModelState.AddError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
                                         _localizer["Error_DateCannotBeInTheFuture"]);
