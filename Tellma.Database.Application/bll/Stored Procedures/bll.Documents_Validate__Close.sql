@@ -180,8 +180,10 @@ BEGIN
 
 	-- Verify that lines whose last state = approved meet the conditions to be approved
 	INSERT INTO @Lines(
-			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
-	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
+			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo],
+			[Decimal1], [Decimal2], [Boolean1], [Text1], [Text2])
+	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo],
+			L.[Decimal1], L.[Decimal2], L.[Boolean1], L.[Text1], L.[Text2]
 	FROM [dbo].[Lines] L
 	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
@@ -225,8 +227,10 @@ BEGIN
 	DELETE FROM @Lines; DELETE FROM @Entries;
 	-- Verify that lines whose last state = posted meet the conditions to be posted
 	INSERT INTO @Lines(
-			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo])
-	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo]
+			[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo],
+			[Decimal1], [Decimal2], [Boolean1], [Text1], [Text2])
+	SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo],
+			L.[Decimal1], L.[Decimal2], L.[Boolean1], L.[Text1], L.[Text2]
 	FROM [dbo].[Lines] L
 	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]

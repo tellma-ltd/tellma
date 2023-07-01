@@ -36,9 +36,11 @@ BEGIN
 			INSERT INTO @PreprocessedEntities
 			EXECUTE	dbo.sp_executesql @Script, N'
 				@DefinitionId INT,
-				@Entities [dbo].[AgentList] READONLY', 
+				@Entities [dbo].[AgentList] READONLY,
+				@UserId INT', 
 				@DefinitionId = @DefinitionId,
-				@Entities = @Entities;
+				@Entities = @Entities,
+				@UserId = @UserId; -- MA: added 2023.07.17
 		END TRY
 		BEGIN CATCH
 			DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();

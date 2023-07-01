@@ -822,7 +822,6 @@
     <Build Include="bll\Stored Procedures\bll.ExpensesByNature__Capitalize.sql" />
     <Build Include="bll\Stored Procedures\bll.AD__Validate.sql" />
     <Build Include="bll\Stored Procedures\bll.RD__Validate.sql" />
-    <Build Include="dbo\Functions\dbo.fn_CenterType__ExpenseByFunction.sql" />
     <Build Include="dal\Functions\dal.fn_Center__ExpenseByFunction_AgentId.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
@@ -922,8 +921,20 @@
     <Build Include="dal\Functions\dal.fn_Concept_Center_Currency_TradeAgent__Balance.sql" />
     <Build Include="dal\Functions\dal.fn_LineDefinition__Code.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_MIC.sql" />
-    <Build Include="wiz\Stored Procedures\wiz.EmployeeBenefits_MIC__TaxAndDeduct.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.EmployeeBenefits__TaxAndDeduct_MIC.sql" />
     <Build Include="wiz\Stored Procedures\wiz.EmployeeBenefits__TaxAndDeduct.sql" />
+    <Build Include="dal\Functions\dal.fn_LookupDefinitionCode__Id.sql" />
+    <Build Include="dal\Functions\dal.fn_Settings__GetCalendar.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateDiffWithPrecision.sql" />
+    <Build Include="dal\Functions\dal.fn_Unit__BaseAmount.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateDiffWithPrecision_V2.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.FixedAssets__Depreciate.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__Name.sql" />
+    <Build Include="dal\Functions\dal.fn_Center__Name2.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__Name.sql" />
+    <Build Include="dal\Functions\dal.fn_Account__Name2.sql" />
+    <Build Include="bll\Functions\bll.fn_ResourceDefinitionPurchase__EntryType.sql" />
+    <Build Include="dal\Functions\dal.fn_CenterType__EntryType.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

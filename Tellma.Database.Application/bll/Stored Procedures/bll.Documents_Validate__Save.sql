@@ -255,17 +255,24 @@ BEGIN
 	WHERE (E.AccountId IN (SELECT [Id] FROM IncomeStatementAccounts) AND C.[IsLeaf] = 0)
 
 	ELSE -- BusinessUnitGoneWithTheWind
-		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-			SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
-		N'Error_Center0IsNotLeaf',
-		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
-		NULL
+	WITH ControlAccounts AS (
+		SELECT A.[Id]
+		FROM dbo.Accounts A
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.[Node].IsDescendantOf(@ControlAccountsExtensionNode) = 1
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+		SELECT DISTINCT TOP (@Top)
+	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(L.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) +'].CenterId',
+	N'Error_Center0IsNotLeaf',
+	[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS [CenterName],
+	NULL
 	FROM @Documents FE
 	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 	JOIN dbo.Centers C ON E.[CenterId] = C.[Id]
 	WHERE (C.[IsLeaf] = 0)
+	AND E.[AccountId] NOT IN (SELECT [Id] FROM ControlAccounts)
 
 	-- Verify that no line has more than employee, to allow Employee T-account
 	/*
