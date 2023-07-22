@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Use the following command to generate a new package -->
+<!-- nuget pack Tellma.Client.csproj -IncludeReferencedProjects -Properties Configuration=Release -->
 <package >
   <metadata>
     <id>Tellma.Client</id>
