@@ -42,15 +42,13 @@ namespace Tellma.IntegrationTests.Scenario_01
                 clientSecret: options.ClientSecret);
 
             var response = await client
-                .Application(tenantId: 100)
+                .Application(tenantId: 301)
                 .Documents(1)
-                .Assign(new List<int> { 5302 }, new AssignArguments
-                {
-                    AssigneeId = 5,
-                    Comment = "For your care"
-                });
+                .Open(new List<int> { 28 });
 
             var entries = response.Data;
+
+            Assert.Null(entries);
 
             // Do something with entries
         }
