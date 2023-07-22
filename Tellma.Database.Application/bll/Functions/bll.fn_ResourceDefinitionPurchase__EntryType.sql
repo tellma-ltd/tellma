@@ -22,3 +22,4 @@ BEGIN
 	)
 	RETURN dal.fn_EntryTypeConcept__Id(@EntryTypeConcept)
 END
+GO

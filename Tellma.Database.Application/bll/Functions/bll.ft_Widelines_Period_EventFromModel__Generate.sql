@@ -541,6 +541,16 @@
 			HAVING SUM([MonetaryValue]) = 0
 		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
 	)
+	OR [Id] IN (
+		SELECT [Id]
+		FROM @T T1
+		JOIN (
+			SELECT [LineKey], [Time1], [Time2]
+			FROM @T
+			WHERE [MonetaryValue] <> 0
+		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
+		WHERE [MonetaryValue] = 0
+	)
 --	select * from @T   order by LineKey, time1, entryIndex; 
 
 	DECLARE @Lines LineList, @Entries EntryList;

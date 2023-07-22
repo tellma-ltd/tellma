@@ -935,6 +935,10 @@
     <Build Include="dal\Functions\dal.fn_Account__Name2.sql" />
     <Build Include="bll\Functions\bll.fn_ResourceDefinitionPurchase__EntryType.sql" />
     <Build Include="dal\Functions\dal.fn_CenterType__EntryType.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__FromDate.sql" />
+    <Build Include="bll\Functions\bll.ft_IFRS16.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DatedAmountList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IFRS16Schedule.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

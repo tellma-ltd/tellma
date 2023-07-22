@@ -51,7 +51,15 @@ AS
 		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 		JOIN FAAccountIds A ON E.AccountId = A.[Id]
 		WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
-		AND E.Time1 < @DepreciationPeriodStarts
+		--AND E.Time1 < @DepreciationPeriodStarts - MA, Commented 2023.07.02. Replaced with logic below
+		AND E.[ResourceId] IN ( -- for FA which were acquired before period start, we include any additions till period end
+			SELECT ResourceId
+			FROM Entries E
+			JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+			WHERE L.[State] = 4
+			AND Time1 < @DepreciationPeriodStarts
+		)
+		AND L.[PostingDate] <= @DepreciationPeriodEnds
 		GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId], A.[EntryTypeId]
 		HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 	),--select * from OpeningBalances
@@ -99,6 +107,7 @@ AS
 			N'AdditionsOtherThanThroughBusinessCombinationsIntangibleAssetsOtherThanGoodwill',
 			N'InternalTransferIntangibleAssetsOtherThanGoodwillExtension'
 			)
+		AND E.[ResourceId] NOT IN (SELECT [ResourceId] FROM OpeningBalances)
 		GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId], A.[EntryTypeId]
 		HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
 		OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0
