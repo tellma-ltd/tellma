@@ -10,6 +10,7 @@ BEGIN
 			OR [Code] = N'ServicesExpenses'
 			THEN N'PaymentsToSuppliersForGoodsAndServices'
 		WHEN [ResourceDefinitionType] IN (N'PropertyPlantAndEquipment',  N'InvestmentProperty')
+			OR [Code] = N'NonCurrentNonFinancialAssets'
 			THEN N'PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities'
 		WHEN [ResourceDefinitionType] = N'IntangibleAssetsOtherThanGoodwill'
 			THEN N'PurchaseOfIntangibleAssetsClassifiedAsInvestingActivities'

@@ -93,7 +93,10 @@ AS
 			SUM(E.[Direction] * E.[MonetaryValue]) AS [NetMonetaryValue],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue],
 			SUM(E.[Direction] * E.[NotedAmount]) AS [NetResidualMonetaryValue],
-			SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value]) / SUM(E.[Direction] * E.[MonetaryValue]) AS [NetResidualValue]
+						IIF(SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value]) = 0, 0, 
+				SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value])
+				/ SUM(E.[Direction] * E.[MonetaryValue]) 
+				) AS [NetResidualValue]
 		FROM map.DetailsEntries() E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]

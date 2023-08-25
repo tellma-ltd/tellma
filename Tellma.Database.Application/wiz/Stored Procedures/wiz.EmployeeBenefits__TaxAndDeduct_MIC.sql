@@ -54,9 +54,9 @@ WITH PeriodBenefitEntries AS (
 	FROM @Entries E
 	JOIN dbo.[Resources] R ON R.[Id] = E.[ResourceId]
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
-	WHERE AC.[Node].IsDescendantOf(@WagesAndSalariesNode) = 1
+--	Before saving, accounts are not detected yet, so we need to rely on resource definition.
+	JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R.[DefinitionId]
+	WHERE RD.[Code] = N'EmployeeBenefits'
 	AND (@EmployeeId IS NULL OR E.[NotedAgentId] = @EmployeeId)
 ) -- In SD, foreign currency benefits are translated to local currency for deductions
 INSERT INTO @PeriodBenefits([Id], [EmployeeId], [ResourceCode], --[CurrencyId], [MonetaryValue], 

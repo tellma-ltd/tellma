@@ -298,15 +298,20 @@ BEGIN
 
 	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
 	-- TODO make it depending on Account Type
+	DECLARE @StatementOfFinancialPositionAbstractNode
+		HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'StatementOfFinancialPositionAbstract');
 	UPDATE E 
 	SET
 		E.[CenterId] = R.[CenterId]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN [dbo].[Resources] R ON E.[ResourceId] = R.Id
-	JOIN [map].[Accounts]() A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for most smart screens
+	JOIN dbo.Resources R ON E.[ResourceId] = R.Id
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id] -- E.[AccountId] is NULL for most smart screens
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE AC.[Node].IsDescendantOf(@StatementOfFinancialPositionAbstractNode) = 1
 	AND R.[CenterId] IS NOT NULL
 	AND L.DefinitionId = @ManualLineLd
+
 
 	-- A resource can have a business unit only (e.g., a customer check)
 	-- or a POS center (e.g., a given product for sale)

@@ -531,7 +531,7 @@
 	FROM FilteredEntries
 	DELETE FROM @T
 	WHERE [Time2] < [Time1]
-	OR [Id] IN (
+	OR [Id] IN ( -- If a workflow (LineKey) adds up to zero, for a period [Time1, *], remove ALL entries
 		SELECT [Id]
 		FROM @T T1
 		JOIN (
@@ -541,16 +541,18 @@
 			HAVING SUM([MonetaryValue]) = 0
 		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
 	)
-	OR [Id] IN (
-		SELECT [Id]
-		FROM @T T1
-		JOIN (
-			SELECT [LineKey], [Time1], [Time2]
-			FROM @T
-			WHERE [MonetaryValue] <> 0
-		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
-		WHERE [MonetaryValue] = 0
-	)
+	-- MA: 2023-07-20, commented because not sure what the following does, 
+	-- it caused errors in July SS Contribution for Tenant (303)
+	--OR [Id] IN (
+	--	SELECT [Id]
+	--	FROM @T T1
+	--	JOIN (
+	--		SELECT [LineKey], [Time1], [Time2]
+	--		FROM @T
+	--		WHERE [MonetaryValue] <> 0
+	--	) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
+	--	WHERE [MonetaryValue] = 0
+	--)
 --	select * from @T   order by LineKey, time1, entryIndex; 
 
 	DECLARE @Lines LineList, @Entries EntryList;

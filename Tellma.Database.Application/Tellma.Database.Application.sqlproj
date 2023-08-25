@@ -939,6 +939,7 @@
     <Build Include="bll\Functions\bll.ft_IFRS16.sql" />
     <Build Include="dbo\User Defined Types\dbo.DatedAmountList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IFRS16Schedule.sql" />
+    <Build Include="dal\Functions\dal.ft_BankAccounts__Reconciled.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
