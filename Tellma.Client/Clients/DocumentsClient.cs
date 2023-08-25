@@ -44,7 +44,6 @@ namespace Tellma.Client
             AddActionArgumentsToUrl(uri, args);
             uri.AddQueryParameter(nameof(args.AssigneeId), args.AssigneeId + "");
             uri.AddQueryParameter(nameof(args.Comment), args.Comment);
-
         }
     }
 }

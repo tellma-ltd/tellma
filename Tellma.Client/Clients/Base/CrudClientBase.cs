@@ -196,7 +196,7 @@ namespace Tellma.Client
             var urlBldr = GetActionUrlBuilder(action);
 
             // Add query parameters
-            var args = request.Arguments;
+            var args = request?.Arguments;
             addArgs(urlBldr, args); // Any other custom configuration
 
             // Prepare the message
@@ -211,7 +211,7 @@ namespace Tellma.Client
             await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
 
             EntitiesResult<TEntity> result;
-            if (args.ReturnEntities ?? false)
+            if (args?.ReturnEntities ?? false)
             {
                 // Extract the response
                 var response = await httpResponse.Content
