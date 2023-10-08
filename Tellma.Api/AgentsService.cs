@@ -399,7 +399,7 @@ namespace Tellma.Api
             {
                 await _behavior.LogCustomScriptBug(
                     ex,
-                    collection: nameof(Resource),
+                    collection: nameof(Agent),
                     definitionId: DefinitionId,
                     defTitle: def.TitleSingular,
                     scriptName: "Validate Script",
