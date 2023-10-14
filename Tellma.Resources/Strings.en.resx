@@ -1231,6 +1231,9 @@
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>This screen definition is archived.</value>
   </data>
+  <data name="Error_DefinitionsUnderTesting0" xml:space="preserve">
+    <value>The number of definitions under testing reached the maximum limit of {0}.</value>
+  </data>
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
     <value>The {0} '{1}' uses foreign currencies.</value>
   </data>
@@ -1417,9 +1420,6 @@
   <data name="Error_RequiredStateCannotBeBeforeVisibleState" xml:space="preserve">
     <value>Required State cannot be before Visible State.</value>
   </data>
-  <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
-    <value>The balance for {0} '{1}' in {2} '{3}' will go negative in a later document {4}.</value>
-  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Resource DefinitionId '{0}' could not be found.</value>
   </data>
@@ -1446,6 +1446,9 @@
   </data>
   <data name="Error_The01IsDuplicated" xml:space="preserve">
     <value>The {0} '{1}' is duplicated.</value>
+  </data>
+  <data name="Error_The01IsUsedIn23" xml:space="preserve">
+    <value>The {0} '{1}' is used in {2} '{3}'.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
@@ -1570,6 +1573,12 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>The code '{0}' is already used.</value>
   </data>
+  <data name="Error_TheConcept0IsDuplicated" xml:space="preserve">
+    <value>The concept {0} is duplicated.</value>
+  </data>
+  <data name="Error_TheConcept0IsUsed" xml:space="preserve">
+    <value>The concept {0} is already used.</value>
+  </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>The exchange rate for currency '{0}' on date {1} is duplicated.</value>
   </data>
@@ -1620,6 +1629,9 @@
   </data>
   <data name="Error_TheEntryType0IsNotActive" xml:space="preserve">
     <value>The entry type '{0}' is not active.</value>
+  </data>
+  <data name="Error_TheEntryType0IsUnassignable" xml:space="preserve">
+    <value>The entry type '{0}' is abstract and cannot be assigned.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
     <value>The field {0} cannot be negative.</value>

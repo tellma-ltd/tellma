@@ -203,7 +203,7 @@
     <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
   <data name="Agent_DateOfBirth" xml:space="preserve">
-    <value>የትውልድ ቀን</value>
+    <value>የተወለደበት ቀን</value>
   </data>
   <data name="Agent_ExternalReference" xml:space="preserve">
     <value>ውጫዊ ማጣቀሻ</value>
@@ -1117,6 +1117,9 @@
   <data name="Error_DefinitionIsArchived" xml:space="preserve">
     <value>ይህ ማያ ገጽ ፍቺው ተመድቧል.</value>
   </data>
+  <data name="Error_DefinitionsUnderTesting0" xml:space="preserve">
+    <value>በፈተናው ስር ያሉት መግለጫዎች ብዛት {0} ከፍተኛው ወሰን ላይ ደርሷል.</value>
+  </data>
   <data name="Error_Document01HasForeignCurrency" xml:space="preserve">
     <value>{0} {1} 'የውጭ ምንዛሬዎችን ይጠቀማል.</value>
   </data>
@@ -1285,9 +1288,6 @@
   <data name="Error_RequiredStateCannotBeBeforeVisibleState" xml:space="preserve">
     <value>አስፈላጊ ሁኔታ ከሚታየው ሁኔታ በፊት መሆን አይችልም.</value>
   </data>
-  <data name="Error_Resource01AndAgent23AppearInLaterDocument4" xml:space="preserve">
-    <value>ሂሳብ ለ {0} F {1} '{2}' {2} '{2}' በኋላ ላይ አሉታዊ ይሆናል {4}.</value>
-  </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
     <value>የመረጃ ምንጭ '{0}' ማግኘት አልተቻለም.</value>
   </data>
@@ -1314,6 +1314,9 @@
   </data>
   <data name="Error_The01IsDuplicated" xml:space="preserve">
     <value>{0} {1} 'የተባዙ ናቸው.</value>
+  </data>
+  <data name="Error_The01IsUsedIn23" xml:space="preserve">
+    <value>{0} {1} 'ውስጥ ጥቅም ላይ ውሏል {2}' ውስጥ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>{0} {1} 'በመለያ ​​ጥቅም ላይ ይውላል' {2} '</value>
@@ -1438,6 +1441,12 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
+  <data name="Error_TheConcept0IsDuplicated" xml:space="preserve">
+    <value>ፅንሰ-ሀሳብ {0} የተባዙ ናቸው.</value>
+  </data>
+  <data name="Error_TheConcept0IsUsed" xml:space="preserve">
+    <value>ፅንሰ-ሀሳብ {0} ቀድሞውኑ ጥቅም ላይ ውሏል.</value>
+  </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
     <value>የምንዛሬ ተመን '{0}' ቀን {1} ቀን {1} የተባዛ ነው.</value>
   </data>
@@ -1488,6 +1497,9 @@
   </data>
   <data name="Error_TheEntryType0IsNotActive" xml:space="preserve">
     <value>የመግቢያው ዓይነት &lt;{0}&gt; ገባሪ አይደለም.</value>
+  </data>
+  <data name="Error_TheEntryType0IsUnassignable" xml:space="preserve">
+    <value>የመግቢያው አይነት &lt;{0}&gt; ረቂቅ ነው እና ሊመደቡ አይችሉም.</value>
   </data>
   <data name="Error_TheField0CannotBeNegative" xml:space="preserve">
     <value>እርሻው {0} አሉታዊ ሊሆኑ አይችሉም.</value>
@@ -1640,7 +1652,7 @@
     <value>የራስዎን አስተያየቶች ብቻ መለወጥ ይችላሉ.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የምንዛሬ ዋጋ</value>
+    <value>የመለወጫ ተመን</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>

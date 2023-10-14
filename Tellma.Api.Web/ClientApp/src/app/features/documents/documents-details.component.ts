@@ -2896,7 +2896,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onUnsign(signature: RequiredSignature) {
-    this.confirmationMessage = this.translate.instant('AreYouSureYouWantToDeleteYourSignature');
+    this.confirmationMessage = this.translate.instant('AreYouSureYouWantToDeleteThisSignature');
     const modalRef = this.modalService.open(this.confirmModal);
     modalRef.result.then(
       (confirmed: boolean) => {
@@ -2918,8 +2918,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public canUnsign(signature: RequiredSignature) {
-    return !!signature.SignedById && (signature.SignedById === this.ws.userSettings.UserId ||
-      signature.OnBehalfOfUserId === this.ws.userSettings.UserId);
+    const s = this.ws.settings;
+    let prefix: string;
+    if (s.FeatureFlags && s.FeatureFlags.RelyOnCanSignForUnsigning) {
+      return !!signature.SignedById && signature.CanSign;
+    } else {    
+      return !!signature.SignedById && (signature.SignedById === this.ws.userSettings.UserId ||
+        signature.OnBehalfOfUserId === this.ws.userSettings.UserId);
+    }
+
   }
 
   public disableUnsign(_: RequiredSignature, model: Document) {
