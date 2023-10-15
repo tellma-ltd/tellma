@@ -93,7 +93,11 @@ AS
 			SUM(E.[Direction] * E.[MonetaryValue]) AS [NetMonetaryValue],
 			SUM(E.[Direction] * E.[Value]) AS [NetValue],
 			SUM(E.[Direction] * E.[NotedAmount]) AS [NetResidualMonetaryValue],
-						IIF(SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value]) = 0, 0, 
+			-- When both num and denom are zero, we use zero.
+			-- This situation is not normal and only happens when user enters data
+			-- in some reverse order. But we added this handling to make the code bullet proof.
+			-- Ideally, we should handle wrong data entry first.
+			IIF(SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value]) = 0, 0, 
 				SUM(E.[Direction] * E.[NotedAmount]) * SUM(E.[Direction] * E.[Value])
 				/ SUM(E.[Direction] * E.[MonetaryValue]) 
 				) AS [NetResidualValue]

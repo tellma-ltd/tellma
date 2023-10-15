@@ -15,7 +15,8 @@ BEGIN
 	DECLARE @CenterType NVARCHAR (255) = dal.fn_Center__CenterType(@CenterId);
 
 	RETURN CASE
-		WHEN @CenterType = N'BusinessUnit' THEN @AdministrativeExpense
+		WHEN @CenterType = N'BusinessUnit' THEN ISNULL(@EntryTypeId, @AdministrativeExpense)
+
 		WHEN @CenterType = N'Administration' THEN @AdministrativeExpense
 		WHEN @CenterType = N'Marketing' THEN @DistributionCosts
 		WHEN @CenterType IN (N'Operation', 'CostOfSales') THEN @CostOfSales

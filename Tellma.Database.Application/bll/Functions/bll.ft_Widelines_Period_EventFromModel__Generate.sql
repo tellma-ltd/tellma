@@ -541,18 +541,19 @@
 			HAVING SUM([MonetaryValue]) = 0
 		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
 	)
-	-- MA: 2023-07-20, commented because not sure what the following does, 
-	-- it caused errors in July SS Contribution for Tenant (303)
-	--OR [Id] IN (
-	--	SELECT [Id]
-	--	FROM @T T1
-	--	JOIN (
-	--		SELECT [LineKey], [Time1], [Time2]
-	--		FROM @T
-	--		WHERE [MonetaryValue] <> 0
-	--	) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
-	--	WHERE [MonetaryValue] = 0
-	--)
+	-- MA: 2023-07-20, commented because it caused errors in July SS Contribution for Tenant (303)
+	-- MA: 2023-09-01, uncommented because it is needed to remove 0 results for amendments starting beginning of month
+	OR [Id] IN (
+		SELECT [Id]
+		FROM @T T1
+		JOIN (
+			SELECT [LineKey], [Time1], [Time2], [EntryIndex] --  MA: 2023-09-01 Added Entry Index 
+			FROM @T
+			WHERE [MonetaryValue] <> 0
+		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
+			AND T2.[EntryIndex] = T1.[EntryIndex] --  MA: 2023-09-01 Added to mitigate the SS Contribution 
+		WHERE [MonetaryValue] = 0
+	);
 --	select * from @T   order by LineKey, time1, entryIndex; 
 
 	DECLARE @Lines LineList, @Entries EntryList;
