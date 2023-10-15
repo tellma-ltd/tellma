@@ -9,7 +9,7 @@
 	[ResourceId]		INT,
 	[NotedAgentId]		INT,
 	[NotedResourceId]	INT, 
-    [Decimal1]			DECIMAL (19,6) NOT NULL
+    [Decimal1]			DECIMAL (19,6) NOT NULL DEFAULT (1)
 );
 GO
 CREATE UNIQUE INDEX IX_LineDefinitionsAgentsResourcesCurrencies ON

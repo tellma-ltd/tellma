@@ -274,6 +274,33 @@ BEGIN
 	DECLARE @CloseValidateScript NVARCHAR (MAX) = (SELECT [CloseValidateScript] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 	IF @CloseValidateScript IS NOT NULL
 	BEGIN TRY
+		DELETE FROM @Lines; DELETE FROM @Entries;
+		-- Pass @Lines and @Entries to the vlidate script
+		INSERT INTO @Lines(
+				[Index],	[DocumentIndex],[Id],	[DefinitionId], [PostingDate],	[Memo],
+				[Decimal1], [Decimal2], [Boolean1], [Text1], [Text2])
+		SELECT	L.[Index],	FE.[Index],	L.[Id], L.[DefinitionId], L.[PostingDate], L.[Memo],
+				L.[Decimal1], L.[Decimal2], L.[Boolean1], L.[Text1], L.[Text2]
+		FROM [dbo].[Lines] L
+		JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
+		JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
+		JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
+
+		INSERT INTO @Entries (
+			[Index], [LineIndex], [DocumentIndex], [Id],
+			[Direction], [AccountId], [CurrencyId], [AgentId], [NotedAgentId], [ResourceId], [NotedResourceId], [CenterId],
+			[EntryTypeId], [MonetaryValue], [Quantity], [UnitId], [Value], [RValue], [PValue], [Time1],
+			[Time2], [ExternalReference], [ReferenceSourceId], [InternalReference], [NotedAgentName],
+			[NotedAmount], [NotedDate])
+		SELECT
+			E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
+			E.[Direction],E.[AccountId],E.[CurrencyId], E.[AgentId], E.[NotedAgentId],E.[ResourceId],E.[NotedResourceId], E.[CenterId],
+			E.[EntryTypeId], E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value], E.[RValue], E.[PValue], E.[Time1],
+			E.[Time2],E.[ExternalReference], E.[ReferenceSourceId], E.[InternalReference],E.[NotedAgentName],
+			E.[NotedAmount],E.[NotedDate]
+		FROM [dbo].[Entries] E
+		JOIN @Lines L ON E.[LineId] = L.[Id];
+
 		INSERT INTO @ValidationErrors
 		EXECUTE	dbo.sp_executesql @CloseValidateScript, N'
 			@DefinitionId INT,

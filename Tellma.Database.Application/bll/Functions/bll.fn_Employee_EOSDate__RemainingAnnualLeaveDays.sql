@@ -13,7 +13,7 @@ BEGIN
 	DECLARE @AnnualLeaveRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'AnnualLeave');
 	DECLARE @TotalProvisioned DECIMAL (19, 6), @TotalAccruedLeaveDays DECIMAL (19, 6),	@AdditionalDays DECIMAL (19, 6)
 
-	SELECT	@TotalProvisioned = SUM(IIF(E.[Direction] = -1, E.[Quantity], 0))
+	SELECT	@TotalProvisioned = SUM(IIF(E.[Direction] = +1, E.[Quantity], 0))
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
