@@ -226,9 +226,6 @@
   <data name="AgentDefinition" xml:space="preserve">
     <value>تعريف الذمة</value>
   </data>
-  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>تعريف تصنيفات المرفقات</value>
-  </data>
   <data name="AgentDefinition_UserCardinality" xml:space="preserve">
     <value>عدد المستخدمين</value>
   </data>
@@ -516,6 +513,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>أرشفة</value>
+  </data>
+  <data name="Definition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>تعريف تصنيفات المرفقات</value>
   </data>
   <data name="Definition_Control" xml:space="preserve">
     <value>نوع الحقل</value>
@@ -2940,6 +2940,9 @@
   </data>
   <data name="Resource_Agent2" xml:space="preserve">
     <value>الذمة 2</value>
+  </data>
+  <data name="Resource_Attachments" xml:space="preserve">
+    <value>المرفقات</value>
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>

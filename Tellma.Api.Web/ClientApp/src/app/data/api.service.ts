@@ -623,7 +623,18 @@ export class ApiService {
   public resourcesApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Resource>(`resources/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Resource>(`resources/${definitionId}`, cancellationToken$)
+      deactivate: this.deactivateFactory<Resource>(`resources/${definitionId}`, cancellationToken$),
+      getAttachment: (resourceId: string | number, attachmentId: string | number) => {
+        const url = appsettings.apiAddress + `api/resources/${definitionId}/${resourceId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
     };
   }
 

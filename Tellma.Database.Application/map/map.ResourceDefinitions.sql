@@ -160,6 +160,9 @@ RETURN (
 		[Resource2Label2],
 		[Resource2Label3],
 
+		[HasAttachments],
+		[AttachmentsCategoryDefinitionId],
+
 		[State]	,
 		[MainMenuIcon],
 		[MainMenuSection],

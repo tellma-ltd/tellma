@@ -9,8 +9,9 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 import { EntityForSave } from './base/entity-for-save';
 import { DateGranularity, TimeGranularity } from './base/metadata-types';
+import { ResourceAttachment, ResourceAttachmentForSave } from './resource-attachment';
 
-export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
+export interface ResourceForSave<TResourceUnit = ResourceUnitForSave, TAttachment = ResourceAttachmentForSave> extends EntityForSave {
     // Common with Agent
     Name?: string;
     Name2?: string;
@@ -57,9 +58,10 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Resource1Id?: number;
     Resource2Id?: number;
     Units?: TResourceUnit[];
+    Attachments?: TAttachment[];
 }
 
-export interface Resource extends ResourceForSave<ResourceUnit> {
+export interface Resource extends ResourceForSave<ResourceUnit, ResourceAttachment> {
     DefinitionId?: number;
     ImageId?: string;
     IsActive?: boolean;

@@ -548,7 +548,7 @@ namespace Tellma.Model.Application
         [Required]
         public bool? HasAttachments { get; set; }
 
-        [Display(Name = "AgentDefinition_AttachmentsCategoryDefinition")]
+        [Display(Name = "Definition_AttachmentsCategoryDefinition")]
         public int? AttachmentsCategoryDefinitionId { get; set; }
 
         #endregion
@@ -643,7 +643,7 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(Agent2DefinitionId))]
         public AgentDefinition Agent2Definition { get; set; }
 
-        [Display(Name = "AgentDefinition_AttachmentsCategoryDefinition")]
+        [Display(Name = "Definition_AttachmentsCategoryDefinition")]
         [ForeignKey(nameof(AttachmentsCategoryDefinitionId))]
         public LookupDefinition AttachmentsCategoryDefinition { get; set; }
 

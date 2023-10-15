@@ -721,7 +721,7 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public Attachments_showError(model: AgentForSave): boolean {
-    return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
+    return !!model && !!model.Attachments && model.Attachments.some(e => !!e.serverErrors);
   }
 
   // // Location + Map stuff

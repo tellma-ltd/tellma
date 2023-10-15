@@ -220,9 +220,6 @@
   <data name="AgentDefinition" xml:space="preserve">
     <value>ወኪል ትርጉም</value>
   </data>
-  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>የአባሪዎች ምድብ ትርጉም</value>
-  </data>
   <data name="AgentDefinition_UserCardinality" xml:space="preserve">
     <value>የተጠቃሚ ካርዲናሪነት</value>
   </data>
@@ -510,6 +507,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>መዝገብ ቤት</value>
+  </data>
+  <data name="Definition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>የአባሪዎች ምድብ ትርጉም</value>
   </data>
   <data name="Definition_Control" xml:space="preserve">
     <value>ቁጥጥር</value>
@@ -2790,6 +2790,9 @@
   </data>
   <data name="Resource_Agent2" xml:space="preserve">
     <value>ወኪል 2</value>
+  </data>
+  <data name="Resource_Attachments" xml:space="preserve">
+    <value>አባሪዎች</value>
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>

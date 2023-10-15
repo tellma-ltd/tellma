@@ -650,6 +650,9 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Resource2Visibility: Visibility;
     Resource2DefinitionId: number;
 
+    HasAttachments?: boolean;
+    AttachmentsCategoryDefinitionId?: number;
+
     ReportDefinitions?: DefinitionReportDefinitionForClient[];
 }
 

@@ -141,7 +141,8 @@ export interface ResourceDefinitionForSave<TReportDefinition = ResourceDefinitio
     Resource2Visibility?: Visibility;
     Resource2DefinitionId?: number;
 
-    // Main Menu
+    HasAttachments?: boolean;
+    AttachmentsCategoryDefinitionId?: number;
 
     MainMenuIcon?: string;
     MainMenuSection?: string;
@@ -363,6 +364,11 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Resource2Visibility: visibilityPropDescriptor('Entity_Resource2', trx),
                 Resource2DefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource2') })} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource2Definition: { datatype: 'entity', control: 'ResourceDefinition', label: () => trx.instant('Field0Definition', { 0: trx.instant('Entity_Resource2') }), foreignKeyName: 'Resource2DefinitionId' },
+
+                HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
+                AttachmentsCategoryDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AttachmentsCategoryDefinition: { datatype: 'entity', label: () => trx.instant('Definition_AttachmentsCategoryDefinition'), control: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
+
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

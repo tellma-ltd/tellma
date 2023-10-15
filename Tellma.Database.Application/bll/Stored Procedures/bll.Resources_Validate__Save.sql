@@ -2,6 +2,7 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+	@Attachments [dbo].[ResourceAttachmentList] READONLY,
 	@Top INT = 200,
 	@UserId INT,
 	@IsError BIT OUTPUT

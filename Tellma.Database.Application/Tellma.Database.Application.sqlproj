@@ -940,6 +940,9 @@
     <Build Include="dbo\User Defined Types\dbo.DatedAmountList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IFRS16Schedule.sql" />
     <Build Include="dal\Functions\dal.ft_BankAccounts__Reconciled.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceAttachments.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceAttachmentList.sql" />
+    <Build Include="map\map.ResourceAttachments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -976,6 +979,7 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
+    <None Include="Tellma_1.Database.Application.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

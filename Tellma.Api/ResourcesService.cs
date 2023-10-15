@@ -105,9 +105,51 @@ namespace Tellma.Api
             }
         }
 
+        public async Task<FileResult> GetAttachment(int resourceId, int attachmentId, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // This enforces read permissions
+            string attachments = nameof(Resource.Attachments);
+            var result = await GetById(resourceId, new GetByIdArguments
+            {
+                Select = $"{attachments}.{nameof(Attachment.FileId)},{attachments}.{nameof(Attachment.FileName)},{attachments}.{nameof(Attachment.FileExtension)}"
+            },
+            cancellation);
+
+            // Get the blob name
+            var attachment = result.Entity?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+            if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
+            {
+                try
+                {
+                    // Get the bytes
+                    string blobName = AttachmentBlobName(attachment.FileId);
+                    var fileBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
+
+                    // Get the content type
+                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
+                    return new FileResult(fileBytes, fileName);
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<int>(attachmentId);
+                }
+            }
+            else
+            {
+                throw new NotFoundException<int>(attachmentId);
+            }
+        }
+
         private static string ImageBlobName(string guid)
         {
             return $"Resources/{guid}";
+        }
+
+        private static string AttachmentBlobName(string guid)
+        {
+            return $"ResourceAttachments/{guid}";
         }
 
         protected override Task<EntityQuery<Resource>> Search(EntityQuery<Resource> query, GetArguments args, CancellationToken cancellation)
@@ -137,6 +179,11 @@ namespace Tellma.Api
                 entity.UnitId ??= def.DefaultUnitId;
                 entity.UnitMassUnitId ??= def.DefaultUnitMassUnitId;
                 entity.VatRate ??= def.DefaultVatRate;
+
+                if (!(def.HasAttachments ?? false))
+                {
+                    entity.Attachments = null;
+                }
 
                 if (def.CurrencyVisibility == null)
                 {
@@ -203,6 +250,8 @@ namespace Tellma.Api
             var metaForSave = await GetMetadataForSave(default);
             var nameProp = metaForSave.Property(nameof(ResourceForSave.Name));
 
+            var definitionHasAttachments = def.HasAttachments ?? false;
+
             foreach (var (entity, index) in entities.Indexed())
             {
                 if (string.IsNullOrWhiteSpace(entity.Name))
@@ -226,6 +275,35 @@ namespace Tellma.Api
                     ModelState.AddError(path, msg);
                 }
 
+                if (entity.Attachments != null && definitionHasAttachments && def.AttachmentsCategoryDefinitionId != null)
+                {
+                    foreach (var (attachment, attachmentIndex) in entity.Attachments.Indexed())
+                    {
+                        string path = $"[{index}].{nameof(entity.Attachments)}[{attachmentIndex}].{nameof(attachment.CategoryId)}";
+                        string msg = _localizer[ErrorMessages.Error_Field0IsRequired, _localizer["Attachment_Category"]];
+                        ModelState.AddError(path, msg);
+                    }
+                }
+
+                ///////// Attachment Validation
+                if (entity.Attachments != null)
+                {
+                    foreach (var (att, attIndex) in entity.Attachments.Indexed())
+                    {
+                        if (att.Id != 0 && att.File != null)
+                        {
+                            ModelState.AddError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
+                                _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
+                        }
+
+                        if (att.Id == 0 && att.File == null)
+                        {
+                            ModelState.AddError($"[{index}].{nameof(entity.Attachments)}[{attIndex}]",
+                                _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                        }
+                    }
+                }
+
                 //if (entity.CurrencyId == null && def.CurrencyVisibility != null)
                 //{
                 //    var path = $"[{index}].{nameof(Resource.CurrencyId)}";
@@ -236,12 +314,14 @@ namespace Tellma.Api
             }
 
             // The new images
-            _blobsToSave = BaseUtil.ExtractImages(entities, ImageBlobName).ToList();
+            _blobsToSave = new List<(string, byte[])>();
+            _blobsToSave.AddRange(BaseUtil.ExtractImages(entities, ImageBlobName));
+            _blobsToSave.AddRange(BaseUtil.ExtractAttachments(entities, e => e.Attachments, AttachmentBlobName));
 
             try
             {
                 // Save the Resources
-                SaveWithImagesOutput result = await _behavior.Repository.Resources__Save(
+                (SaveWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Resources__Save(
                         definitionId: DefinitionId,
                         entities: entities,
                         returnIds: returnIds,
@@ -253,7 +333,9 @@ namespace Tellma.Api
                 AddErrorsAndThrowIfInvalid(result.Errors);
 
                 // Add any attachment Ids that we must delete
-                _blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
+                _blobsToDelete = new List<string>();
+                _blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
+                _blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
 
                 return result.Ids;
             }
@@ -289,9 +371,9 @@ namespace Tellma.Api
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
-            List<string> blobsToDelete; // Both image Ids and attachment Ids
+            var blobsToDelete = new List<string>(); // Both image Ids and attachment Ids
 
-            DeleteWithImagesOutput result = await _behavior.Repository.Resources__Delete(
+            (DeleteWithImagesOutput result, List<string> deletedAttachmentIds) = await _behavior.Repository.Resources__Delete(
                 definitionId: DefinitionId,
                 ids: ids,
                 validateOnly: ModelState.IsError,
@@ -301,7 +383,8 @@ namespace Tellma.Api
             // Validation
             AddErrorsAndThrowIfInvalid(result.Errors);
 
-            blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
+            blobsToDelete.AddRange(result.DeletedImageIds.Select(ImageBlobName));
+            blobsToDelete.AddRange(deletedAttachmentIds.Select(AttachmentBlobName));
 
             if (blobsToDelete.Any())
             {
@@ -364,6 +447,13 @@ namespace Tellma.Api
                 mapping.SimpleProperties = mapping.SimpleProperties.Where(p => p != wkbProp);
                 mapping.NormalizeIndices(); // Fix the gap we created in the previous line
             }
+
+            // Remove the attachments, since they cannot be exported and imported in CSV or Excel
+            var attachments = mapping.CollectionPropertyByName(nameof(Resource.Attachments));
+            mapping.CollectionProperties = mapping.CollectionProperties.Where(p => p != attachments);
+
+            // Fix the newly created gaps, if any
+            mapping.NormalizeIndices();
 
             return base.ProcessDefaultMapping(mapping);
         }

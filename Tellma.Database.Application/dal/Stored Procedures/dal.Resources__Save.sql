@@ -2,12 +2,13 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+	@Attachments [dbo].[ResourceAttachmentList] READONLY,
 	@ReturnIds BIT = 0,
 	@UserId INT
 AS
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @DeletedImageIds [dbo].[StringList], @DeletedAttachmentIds [dbo].[StringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	
 	-- Entities whose ImageIds will be updated: capture their old ImageIds first (if any) so C# can delete them from blob storage
@@ -285,10 +286,55 @@ BEGIN
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;		
+		
+	-- Attachments
+	WITH BA AS (
+		SELECT * FROM dbo.[ResourceAttachments]
+		WHERE [ResourceId] IN (
+			SELECT II.[Id] FROM @IndexedIds II 
+			JOIN @Entities E ON II.[Index] = E.[Index]
+			WHERE E.[UpdateAttachments] = 1 -- Is this correct ?
+		)
+	)
+	INSERT INTO @DeletedAttachmentIds([Id])
+	SELECT x.[DeletedFileId]
+	FROM
+	(
+		MERGE INTO BA AS t
+		USING (
+			SELECT
+				A.[Id],
+				DI.[Id] AS [ResourceId],
+				A.[CategoryId],
+				A.[FileName],
+				A.[FileExtension],
+				A.[FileId],
+				A.[Size]
+			FROM @Attachments A 
+			JOIN @IndexedIds DI ON A.[HeaderIndex] = DI.[Index]
+		) AS s ON (t.[Id] = s.[Id])
+		WHEN MATCHED THEN
+			UPDATE SET
+				t.[FileName]		= s.[FileName],
+				t.[CategoryId]		= s.[CategoryId],
+				t.[ModifiedAt]		= @Now,
+				t.[ModifiedById]	= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT ([ResourceId], [CategoryId], [FileName], [FileExtension], [FileId], [Size], [CreatedById], [CreatedAt], [ModifiedById], [ModifiedAt])
+			VALUES (s.[ResourceId], s.[CategoryId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size], @UserId, @Now, @UserId, @Now)
+		WHEN NOT MATCHED BY SOURCE THEN
+			DELETE
+		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
+	) AS x
+	WHERE x.[InsertedFileId] IS NULL
+
 
 	-- Return overwritten Image Ids, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedImageIds;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;
+
+	-- Return deleted Attachment Ids, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedAttachmentIds;
 END;

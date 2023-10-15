@@ -279,6 +279,7 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text4Label2) ||
         areServerErrors(model.serverErrors.Text4Label3) ||
         areServerErrors(model.serverErrors.Text4Visibility) ||
+        areServerErrors(model.serverErrors.HasAttachments) ||
 
         // Agent Only
         areServerErrors(model.serverErrors.Agent1Label) ||
@@ -298,7 +299,6 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.ExternalReferenceVisibility) ||
         areServerErrors(model.serverErrors.BankAccountNumberVisibility) ||
         areServerErrors(model.serverErrors.UserCardinality) ||
-        areServerErrors(model.serverErrors.HasAttachments) ||
         areServerErrors(model.serverErrors.AttachmentsCategoryDefinitionId)
       ));
     } else if (section === 'Scripts') {

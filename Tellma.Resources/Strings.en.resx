@@ -247,9 +247,6 @@
   <data name="AgentDefinition" xml:space="preserve">
     <value>Agent Definition</value>
   </data>
-  <data name="AgentDefinition_AttachmentsCategoryDefinition" xml:space="preserve">
-    <value>Attachments Category Definition</value>
-  </data>
   <data name="AgentDefinition_UserCardinality" xml:space="preserve">
     <value>User Cardinality</value>
   </data>
@@ -585,6 +582,9 @@
   </data>
   <data name="Definition_Archive" xml:space="preserve">
     <value>Archive</value>
+  </data>
+  <data name="Definition_AttachmentsCategoryDefinition" xml:space="preserve">
+    <value>Attachments Category Definition</value>
   </data>
   <data name="Definition_Control" xml:space="preserve">
     <value>Control</value>
@@ -3066,6 +3066,9 @@
   </data>
   <data name="Resource_Agent2" xml:space="preserve">
     <value>Agent 2</value>
+  </data>
+  <data name="Resource_Attachments" xml:space="preserve">
+    <value>Attachments</value>
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>

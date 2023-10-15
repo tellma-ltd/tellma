@@ -45,6 +45,9 @@ namespace Tellma.Api.Behaviors
                     nameof(Resource) => ResourceDefinition(definitionId.Value),
                     nameof(ResourceForSave) => ResourceDefinition(definitionId.Value),
 
+                    nameof(ResourceAttachment) => null, // Weak entity, no point overriding anything here
+                    nameof(ResourceAttachmentForSave) => null, // Weak entity, no point overriding anything here
+
                     nameof(Agent) => AgentDefinition(definitionId.Value),
                     nameof(AgentForSave) => AgentDefinition(definitionId.Value),
 
@@ -94,6 +97,9 @@ namespace Tellma.Api.Behaviors
 
                     nameof(Resource) => ResourcePropertyOverrides(definitionId.Value, propName, display),
                     nameof(ResourceForSave) => ResourcePropertyOverrides(definitionId.Value, propName, display),
+
+                    nameof(ResourceAttachment) => ResourceAttachmentPropertyOverrides(definitionId.Value, propName, display),
+                    nameof(ResourceAttachmentForSave) => ResourceAttachmentPropertyOverrides(definitionId.Value, propName, display),
 
                     nameof(Agent) => AgentPropertyOverrides(definitionId.Value, propName, display),
                     nameof(AgentForSave) => AgentPropertyOverrides(definitionId.Value, propName, display),
@@ -182,6 +188,44 @@ namespace Tellma.Api.Behaviors
         }
 
         #region Definition Override
+
+        /// <summary>
+        /// Specifies any overriding changes to a <see cref="ResourceAttachment"/> property metadata that come from the definition. 
+        /// In particular: the property display, whether it's visible or not, whether it's required or not, 
+        /// and - if it's a navigation property - the target definitionId
+        /// </summary>
+        private PropertyMetadataOverrides ResourceAttachmentPropertyOverrides(int definitionId, string propName, Func<string> display)
+        {
+            // (1) Get the definition
+            var def = ResourceDefinition(definitionId);
+
+            // (2) Use it to calculate the overrides
+            bool isRequired = false;
+            int? targetDefId = null;
+
+            switch (propName)
+            {
+                case nameof(ResourceAttachment.CategoryId):
+                case nameof(ResourceAttachment.Category):
+                    if (def.AttachmentsCategoryDefinitionId == null)
+                    {
+                        display = null;
+                    }
+                    else
+                    {
+                        isRequired = true;
+                        targetDefId = def.AttachmentsCategoryDefinitionId;
+                    }
+                    break;
+            }
+
+            return new PropertyMetadataOverrides
+            {
+                Display = display,
+                IsRequired = isRequired,
+                DefinitionId = targetDefId,
+            };
+        }
 
         /// <summary>
         /// Specifies any overriding changes to a <see cref="Resource"/> property metadata that come from the definition. 
@@ -387,6 +431,12 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.Resource2Visibility, def.Resource2Label, def.Resource2Label2, def.Resource2Label3, display);
                     isRequired = def.Resource2Visibility == Visibility.Required;
                     break;
+                case nameof(Resource.Attachments):
+                    if (!(def.HasAttachments ?? false))
+                    {
+                        display = null;
+                    }
+                    break;
             }
 
             int? targetDefId = propName switch
@@ -400,6 +450,7 @@ namespace Tellma.Api.Behaviors
                 nameof(Resource.Agent2) => def.Agent2DefinitionId,
                 nameof(Resource.Resource1) => def.Resource1DefinitionId,
                 nameof(Resource.Resource2) => def.Resource2DefinitionId,
+                nameof(Resource.Attachments) => definitionId,
                 _ => null,
             };
 

@@ -393,6 +393,17 @@
                             *ngTemplateOutlet="errorsTemplate;context: { control: resource2defId, serverErrors: model.serverErrors?.Resource2DefinitionId }">
                         </ng-container>
                     </div>
+                    
+                    <!-- HasAttachments -->
+                    <div class="form-group">
+                        <label class="small" for="hasattachments">{{ 'Definition_HasAttachments' | translate }}</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="hasattachments"
+                                [(ngModel)]="model.HasAttachments" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label"
+                                for="hasattachments"></label>
+                        </div>
+                    </div>
 
                     <!-- Visibility Field Template -->
                     <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">

@@ -53,6 +53,7 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
     }
 
     result.UnitCardinality = 'None';
+    result.HasAttachments = false;
     result.ReportDefinitions = [];
 
     return result;
@@ -254,6 +255,7 @@ Lookup1Definition,Lookup2Definition,Lookup3Definition,Lookup4Definition,Agent1De
         areServerErrors(model.serverErrors.Text2Label2) ||
         areServerErrors(model.serverErrors.Text2Label3) ||
         areServerErrors(model.serverErrors.Text2Visibility) ||
+        areServerErrors(model.serverErrors.HasAttachments) ||
 
         // Resource Only
         areServerErrors(model.serverErrors.IdentifierLabel) ||

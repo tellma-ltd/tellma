@@ -132,6 +132,7 @@ namespace Tellma.Repository.Application
             nameof(ReportDefinitionSelect) => "[map].[ReportDefinitionSelects]()",
             nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds, @UserId)",
             nameof(Resource) => "[map].[Resources]()",
+            nameof(ResourceAttachment) => "[map].[ResourceAttachments]()",
             nameof(ResourceDefinition) => "[map].[ResourceDefinitions]()",
             nameof(ResourceDefinitionReportDefinition) => "[map].[ResourceDefinitionReportDefinitions]()",
             nameof(ResourceUnit) => "[map].[ResourceUnits]()",
@@ -7643,7 +7644,8 @@ namespace Tellma.Repository.Application
         private static SqlParameter ResourcesTvp(List<ResourceForSave> entities)
         {
             var extraColumns = new List<ExtraColumn<ResourceForSave>> {
-                    RepositoryUtilities.Column("ImageId", typeof(string), (ResourceForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId)
+                    RepositoryUtilities.Column("ImageId", typeof(string), (ResourceForSave e) => e.Image == null ? "(Unchanged)" : e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("UpdateAttachments", typeof(bool), (ResourceForSave e) => e.Attachments != null),
                 };
 
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true, extraColumns: extraColumns);
@@ -7666,6 +7668,23 @@ namespace Tellma.Repository.Application
             };
 
             return unitsTvp;
+        }
+
+        private static SqlParameter ResourceAttachmentsTvp(List<ResourceForSave> entities)
+        {
+            var extraAttachmentColumns = new List<ExtraColumn<ResourceAttachmentForSave>> {
+                    RepositoryUtilities.Column("FileId", typeof(string), (ResourceAttachmentForSave e) => e.EntityMetadata?.FileId),
+                    RepositoryUtilities.Column("Size", typeof(long), (ResourceAttachmentForSave e) => e.EntityMetadata?.FileSize)
+                };
+
+            DataTable attachmentsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Attachments, extraColumns: extraAttachmentColumns);
+            var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ResourceAttachment)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            return attachmentsTvp;
         }
 
         public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities, int userId)
@@ -7721,10 +7740,11 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Resources__Preprocess));
         }
 
-        public async Task<SaveWithImagesOutput> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
+        public async Task<(SaveWithImagesOutput result, List<string> deletedAttachmentIds)> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             SaveWithImagesOutput result = null;
+            List<string> deletedAttachmentIds = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -7740,10 +7760,12 @@ namespace Tellma.Repository.Application
                 // Parameters
                 var entitiesTvp = ResourcesTvp(entities);
                 var unitsTvp = ResourceUnitsTvp(entities);
+                var attachmentsTvp = ResourceAttachmentsTvp(entities);
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(unitsTvp);
+                cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
                 cmd.Parameters.Add("@Top", top);
@@ -7756,6 +7778,16 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadSaveWithImagesResult(returnIds, validateOnly);
+
+                    if (!result.IsError && !validateOnly)
+                    {
+                        deletedAttachmentIds = new List<string>();
+                        await reader.NextResultAsync();
+                        while (await reader.ReadAsync())
+                        {
+                            deletedAttachmentIds.Add(reader.String(0));
+                        }
+                    }
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
@@ -7764,13 +7796,14 @@ namespace Tellma.Repository.Application
             },
             DatabaseName(connString), nameof(Resources__Save));
 
-            return result;
+            return (result, deletedAttachmentIds);
         }
 
-        public async Task<DeleteWithImagesOutput> Resources__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
+        public async Task<(DeleteWithImagesOutput result, List<string> deletedAttachmentIds)> Resources__Delete(int definitionId, IEnumerable<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
             DeleteWithImagesOutput result = null;
+            List<string> deletedAttachmentIds = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -7804,6 +7837,19 @@ namespace Tellma.Repository.Application
                     await conn.OpenAsync();
                     using var reader = await cmd.ExecuteReaderAsync();
                     result = await reader.LoadDeleteWithImagesResult(validateOnly);
+
+                    if (!result.IsError && !validateOnly)
+                    {
+                        // LoadDeleteWithImagesResult already calls next result set
+                        deletedAttachmentIds = new List<string>();
+                        while (await reader.ReadAsync())
+                        {
+                            deletedAttachmentIds.Add(reader.String(0));
+                        }
+
+                        // Execute the delete (othewise any SQL errors won't be returned)
+                        await reader.NextResultAsync();
+                    }
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
@@ -7812,7 +7858,8 @@ namespace Tellma.Repository.Application
             },
             DatabaseName(connString), nameof(Resources__Save));
 
-            return result;
+
+            return (result, deletedAttachmentIds);
         }
 
         public async Task<OperationOutput> Resources__Activate(int definitionId, List<int> ids, bool isActive, bool validateOnly, int top, int userId)

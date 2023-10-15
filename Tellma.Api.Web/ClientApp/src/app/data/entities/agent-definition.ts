@@ -350,8 +350,8 @@ export function metadata_AgentDefinition(wss: WorkspaceService, trx: TranslateSe
                 BankAccountNumberVisibility: visibilityPropDescriptor('Agent_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('AgentDefinition_UserCardinality', trx),
                 HasAttachments: { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAttachments') },
-                AttachmentsCategoryDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('AgentDefinition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AttachmentsCategoryDefinition: { datatype: 'entity', label: () => trx.instant('AgentDefinition_AttachmentsCategoryDefinition'), control: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
+                AttachmentsCategoryDefinitionId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Definition_AttachmentsCategoryDefinition')})} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AttachmentsCategoryDefinition: { datatype: 'entity', label: () => trx.instant('Definition_AttachmentsCategoryDefinition'), control: 'LookupDefinition', foreignKeyName: 'AttachmentsCategoryDefinitionId' },
 
                 State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

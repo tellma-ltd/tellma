@@ -53,6 +53,15 @@ namespace Tellma.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{docId}/attachments/{attachmentId}")]
+        public async Task<ActionResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        {
+            var result = await GetService().GetAttachment(docId, attachmentId, cancellation);
+            var contentType = ControllerUtilities.ContentType(result.FileName);
+
+            return File(fileContents: result.FileBytes, contentType: contentType, result.FileName);
+        }
+
         protected override CrudServiceBase<ResourceForSave, Resource, int> GetCrudService()
         {
             _service.SetDefinitionId(DefinitionId);

@@ -154,6 +154,8 @@
 	[Resource2Visibility]				NVARCHAR (50),
 	[Resource2DefinitionIndex]			INT,
 	[Resource2DefinitionId]				INT,
+	[HasAttachments]					BIT,
+	[AttachmentsCategoryDefinitionId]	INT,
 
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),

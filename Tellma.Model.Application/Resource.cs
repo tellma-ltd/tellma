@@ -7,7 +7,7 @@ using Tellma.Model.Common;
 namespace Tellma.Model.Application
 {
     [Display(Name = "Resource", GroupName = "Resources")]
-    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
+    public class ResourceForSaveBase<TResourceUnit, TAttachment> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImage
     {
         [Display(Name = "Name")]
         [Required]
@@ -168,16 +168,20 @@ namespace Tellma.Model.Application
         [Display(Name = "Resource_Units")]
         [ForeignKey(nameof(ResourceUnit.ResourceId))]
         public List<TResourceUnit> Units { get; set; }
-        
+
+        [Display(Name = "Resource_Attachments")]
+        [ForeignKey(nameof(ResourceAttachment.ResourceId))]
+        public List<TAttachment> Attachments { get; set; }
+
         #endregion
     }
 
-    public class ResourceForSave : ResourceForSaveBase<ResourceUnitForSave>
+    public class ResourceForSave : ResourceForSaveBase<ResourceUnitForSave, ResourceAttachmentForSave>
     {
 
     }
 
-    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity
+    public class Resource : ResourceForSaveBase<ResourceUnit, ResourceAttachment>, ILocationEntity
     {
         [Display(Name = "Definition")]
         [Required]

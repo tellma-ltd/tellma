@@ -48,7 +48,8 @@
 	[Resource2Id]				INT,
 
 	-- Extra Columns not in Resource.cs
-	[ImageId]					NVARCHAR (50)
+	[ImageId]					NVARCHAR (50),
+	[UpdateAttachments]			BIT
 
 	INDEX IX_ResourceList__Code ([Code])
 );

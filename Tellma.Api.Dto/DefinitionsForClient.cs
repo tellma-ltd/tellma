@@ -709,6 +709,9 @@ namespace Tellma.Api.Dto
         public string Resource2Visibility { get; set; }
         public int? Resource2DefinitionId { get; set; }
 
+        public bool? HasAttachments { get; set; }
+        public int? AttachmentsCategoryDefinitionId { get; set; }
+
         public List<DefinitionReportDefinitionForClient> ReportDefinitions { get; set; }
     }
 

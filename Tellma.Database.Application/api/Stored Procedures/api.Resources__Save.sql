@@ -2,6 +2,7 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits [dbo].[ResourceUnitList] READONLY,
+	@Attachments [dbo].[ResourceAttachmentList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
@@ -19,6 +20,7 @@ BEGIN
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities,
 		@ResourceUnits = @ResourceUnits,
+		@Attachments = @Attachments,
 		@UserId = @UserId,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
@@ -31,6 +33,7 @@ BEGIN
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities,
 		@ResourceUnits = @ResourceUnits,
+		@Attachments = @Attachments,
 		@ReturnIds = @ReturnIds,
 		@UserId = @UserId;
 END;

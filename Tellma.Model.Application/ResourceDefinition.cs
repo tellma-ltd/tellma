@@ -551,6 +551,13 @@ namespace Tellma.Model.Application
         [SelfReferencing(nameof(Resource2DefinitionIndex))]
         public int? Resource2DefinitionId { get; set; }
 
+        [Display(Name = "Definition_HasAttachments")]
+        [Required]
+        public bool? HasAttachments { get; set; }
+
+        [Display(Name = "Definition_AttachmentsCategoryDefinition")]
+        public int? AttachmentsCategoryDefinitionId { get; set; }
+
         #endregion
 
         #region Main Menu
@@ -600,6 +607,10 @@ namespace Tellma.Model.Application
         public DateTimeOffset? SavedAt { get; set; }
 
         // For Query
+
+        [Display(Name = "Definition_AttachmentsCategoryDefinition")]
+        [ForeignKey(nameof(AttachmentsCategoryDefinitionId))]
+        public LookupDefinition AttachmentsCategoryDefinition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

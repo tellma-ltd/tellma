@@ -493,6 +493,9 @@ namespace Tellma.Api
                 Resource2Visibility = MapVisibility(def.Resource2Visibility),
                 Resource2DefinitionId = def.Resource2DefinitionId,
 
+                HasAttachments = def.HasAttachments,
+                AttachmentsCategoryDefinitionId = def.AttachmentsCategoryDefinitionId,
+
                 ReportDefinitions = def.ReportDefinitions?.Select(e => new DefinitionReportDefinitionForClient
                 {
                     ReportDefinitionId = e.ReportDefinitionId.Value,

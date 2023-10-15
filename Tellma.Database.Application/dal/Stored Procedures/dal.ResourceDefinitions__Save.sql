@@ -165,6 +165,9 @@ BEGIN
 				[Resource2Visibility],
 				[Resource2DefinitionId],
 
+				[HasAttachments],
+				[AttachmentsCategoryDefinitionId],
+
 				[MainMenuIcon],
 				[MainMenuSection],
 				[MainMenuSortKey]
@@ -319,6 +322,8 @@ BEGIN
 				t.[Resource2Label3]			= s.[Resource2Label3],
 				t.[Resource2Visibility]		= s.[Resource2Visibility],
 				t.[Resource2DefinitionId]	= s.[Resource2DefinitionId],
+				t.[HasAttachments]			= s.[HasAttachments],
+				t.[AttachmentsCategoryDefinitionId] = s.[AttachmentsCategoryDefinitionId],
 				t.[MainMenuIcon]			= s.[MainMenuIcon],
 				t.[MainMenuSection]			= s.[MainMenuSection],
 				t.[MainMenuSortKey]			= s.[MainMenuSortKey],
@@ -462,6 +467,8 @@ BEGIN
 				[Resource2Label3],
 				[Resource2Visibility],
 				[Resource2DefinitionId],
+				[HasAttachments],
+				[AttachmentsCategoryDefinitionId],
 				[MainMenuIcon],
 				[MainMenuSection],
 				[MainMenuSortKey],
@@ -606,6 +613,8 @@ BEGIN
 				s.[Resource2Label3],
 				s.[Resource2Visibility],
 				s.[Resource2DefinitionId],
+				s.[HasAttachments],
+				s.[AttachmentsCategoryDefinitionId],
 				s.[MainMenuIcon],
 				s.[MainMenuSection],
 				s.[MainMenuSortKey],
