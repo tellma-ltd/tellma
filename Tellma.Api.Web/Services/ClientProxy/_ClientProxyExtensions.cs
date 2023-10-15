@@ -91,7 +91,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     "x-admin-settings-version",
                     "x-admin-permissions-version",
                     "x-admin-user-settings-version",
-                    "x-global-settings-version"
+                    "x-global-settings-version",
+                    "server-timing"
                 );
             });
         }

@@ -9,12 +9,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Diagnostics;
 using Tellma.Api.Base;
 using Tellma.Api.Dto;
 using Tellma.Api.Web.Controllers;
 using Tellma.Controllers;
 using Tellma.Services.ClientProxy;
 using Tellma.Services.Utilities;
+using System.Threading.Tasks;
 
 namespace Tellma
 {
@@ -60,11 +62,7 @@ namespace Tellma
                 services.AddClientAppAddressResolver(_config);
 
                 // Azure Application Insights
-                string instrumentationKey = _config["APPINSIGHTS_INSTRUMENTATIONKEY"];
-                if (!string.IsNullOrWhiteSpace(instrumentationKey))
-                {
-                    services.AddApplicationInsightsTelemetry(instrumentationKey);
-                }
+                services.AddApplicationInsightsTelemetry();
 
                 // Register the API
                 services.AddTellmaApi(_config)
@@ -230,6 +228,25 @@ namespace Tellma
 
             try
             {
+                // Add total time spent on the server as a response header
+                // (Useful for debugging performance issues on Azure)
+                app.Use(async (context, next) =>
+                {
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
+                    context.Response.OnStarting(() =>
+                    {
+                        stopwatch.Stop();
+                        var millis = stopwatch.ElapsedMilliseconds;
+                        context.Response.Headers.Add("server-timing", $"Total;dur={millis}");
+
+                        return Task.CompletedTask;
+                    });
+
+                    await next.Invoke();
+                });
+
                 // Regular Errors
                 if (_env.IsDevelopment())
                 {
