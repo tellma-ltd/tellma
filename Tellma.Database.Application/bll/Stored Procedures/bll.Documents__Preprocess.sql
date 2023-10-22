@@ -5,7 +5,8 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Culture NVARCHAR(50),
-	@NeutralCulture NVARCHAR(50)
+	@NeutralCulture NVARCHAR(50),
+	@UserId INT = NULL -- MA: 2023-10-22, passed to preprocessing script
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -28,7 +29,8 @@ BEGIN
 	DECLARE @ScriptLines [dbo].[LineList], @ScriptEntries [dbo].[EntryList];
 	DECLARE @PreprocessedDocuments [dbo].[DocumentList],@PreprocessedDocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList], 
 			@PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
-	DECLARE @D [dbo].[DocumentList], @DLDE [dbo].[DocumentLineDefinitionEntryList],
+	DECLARE @D [dbo].[DocumentList]; SELECT * INTO #D FROM @D;
+	DECLARE @DLDE [dbo].[DocumentLineDefinitionEntryList],
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
@@ -48,7 +50,7 @@ BEGIN
 	-----
 	SELECT * FROM @ProcessedWideLines;
 	';
-	INSERT INTO @D SELECT * FROM @Documents;
+	INSERT INTO #D SELECT * FROM @Documents;
 	INSERT INTO @DLDE SELECT * FROM @DocumentLineDefinitionEntries;
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
@@ -57,7 +59,7 @@ BEGIN
 	IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1) = 1
 	BEGIN
 		SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1;
-		UPDATE @D SET [CenterId] = @BusinessUnitId;
+		UPDATE #D SET [CenterId] = @BusinessUnitId;
 		UPDATE @DLDE SET [CenterId] = @BusinessUnitId WHERE [CenterIsCommon] = 1;
 		UPDATE @E SET [CenterId] = @BusinessUnitId
 	END;
@@ -66,7 +68,7 @@ BEGIN
 		AND (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1) = 1
 		BEGIN
 			SELECT @BusinessUnitId = [Id] FROM [dbo].[Centers] WHERE [CenterType] = N'BusinessUnit' AND [IsActive] = 1;
-			UPDATE @D SET [CenterId] = @BusinessUnitId
+			UPDATE #D SET [CenterId] = @BusinessUnitId
 		END
 	END;
 /* -- Moved the logic after processing
@@ -134,8 +136,8 @@ BEGIN
 		WHERE [PreprocessScript] IS NOT NULL
 	);
 	-- Copy lines and entries with no script as they are
-	INSERT INTO @PreprocessedDocuments
-	SELECT * FROM @D
+	--INSERT INTO @PreprocessedDocuments
+	--SELECT * FROM #D
 	INSERT INTO @PreprocessedLines
 	SELECT * FROM @L WHERE DefinitionId NOT IN (SELECT [Id] FROM @ScriptLineDefinitions)
 	INSERT INTO @PreprocessedEntries
@@ -176,8 +178,8 @@ BEGIN
 				INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
 				EXECUTE	dbo.sp_executesql
 					@Script,
-					N'@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
-					@WideLines = @WL, @AllWideLines = @ScriptWideLines;
+					N'@UserId INT,@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
+					@UserId = @UserId, @WideLines = @WL, @AllWideLines = @ScriptWideLines;
 			END TRY
 			BEGIN CATCH
 				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
@@ -197,6 +199,10 @@ BEGIN
 		FROM @PreprocessedWideLines;
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
+		-- MA: 2023-10-21. COmmented from above and added here after the script, to allow modifying #D from within script
+		-- Does it cause a bug if we upload lots of documents?
+		INSERT INTO @PreprocessedDocuments
+		SELECT * FROM #D
 	END
 	-- for all lines, Get currency and center from Resources
 	DECLARE @BalanceSheetNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'StatementOfFinancialPositionAbstract');
@@ -591,3 +597,4 @@ END
 	 [✓] For Manual Lines: If CurrencyId == functional set MonetaryValue = Value
 
 	*/
+GO

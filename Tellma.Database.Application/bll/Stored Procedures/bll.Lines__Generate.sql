@@ -6,7 +6,8 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Culture NVARCHAR(50) = N'en',
-	@NeutralCulture NVARCHAR(50) = N'en'
+	@NeutralCulture NVARCHAR(50) = N'en',
+	@UserId INT = NULL -- MA: 2023-10-22, passed to preprocessing script
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -18,7 +19,8 @@ BEGIN
 
 	BEGIN TRY
 		INSERT INTO @WideLines
-		EXECUTE	dbo.sp_executesql @Script, N'@GenerateArguments [GenerateArgumentList] READONLY, @Documents [dbo].[DocumentList] READONLY,@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY, @Lines [dbo].[LineList] READONLY, @Entries [dbo].[EntryList] READONLY, @LineDefinitionId INT',
+		EXECUTE	dbo.sp_executesql @Script, N'@UserId INT, @GenerateArguments [GenerateArgumentList] READONLY, @Documents [dbo].[DocumentList] READONLY,@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY, @Lines [dbo].[LineList] READONLY, @Entries [dbo].[EntryList] READONLY, @LineDefinitionId INT',
+				@UserId = @UserId,
 				@GenerateArguments = @GenerateArguments, 
 				@Documents = @Documents, 
 				@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, 
