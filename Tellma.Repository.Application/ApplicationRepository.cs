@@ -3621,7 +3621,7 @@ namespace Tellma.Repository.Application
             return (docsTvp, lineDefinitionEntriesTvp, linesTvp, entriesTvp, attachmentsTvp);
         }
 
-        public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> documents)
+        public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> documents, int userId)
         {
             var connString = await GetConnectionString();
 
@@ -3645,6 +3645,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
+                cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute
@@ -3816,7 +3817,7 @@ namespace Tellma.Repository.Application
             List<Center> centers,
             List<Currency> currencies,
             List<Unit> units
-            )> Lines__Generate(int lineDefId, List<DocumentForSave> documents, Dictionary<string, string> args, CancellationToken cancellation)
+            )> Lines__Generate(int lineDefId, List<DocumentForSave> documents, Dictionary<string, string> args, int userId, CancellationToken cancellation)
         {
             var connString = await GetConnectionString(cancellation);
 
@@ -3856,6 +3857,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add(lineDefinitionEntriesTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
+                cmd.Parameters.Add("@UserId", userId);
                 AddCultureAndNeutralCulture(cmd);
 
                 // Execute

@@ -825,7 +825,7 @@ namespace Tellma.Api
             {
                 // Call the SP
                 var (lines, accounts, resources, agents, entryTypes, centers, currencies, units) =
-                    await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, cancellation);
+                    await _behavior.Repository.Lines__Generate(lineDefId, docs, betterArgs, UserId, cancellation);
 
                 foreach (var line in lines)
                 {
@@ -1389,7 +1389,7 @@ namespace Tellma.Api
             // SQL server preprocessing
             try
             {
-                await _behavior.Repository.Documents__Preprocess(DefinitionId, docs);
+                await _behavior.Repository.Documents__Preprocess(DefinitionId, docs, UserId);
             }
             catch (CustomScriptException ex) when (ex.IsScriptBug && docDef.State == DefStates.Visible)
             {

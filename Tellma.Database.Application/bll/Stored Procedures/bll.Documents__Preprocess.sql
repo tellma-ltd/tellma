@@ -4,9 +4,9 @@
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
+	@UserId INT, -- MA: 2023-10-22, passed to preprocessing script
 	@Culture NVARCHAR(50),
-	@NeutralCulture NVARCHAR(50),
-	@UserId INT = NULL -- MA: 2023-10-22, passed to preprocessing script
+	@NeutralCulture NVARCHAR(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
