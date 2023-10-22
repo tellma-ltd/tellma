@@ -14,7 +14,13 @@ BEGIN
 	SET [RevokedAt] = @Now,
 		[RevokedById] = @UserId
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
-	AND ([OnBehalfOfUserId] = @UserId OR [CreatedById] = @UserId);
+	AND (	
+			[RuleType] = 'Public' OR
+			[RuleType] = 'ByUser' AND ([OnBehalfOfUserId] = @UserId OR [CreatedById] = @UserId) OR 
+			[RuleType] = 'ByRole' AND [RoleId] IN (SELECT [RoleId] FROM dbo.[RoleMemberships]
+													WHERE [UserId] = @UserId
+													AND [ValidTo] > GETDATE())
+		)
 
 	-- Refresh the lines states
 	INSERT INTO @LineIds([Id])

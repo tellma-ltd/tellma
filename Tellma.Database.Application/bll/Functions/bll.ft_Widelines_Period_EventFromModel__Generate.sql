@@ -442,7 +442,8 @@
 	BEGIN
 	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
 	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
-	IF ISNULL(@ToDate,  N'9999-12-31') = N'9999-12-31' SET @ToDate = N'9999-12-30';
+--	IF ISNULL(@ToDate,  N'9999-12-31') = N'9999-12-31' SET @ToDate = N'9999-12-30';
+	SET @ToDate = ISNULL(@ToDate,  N'9999-12-31');
 	DECLARE @OldContractAmendmentLineDefinitionId INT;
 	IF @ContractAmendmentLineDefinitionId <> 0
 	BEGIN
@@ -506,7 +507,9 @@
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
 															@OldContractAmendmentLineDefinitionId)
-		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
+--		MA: 2023-10-16. The following line was commented out because it was causing an overflow. Rewrote the logic
+--		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
+		AND L.[State] = 2 AND ISNULL(E.[Time2], '9999-12-31') < @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 	) --  select * from FilteredEntries 
 	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], --[Decimal1], 
 		[Time1],[Direction],[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],

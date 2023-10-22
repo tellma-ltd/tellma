@@ -76,4 +76,10 @@
     <Property Name="NewSchema" Value="dal" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Move Schema" Key="5320a2ab-32a0-4ace-b104-1a804dc5ced7" ChangeDateTime="10/17/2023 05:42:38">
+    <Property Name="ElementName" Value="[dbo].[fn_NullCenter]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

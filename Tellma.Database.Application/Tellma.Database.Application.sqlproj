@@ -948,6 +948,7 @@
     <Build Include="dbo\Tables\dbo.ResourceAttachments.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceAttachmentList.sql" />
     <Build Include="map\map.ResourceAttachments.sql" />
+    <Build Include="dal\Functions\dal.fn_NullCenter.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
