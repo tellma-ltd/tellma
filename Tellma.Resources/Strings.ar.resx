@@ -100,6 +100,9 @@
   <data name="Account_NotedResource" xml:space="preserve">
     <value>المورد المعني</value>
   </data>
+  <data name="Account_NotedResourceDefinition" xml:space="preserve">
+    <value>تعريف المورد المعني</value>
+  </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
   </data>
