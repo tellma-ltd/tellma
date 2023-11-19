@@ -2163,7 +2163,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const entityId = cell.valueId;
         const screenUrlSegments = cell.info.entityDesc.masterScreenUrl.split('/');
         
-        if (!!cell.info.entityDesc.definitionIds) {
+        if (!!cell.info.entityDesc.definitionIds && !cell.info.entityDesc.definitionId) {
           // A definitioned dimension
           const definitionId = cell.defId || cell.info.entityDesc.definitionId;
           this.router.navigate(['app', tenantId + '', ...screenUrlSegments, definitionId, entityId]);
