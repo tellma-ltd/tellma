@@ -17,6 +17,7 @@ using Tellma.Controllers;
 using Tellma.Services.ClientProxy;
 using Tellma.Services.Utilities;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.CookiePolicy;
 
 namespace Tellma
 {
@@ -255,11 +256,11 @@ namespace Tellma
                 else
                 {
                     app.UseExceptionHandler("/Error");
-                    app.UseHsts();
-                }
 
-                // Only HTTPS allowed
-                app.UseHttpsRedirection();
+                    // Only HTTPS allowed
+                    app.UseHsts();
+                    app.UseHttpsRedirection();
+                }
 
                 // Twilio event webhook callback
                 if (_opt.SmsEnabled)
@@ -316,7 +317,7 @@ namespace Tellma
                 if (_opt.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
-                    app.UseEmbeddedIdentityServer();
+                    app.UseEmbeddedIdentityServer(_env.IsDevelopment());
                 }
                 else
                 {
