@@ -90,7 +90,13 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Tests", "Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.BlobsMigrator", "tools\Tellma.BlobsMigrator\Tellma.BlobsMigrator.csproj", "{28C21F2E-8DC4-4360-BB83-B1F524220AFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.DefinitionsComparer", "tools\Tellma.DefinitionsComparer\Tellma.DefinitionsComparer.csproj", "{45C4B07B-8602-4594-B36B-B06F061C79B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.DefinitionsComparer", "tools\Tellma.DefinitionsComparer\Tellma.DefinitionsComparer.csproj", "{45C4B07B-8602-4594-B36B-B06F061C79B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{13EE48EB-31CC-423A-A349-4F51D0EA1ECD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Integration.Zatca.Tests", "Tellma.Integration.Zatca.Tests\Tellma.Integration.Zatca.Tests.csproj", "{1DCAE581-FF17-4CA5-A6D1-6EE453517917}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tellma.Integration.Zatca", "Tellma.Integration.Zatca\Tellma.Integration.Zatca.csproj", "{11733560-86B1-4B7E-B14F-A01FD5E93EC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -258,6 +264,14 @@ Global
 		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45C4B07B-8602-4594-B36B-B06F061C79B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DCAE581-FF17-4CA5-A6D1-6EE453517917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DCAE581-FF17-4CA5-A6D1-6EE453517917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DCAE581-FF17-4CA5-A6D1-6EE453517917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DCAE581-FF17-4CA5-A6D1-6EE453517917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11733560-86B1-4B7E-B14F-A01FD5E93EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11733560-86B1-4B7E-B14F-A01FD5E93EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11733560-86B1-4B7E-B14F-A01FD5E93EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11733560-86B1-4B7E-B14F-A01FD5E93EC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -268,6 +282,8 @@ Global
 		{2300ABCA-A2B4-45CE-86A3-AFE126D49AFE} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{28C21F2E-8DC4-4360-BB83-B1F524220AFF} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
 		{45C4B07B-8602-4594-B36B-B06F061C79B4} = {7BA7840C-1552-456C-B7CA-4D3B064EC524}
+		{1DCAE581-FF17-4CA5-A6D1-6EE453517917} = {13EE48EB-31CC-423A-A349-4F51D0EA1ECD}
+		{11733560-86B1-4B7E-B14F-A01FD5E93EC5} = {13EE48EB-31CC-423A-A349-4F51D0EA1ECD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}
