@@ -103,8 +103,8 @@ JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 WHERE E.[Index] = @AccountEntryIndex
 AND
-ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
-		E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate
+ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance](
+		E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate, L.[Id]
 	), 0) = 0
 --)
 ;
@@ -112,15 +112,15 @@ ISNULL([dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
 WITH AccountPriorBalance AS (
 	SELECT
 		E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedDate],
-		[dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance](
-			E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate
+		[dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance](
+			E.AccountId, E.CenterId, E.CurrencyId, E.AgentId, E.ResourceId, E.NotedDate, L.[Id]
 		) AS PriorBalance,
 	SUM([Direction] * [MonetaryValue]) AS Amount
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	WHERE E.[Index] = @AccountEntryIndex
-	GROUP BY E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedDate]
+	GROUP BY L.[Id], E.[AccountId], E.[CenterId], E.[CurrencyId], E.[AgentId], E.[ResourceId], E.[NotedDate]
 )
 INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 SELECT DISTINCT TOP (@Top)

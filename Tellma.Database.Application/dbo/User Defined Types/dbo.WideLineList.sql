@@ -32,7 +32,7 @@
 	[ExternalReference0]		NVARCHAR (50),
 	[ReferenceSourceId0]		INT,
 	[InternalReference0]		NVARCHAR (50),
-	[NotedAgentName0]			NVARCHAR (50),
+	[NotedAgentName0]			NVARCHAR (50), -- In the table it is 255. May affect Bank reconciliation
 	[NotedAmount0]				DECIMAL (19,6),
 	[NotedDate0]				DATE,
 	[NotedResourceId0]			INT,

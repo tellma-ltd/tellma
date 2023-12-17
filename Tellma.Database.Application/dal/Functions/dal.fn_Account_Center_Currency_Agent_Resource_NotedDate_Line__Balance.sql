@@ -1,13 +1,12 @@
-﻿CREATE FUNCTION [dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance] (
--- MA: 2023-12-11. This is used in bll.[LD_AccountHasEnoughBalance__Validate] but causes a bug when
--- the line under consideration is already posted. Another function
--- fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance was introduced to handle this case
+﻿CREATE FUNCTION [dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance]
+(
 	@AccountId	INT,
 	@CenterId	INT,
 	@CurrencyId	NCHAR (3),
 	@AgentId	INT,
 	@ResourceId	INT,
-	@NotedDate	DATE
+	@NotedDate	DATE,
+	@LineId INT
 )
 RETURNS DECIMAL (19, 4)
 AS
@@ -23,6 +22,7 @@ BEGIN
 		AND (E.[AgentId]	= @AgentId		OR E.AgentId IS NULL AND @AgentId IS NULL)
 		AND (E.[ResourceId]	= @ResourceId	OR E.[ResourceId] IS NULL AND @ResourceId IS NULL)
 		AND (E.[NotedDate]	<= @NotedDate	OR E.[NotedDate] IS NULL)-- AND @NotedDate IS NULL)
+		AND (E.[LineId] <> @LineId)
 	)
 END
 GO

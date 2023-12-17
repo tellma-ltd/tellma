@@ -11,6 +11,8 @@ BEGIN
 		WHEN @Hundreds = 2 THEN N'ET'
 		WHEN @Hundreds = 3 THEN N'SA'
 		WHEN @Hundreds = 4 THEN N'LB'
+		WHEN @Hundreds = 5 THEN N'BA'
+		WHEN @Hundreds = 6 THEN N'AE'
 		ELSE N'US'
 	END
 END

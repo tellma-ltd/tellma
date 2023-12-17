@@ -6,7 +6,8 @@
 	@Entries EntryList READONLY,
 	@Top INT,
 	@ParentConcept NVARCHAR (255),
-	@FE_Index_Str NVARCHAR (255)
+	@FE_Index_Str NVARCHAR (255),
+	@InventoryCreditEntryIndex INT = 4
 AS
 DECLARE @ValidationErrors ValidationErrorList;
 DECLARE @ErrorNames dbo.ErrorNameList;
@@ -21,7 +22,7 @@ With CurrentDocs AS (
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	WHERE E.[Index] = 4 -- this only works for sales!!
+	WHERE E.[Index] = @InventoryCreditEntryIndex -- this only works for sales!!
 	GROUP BY L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
 ),
 Excesses AS (
@@ -52,10 +53,12 @@ JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 JOIN Excesses S ON S.[CenterId] = E.[CenterId] AND S.[AgentId] = E.[AgentId] AND S.[ResourceId] = E.[ResourceId]
 JOIN dbo.Centers C ON C.[Id] = E.[CenterId]
-JOIN dbo.Centers P ON C.[Node].IsDescendantOf(P.[Node]) = 1
+-- MA: 2023-11-14 
+--JOIN dbo.Centers P ON C.[Node].IsDescendantOf(P.[Node]) = 1
 JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
-WHERE P.[CenterType] = N'BusinessUnit'
+-- MA: 2023-11-14 
+--WHERE P.[CenterType] = N'BusinessUnit'
 
 IF EXISTS (SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;

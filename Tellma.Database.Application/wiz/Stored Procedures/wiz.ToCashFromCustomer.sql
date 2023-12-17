@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [wiz].[ToCashFromTradeReceivable]
-	@TradeReceivableAccountId INT,
+﻿CREATE PROCEDURE [wiz].[ToCashFromCustomer]
+	@CustomerId INT,
 	@DueOnOrBefore DATE,
 	@CashAccountId INT,
 	@PostingDate DATE = NULL,
@@ -23,7 +23,8 @@ AS
 		bll.fn_ConvertToFunctional(@PostingDate, SS.[CurrencyId], SUM(SS.[Balance]))
 	FROM [dal].[ft_Concept_Center__Agents_Balances](N'CurrentTradeReceivables', NULL) SS
 	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
-	WHERE SI.[Agent1Id] = @TradeReceivableAccountId
+	JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]
+	WHERE CA.[Agent1Id] = @CustomerId
 	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] <= ISNULL(@DueOnOrBefore, @PostingDate))
 	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] >= ISNULL(@DueOnOrAfter, N'1753-01-01'))
 	GROUP BY SI.[Id], SS.[AccountId], SS.[CenterId], SS.[AgentId], SS.[CurrencyId], SI.[ToDate]

@@ -10,20 +10,20 @@ BEGIN
 	DECLARE @BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary');
 	DECLARE @EmployeeAD INT = dal.fn_AgentDefinitionCode__Id('Employee');
 	DECLARE @EmployeeCount INT = (SELECT COUNT(*) FROM @EmployeeIds);
-
+	DECLARE @FromDate DATE = DATEADD(MONTH, -3, GETDATE()); -- Go back 3 months
 	-- Update Termination Date
 	DECLARE @TerminationDates TABLE (
 		EmployeeId INT PRIMARY KEY,
 		TerminationDate DATE
 	);
 	INSERT INTO @TerminationDates(EmployeeId, TerminationDate)
-	SELECT [NotedAgentId0] AS EmployeeId, MAX([Time20]) AS TerminationDate
+	SELECT DISTINCT [NotedAgentId0] AS EmployeeId, MAX([Time20]) AS TerminationDate
 	FROM [bll].[ft_Widelines_Period_EventFromModel__Generate]
 	(
 		@ContractLineDefinitionId,
 		@ContractAmendmentLineDefinitionId,
 		@ContractTerminationLineDefinitionId,
-		GETDATE(), '9999-12-31',
+		@FromDate, '9999-12-31', -- assuming retoractive termination of one month back only
 		@DurationUnitId,
 		0,
 		NULL, --@AgentId INT = NULL,
@@ -57,7 +57,7 @@ BEGIN
 		CenterId INT
 	);
 	INSERT INTO @EmployeeCenters(EmployeeId, CenterId)
-	SELECT [NotedAgentId0] AS EmployeeId, [CenterId0] AS CenterId
+	SELECT DISTINCT [NotedAgentId0] AS EmployeeId, [CenterId0] AS CenterId
 	FROM [bll].[ft_Widelines_Period_EventFromModel__Generate]
 	(
 		@ContractLineDefinitionId,
