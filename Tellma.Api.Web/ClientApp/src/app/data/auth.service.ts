@@ -7,6 +7,7 @@ import { StorageService } from './storage.service';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
+import { environment } from '~/environments/environment';
 
 // a set of events that various services in the application are interested in knowing about
 export enum AuthEvent {
@@ -69,6 +70,9 @@ export class AuthService {
 
       // the scope for the permissions the client should request
       scope: 'openid profile email tellma',
+
+      // Allow unsecure auth in dev environments
+      requireHttps: environment.production,
 
       // these can be null and if they are they will be retrieved by loading the discovery document
       // setting them in the appsettings is just an optimization to allow instant startup of the app

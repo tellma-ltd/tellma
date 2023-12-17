@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Tellma.Api;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.CookiePolicy;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -119,7 +120,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // add external providers
-            if (idOptions.Google?.ClientId != null)
+            if (!string.IsNullOrWhiteSpace(idOptions.Google?.ClientId))
             {
                 authBuilder.AddGoogle("Google", "Google", opt =>
                 {
@@ -128,7 +129,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
             }
 
-            if (idOptions.Microsoft?.ClientId != null)
+            if (!string.IsNullOrWhiteSpace(idOptions.Microsoft?.ClientId))
             {
                 authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
                 {
@@ -237,8 +238,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Embedded IdentityServer middleware.
         /// </summary>
-        public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app)
+        public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app, bool isDevelopment)
         {
+            if (isDevelopment)
+            {
+                // This allows us to authenticate over HTTP in debug mode
+                app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+            }
+
             return app.UseIdentityServer();
         }
 

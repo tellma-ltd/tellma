@@ -88,6 +88,15 @@
               ],
               "serviceWorker": true,
               "ngswConfigPath": "ngsw-config.json"
+            },
+            
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -100,6 +109,9 @@
           "configurations": {
             "production": {
               "browserTarget": "tellma:build:production"
+            },
+            "local": {
+              "browserTarget": "tellma:build:local"
             }
           }
         },

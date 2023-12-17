@@ -97,6 +97,12 @@
   <data name="Account_NotedAgentDefinition" xml:space="preserve">
     <value>指定的代理定义</value>
   </data>
+  <data name="Account_NotedResource" xml:space="preserve">
+    <value>指出的资源</value>
+  </data>
+  <data name="Account_NotedResourceDefinition" xml:space="preserve">
+    <value>指出的资源定义</value>
+  </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
   </data>
@@ -150,6 +156,9 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注明日期标签</value>
+  </data>
+  <data name="AccountType_NotedResourceDefinitions" xml:space="preserve">
+    <value>指出的资源定义</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>参考源标签</value>
@@ -440,7 +449,7 @@
     <value>仪表板定义</value>
   </data>
   <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
-    <value>自动退缩期（分钟）</value>
+    <value>自动消除时期（分钟）</value>
   </data>
   <data name="DashboardDefinition_Height" xml:space="preserve">
     <value>高度（瓷砖）</value>
@@ -952,6 +961,9 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
   </data>
+  <data name="Entry_NotedResource" xml:space="preserve">
+    <value>指出的资源</value>
+  </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>p值</value>
   </data>
@@ -1022,7 +1034,7 @@
     <value>找不到代理商。</value>
   </data>
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>无法找到代理定义'{0}'。</value>
+    <value>无法找到Agent DefinitionID'{0}'。</value>
   </data>
   <data name="Error_AgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
     <value>{0}' 未在帐户类型“{1}”或其后代中使用。</value>
@@ -1328,7 +1340,7 @@
     <value>{0}'{1}'在{2}'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
-    <value>帐户'{0}'具有无活性代理'{1}'。</value>
+    <value>帐户'{0}'具有无效代理'{1}'。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
     <value>帐户'{0}'具有无活动的注释代理'{1}'。</value>
@@ -1373,7 +1385,7 @@
     <value>帐户'{0}'在{1} {2}中使用中心'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
-    <value>{1} {2}中使用currency'{3}'中的帐户'{0}'。</value>
+    <value>帐户'{0}'在{1} {2}中使用货币'{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>{1} {2}中使用了account' {0}'，并使用资源'{3}'使用。</value>
@@ -1454,7 +1466,7 @@
     <value>日期{1}的货币'{0}'的汇率已重复。</value>
   </data>
   <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
-    <value>货币'{0}'是不活动的。</value>
+    <value>货币'{0}'是不活跃的。</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>货币'{0}'在帐户'{1}中使用。</value>
@@ -1622,7 +1634,7 @@
     <value>单位'{0}'与{1}'{2}'不兼容。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
-    <value>未知的导入模式'{0}'，允许的值为：{1}</value>
+    <value>未知导入模式'{0}'，允许的值为：{1}</value>
   </data>
   <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
     <value>行定义ID {0}不存在。</value>
@@ -2015,7 +2027,7 @@
     <value>unsign脚本</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
-    <value>查看默认值以形式</value>
+    <value>查看默认形式</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
     <value>工作流程</value>
@@ -2070,6 +2082,9 @@
   </data>
   <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
     <value>指定的代理定义</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedResourceDefinitions" xml:space="preserve">
+    <value>指出的资源定义</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>父账户类型</value>
@@ -2888,7 +2903,7 @@
     <value>薪水期开始</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>计算薪水之前的一天</value>
+    <value>计算薪水的一天</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>功能货币</value>
@@ -3281,7 +3296,7 @@
     <value>邀请</value>
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
-    <value>邀请</value>
+    <value>被邀请</value>
   </data>
   <data name="User_IsService" xml:space="preserve">
     <value>是服务帐户</value>

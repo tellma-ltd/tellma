@@ -97,6 +97,12 @@
   <data name="Account_NotedAgentDefinition" xml:space="preserve">
     <value>የታወቀ ወኪል ትርጉም</value>
   </data>
+  <data name="Account_NotedResource" xml:space="preserve">
+    <value>የታየው ምንጭ</value>
+  </data>
+  <data name="Account_NotedResourceDefinition" xml:space="preserve">
+    <value>የታወቀ ሀብት ትርጓሜ</value>
+  </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
@@ -150,6 +156,9 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>የታወቀ የቀን ስያሜ</value>
+  </data>
+  <data name="AccountType_NotedResourceDefinitions" xml:space="preserve">
+    <value>የታወቁ ሀብት ትርጓሜዎች</value>
   </data>
   <data name="AccountType_ReferenceSourceLabel" xml:space="preserve">
     <value>የማጣቀሻ ምንጭ መለያ</value>
@@ -951,6 +960,9 @@
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን</value>
+  </data>
+  <data name="Entry_NotedResource" xml:space="preserve">
+    <value>የታየው ምንጭ</value>
   </data>
   <data name="Entry_PValue" xml:space="preserve">
     <value>P እሴት</value>
@@ -2103,6 +2115,9 @@
   </data>
   <data name="LineDefinitionEntry_NotedAgentDefinitions" xml:space="preserve">
     <value>የታዋቂው ወኪሎች ትርጉም</value>
+  </data>
+  <data name="LineDefinitionEntry_NotedResourceDefinitions" xml:space="preserve">
+    <value>የታወቁ ሀብት ትርጓሜዎች</value>
   </data>
   <data name="LineDefinitionEntry_ParentAccountType" xml:space="preserve">
     <value>የወላጅ መለያ አይነት</value>
