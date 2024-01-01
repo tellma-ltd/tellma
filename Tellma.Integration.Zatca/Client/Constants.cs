@@ -24,5 +24,10 @@
             public const string WARNING = nameof(WARNING);
             public const string ERROR = nameof(ERROR);
         }
+        public class Disposition
+        {
+            public const string ISSUED = nameof(ISSUED);
+            public const string NOT_COMPLIANT = nameof(NOT_COMPLIANT);
+        }
     }
 }

@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Requests\ComplianceRequest_Invalid.json" />
+    <None Remove="Resources\Requests\ComplianceRequest_Valid.json" />
+    <None Remove="Resources\Requests\CsrRequest_Invalid.json" />
+    <None Remove="Resources\Requests\CsrRequest_Valid.json" />
     <None Remove="Resources\SimplifiedInvoiceRequest_Invalid.json" />
     <None Remove="Resources\SimplifiedInvoiceRequest_ValidWithWarnings.json" />
     <None Remove="Resources\StandardInvoiceRequest_Valid.json" />
@@ -18,13 +22,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\SimplifiedInvoiceRequest_Invalid.json">
+    <Content Include="Resources\Requests\ComplianceRequest_Invalid.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\SimplifiedInvoiceRequest_ValidWithWarnings.json">
+    <Content Include="Resources\Requests\ComplianceRequest_Valid.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\StandardInvoiceRequest_Valid.json">
+    <Content Include="Resources\Requests\CsrRequest_Invalid.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Requests\CsrRequest_Valid.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Requests\ReportingRequest_Invalid.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Requests\ReportingRequest_ValidWithWarnings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Requests\ClearanceRequest_Valid.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\StandardInvoice_FatooraSample_Unsigned.xml">
