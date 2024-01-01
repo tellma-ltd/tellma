@@ -1,7 +1,7 @@
 ﻿namespace Tellma.Integration.Zatca
 {
     /// <summary>
-    /// DTO for all the cryptographic values calculated when signing the invoice XML.
+    /// Model for all the cryptographic values calculated when signing the invoice XML.
     /// </summary>
     public class SignatureInfo
     {

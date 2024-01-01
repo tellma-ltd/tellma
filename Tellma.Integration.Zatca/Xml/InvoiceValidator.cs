@@ -108,7 +108,7 @@ namespace Tellma.Integration.Zatca
             if (inv.UniqueInvoiceIdentifier == default)
                 yield return new("BR-KSA-03", $"The invoice must contain a unique identifier 'UUID' (KSA-1). Current value is '{inv.UniqueInvoiceIdentifier}'");
 
-            if (inv.InvoiceIssueDateTime.Date > InvoiceUtil.NowInSaudiArabia().Date)
+            if (inv.InvoiceIssueDateTime.Date > NowInSaudiArabia().Date)
                 yield return new("BR-KSA-04", $"The document issue date (BT-2) must be less or equal to the current date. Current issue date is {inv.InvoiceIssueDateTime.Date}.");
 
             if (!Enum.IsDefined(inv.InvoiceType))
@@ -213,6 +213,15 @@ namespace Tellma.Integration.Zatca
         /// Returns true when validating a standard invoice.
         /// </summary>
         private static bool IsStandard(Invoice inv) => inv.InvoiceTypeTransactions.HasFlag(InvoiceTransaction.Standard);
+
+        /// <summary>
+        /// Returns the current <see cref="DateTime"/> in Saudi Arabia's time zone.
+        /// </summary>
+        private static DateTime NowInSaudiArabia()
+        {
+            var saudiTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Arab Standard Time");
+            return TimeZoneInfo.ConvertTime(DateTime.Now, saudiTimeZone);
+        }
     }
 
     public class ValidationResult
