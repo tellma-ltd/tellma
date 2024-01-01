@@ -170,7 +170,7 @@ namespace Tellma.Integration.Zatca
             {
                 var ac = inv.AllowanceCharge;
 
-                if (ac.Indicator == AllowanceChargeType.Discount && ac.VatCategory == VatCategory.NotSubjectToTax && ac.VatRate != 0.0m)
+                if (ac.Indicator == AllowanceChargeType.Allowance && ac.VatCategory == VatCategory.NotSubjectToTax && ac.VatRate != 0.0m)
                     yield return new("BR-KSA-12", $"A Document level allowance (BG-20) where VAT category code (BT-95) is 'Not subject to VAT', the Document level allowance VAT rate (BT-96) shall be 0 (Zero). Current value is {inv.AllowanceCharge.VatRate}.");
 
                 if (ac.Indicator == AllowanceChargeType.Charge && ac.VatCategory == VatCategory.NotSubjectToTax && ac.VatRate != 0.0m)

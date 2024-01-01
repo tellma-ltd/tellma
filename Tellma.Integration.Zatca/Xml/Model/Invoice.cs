@@ -100,7 +100,7 @@
         /// <br/> 
         /// Invoice counter value.
         /// </summary>
-        public string? InvoiceCounterValue { get; set; } 
+        public string? InvoiceCounterValue { get; set; }
 
         /// <summary>
         /// <b>KSA-13</b> 
@@ -193,40 +193,45 @@
         /// <summary>
         /// <b>BT-106</b> 
         /// <br/> 
-        /// Sum of all Invoice line net amounts in the Invoice  without VAT.
+        /// Auto-calculated as the sum of all <see cref="InvoiceLine.NetAmount"/> (amount without VAT).
         /// </summary>
-        public decimal SumOfInvoiceLineNetAmount { get; set; }
+        public decimal SumOfInvoiceLineNetAmount => Lines.Sum(e => e.NetAmount); // Rule BR-CO-10
 
         /// <summary>
         /// <b>BT-107</b> 
         /// <br/> 
         /// Sum of all allowances on document level in the Invoice. <br/>
-        /// Allowances on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>.
+        /// Allowances on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>. <br/>
+        /// Auto-calculated as <see cref="AllowanceCharge.Amount"/> if it's an allowance.
         /// </summary>
-        public decimal SumOfAllowancesOnDocumentLevel { get; set; }
+        public decimal SumOfAllowancesOnDocumentLevel =>
+            AllowanceCharge != null && AllowanceCharge.Indicator == AllowanceChargeType.Allowance ? AllowanceCharge.Amount : 0m; // Rule BR-CO-11
 
         /// <summary>
         /// <b>BT-108</b> 
         /// <br/> 
         /// Sum of all charges on document level in the Invoice. <br/>
-        /// Charges on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>.
+        /// Charges on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>. <br/>
+        /// Auto-calculated as <see cref="AllowanceCharge.Amount"/> if it's a charge.
         /// </summary>
-        public decimal SumOfChargesDocumentLevel { get; set; }
+        public decimal SumOfChargesDocumentLevel =>
+            AllowanceCharge != null && AllowanceCharge.Indicator == AllowanceChargeType.Charge ? AllowanceCharge.Amount : 0m; // Rule BR-CO-12
 
         /// <summary>
         /// <b>BT-109</b> 
         /// <br/> 
-        /// The total amount of the Invoice without VAT.
+        /// The total amount of the Invoice without VAT. <br/>
+        /// Auto-calculated as <see cref="SumOfInvoiceLineNetAmount"/> - <see cref="SumOfAllowancesOnDocumentLevel"/> + <see cref="SumOfChargesDocumentLevel"/>.
         /// </summary>
-        public decimal InvoiceTotalAmountWithoutVat { get; set; }
+        public decimal InvoiceTotalAmountWithoutVat => SumOfInvoiceLineNetAmount - SumOfAllowancesOnDocumentLevel + SumOfChargesDocumentLevel; // Rule BR-CO-13
 
         /// <summary>
         /// <b>BT-110</b> 
         /// <br/> 
         /// The total VAT amount for the Invoice. <br/>
-        /// The Invoice total VAT amount is the sum of all VAT category tax amounts.
+        /// Auto-calculated as <see cref="VatCategoryTaxAmount"/>.
         /// </summary>
-        public decimal InvoiceTotalVatAmount { get; set; }
+        public decimal InvoiceTotalVatAmount => VatCategoryTaxAmount; // Rule BR-CO-14
 
         /// <summary>
         /// <b>BT-111</b> 
@@ -248,9 +253,9 @@
         /// <b>BT-112</b> 
         /// <br/> 
         /// The total amount of the Invoice with VAT. <br/>
-        /// The Invoice total amount with VAT is the <see cref="InvoiceTotalAmountWithoutVat"/> plus the <see cref="InvoiceTotalVatAmount"/>.
+        /// Auto-calculated as <see cref="InvoiceTotalAmountWithoutVat"/> + <see cref="InvoiceTotalVatAmount"/>.
         /// </summary>
-        public decimal InvoiceTotalAmountWithVat { get; set; }
+        public decimal InvoiceTotalAmountWithVat => InvoiceTotalAmountWithoutVat + InvoiceTotalVatAmount; // Rule BR-CO-15
 
         /// <summary>
         /// <b>BT-113</b> 
@@ -271,9 +276,10 @@
         /// <b>BT-115</b> 
         /// <br/> 
         /// The outstanding amount that is requested to be paid. <br/>
-        /// This amount is the <see cref="InvoiceTotalAmountWithVat"/> minus the <see cref="PrepaidAmount"/> that has been paid in advance plus <see cref="RoundingAmount"/>. The amount is zero in case of a fully paid Invoice.
+        /// Auto-computed as <see cref="InvoiceTotalAmountWithVat"/> - <see cref="PrepaidAmount"/> + <see cref="RoundingAmount"/>. <br/> 
+        /// The amount is zero in case of a fully paid Invoice.
         /// </summary>
-        public decimal AmountDueForPayment { get; set; }
+        public decimal AmountDueForPayment => InvoiceTotalAmountWithVat - PrepaidAmount + RoundingAmount; // Rule BR-CO-16
 
         /// <summary>
         /// <b>BT-116</b> 
@@ -286,9 +292,9 @@
         /// <summary>
         /// <b>BT-117</b> 
         /// <br/> 
-        /// Calculated by multiplying the <see cref="VatCategoryTaxableAmount"/> with the <see cref="VatRate"/> for the relevant VAT category.
+        /// Auto-computed as <see cref="VatCategoryTaxableAmount"/> x <see cref="VatRate"/> rounded to 2 decimal places.
         /// </summary>
-        public decimal VatCategoryTaxAmount { get; set; }
+        public decimal VatCategoryTaxAmount => decimal.Round(VatCategoryTaxableAmount * VatRate, 2); // Rule BR-CO-17
 
         /// <summary>
         /// <b>BT-118</b> 

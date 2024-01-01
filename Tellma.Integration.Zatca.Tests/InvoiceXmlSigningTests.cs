@@ -2,7 +2,7 @@
 {
     public class InvoiceXmlSigningTests
     {
-        [Fact(DisplayName = "Invoice signing is consistent with FATOORA tool")]
+        [Fact(DisplayName = "Invoice signing is consistent with FATOORA")]
         public void SignInvoice()
         {
             // Arrange

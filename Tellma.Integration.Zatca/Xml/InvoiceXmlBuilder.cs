@@ -478,7 +478,7 @@ namespace Tellma.Integration.Zatca
                     if (line.ItemPriceDiscount != default || line.ItemGrossPrice != default)
                     {
                         priceElem.Add(new XElement(cac + "AllowanceCharge",
-                            new XElement(cbc + "ChargeIndicator", AllowanceChargeType.Discount.ToXml())
+                            new XElement(cbc + "ChargeIndicator", AllowanceChargeType.Allowance.ToXml())
                         ).Grab(out XElement allowanceChargeElem));
 
                         if (line.ItemPriceDiscount != default)
@@ -1014,7 +1014,7 @@ namespace Tellma.Integration.Zatca
         {
             return v switch
             {
-                AllowanceChargeType.Discount => "false",
+                AllowanceChargeType.Allowance => "false",
                 AllowanceChargeType.Charge => "true",
                 _ => "",
             };

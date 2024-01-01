@@ -56,26 +56,17 @@
             PaymentMeans = PaymentMeans.InCash,
             AllowanceCharge = new AllowanceCharge
             {
-                Indicator = AllowanceChargeType.Discount,
+                Indicator = AllowanceChargeType.Allowance,
                 Reason = "discount",
                 Amount = 2m,
                 VatCategory = VatCategory.StandardRate,
                 VatRate = 0.15m
             },
-            InvoiceTotalVatAmount = 144.9m,
             VatCategoryTaxableAmount = 966.00m,
-            VatCategoryTaxAmount = 144.9m,
             VatCategory = VatCategory.StandardRate,
             VatRate = 0.1500m,
-
             InvoiceTotalVatAmountInAccountingCurrency = 144.9m,
-
-            SumOfInvoiceLineNetAmount = 968.00m,
-            InvoiceTotalAmountWithoutVat = 966.00m,
-            InvoiceTotalAmountWithVat = 1110.90m,
-            SumOfAllowancesOnDocumentLevel = 2.00m,
             PrepaidAmount = 0.00m,
-            AmountDueForPayment = 1110.90m,
 
             Lines = new List<InvoiceLine>
                 {
@@ -160,7 +151,6 @@
             PurchaseOrderId = "12345",
             ReasonsForIssuanceOfCreditDebitNote = new List<string> { "Reason 1", "Reason 2" },
             RoundingAmount = 0.21m,
-            SumOfChargesDocumentLevel = 968.0m,
             VatExemptionReason = "vat-exemption-reason",
             VatExemptionReasonCode = "vat-exemption-reason-code",
 
@@ -169,7 +159,7 @@
             PaymentMeans = PaymentMeans.InCash,
             AllowanceCharge = new AllowanceCharge
             {
-                Indicator = AllowanceChargeType.Discount,
+                Indicator = AllowanceChargeType.Allowance,
                 Reason = "discount",
                 Amount = 2m,
                 VatCategory = VatCategory.StandardRate,
@@ -178,18 +168,11 @@
                 Percentage = 0.15m,
                 ReasonCode = "99"
             },
-            InvoiceTotalVatAmount = 144.9m,
             VatCategoryTaxableAmount = 966.00m,
-            VatCategoryTaxAmount = 144.9m,
             VatCategory = VatCategory.StandardRate,
             VatRate = 0.1500m,
 
-            SumOfInvoiceLineNetAmount = 968.00m,
-            InvoiceTotalAmountWithoutVat = 966.00m,
-            InvoiceTotalAmountWithVat = 1110.90m,
-            SumOfAllowancesOnDocumentLevel = 2.00m,
             PrepaidAmount = 0.00m,
-            AmountDueForPayment = 1110.90m,
 
             Lines = new List<InvoiceLine>
                 {
@@ -214,7 +197,7 @@
                         {
                             Amount = 968.00m,
                             BaseAmount = 145.20m,
-                            Indicator = AllowanceChargeType.Discount,
+                            Indicator = AllowanceChargeType.Allowance,
                             Percentage = 0.05m,
                             Reason = "line discount reason",
                             ReasonCode = "99"
@@ -256,7 +239,7 @@
                         {
                             Amount = 1968.00m,
                             BaseAmount = 1145.20m,
-                            Indicator = AllowanceChargeType.Discount,
+                            Indicator = AllowanceChargeType.Allowance,
                             Percentage = 0.05m,
                             Reason = "line 2 discount reason",
                             ReasonCode = "99"
