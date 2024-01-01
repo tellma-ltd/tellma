@@ -4,23 +4,23 @@ using System.Reflection;
 
 namespace Tellma.Integration.Zatca.Tests
 {
-    public partial class ZatcaClientSandboxTests
+    public partial class ZatcaClientTests
     {
         private static readonly string _sectionName = "ZatcaSandbox";
         private static readonly string _zatcaSandboxBaseUri = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
 
         readonly ZatcaSandboxOptions _options;
 
-        public ZatcaClientSandboxTests()
+        public ZatcaClientTests()
         {
             var builder = new ConfigurationBuilder()
-                .AddUserSecrets<ZatcaClientSandboxTests>();
+                .AddUserSecrets<ZatcaClientTests>();
 
             _options = builder
                 .Build()
                 .GetSection(_sectionName)
                 .Get<ZatcaSandboxOptions>() 
-                ?? throw new InvalidOperationException($"Running {nameof(ZatcaClientSandboxTests)} requires a '{_sectionName}' section in the Test project user secrets");
+                ?? throw new InvalidOperationException($"Running {nameof(ZatcaClientTests)} requires a '{_sectionName}' section in the Test project user secrets");
         }
 
         [Fact(DisplayName = "Reporting a single invoice with warnings")]
@@ -179,12 +179,12 @@ namespace Tellma.Integration.Zatca.Tests
             {
                 if (string.IsNullOrWhiteSpace(username))
                 {
-                    throw new InvalidOperationException($"Running {nameof(ZatcaClientSandboxTests)} requires a property '{nameof(ZatcaSandboxOptions.Username)}' in the '{_sectionName}' section in the Test project's user secrets");
+                    throw new InvalidOperationException($"Running {nameof(ZatcaClientTests)} requires a property '{nameof(ZatcaSandboxOptions.Username)}' in the '{_sectionName}' section in the Test project's user secrets");
                 }
 
                 if (string.IsNullOrWhiteSpace(password))
                 {
-                    throw new InvalidOperationException($"Running {nameof(ZatcaClientSandboxTests)} requires a property '{nameof(ZatcaSandboxOptions.Password)}' in the '{_sectionName}' section in the Test project's user secrets");
+                    throw new InvalidOperationException($"Running {nameof(ZatcaClientTests)} requires a property '{nameof(ZatcaSandboxOptions.Password)}' in the '{_sectionName}' section in the Test project's user secrets");
 
                 }
 
