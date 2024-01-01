@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Tellma.Integration.Zatca
 {
@@ -344,96 +343,5 @@ namespace Tellma.Integration.Zatca
         }
 
         #endregion
-    }
-
-    public class CreateProductionCsidRequest
-    {
-        [JsonPropertyName("compliance_request_id")]
-        public string? ComplianceRequestId { get; set; }
-    }
-
-    public class Response<T> where T : class
-    {
-        public Response(ResponseStatus status, T? result)
-        {
-            Status = status;
-            Result = result;
-
-            if (IsSuccess && Result == null)
-            {
-                throw new InvalidOperationException("If the status code is successful, the result cannot be null.");
-            }
-        }
-
-        public ResponseStatus Status { get; }
-
-        public T? Result { get; }
-
-        public bool IsSuccess => ((int)Status >= 200) && ((int)Status <= 299);
-
-        public T ResultOrThrow() => Result ?? throw new InvalidOperationException("Result is null.");
-    }
-
-    public enum ResponseStatus
-    {
-        Success = 200,
-        SuccessWithWarnings = 202,
-        ClearanceDeactivated = 303,
-        InvalidRequest = 400,
-        InvalidCredentials = 401,
-        InvalidVersion = 406,
-        ServerError = 500,
-    }
-
-    public class ComplianceCheckRequest : InvoiceRequestBase
-    {
-    }
-
-    public class ComplianceCheckResponse : InvoiceResponseBase
-    {
-        /// <summary>
-        /// <see cref="Constants.ReportingStatus"/>
-        /// </summary>
-        [JsonPropertyName("reportingStatus")]
-        public string? ReportingStatus { get; set; }
-
-        /// <summary>
-        /// <see cref="Constants.ClearanceStatus"/>
-        /// </summary>
-        [JsonPropertyName("clearanceStatus")]
-        public string? ClearanceStatus { get; set; }
-
-        [JsonPropertyName("qrSellerStatus")]
-        public string? QrSellerStatus { get; set; }
-
-        [JsonPropertyName("qrBuyerStatus")]
-        public string? QrBuyerStatus { get; set; }
-    }
-
-    public class CsidResponse
-    {
-        [JsonPropertyName("requestID")]
-        public long RequestId { get; set; }
-
-        /// <summary>
-        /// <see cref="Constants.Disposition"/>
-        /// </summary>
-        [JsonPropertyName("dispositionMessage")]
-        public string? DispositionMessage { get; set; }
-
-        [JsonPropertyName("binarySecurityToken")]
-        public string? BinarySecurityToken { get; set; }
-
-        [JsonPropertyName("secret")]
-        public string? Secret { get; set; }
-
-        [JsonPropertyName("errors")]
-        public List<string>? Errors { get; set; }
-    }
-
-    public class CsrRequest
-    {
-        [JsonPropertyName("csr")]
-        public string? Csr { get; set; }
     }
 }
