@@ -31,7 +31,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = new ZatcaClient(_zatcaSandboxBaseUri, credsFactory);
 
             // Act
-            var request = await GetFileContent<ReportingRequest>("SimplifiedInvoice_ValidWithWarnings.json");
+            var request = await GetFileContent<ReportingRequest>("SimplifiedInvoiceRequest_ValidWithWarnings.json");
             var response = await client.ReportSingle(request);
 
             // Assert
@@ -72,7 +72,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = new ZatcaClient(_zatcaSandboxBaseUri, credsFactory);
 
             // Act
-            var request = await GetFileContent<ReportingRequest>("SimplifiedInvoice_Invalid.json");
+            var request = await GetFileContent<ReportingRequest>("SimplifiedInvoiceRequest_Invalid.json");
             var response = await client.ReportSingle(request);
 
             // Assert
@@ -109,7 +109,7 @@ namespace Tellma.Integration.Zatca.Tests
             await Assert.ThrowsAsync<ZatcaAuthenticationException>(async () =>
             {
                 // Act
-                var request = await GetFileContent<ReportingRequest>("SimplifiedInvoice_ValidWithWarnings.json");
+                var request = await GetFileContent<ReportingRequest>("SimplifiedInvoiceRequest_ValidWithWarnings.json");
                 await client.ReportSingle(request);
             });
         }
@@ -122,7 +122,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = new ZatcaClient(_zatcaSandboxBaseUri, credsFactory);
 
             // Act
-            var request = await GetFileContent<ClearanceRequest>("StandardInvoice_Valid.json");
+            var request = await GetFileContent<ClearanceRequest>("StandardInvoiceRequest_Valid.json");
             var response = await client.ClearSingle(request);
 
             // Assert
@@ -157,16 +157,14 @@ namespace Tellma.Integration.Zatca.Tests
             await Assert.ThrowsAsync<ZatcaClearanceDeactivatedException>(async () =>
             {
                 // Act
-                var request = await GetFileContent<ClearanceRequest>("StandardInvoice_Valid.json");
+                var request = await GetFileContent<ClearanceRequest>("StandardInvoiceRequest_Valid.json");
                 var response = await client.ClearSingle(request, activeClearance: false);
             });
         }
 
         private static async Task<T> GetFileContent<T>(string fileName)
         {
-            string filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", $@"Resources\{fileName}");
-            string fileContent = await File.ReadAllTextAsync(filePath);
-
+            string fileContent = await File.ReadAllTextAsync($@"Resources\{fileName}");
             return JsonConvert.DeserializeObject<T>(fileContent);
         }
 

@@ -11,19 +11,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\SimplifiedInvoice_Invalid.json" />
-    <None Remove="Resources\SimplifiedInvoice_ValidWithWarnings.json" />
-    <None Remove="Resources\StandardInvoice_Valid.json" />
+    <None Remove="Resources\SimplifiedInvoiceRequest_Invalid.json" />
+    <None Remove="Resources\SimplifiedInvoiceRequest_ValidWithWarnings.json" />
+    <None Remove="Resources\StandardInvoice.xml" />
+    <None Remove="Resources\StandardInvoiceRequest_Valid.json" />
+    <None Remove="Resources\StandardInvoice_FatooraSample_Signed.xml" />
+    <None Remove="Resources\StandardInvoice_FatooraSample_Unsigned.xml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\SimplifiedInvoice_Invalid.json">
+    <Content Include="Resources\SimplifiedInvoiceRequest_Invalid.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\SimplifiedInvoice_ValidWithWarnings.json">
+    <Content Include="Resources\SimplifiedInvoiceRequest_ValidWithWarnings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\StandardInvoice_Valid.json">
+    <Content Include="Resources\StandardInvoiceRequest_Valid.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\StandardInvoice.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\StandardInvoice_FatooraSample_Unsigned.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\StandardInvoice_FatooraSample_Signed.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -32,6 +44,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

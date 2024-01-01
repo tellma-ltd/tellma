@@ -17,7 +17,7 @@ namespace Tellma.Integration.Zatca
         public string? Code { get; set; }
 
         /// <summary>
-        /// e.g. XSD validation, QRCODE_VALIDATION, XSD validation
+        /// e.g. XSD validation, QRCODE_VALIDATION
         /// </summary>
         [JsonPropertyName("category")]
         public string? Category { get; set; }
