@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Xml;
 
 namespace Tellma.Integration.Zatca
 {
@@ -37,7 +32,6 @@ namespace Tellma.Integration.Zatca
         };
 
 
-
         #endregion
 
         private readonly Invoice inv;
@@ -47,7 +41,7 @@ namespace Tellma.Integration.Zatca
             inv = invoice ?? throw new ArgumentNullException(nameof(invoice));
         }
 
-        public IEnumerable<ValidationError> Validate()
+        public IEnumerable<ValidationResult> Validate()
         {
             if (string.IsNullOrWhiteSpace(inv.InvoiceNumber))
                 yield return new("BR-02", "An Invoice shall have an Invoice number (BT-1).");
@@ -109,7 +103,7 @@ namespace Tellma.Integration.Zatca
         /// Validate KSA - business rules (BR-KSA-03).
         /// </summary>
         /// <returns>Any violations.</returns>
-        public IEnumerable<ValidationError> Validate_BR_KSA()
+        public IEnumerable<ValidationResult> Validate_BR_KSA()
         {
             if (inv.UniqueInvoiceIdentifier == default)
                 yield return new("BR-KSA-03", $"The invoice must contain a unique identifier 'UUID' (KSA-1). Current value is '{inv.UniqueInvoiceIdentifier}'");
@@ -219,34 +213,36 @@ namespace Tellma.Integration.Zatca
         /// Returns true when validating a standard invoice.
         /// </summary>
         private static bool IsStandard(Invoice inv) => inv.InvoiceTypeTransactions.HasFlag(InvoiceTransaction.Standard);
-
-        /// <summary>
-        /// Returns true if <paramref name="v"/> is one of the values listed in 
-        /// <see href="https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred4461.htm">UNTDID 4461</see>.
-        /// </summary>
-        private static bool IsValidUntdid4461(int v)
-        {
-            return v >= 1 && v <= 68 ||
-                v == 70 ||
-                v >= 74 && v <= 78 ||
-                v >= 91 && v <= 97;
-        }
     }
 
-    public class ValidationError
+    public class ValidationResult
     {
-        public ValidationError(string message)
+        public ValidationResult(string message)
         {
             Message = message;
+            Severity = Severity.Error;
         }
 
-        public ValidationError(string rule, string message)
+        public ValidationResult(Severity sev, string message)
+        {
+            Message = message;
+            Severity = sev;
+        }
+
+        public ValidationResult(string rule, string message)
         {
             Rule = rule;
             Message = message;
+            Severity = Severity.Error;
         }
 
         public string? Rule { get; }
         public string Message { get; }
+        public Severity Severity { get; }
+    }
+
+    public enum Severity
+    {
+        Error = 0, Warning = 1
     }
 }

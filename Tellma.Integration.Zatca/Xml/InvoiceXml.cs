@@ -14,7 +14,10 @@ using System.Xml.Xsl;
 
 namespace Tellma.Integration.Zatca
 {
-    public class InvoiceXmlBuilder
+    /// <summary>
+    /// Class for generating and signing ZATCA-compliant invoice XML.
+    /// </summary>
+    public class InvoiceXml
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
         public const string TIME_FORMAT = "HH:mm:ss";
@@ -35,7 +38,7 @@ namespace Tellma.Integration.Zatca
         private readonly Invoice _inv;
         private XDocument? _xdoc;
 
-        public InvoiceXmlBuilder(Invoice inv)
+        public InvoiceXml(Invoice inv)
         {
             _inv = inv ?? throw new ArgumentNullException(nameof(inv));
         }
@@ -53,7 +56,7 @@ namespace Tellma.Integration.Zatca
         /// <see href="https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf">ZATCA E-Invoice Standard</see>
         /// and <see href="https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_EInvoice_Data_Dictionary%20vF.xlsx">E-Invoice Data Dictionary</see> (2023-5-19).
         /// </summary>
-        public InvoiceXmlBuilder Build()
+        public InvoiceXml Build()
         {
             // Create the Invoice element which is the document root
             var invoiceElem =

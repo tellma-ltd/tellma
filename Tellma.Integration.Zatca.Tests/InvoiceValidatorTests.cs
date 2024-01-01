@@ -27,5 +27,24 @@ namespace Tellma.Integration.Zatca.Tests
             // Assert
             Assert.Empty(results);
         }
+
+        [Fact(DisplayName = "Invalid invoice fails validation")]
+        public void InvalidInvoice()
+        {
+            // Arrange
+            var invoice = InvoicesSamples.ValidStandardInvoice();
+
+            invoice.Seller = null;
+            var validator = new InvoiceValidator(invoice);
+
+            // Act
+            var results = validator.Validate();
+
+            foreach (var e in results)
+                _output.WriteLine(e.Rule + ": " + e.Message);
+
+            // Assert
+            Assert.NotEmpty(results);
+        }
     }
 }
