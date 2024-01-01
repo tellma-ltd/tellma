@@ -11,13 +11,13 @@ namespace Tellma.Integration.Zatca
         public string? Type { get; set; }
 
         /// <summary>
-        /// e.g. XSD_ZATCA_VALID, invoiceTimeStamp_QRCODE_INVALID, invalid-signing-certificate, XSD_ZATCA_INVALID
+        /// e.g. XSD_ZATCA_VALID, invoiceTimeStamp_QRCODE_INVALID, invalid-signing-certificate, XSD_ZATCA_INVALID.
         /// </summary>
         [JsonPropertyName("code")]
         public string? Code { get; set; }
 
         /// <summary>
-        /// e.g. XSD validation, QRCODE_VALIDATION
+        /// e.g. XSD validation, QRCODE_VALIDATION.
         /// </summary>
         [JsonPropertyName("category")]
         public string? Category { get; set; }

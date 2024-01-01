@@ -2,54 +2,50 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Tellma.Integration.Zatca
 {
-    public class ZatcaClient
+    public class Credentials
     {
-        #region HttpClient
-
-        /// <summary>
-        /// The universal <see cref="HttpClient"/> used to call the Zatca API
-        /// </summary>
-        private static HttpClient? _httpClient;
-
-        private static readonly object _httpClientLock = new();
-
-        /// <summary>
-        /// Initializes the universal <see cref="HttpClient"/> if not already initialized and returns it.
-        /// </summary>
-        private static HttpClient GetClient()
+        public Credentials(string username, string password)
         {
-            if (_httpClient == null)
+            if (string.IsNullOrWhiteSpace(username))
             {
-                lock (_httpClientLock)
-                {
-                    _httpClient ??= new HttpClient();
-                    _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    _httpClient.DefaultRequestHeaders.Add("Accept-Version", "V2");
-                }
+                throw new ArgumentException($"'{nameof(username)}' cannot be null or whitespace.", nameof(username));
             }
 
-            return _httpClient;
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or whitespace.", nameof(password));
+            }
+
+            Username = username;
+            Password = password;
         }
+
+        public string Username { get; }
+        public string Password { get; }
+    }
+    public class ZatcaClient
+    {
+        #region Constants
+
+        const string PRODUCTION_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal"; // TODO: Replace with production URL
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// The base URL of Zatca API.
+        /// The base URL of ZATCA API.
         /// </summary>
         private readonly string _baseUrl;
 
-        /// <summary>
-        /// The factory used to retrieve the username and password, if an implementation is not provided
-        /// a <see cref="DefaultCredentialsFactory"/> is used.
-        /// </summary>
-        private readonly ICredentialsFactory _credentialsFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ZatcaClient(string baseUrl, ICredentialsFactory credentialsFactory)
+        public ZatcaClient(string baseUrl, IHttpClientFactory httpClientFactory)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
@@ -57,21 +53,63 @@ namespace Tellma.Integration.Zatca
             }
 
             _baseUrl = baseUrl;
-            _credentialsFactory = credentialsFactory ?? throw new ArgumentNullException(nameof(credentialsFactory));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public ZatcaClient()
+        public ZatcaClient(IHttpClientFactory httpClientFactory) : this(PRODUCTION_BASE_URL, httpClientFactory)
         {
-            _baseUrl = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal"; // TODO: Replace with production URL
-            _credentialsFactory = new DefaultCredentialsFactory(); // 
+        }
+
+        public ZatcaClient(string baseUrl, HttpClient client)
+        {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                throw new ArgumentException($"'{nameof(baseUrl)}' cannot be null or whitespace.", nameof(baseUrl));
+            }
+
+            if (client is null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            _baseUrl = baseUrl;
+            _httpClientFactory = new StaticHttpClientFactory(client);
+        }
+
+        public ZatcaClient(HttpClient client) : this(PRODUCTION_BASE_URL, client)
+        {
+        }
+
+        private class StaticHttpClientFactory : IHttpClientFactory
+        {
+            private readonly HttpClient _client;
+
+            public StaticHttpClientFactory(HttpClient client) => _client = client;
+
+            public HttpClient CreateClient(string name) => _client;
         }
 
         #endregion
 
         #region API
 
-        public async Task<ReportingResponse> ReportSingle(ReportingRequest request, CancellationToken cancellation = default)
+        /// <summary>
+        /// Calls the e-Invoice reporting API.
+        /// <para/>
+        /// Note: A 400 response will not throw an exception.
+        /// </summary>
+        public async Task<Response<ReportingResponse>> ReportInvoice(ReportingRequest request, Credentials creds, CancellationToken cancellation = default)
         {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (creds is null)
+            {
+                throw new ArgumentNullException(nameof(creds));
+            }
+
             string url = _baseUrl + "/invoices/reporting/single";
 
             // Prepare the message
@@ -82,20 +120,32 @@ namespace Tellma.Integration.Zatca
             };
 
             // Send the message
-            using var httpResponse = await SendAsync(msg, cancellation).ConfigureAwait(false);
-            await EnsureSuccess(httpResponse);
+            using var httpResponse = await SendAsync(msg, creds, cancellation).ConfigureAwait(false);
 
-            var result = await httpResponse.Content
-                .ReadFromJsonAsync<ReportingResponse>(cancellationToken: cancellation)
-                .ConfigureAwait(false);
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<ReportingResponse>(httpResponse, cancellation);
 
-            return result ??
-                // Should not hit this error if we did our error handling correctly
-                throw new InvalidOperationException($"Could not deserialize the response, status code {httpResponse.StatusCode}.");
+            return new(status, result);
         }
 
-        public async Task<ClearanceResponse> ClearSingle(ClearanceRequest request, bool activeClearance = true, CancellationToken cancellation = default)
+        /// <summary>
+        /// Calls the e-Invoice clearance API.
+        /// <para/>
+        /// Note: A 400 response will not throw an exception.
+        /// </summary>
+        public async Task<Response<ClearanceResponse>> ClearInvoice(ClearanceRequest request, Credentials creds, bool activeClearance = true, CancellationToken cancellation = default)
         {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (creds is null)
+            {
+                throw new ArgumentNullException(nameof(creds));
+            }
+
             string url = _baseUrl + "/invoices/clearance/single";
 
             // Prepare the message
@@ -109,52 +159,176 @@ namespace Tellma.Integration.Zatca
             msg.Headers.Add("Clearance-Status", activeClearance ? "1" : "0");
 
             // Send the message
-            using var httpResponse = await SendAsync(msg, cancellation).ConfigureAwait(false);
-            await EnsureSuccess(httpResponse);
+            using var httpResponse = await SendAsync(msg, creds, cancellation).ConfigureAwait(false);
 
-            var result = await httpResponse.Content
-                .ReadFromJsonAsync<ClearanceResponse>(cancellationToken: cancellation)
-                .ConfigureAwait(false);
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<ClearanceResponse>(httpResponse, cancellation);
 
-            return result ??
-                // Should not hit this error if we did our error handling correctly
-                throw new InvalidOperationException($"Could not deserialize the response, status code {httpResponse.StatusCode}.");
+            return new(status, result);
+        }
+
+        /// <summary>
+        /// Calls the e-Invoice Compliance CSID API.
+        /// </summary>
+        public async Task<Response<CsidResponse>> CreateComplianceCsid(CsrRequest request, string otp, CancellationToken cancellation = default)
+        {
+            // Validate arguments
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (string.IsNullOrWhiteSpace(otp))
+                throw new ArgumentException($"'{nameof(otp)}' cannot be null or whitespace.", nameof(otp));
+
+            string url = _baseUrl + "/compliance";
+
+            // Prepare the message
+            var method = HttpMethod.Post;
+            var msg = new HttpRequestMessage(method, url)
+            {
+                Content = JsonContent.Create(request)
+            };
+
+            // Add OTP header
+            msg.Headers.Add("Otp", otp);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, null, cancellation).ConfigureAwait(false);
+
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+
+            return new(status, result);
+        }
+
+        /// <summary>
+        /// Calls the e-Invoice Compliance Invoice API.
+        /// </summary>
+        public async Task<Response<ComplianceCheckResponse>> CheckInvoiceCompliance(ComplianceCheckRequest request, Credentials creds, CancellationToken cancellation = default)
+        {
+            // Validate arguments
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (creds is null)
+                throw new ArgumentNullException(nameof(creds));
+
+            // Base URL
+            string url = _baseUrl + "/compliance/invoices";
+
+            // Prepare the message
+            var method = HttpMethod.Post;
+            var msg = new HttpRequestMessage(method, url)
+            {
+                Content = JsonContent.Create(request)
+            };
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, creds, cancellation).ConfigureAwait(false);
+            
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<ComplianceCheckResponse>(httpResponse, cancellation);
+
+            return new(status, result);
+        }
+
+        /// <summary>
+        /// Calls the Production CSID (Onboarding) API.
+        /// </summary>
+        public async Task<Response<CsidResponse>> CreateProductionCsid(CreateProductionCsidRequest request, Credentials creds, CancellationToken cancellation = default)
+        {
+            // Validate arguments
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (creds is null)
+                throw new ArgumentNullException(nameof(creds));
+
+            // Base URL
+            string url = _baseUrl + "/production/csids";
+
+            // Prepare the message
+            var method = HttpMethod.Post;
+            var msg = new HttpRequestMessage(method, url)
+            {
+                Content = JsonContent.Create(request)
+            };
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, creds, cancellation).ConfigureAwait(false);
+
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+
+            return new(status, result);
+        }
+
+        /// <summary>
+        /// Calls the Production CSID (Renewal) API.
+        /// </summary>
+        public async Task<Response<CsidResponse>> RenewComplianceCsid(CsrRequest request, Credentials creds, string otp, CancellationToken cancellation = default)
+        {
+            // Validate arguments
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (creds is null)
+                throw new ArgumentNullException(nameof(creds));
+
+            string url = _baseUrl + "/production/csids";
+
+            // Prepare the message
+            var method = HttpMethod.Patch;
+            var msg = new HttpRequestMessage(method, url)
+            {
+                Content = JsonContent.Create(request)
+            };
+
+            // Add OTP header
+            msg.Headers.Add("Otp", otp);
+
+            // Send the message
+            using var httpResponse = await SendAsync(msg, creds, cancellation).ConfigureAwait(false);
+
+            // Return the Response
+            var status = (ResponseStatus)httpResponse.StatusCode;
+            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+
+            return new(status, result);
         }
 
         #endregion
 
         #region Helpers
 
-        private static async Task EnsureSuccess(HttpResponseMessage response)
+        private static async Task<T?> TryParseResult<T>(HttpResponseMessage msg, CancellationToken cancellation) where T : class
         {
-            // Handle all known status codes that Zatca returns
-            switch (response.StatusCode)
+            if (msg.IsSuccessStatusCode || msg.StatusCode == HttpStatusCode.BadRequest)
             {
-                case HttpStatusCode.RedirectMethod:
-                    throw new ZatcaClearanceDeactivatedException();
-
-                case HttpStatusCode.Unauthorized:
-                    throw new ZatcaAuthenticationException();
-
-                case HttpStatusCode.InternalServerError:
-                    var errorMsg = await response.Content.ReadAsStringAsync();
-                    throw new ZatcaInternalException(errorMsg);
+                try
+                {
+                    return await msg.Content
+                        .ReadFromJsonAsync<T>(cancellationToken: cancellation)
+                        .ConfigureAwait(false);
+                }
+                catch (JsonException) { }
             }
 
-            if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.BadRequest) // 400 will indicate failure in the response body
-            {
-                // Future proofing
-                throw new ZatcaException($"Unhandled status code from Zatca {response.StatusCode}.", isTransient: true);
-            }
+            return null;
         }
 
-        private Task<(string username, string password)> GetCredentials(CancellationToken cancellation) => _credentialsFactory.GetCredentials(cancellation);
-
-        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, CancellationToken cancellation = default)
+        private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Credentials? creds, CancellationToken cancellation = default)
         {
             // Add basic authentication header
-            var (username, password) = await GetCredentials(cancellation);
-            msg.Headers.Authorization = new BasicAuthenticationHeaderValue(username, password);
+            if (creds != null)
+                msg.Headers.Authorization = new BasicAuthenticationHeaderValue(creds.Username, creds.Password);
+
+            // Add standard headers
+            msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            msg.Headers.Add("Accept-Version", "V2");
 
             // Add language header
             var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
@@ -162,7 +336,7 @@ namespace Tellma.Integration.Zatca
             msg.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(lang));
 
             // Send request
-            HttpClient client = GetClient();
+            HttpClient client = _httpClientFactory.CreateClient(string.Empty);
             var responseMsg = await client.SendAsync(msg, cancellation);
 
             // Return response
@@ -170,5 +344,96 @@ namespace Tellma.Integration.Zatca
         }
 
         #endregion
+    }
+
+    public class CreateProductionCsidRequest
+    {
+        [JsonPropertyName("compliance_request_id")]
+        public string? ComplianceRequestId { get; set; }
+    }
+
+    public class Response<T> where T : class
+    {
+        public Response(ResponseStatus status, T? result)
+        {
+            Status = status;
+            Result = result;
+
+            if (IsSuccess && Result == null)
+            {
+                throw new InvalidOperationException("If the status code is successful, the result cannot be null.");
+            }
+        }
+
+        public ResponseStatus Status { get; }
+
+        public T? Result { get; }
+
+        public bool IsSuccess => ((int)Status >= 200) && ((int)Status <= 299);
+
+        public T ResultOrThrow() => Result ?? throw new InvalidOperationException("Result is null.");
+    }
+
+    public enum ResponseStatus
+    {
+        Success = 200,
+        SuccessWithWarnings = 202,
+        ClearanceDeactivated = 303,
+        InvalidRequest = 400,
+        InvalidCredentials = 401,
+        InvalidVersion = 406,
+        ServerError = 500,
+    }
+
+    public class ComplianceCheckRequest : InvoiceRequestBase
+    {
+    }
+
+    public class ComplianceCheckResponse : InvoiceResponseBase
+    {
+        /// <summary>
+        /// <see cref="Constants.ReportingStatus"/>
+        /// </summary>
+        [JsonPropertyName("reportingStatus")]
+        public string? ReportingStatus { get; set; }
+
+        /// <summary>
+        /// <see cref="Constants.ClearanceStatus"/>
+        /// </summary>
+        [JsonPropertyName("clearanceStatus")]
+        public string? ClearanceStatus { get; set; }
+
+        [JsonPropertyName("qrSellerStatus")]
+        public string? QrSellerStatus { get; set; }
+
+        [JsonPropertyName("qrBuyerStatus")]
+        public string? QrBuyerStatus { get; set; }
+    }
+
+    public class CsidResponse
+    {
+        [JsonPropertyName("requestID")]
+        public long RequestId { get; set; }
+
+        /// <summary>
+        /// <see cref="Constants.Disposition"/>
+        /// </summary>
+        [JsonPropertyName("dispositionMessage")]
+        public string? DispositionMessage { get; set; }
+
+        [JsonPropertyName("binarySecurityToken")]
+        public string? BinarySecurityToken { get; set; }
+
+        [JsonPropertyName("secret")]
+        public string? Secret { get; set; }
+
+        [JsonPropertyName("errors")]
+        public List<string>? Errors { get; set; }
+    }
+
+    public class CsrRequest
+    {
+        [JsonPropertyName("csr")]
+        public string? Csr { get; set; }
     }
 }

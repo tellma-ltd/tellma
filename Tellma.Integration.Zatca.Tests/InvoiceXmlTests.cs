@@ -39,7 +39,7 @@ namespace Tellma.Integration.Zatca.Tests
             Assert.Empty(problems);
         }
 
-        [Fact(DisplayName = "Generating XML with a valid model")]
+        [Fact(DisplayName = "Generate XML with a valid model")]
         public void ValidModel()
         {
             var invoice = InvoicesSamples.ValidStandardInvoice();
@@ -49,7 +49,7 @@ namespace Tellma.Integration.Zatca.Tests
             _output.WriteLine(xml);
         }
 
-        [Fact(DisplayName = "Generating XML with an empty model")]
+        [Fact(DisplayName = "Generate XML with an empty model")]
         public void EmptyModel()
         {
             var invoice = new Invoice();
@@ -59,7 +59,7 @@ namespace Tellma.Integration.Zatca.Tests
             _output.WriteLine(xml);
         }
 
-        [Fact(DisplayName = "Generating XML with a semi-empty model")]
+        [Fact(DisplayName = "Generate XML with a semi-empty model")]
         public void SemiEmptyModel()
         {
             var invoice = new Invoice
@@ -79,7 +79,7 @@ namespace Tellma.Integration.Zatca.Tests
             _output.WriteLine(xml);
         }
 
-        [Fact(DisplayName = "Invoice signing is consistent with FATOORA")]
+        [Fact(DisplayName = "Signing XML is consistent with FATOORA")]
         public void SignInvoice()
         {
             // Arrange
