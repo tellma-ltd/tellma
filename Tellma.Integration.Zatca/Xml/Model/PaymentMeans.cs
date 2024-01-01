@@ -6,8 +6,6 @@
     /// </summary>
     public enum PaymentMeans
     {
-        // 10, 30, 42, 48, 1
-
         /// <summary>
         /// Not defined legally enforceable agreement between two or more parties 
         /// (expressing a contractual right or a right to the payment of money).

@@ -8,7 +8,7 @@
         /// <summary>
         /// Allowance (discount).
         /// </summary>
-        Discount, 
+        Allowance, 
 
         /// <summary>
         /// Extra charge.
