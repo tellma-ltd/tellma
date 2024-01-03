@@ -1,4 +1,6 @@
-﻿namespace Tellma.Integration.Zatca
+﻿using System.Text.RegularExpressions;
+
+namespace Tellma.Integration.Zatca
 {
     /// <summary>
     /// Model for a line in the ZATCA e-invoice, as specified in the 
@@ -69,9 +71,10 @@
         /// <summary>
         /// <b>KSA-12</b>
         /// <br/> 
-        /// Line amount inclusive VAT.
+        /// Line amount inclusive VAT. <br/>
+        /// Auto-calculated as <see cref="NetAmount"/> + <see cref="VatAmount"/>.
         /// </summary>
-        public decimal AmountIncludingVat { get; set; }
+        public decimal AmountIncludingVat => NetAmount + VatAmount; // Rule BR-KSA-51
 
         /// <summary>
         /// <b>KSA-31</b>
@@ -83,9 +86,10 @@
         /// <summary>
         /// <b>KSA-32</b>
         /// <br/> 
-        /// The sum total of VAT category tax amount (BT-117) subject to specific VAT Category code of the associated Prepayment invoice(s).
+        /// The sum total of VAT category tax amount (BT-117) subject to specific VAT Category code of the associated Prepayment invoice(s). <br/>
+        /// Auto-calculated as <see cref="PrepaymentVatCategoryTaxableAmount"/> + <see cref="PrepaymentVatRate"/>.
         /// </summary>
-        public decimal PrepaymentVatCategoryTaxAmount { get; set; }
+        public decimal PrepaymentVatCategoryTaxAmount => decimal.Round(PrepaymentVatCategoryTaxableAmount * PrepaymentVatRate, 2); // Rule BR-KSA-79
 
         /// <summary>
         /// <b>BT-153</b>
@@ -120,7 +124,7 @@
         /// <b>BT-146</b>
         /// <br/> 
         /// The price of an item, exclusive of VAT, after subtracting item price discount. <br/>
-        /// The Item net price has to be equal with the <see cref="ItemGrossPrice"/> minus the <see cref="ItemPriceDiscount"/>.
+        /// The Item net price has to be equal to <see cref="ItemGrossPrice"/> - <see cref="ItemPriceDiscount"/> when the former is provided (rule BR-KSAEN16931-07)
         /// </summary>
         public decimal ItemNetPrice { get; set; }
 

@@ -65,7 +65,7 @@ namespace Tellma.Integration.Zatca
                     new XAttribute(XNamespace.Xmlns + "cbc", cbc),
                     new XAttribute(XNamespace.Xmlns + "cac", cac),
                     new XAttribute(XNamespace.Xmlns + "ext", ext),
-                    new XElement(cbc + "ProfileID", _inv.BusinessProcessType),
+                    new XElement(cbc + "ProfileID", "reporting:1.0"),
                     new XElement(cbc + "ID", _inv.InvoiceNumber),
                     new XElement(cbc + "UUID", _inv.UniqueInvoiceIdentifier.ToString(UUID_FORMAT)),
                     new XElement(cbc + "IssueDate", _inv.InvoiceIssueDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
