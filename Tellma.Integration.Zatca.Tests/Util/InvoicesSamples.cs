@@ -78,7 +78,6 @@
 
                         NetAmount = 968.00m,
                         VatAmount = 145.20m,
-                        AmountIncludingVat = 1113.20m,
 
                         ItemName = "dsd",
                         ItemVatCategory = VatCategory.StandardRate,
@@ -184,7 +183,6 @@
 
                         NetAmount = 968.00m,
                         VatAmount = 145.20m,
-                        AmountIncludingVat = 1113.20m,
 
                         ItemName = "dsd",
                         ItemVatCategory = VatCategory.StandardRate,
@@ -214,7 +212,6 @@
                         PrepaymentUuid = Guid.Parse("26e78469-64af-406d-9cfd-895e724198f0"),
                         PrepaymentVatCategory= VatCategory.StandardRate,
                         PrepaymentVatCategoryTaxableAmount= 600.0m,
-                        PrepaymentVatCategoryTaxAmount = 120.0m,
                         PrepaymentVatRate = 0.15m
                     },
 
@@ -226,7 +223,6 @@
 
                         NetAmount = 1968.00m,
                         VatAmount = 1145.20m,
-                        AmountIncludingVat = 1113.20m,
 
                         ItemName = "dsds",
                         ItemVatCategory = VatCategory.StandardRate,
@@ -256,7 +252,6 @@
                         PrepaymentUuid = Guid.Parse("36e78469-64af-406d-9cfd-895e724198f0"),
                         PrepaymentVatCategory= VatCategory.StandardRate,
                         PrepaymentVatCategoryTaxableAmount= 1600.0m,
-                        PrepaymentVatCategoryTaxAmount = 1120.0m,
                         PrepaymentVatRate = 0.15m
                     }
                 }

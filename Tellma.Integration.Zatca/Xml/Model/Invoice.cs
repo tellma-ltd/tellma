@@ -7,15 +7,6 @@
     public class Invoice
     {
         /// <summary>
-        /// <b>BT-23</b> 
-        /// <br/> 
-        /// Identifies a user-defined profile of the customization of UBL being used.
-        /// <para/>
-        /// Defaults to "reporting:1.0".
-        /// </summary>
-        public string BusinessProcessType => "reporting:1.0";
-
-        /// <summary>
         /// <b>BT-1</b> 
         /// <br/> 
         /// A unique identification of the Invoice.
