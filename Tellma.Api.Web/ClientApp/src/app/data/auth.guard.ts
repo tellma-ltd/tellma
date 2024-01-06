@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService, AuthEvent } from './auth.service';
 import { tap, catchError } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { ServerNotificationsService } from './server-notifications.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AuthGuard {
   constructor(
     private auth: AuthService, private cleaner: CleanerService,
     private router: Router, private progress: ProgressOverlayService,
@@ -20,12 +20,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     this.handleAuthEvents();
   }
 
-  canActivateChild(_: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivateChild(state: RouterStateSnapshot): Observable<boolean> {
     const returnUrl = state.url;
     return this.can(returnUrl);
   }
 
-  canActivate(_: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(state: RouterStateSnapshot): Observable<boolean> {
     const returnUrl = state.url;
     return this.can(returnUrl);
   }

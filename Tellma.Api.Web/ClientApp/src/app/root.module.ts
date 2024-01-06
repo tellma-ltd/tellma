@@ -1,4 +1,4 @@
-import { NgModule, Component } from '@angular/core';
+import { NgModule, Component, inject } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
@@ -9,7 +9,7 @@ import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
 import { ApiService } from './data/api.service';
-import { Router, RouterModule, Routes, PreloadAllModules, NavigationStart } from '@angular/router';
+import { Router, RouterModule, Routes, PreloadAllModules, NavigationStart, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -80,7 +80,7 @@ export const routes: Routes = [
           {
             path: 'companies',
             component: CompaniesComponent,
-            canActivate: [AuthGuard]
+            canActivate: [(_: ActivatedRouteSnapshot, s: RouterStateSnapshot) => inject(AuthGuard).canActivate(s)]
           },
           {
             path: 'error/:error',
@@ -101,7 +101,7 @@ export const routes: Routes = [
       // Lazy loaded modules,
       {
         path: 'app',
-        canActivate: [AuthGuard], // otherwise the tenant resolver can't work
+        canActivate: [(_: ActivatedRouteSnapshot, s: RouterStateSnapshot) => inject(AuthGuard).canActivate(s)], // otherwise the tenant resolver can't work
         loadChildren: LoadApplicationModule,
         data: { preload: true }
       },
@@ -111,14 +111,14 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
-        canActivate: [AuthGuard],
+        canActivate: [(_: ActivatedRouteSnapshot, s: RouterStateSnapshot) => inject(AuthGuard).canActivate(s)],
         loadChildren: LoadAdminModule,
         data: { preload: false }
       },
 
       // those paths always end in a redirect
-      { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
-      { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
+      { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [() => inject(SignInCallbackGuard).canActivate()] },
+      { path: '', component: PlaceholderComponent, canActivate: [() => inject(BaseAddressGuard).canActivate()] },
     ]
   },
 
@@ -147,10 +147,9 @@ export const routes: Routes = [
     NoopAnimationsModule,
     FontAwesomeModule,
     RouterModule.forRoot(routes, {
-        preloadingStrategy: PreloadAllModules,
-        enableTracing: false,
-        relativeLinkResolution: 'legacy'
-    }),
+    preloadingStrategy: PreloadAllModules,
+    enableTracing: false
+}),
     OverlayModule,
     HttpClientModule,
     NgbCollapseModule,

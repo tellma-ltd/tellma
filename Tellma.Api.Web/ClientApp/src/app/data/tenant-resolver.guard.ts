@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
@@ -8,7 +8,6 @@ import { ApiService } from './api.service';
 import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
-import { CanActivate } from '@angular/router';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { DefinitionsForClient } from './dto/definitions-for-client';
@@ -105,7 +104,7 @@ export function handleFreshUserSettings(
 @Injectable({
   providedIn: 'root'
 })
-export class TenantResolverGuard implements CanActivate {
+export class TenantResolverGuard {
 
   // Note: we used a guard here instead of a resolver to guarantee that the user cannot
   // navigate to the application until the global values of that tenant are resolved first
