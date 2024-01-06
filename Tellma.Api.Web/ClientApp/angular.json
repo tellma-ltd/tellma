@@ -104,21 +104,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tellma:build"
+            "buildTarget": "tellma:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tellma:build:production"
+              "buildTarget": "tellma:build:production"
             },
             "local": {
-              "browserTarget": "tellma:build:local"
+              "buildTarget": "tellma:build:local"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tellma:build"
+            "buildTarget": "tellma:build"
           }
         },
         "test": {
