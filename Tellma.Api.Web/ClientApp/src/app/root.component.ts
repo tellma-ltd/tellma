@@ -119,8 +119,8 @@ export class RootComponent {
     });
 
     // listen for notifications from the service worker that a new version of the client is available
-    this.serviceWorker.available.subscribe(_ => {
-      this.showNewUpdateIsAvailable = true;
+    this.serviceWorker.versionUpdates.subscribe(e => {
+      this.showNewUpdateIsAvailable = e.type === 'VERSION_READY';
     });
 
     // show a message if the user opens the app on Internet Explorer

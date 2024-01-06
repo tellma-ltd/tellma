@@ -165,29 +165,24 @@ function safeToView(blob: Blob): boolean {
 export function downloadBlob(blob: Blob, fileName: string) {
   // Helper function to download a blob from memory to the user's computer,
   // Without having to open a new window first
-  if (window.navigator && window.navigator.msSaveBlob) {
-    // To support IE and Edge
-    window.navigator.msSaveBlob(blob, fileName);
-  } else {
-    // Create an in memory url for the blob, further reading:
-    // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
-    const url = window.URL.createObjectURL(blob);
+  // Create an in memory url for the blob, further reading:
+  // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+  const url = window.URL.createObjectURL(blob);
 
-    // Below is a trick for downloading files without opening a new browser tab
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName || 'file';
-    document.body.appendChild(a);
-    a.click();
+  // Below is a trick for downloading files without opening a new browser tab
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = fileName || 'file';
+  document.body.appendChild(a);
+  a.click();
 
-    // Best practice to prevent a memory leak, especially in a SPA
-    // setTimeout to avoid an issue with Safari
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }, 200);
-  }
+  // Best practice to prevent a memory leak, especially in a SPA
+  // setTimeout to avoid an issue with Safari
+  setTimeout(() => {
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }, 200);
 }
 
 /**
@@ -199,17 +194,13 @@ export function openOrDownloadBlob(blob: Blob, fileName: string) {
 
   if (safeToView(blob)) {
     // File is safe to preview
-    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-      window.navigator.msSaveOrOpenBlob(blob, fileName);
-    } else {
-      // Create an in memory url for the blob, further reading:
-      // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
-      const url = window.URL.createObjectURL(blob);
-      window.open(url); // Opens the file in a new browser tab
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url); // To prevent a memory leak
-      }, 200);
-    }
+    // Create an in memory url for the blob, further reading:
+    // https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+    const url = window.URL.createObjectURL(blob);
+    window.open(url); // Opens the file in a new browser tab
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url); // To prevent a memory leak
+    }, 200);
   } else {
     downloadBlob(blob, fileName);
   }
