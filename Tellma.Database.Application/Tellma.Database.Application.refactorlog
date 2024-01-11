@@ -82,4 +82,10 @@
     <Property Name="NewSchema" Value="dal" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Move Schema" Key="f845dbe2-3128-42d4-a250-6ae1d1694649" ChangeDateTime="12/28/2023 09:45:26">
+    <Property Name="ElementName" Value="[wiz].[ft_FixedAssets__Depreciate]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

@@ -1,14 +1,34 @@
-﻿CREATE PROCEDURE [wiz].[FixedAssets__Depreciate]
-	@DocumentIndex	INT = 0,
-	@DepreciationPeriodStarts DATE =  N'2022.06.01',
-	@DepreciationPeriodEnds DATE =  N'2022.06.30',
+﻿CREATE FUNCTION [bll].[ft_FixedAssets__Depreciation]
+(
+-- Must always compare and copy from the logic in [wiz].[FixedAssets__Depreciate]
+	@ResourceIds IdList READONLY,
+	@DepreciationPeriodStarts DATE,
+	@DepreciationPeriodEnds DATE,
 	@LineType TINYINT = 100 -- 100: Normal, 120: Regulatory
-	-- TODO: Rewrite it so it relies on the table valued function [wiz].[ft_FixedAssets__Depreciate]
-	-- or better, replace the call everywhere to this one.
+)
+RETURNS @returntable TABLE
+(
+	[Index]				INT PRIMARY KEY,
+	[CenterId]			INT,
+	[CurrencyId]		NCHAR (3),
+	[AgentId]			INT,
+	[ResourceId]		INT,
+	[NotedAgentId]		INT,
+	[NotedResourceId]	INT,
+	[Quantity]			DECIMAL (19, 4),
+	[UnitId]			INT,
+	[MonetaryValue]		DECIMAL (19, 4),
+	[Value]				DECIMAL (19, 4),
+	[Time1]				DATE,
+	[Time2]				DATE,
+	[FAEntryTypeId]		INT,
+	[ExpenseEntryTypeId]INT	
+)
 AS
+BEGIN
 	-- Return the list of assets that have depreciable life, with Time1 = last depreciable date + 1
 	-- Time2 is decided by posting date
-	DECLARE @WideLines [WidelineList];
+--	DECLARE @WideLines [WidelineList];
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
 	DECLARE @ROUNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'RightofuseAssets');
 	DECLARE @IANode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IntangibleAssetsOtherThanGoodwill');
@@ -59,9 +79,9 @@ AS
 	JOIN dbo.Lines L ON E.LineId = L.Id
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @FAAccountIds A ON E.AccountId = A.[Id]
-	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 	--AND E.Time1 < @DepreciationPeriodStarts - MA, Commented 2023.07.02. Replaced with logic below
+	AND ((SELECT COUNT(*) FROM @ResourceIds) = 0 OR E.[ResourceId] IN (SELECT [Id] FROM @ResourceIds))
 	AND E.[ResourceId] IN ( -- for FA which were acquired before period start, we include any additions till period end
 		SELECT ResourceId
 		FROM Entries E
@@ -70,7 +90,6 @@ AS
 		AND Time1 < @DepreciationPeriodStarts
 	)
 	AND L.[PostingDate] <= @DepreciationPeriodEnds
-	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId], A.[EntryTypeId]
 	HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0;
 	-- select * from @OpeningBalances; -- Balance sheet accounts
@@ -82,10 +101,9 @@ AS
 	JOIN dbo.Lines L ON E.LineId = L.Id
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @DNAEAccountIds A ON E.AccountId = A.[Id]
-	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 	AND L.PostingDate < @DepreciationPeriodStarts
-	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
+	AND ((SELECT COUNT(*) FROM @ResourceIds) = 0 OR E.[ResourceId] IN (SELECT [Id] FROM @ResourceIds))
 	GROUP BY E.[ResourceId];
 	-- select * from @LastDepreciationDates
 	
@@ -97,9 +115,7 @@ AS
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @DNAEAccountIds A ON E.AccountId = A.[Id]
 	JOIN @LastDepreciationDates LDD ON LDD.ResourceId = E.[ResourceId] AND LDD.[LastDepreciationDate] = L.[PostingDate]
-	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
-	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
-	AND R.[IsActive] = 1 AND R.[Code] <> N'0';
+	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType;
 	-- select * from @OpeningAgentNotedResourceNotedAgentEntryTypes; -- P/L accounts
 	
 	-- As it is now, it is run every month, and if you want to include the items purchased before mid month, simply adjust
@@ -134,15 +150,14 @@ AS
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @FAAccountIds A ON E.AccountId = A.[Id]
 	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
-	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
 	AND E.Time1 Between @DepreciationPeriodStarts AND @DepreciationPeriodEnds
 	AND ET.[Concept] IN (
 		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',--		N'InternalTransferPropertyPlantAndEquipmentExtension',
 		N'AdditionsOtherThanThroughBusinessCombinationsIntangibleAssetsOtherThanGoodwill' --N'InternalTransferIntangibleAssetsOtherThanGoodwillExtension'
 		)
+	AND ((SELECT COUNT(*) FROM @ResourceIds) = 0 OR E.[ResourceId] IN (SELECT [Id] FROM @ResourceIds))
 	AND E.[ResourceId] NOT IN (SELECT [ResourceId] FROM @OpeningBalances)
-	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId], A.[EntryTypeId]
 	HAVING SUM(E.[Direction] * E.[BaseQuantity]) <> 0
 	OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0;
@@ -174,7 +189,7 @@ AS
 	FROM @OpeningBalances OB
 	JOIN dbo.Resources PPE ON PPE.[Id] = OB.[ResourceId]
 	LEFT JOIN dbo.Lookups LK ON LK.Id = PPE.[Lookup4Id] -- assuming we use last lookup for dep methods
-	WHERE PPE.[IsActive] = 1 AND PPE.[Code] <> N'0'
+	WHERE ((SELECT COUNT(*) FROM @ResourceIds) = 0 OR OB.[ResourceId] IN (SELECT [Id] FROM @ResourceIds))
 	UNION
 	SELECT PA.[EntryTypeId], PA.[ResourceId], PA.[BaseUnitId], PA.[CurrencyId], PA.[CenterId], PA.[AgentId], PA.[NotedAgentId], PA.[NotedResourceId],	
 		PA.[DepreciableLife] AS [NetLife],
@@ -187,25 +202,22 @@ AS
 	FROM @PeriodAdditions PA
 	JOIN dbo.Resources PPE ON PPE.[Id] = PA.[ResourceId]
 	LEFT JOIN dbo.Lookups LK ON LK.Id = PPE.[Lookup4Id] -- assuming we use last lookup for dep methods
-	WHERE PPE.[IsActive] = 1 AND PPE.[Code] <> N'0'
-	AND PPE.[Id] NOT IN (SELECT [ResourceId] FROM @PeriodDisposals)
+	WHERE ((SELECT COUNT(*) FROM @ResourceIds) = 0 OR PA.[ResourceId] IN (SELECT [Id] FROM @ResourceIds))
+	AND PPE.[Id] NOT IN (SELECT [ResourceId] FROM @PeriodDisposals);
 	-- select * from @TargetPeriodDepreciation; -- balance sheet accounts
 
 	-- Note: To handle the case of FA changing multiple centers during the month, we can make an ajusting entries for those who changed only
-	INSERT INTO @WideLines([Index],
-		[DocumentIndex], 
-		[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
-		[CenterId1], [CurrencyId1], [AgentId1], [ResourceId1], [NotedAgentId1], [NotedResourceId1], [Quantity1], [UnitId1], [MonetaryValue1], [Value1], [Time11], [Time21],[EntryTypeId1]
+	INSERT INTO @returntable([Index],
+		[CenterId], [CurrencyId], [AgentId], [ResourceId], [NotedAgentId], [NotedResourceId], [Quantity], [UnitId], [MonetaryValue], [Value],
+			[Time1], [Time2], [ExpenseEntryTypeId], [FAEntryTypeId]
 		)
 	SELECT ROW_NUMBER() OVER(ORDER BY NPD.[ResourceId]) - 1,
-			@DocumentIndex,
 			NPD.[CenterId], NPD.[CurrencyId], NPD.[AgentId], NPD.[ResourceId],	NPD.[NotedAgentId], OANRNAET.[NotedResourceId],
 			[NetLife], R.[UnitId], [NetMonetaryValue], [NetValue], @DepreciationPeriodStarts, @DepreciationPeriodEnds, OANRNAET.[EntryTypeId],
-			NPD.[CenterId], NPD.[CurrencyId], NPD.[AgentId], NPD.[ResourceId], NPD.[NotedAgentId], NPD.[NotedResourceId],
-			[NetLife], R.[UnitId], [NetMonetaryValue], [NetValue], @DepreciationPeriodStarts, @DepreciationPeriodEnds, NPD.[EntryTypeId]
+			NPD.[EntryTypeId]
 	FROM @TargetPeriodDepreciation NPD
 	JOIN dbo.Resources R ON R.[Id] = NPD.[ResourceId]
-	LEFT JOIN @OpeningAgentNotedResourceNotedAgentEntryTypes OANRNAET ON OANRNAET.[ResourceId] = NPD.[ResourceId];
+	LEFT JOIN @OpeningAgentNotedResourceNotedAgentEntryTypes OANRNAET ON OANRNAET.[ResourceId] = NPD.[ResourceId]
 
-	SELECT * FROM @WideLines;
-GO
+	RETURN
+END
