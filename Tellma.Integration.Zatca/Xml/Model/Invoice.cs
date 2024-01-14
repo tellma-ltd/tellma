@@ -186,7 +186,7 @@
         /// <summary>
         /// Document-level Allowance/Charge.
         /// </summary>
-        public AllowanceCharge? AllowanceCharge { get; set; }
+        public List<AllowanceCharge> AllowanceCharges { get; set; } = new();
 
         // Auto computed fields?
 
@@ -204,8 +204,7 @@
         /// Allowances on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>. <br/>
         /// Auto-calculated as <see cref="AllowanceCharge.Amount"/> if it's an allowance.
         /// </summary>
-        public decimal SumOfAllowancesOnDocumentLevel =>
-            AllowanceCharge != null && AllowanceCharge.Indicator == AllowanceChargeType.Allowance ? AllowanceCharge.Amount : 0m; // Rule BR-CO-11
+        public decimal SumOfAllowancesOnDocumentLevel => AllowanceCharges?.Where(e => e.Indicator == AllowanceChargeType.Allowance)?.Sum(e => e.Amount) ?? 0m;// Rule BR-CO-11
 
         /// <summary>
         /// <b>BT-108</b> 
@@ -214,8 +213,7 @@
         /// Charges on line level are included in the Invoice line net amount which is summed up into the <see cref="SumOfInvoiceLineNetAmount"/>. <br/>
         /// Auto-calculated as <see cref="AllowanceCharge.Amount"/> if it's a charge.
         /// </summary>
-        public decimal SumOfChargesDocumentLevel =>
-            AllowanceCharge != null && AllowanceCharge.Indicator == AllowanceChargeType.Charge ? AllowanceCharge.Amount : 0m; // Rule BR-CO-12
+        public decimal SumOfChargesDocumentLevel => AllowanceCharges?.Where(e => e.Indicator == AllowanceChargeType.Charge)?.Sum(e => e.Amount) ?? 0m; // Rule BR-CO-12
 
         /// <summary>
         /// <b>BT-109</b> 
