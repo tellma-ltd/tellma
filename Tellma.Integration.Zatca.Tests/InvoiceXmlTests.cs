@@ -66,7 +66,7 @@ namespace Tellma.Integration.Zatca.Tests
             {
                 Seller = new(),
                 Buyer = new(),
-                AllowanceCharge = new(),
+                AllowanceCharges = new(),
                 Lines = new() {
                     new InvoiceLine() {
                         AllowanceCharge = new()

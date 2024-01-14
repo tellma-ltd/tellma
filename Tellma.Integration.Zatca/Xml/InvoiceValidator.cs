@@ -114,6 +114,7 @@ namespace Tellma.Integration.Zatca
             if (!Enum.IsDefined(inv.InvoiceType))
                 yield return new("BR-KSA-05", $"The invoice type code (BT-3) must be equal to a value from the subset of UN/CEFACT code list 1001, agreed for KSA electronic invoices. Current value is {inv.InvoiceType}");
 
+            // TODO Fix
             {
                 uint tr = (uint)inv.InvoiceTypeTransactions;
                 if ((tr & 0b0000011U) < 0b0000001U || // Neither Standard nor Simplified
@@ -160,15 +161,13 @@ namespace Tellma.Integration.Zatca
                     yield return new("BR-KSA-10", $"Buyer address must contain country code (BT-40).");
             }
 
-            if (inv.AllowanceCharge != null)
+            foreach (var ac in inv.AllowanceCharges)
             {
-                var ac = inv.AllowanceCharge;
-
                 if (ac.Indicator == AllowanceChargeType.Allowance && ac.VatCategory == VatCategory.NotSubjectToTax && ac.VatRate != 0.0m)
-                    yield return new("BR-KSA-12", $"A Document level allowance (BG-20) where VAT category code (BT-95) is 'Not subject to VAT', the Document level allowance VAT rate (BT-96) shall be 0 (Zero). Current value is {inv.AllowanceCharge.VatRate}.");
+                    yield return new("BR-KSA-12", $"A Document level allowance (BG-20) where VAT category code (BT-95) is 'Not subject to VAT', the Document level allowance VAT rate (BT-96) shall be 0 (Zero). Current value is {ac.VatRate}.");
 
                 if (ac.Indicator == AllowanceChargeType.Charge && ac.VatCategory == VatCategory.NotSubjectToTax && ac.VatRate != 0.0m)
-                    yield return new("BR-KSA-13", $"A Document level allowance (BG-20) where VAT category code (BT-95) is 'Not subject to VAT', the Document level allowance VAT rate (BT-96) shall be 0 (Zero). Current value is {inv.AllowanceCharge.VatRate}.");
+                    yield return new("BR-KSA-13", $"A Document level allowance (BG-20) where VAT category code (BT-95) is 'Not subject to VAT', the Document level allowance VAT rate (BT-96) shall be 0 (Zero). Current value is {ac.VatRate}.");
             }
 
             // ??? Is Buyer Id required even in Simple invoice?
@@ -205,6 +204,22 @@ namespace Tellma.Integration.Zatca
 
             if (!Enum.IsDefined(inv.VatCategory))
                 yield return new("BR-KSA-18", $"VAT category code must contain one of the values ({VatCategory.StandardRate}, {VatCategory.ZeroRatedGoods}, {VatCategory.ExemptFromTax}, {VatCategory.NotSubjectToTax}). Current value is {inv.VatCategory}.");
+
+            foreach (var charge in inv.AllowanceCharges.Where(e => e.Indicator == AllowanceChargeType.Charge))
+            {
+                if (string.IsNullOrWhiteSpace(charge.ReasonCode))
+                {
+                    yield return new("BR-KSA-19", $"Each Document level charge (BG-21) shall have a code for the reason for document level charge (BT-105).");
+                }
+            }
+
+            foreach (var charge in inv.Lines.Select(line => line.AllowanceCharge).Where(e => e?.Indicator == AllowanceChargeType.Charge))
+            {
+                if (charge != null && string.IsNullOrWhiteSpace(charge.ReasonCode))
+                {
+                    yield return new("BR-KSA-20", $"Each Invoice line charge (BG-28) shall have a code for the reason for invoice line charge (BT-145).");
+                }
+            }
 
             // TODO ...
         }

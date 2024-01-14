@@ -54,13 +54,14 @@
             SupplyDate = new DateTime(2022, 3, 13),
             SupplyEndDate = new DateTime(2022, 3, 15),
             PaymentMeans = PaymentMeans.InCash,
-            AllowanceCharge = new AllowanceCharge
-            {
-                Indicator = AllowanceChargeType.Allowance,
-                Reason = "discount",
-                Amount = 2m,
-                VatCategory = VatCategory.StandardRate,
-                VatRate = 0.15m
+            AllowanceCharges = new() { new AllowanceCharge
+                {
+                    Indicator = AllowanceChargeType.Allowance,
+                    Reason = "discount",
+                    Amount = 2m,
+                    VatCategory = VatCategory.StandardRate,
+                    VatRate = 0.15m
+                }
             },
             VatCategoryTaxableAmount = 966.00m,
             VatCategory = VatCategory.StandardRate,
@@ -70,7 +71,7 @@
 
             Lines = new List<InvoiceLine>
                 {
-                    new InvoiceLine
+                    new()
                     {
                         Identifier = "1",
                         Quantity = 44.0m,
@@ -157,16 +158,18 @@
             SupplyDate = new DateTime(2022, 3, 13),
             SupplyEndDate = new DateTime(2022, 3, 15),
             PaymentMeans = PaymentMeans.InCash,
-            AllowanceCharge = new AllowanceCharge
-            {
-                Indicator = AllowanceChargeType.Allowance,
-                Reason = "discount",
-                Amount = 2m,
-                VatCategory = VatCategory.StandardRate,
-                VatRate = 0.15m,
-                BaseAmount = 15m,
-                Percentage = 0.15m,
-                ReasonCode = "99"
+            AllowanceCharges = new() { 
+                new AllowanceCharge
+                {
+                    Indicator = AllowanceChargeType.Allowance,
+                    Reason = "discount",
+                    Amount = 2m,
+                    VatCategory = VatCategory.StandardRate,
+                    VatRate = 0.15m,
+                    BaseAmount = 15m,
+                    Percentage = 0.15m,
+                    ReasonCode = "99"
+                }
             },
             VatCategoryTaxableAmount = 966.00m,
             VatCategory = VatCategory.StandardRate,
@@ -176,7 +179,7 @@
 
             Lines = new List<InvoiceLine>
                 {
-                    new InvoiceLine
+                    new()
                     {
                         Identifier = "1",
                         Quantity = 44.0m,
@@ -218,7 +221,7 @@
                         PrepaymentVatRate = 0.15m
                     },
 
-                    new InvoiceLine
+                    new()
                     {
                         Identifier = "2",
                         Quantity = 54.0m,

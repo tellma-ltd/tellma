@@ -231,40 +231,42 @@ namespace Tellma.Integration.Zatca
             }
 
             // Extra charges or discounts
-            var ac = _inv.AllowanceCharge;
-            if (ac != null)
+            foreach (var ac in _inv.AllowanceCharges)
             {
-                invoiceElem.Add(
-                    new XElement(cac + "AllowanceCharge",
-                        // ??? There is an "ID" here according to the sample?
-                        new XElement(cbc + "ChargeIndicator", ac.Indicator.ToXml())
-                    ).Grab(out XElement allowanceChargeElem)
-                );
+                if (ac != null)
+                {
+                    invoiceElem.Add(
+                        new XElement(cac + "AllowanceCharge",
+                            // ??? There is an "ID" here according to the sample?
+                            new XElement(cbc + "ChargeIndicator", ac.Indicator.ToXml())
+                        ).Grab(out XElement allowanceChargeElem)
+                    );
 
-                if (!string.IsNullOrWhiteSpace(ac.ReasonCode))
-                    allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReasonCode", ac.ReasonCode));
+                    if (!string.IsNullOrWhiteSpace(ac.ReasonCode))
+                        allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReasonCode", ac.ReasonCode));
 
-                if (!string.IsNullOrWhiteSpace(ac.Reason))
-                    allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReason", ac.Reason));
+                    if (!string.IsNullOrWhiteSpace(ac.Reason))
+                        allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReason", ac.Reason));
 
-                if (ac.Percentage != default)
-                    allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (ac.Percentage * 100).ToString(DECIMAL_FORMAT)));
+                    if (ac.Percentage != default)
+                        allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (ac.Percentage * 100).ToString(DECIMAL_FORMAT)));
 
-                allowanceChargeElem.Add(Amount("Amount", ac.Amount));
+                    allowanceChargeElem.Add(Amount("Amount", ac.Amount));
 
-                if (ac.BaseAmount != default)
-                    allowanceChargeElem.Add(Amount("BaseAmount", ac.BaseAmount));
+                    if (ac.BaseAmount != default)
+                        allowanceChargeElem.Add(Amount("BaseAmount", ac.BaseAmount));
 
-                // Add the Tax category
-                allowanceChargeElem.Add(
-                    new XElement(cac + "TaxCategory",
-                        new XElement(cbc + "ID", ac.VatCategory.ToXml()),
-                        new XElement(cbc + "Percent", (ac.VatRate * 100).ToString(DECIMAL_FORMAT)),
-                        new XElement(cac + "TaxScheme",
-                            new XElement(cbc + "ID", "VAT")
+                    // Add the Tax category
+                    allowanceChargeElem.Add(
+                        new XElement(cac + "TaxCategory",
+                            new XElement(cbc + "ID", ac.VatCategory.ToXml()),
+                            new XElement(cbc + "Percent", (ac.VatRate * 100).ToString(DECIMAL_FORMAT)),
+                            new XElement(cac + "TaxScheme",
+                                new XElement(cbc + "ID", "VAT")
+                            )
                         )
-                    )
-                );
+                    );
+                }
             }
 
             // VAT amount (Rule BR-KSAEN16931-09)
