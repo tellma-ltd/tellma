@@ -3,6 +3,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -64,11 +65,11 @@ namespace Tellma.Integration.Zatca
                     new XAttribute(XNamespace.Xmlns + "cbc", cbc),
                     new XAttribute(XNamespace.Xmlns + "cac", cac),
                     new XAttribute(XNamespace.Xmlns + "ext", ext),
-                    new XElement(cbc + "ProfileID", _inv.BusinessProcessType),
+                    new XElement(cbc + "ProfileID", "reporting:1.0"),
                     new XElement(cbc + "ID", _inv.InvoiceNumber),
                     new XElement(cbc + "UUID", _inv.UniqueInvoiceIdentifier.ToString(UUID_FORMAT)),
-                    new XElement(cbc + "IssueDate", _inv.InvoiceIssueDateTime.ToString(DATE_FORMAT)),
-                    new XElement(cbc + "IssueTime", _inv.InvoiceIssueDateTime.ToString(TIME_FORMAT)),
+                    new XElement(cbc + "IssueDate", _inv.InvoiceIssueDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
+                    new XElement(cbc + "IssueTime", _inv.InvoiceIssueDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
                     new XElement(cbc + "InvoiceTypeCode",
                         new XAttribute("name", _inv.InvoiceTypeTransactions.ToXml()), // e.g. 0111010
                         ((int)_inv.InvoiceType).ToString() // e.g. 388
@@ -198,9 +199,9 @@ namespace Tellma.Integration.Zatca
                 invoiceElem.Add(new XElement(cac + "Delivery").Grab(out XElement deliveryElem));
 
                 if (_inv.SupplyDate != default)
-                    deliveryElem.Add(new XElement(cbc + "ActualDeliveryDate", _inv.SupplyDate.ToString(DATE_FORMAT)));
+                    deliveryElem.Add(new XElement(cbc + "ActualDeliveryDate", _inv.SupplyDate.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)));
                 if (_inv.SupplyEndDate != default)
-                    deliveryElem.Add(new XElement(cbc + "LatestDeliveryDate", _inv.SupplyEndDate.ToString(DATE_FORMAT)));
+                    deliveryElem.Add(new XElement(cbc + "LatestDeliveryDate", _inv.SupplyEndDate.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)));
             }
 
             // Payment means
@@ -353,8 +354,8 @@ namespace Tellma.Integration.Zatca
                         new XElement(cac + "DocumentReference",
                             new XElement(cbc + "ID", line.PrepaymentId).Grab(out XElement idElem),
                             // ... Optional UUID goes here ...
-                            new XElement(cbc + "IssueDate", line.PrepaymentIssueDateTime.ToString(DATE_FORMAT)),
-                            new XElement(cbc + "IssueTime", line.PrepaymentIssueDateTime.ToString(TIME_FORMAT)),
+                            new XElement(cbc + "IssueDate", line.PrepaymentIssueDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
+                            new XElement(cbc + "IssueTime", line.PrepaymentIssueDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
                             new XElement(cbc + "DocumentTypeCode", ((int)InvoiceType.TaxInvoice).ToString()) // always '388'
                         )
                     );
@@ -679,7 +680,7 @@ namespace Tellma.Integration.Zatca
                 qrCode = QrCode(
                     sellerName: _inv.Seller?.Name ?? string.Empty,
                     vatNumber: _inv.Seller?.VatNumber ?? string.Empty,
-                    issueDateTime: _inv.InvoiceIssueDateTime.ToString(DATETIME_FORMAT),
+                    issueDateTime: _inv.InvoiceIssueDateTime.ToString(DATETIME_FORMAT, CultureInfo.InvariantCulture),
                     total: _inv.InvoiceTotalAmountWithVat,
                     vat: _inv.InvoiceTotalVatAmount,
                     invoiceHash: invoiceHash,
