@@ -584,12 +584,26 @@ namespace Tellma.Api
             await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             // Non-transactional stuff
+
+            // ZATCA integration goes here ...
+            if (transition == nameof(Close))
+            {
+
+            }
+
             var statuses = output.InboxStatuses;
             _clientProxy.UpdateInboxStatuses(TenantId, statuses);
 
             // Commit and return
             trx.Complete();
             return result;
+        }
+
+        private async Task<bool> IsClearable(CancellationToken cancellation)
+        {
+            var def = await Definition(cancellation);
+
+            return def.Code?.EndsWith("388") ?? false;
         }
 
         #endregion

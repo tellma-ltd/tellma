@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,44 +10,25 @@ namespace Tellma.Repository.Application.Tests
 {
     public class ApplicationRepositoryFixture
     {
+        private const string TELLMA_DATABASE_SECTION_NAME = "TellmaDatabase";
+
         public ApplicationRepository Repo { get; }
 
         public ApplicationRepositoryFixture()
         {
             // Build the configuration root based on project user secrets
-            IConfiguration config = new ConfigurationBuilder()
+            var config = new ConfigurationBuilder()
                 .AddUserSecrets(GetType().Assembly)
                 .Build();
 
-            // Retrieve the admin connection string from project user secrets
-            var dbName = config.GetValue<string>("DatabaseName");
-            var serverName = config.GetValue<string>("ServerName");
-
-            // Default values
-            if (string.IsNullOrWhiteSpace(dbName))
-            {
-                dbName = "Tellma.Tests.101";
-            }
-
-            if (string.IsNullOrWhiteSpace(serverName))
-            {
-                serverName = ".";
-            }
-
-            // Create the connection string
-            var connBuilder = new SqlConnectionStringBuilder
-            {
-                DataSource = serverName,
-                InitialCatalog = dbName,
-                IntegratedSecurity = true, // Windows Auth
-                MultipleActiveResultSets = true,
-            };
-
-            var connString = connBuilder.ConnectionString;
+            // Retrieve the database connection string from project user secrets
+            var options = config.GetSection(TELLMA_DATABASE_SECTION_NAME)
+                ?.Get<TellmaDatabaseOptions>()
+                ?? throw new InvalidOperationException($"Running the tests requires a '{TELLMA_DATABASE_SECTION_NAME}' section in the Test project user secrets");
 
             // Prepare the mock dependencies
             var logger = new NullLogger<ApplicationRepository>();
-            var shardResolver = new MockShardResolver(connString);
+            var shardResolver = new MockShardResolver(options.ConnectionString);
 
             // Populate the read-only Fixture fields
             Repo = new ApplicationRepository(MockShardResolver.TenantId, shardResolver, logger);
@@ -66,5 +48,10 @@ namespace Tellma.Repository.Application.Tests
         }
 
         #endregion
+    }
+
+    public class TellmaDatabaseOptions
+    {
+        public string ConnectionString { get; set; }
     }
 }

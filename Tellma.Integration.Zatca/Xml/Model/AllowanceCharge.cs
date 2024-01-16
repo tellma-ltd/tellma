@@ -48,7 +48,7 @@
         /// <b>BT-98</b> (Allowance), <b>BT-105</b> (Charge)
         /// <br/> 
         /// The reason code corresponding to the <see cref="Reason"/>. <br/>
-        /// Entries from the <see href="https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm">UNTDID 5189 code list</see> for discounts, 
+        /// Entries from the <see href="https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm">UNTDID 5189 code list</see> for allowances, 
         /// and from the <see href="https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm">UNTDID 7161 code list</see> for charges.
         /// </summary>
         public string? ReasonCode { get; set; }

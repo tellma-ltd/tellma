@@ -12,9 +12,9 @@ namespace Tellma.Integration.Zatca
         /// <b>BT-126</b> 
         /// <br/> 
         /// A unique identifier for the individual line within the Invoice. 
-        /// This value should be only numeric value between 1 and 999,999
+        /// This value should be only numeric value between 1 and 999,999.
         /// </summary>
-        public string? Identifier { get; set; }
+        public int Identifier { get; set; }
 
         /// <summary>
         /// <b>KSA-26</b> 
@@ -35,7 +35,7 @@ namespace Tellma.Integration.Zatca
         /// <br/> 
         /// <see cref="Invoice.InvoiceIssueDateTime"/> (BT-2 and KSA-25) of the associated Prepayment invoice(s).
         /// </summary>
-        public DateTime PrepaymentIssueDateTime { get; set; }
+        public DateTimeOffset PrepaymentIssueDateTime { get; set; }
 
         /// <summary>
         /// <b>BT-129</b>

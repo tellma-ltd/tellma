@@ -4,10 +4,11 @@ using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using System.Collections;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Tellma.Integration.Zatca
@@ -27,11 +28,51 @@ namespace Tellma.Integration.Zatca
             }
         }
 
+        /// <summary>
+        /// Generates a Certificate Stamping Request (CSR) based from the given private key.
+        /// </summary>
+        /// <param name="privateKeyContent">The content of the private key PEM file without the <c>-----BEGIN ...-----</c> header and <c>-----END ...-----</c> footer.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">If the provided PEM is invalid</exception>
+        public CsrResult GenerateCsr(string privateKeyContent)
+        {
+            string privateKeyPem = @$"-----BEGIN EC PRIVATE KEY-----
+{privateKeyContent}
+-----END EC PRIVATE KEY-----";
+
+            // Create key pair from PEM content
+            using TextReader reader = new StringReader(privateKeyPem);
+            PemReader pemReader = new(reader);
+
+            if (pemReader.ReadObject() is ECPrivateKeyParameters privateKey)
+            {
+                ECDomainParameters domainParameters = privateKey.Parameters;
+                ECPublicKeyParameters publicKey = new(privateKey.AlgorithmName, domainParameters.G.Multiply(privateKey.D), domainParameters);
+                AsymmetricCipherKeyPair keyPair = new(publicKey, privateKey);
+
+                return GenerateCsrImpl(keyPair);
+            }
+            else
+            {
+                // Handle other cases or throw an exception
+                throw new InvalidOperationException($"Unsupported PEM format: {privateKeyContent}");
+            }
+        }
+
         public CsrResult GenerateCsr()
         {
-            var input = _info;
+            // Generate key pair from scratch
+            ECKeyPairGenerator keyPairGenerator = new("ECDSA");
+            KeyGenerationParameters parameters = new(new SecureRandom(), 256);
+            keyPairGenerator.Init(parameters);
+            AsymmetricCipherKeyPair keyPair = keyPairGenerator.GenerateKeyPair();
 
-            AsymmetricCipherKeyPair keyPair = GenerateKeyPair();
+            return GenerateCsrImpl(keyPair);
+        }
+
+        private CsrResult GenerateCsrImpl(AsymmetricCipherKeyPair keyPair)
+        {
+            var input = _info;
 
             var distinguishedNameKeys = new ArrayList
             {
@@ -77,10 +118,10 @@ namespace Tellma.Integration.Zatca
             X509Extensions req_ext = extGenerator.Generate();
             AttributePkcs req_extensions = new(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(req_ext));
             Pkcs10CertificationRequest certificationRequest = new(
-                signatureAlgorithm: "SHA256withECDSA", 
-                subject: subject, 
-                publicKey: keyPair.Public, 
-                attributes: new DerSet(req_extensions), 
+                signatureAlgorithm: "SHA256withECDSA",
+                subject: subject,
+                publicKey: keyPair.Public,
+                attributes: new DerSet(req_extensions),
                 signingKey: keyPair.Private
             );
 
@@ -94,20 +135,10 @@ namespace Tellma.Integration.Zatca
             return new(csrContent, privateKey);
         }
 
-        private static AsymmetricCipherKeyPair GenerateKeyPair()
-        {
-            ECKeyPairGenerator keyPairGenerator = new("ECDSA");
-            KeyGenerationParameters parameters = new(new SecureRandom(), 256);
-            keyPairGenerator.Init(parameters);
-            AsymmetricCipherKeyPair result = keyPairGenerator.GenerateKeyPair();
-
-            return result;
-        }
-
         private static string ToPemString(object obj)
         {
             StringWriter writer = new();
-            Org.BouncyCastle.OpenSsl.PemWriter pemWriter = new(writer);
+            PemWriter pemWriter = new(writer);
             pemWriter.WriteObject(obj);
             pemWriter.Writer.Flush();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -123,7 +124,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public static async Task<InboxStatusOutput> LoadInboxStatusResult(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
+        public static async Task<InboxStatusOutput> LoadInboxStatusOutput(this SqlDataReader reader, bool validateOnly, CancellationToken cancellation = default)
         {
             // (1) Load the errors
             var errors = await reader.LoadErrors(cancellation);
@@ -141,5 +142,123 @@ namespace Tellma.Repository.Application
             return new InboxStatusOutput(errors, inboxStatuses);
         }
 
+        public static async Task<List<ZatcaInvoice>> LoadZatcaInvoices(this SqlDataReader reader, CancellationToken cancellation = default)
+        {
+            var result = new List<ZatcaInvoice>();
+
+            // 1 - Load the invoices
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int index = reader.GetInt32(i++);
+                while (result.Count <= index) result.Add(null);
+
+                result[index] = new ZatcaInvoice
+                {
+                    Id = reader.GetInt32(i++),
+                    InvoiceNumber = reader.String(i++),
+                    UniqueInvoiceIdentifier = reader.GetGuid(i++),
+                    InvoiceIssueDateTime = reader.GetDateTimeOffset(i++),
+                    InvoiceType = reader.GetInt32(i++),
+                    IsSimplified = reader.Boolean(i++) ?? false,
+                    IsThirdParty = reader.Boolean(i++) ?? false,
+                    IsNominal = reader.Boolean(i++) ?? false,
+                    IsExports = reader.Boolean(i++) ?? false,
+                    IsSummary = reader.Boolean(i++) ?? false,
+                    IsSelfBilled = reader.Boolean(i++) ?? false,
+                    InvoiceNote = reader.String(i++),
+                    InvoiceCurrency = reader.String(i++),
+                    PurchaseOrderId = reader.String(i++),
+                    BillingReferenceId = reader.String(i++),
+                    ContractId = reader.String(i++),
+                    BuyerId = reader.String(i++),
+                    BuyerIdScheme = reader.String(i++), // VAT or else
+                    BuyerAddressStreet = reader.String(i++),
+                    BuyerAddressAdditionalStreet = reader.String(i++),
+                    BuyerAddressBuildingNumber = reader.String(i++),
+                    BuyerAddressAdditionalNumber = reader.String(i++),
+                    BuyerAddressCity = reader.String(i++),
+                    BuyerAddressPostalCode = reader.String(i++),
+                    BuyerAddressProvince = reader.String(i++),
+                    BuyerAddressDistrict = reader.String(i++),
+                    BuyerAddressCountryCode = reader.String(i++),
+                    BuyerName = reader.String(i++),
+                    SupplyDate = reader.DateTime(i++) ?? default,
+                    SupplyEndDate = reader.DateTime(i++) ?? default,
+                    PaymentMeans = reader.GetInt32(i++),
+                    ReasonForIssuanceOfCreditDebitNote = reader.String(i++),
+                    PaymentTerms = reader.String(i++),
+                    PaymentAccountId = reader.String(i++),
+                    InvoiceTotalVatAmountInAccountingCurrency = reader.Decimal(i++) ?? 0m,
+                    PrepaidAmount = reader.Decimal(i++) ?? 0m,
+                    RoundingAmount = reader.Decimal(i++) ?? 0m,
+                    VatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
+                    VatCategory = reader.String(i++), // E, S, Z, O
+                    VatRate = reader.Decimal(i++) ?? 0m,
+                    VatExemptionReason = reader.String(i++),
+                    VatExemptionReasonCode = reader.String(i++),
+                };
+            }
+
+            // 2 - Load the Allowances/Charges
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int invoiceIndex = reader.GetInt32(i++);
+                var invoice = result[invoiceIndex];
+
+                invoice.AllowanceCharges.Add(new ZatcaAllowanceCharge
+                {
+                    IsCharge = reader.Boolean(i++) ?? false,
+                    Amount = reader.Decimal(i++) ?? 0m,
+                    Reason = reader.String(i++),
+                    ReasonCode = reader.String(i++),
+                    VatCategory = reader.String(i++),
+                    VatRate = reader.Decimal(i++) ?? 0m,
+                });
+            }
+
+            // 3 - Load the Invoice/Lines
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int invoiceIndex = reader.GetInt32(i++);
+                var invoice = result[invoiceIndex];
+
+                invoice.Lines.Add(new ZatcaInvoiceLine
+                {
+                    Id = reader.GetInt32(i++),
+                    PrepaymentId = reader.String(i++),
+                    PrepaymentUuid = reader.Guid(i++) ?? default,
+                    PrepaymentIssueDateTime = reader.GetDateTimeOffset(i++),
+                    Quantity = reader.Decimal(i++) ?? 0m,
+                    QuantityUnit = reader.String(i++),
+                    NetAmount = reader.Decimal(i++) ?? 0m,
+                    AllowanceChargeIsCharge = reader.Boolean(i++) ?? false,
+                    AllowanceChargeAmount = reader.Decimal(i++) ?? 0m,
+                    AllowanceChargeReason = reader.String(i++),
+                    AllowanceChargeReasonCode = reader.String(i++),
+                    VatAmount = reader.Decimal(i++) ?? 0m,
+                    PrepaymentVatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
+                    ItemName = reader.String(i++),
+                    ItemBuyerIdentifier = reader.String(i++),
+                    ItemSellerIdentifier = reader.String(i++),
+                    ItemStandardIdentifier = reader.String(i++),
+                    ItemNetPrice = reader.Decimal(i++) ?? 0m,
+                    ItemVatCategory = reader.String(i++), // E, S, Z, O
+                    ItemVatRate = reader.Decimal(i++) ?? 0m,
+                    PrepaymentVatCategory = reader.String(i++), // E, S, Z, O
+                    PrepaymentVatRate = reader.Decimal(i++) ?? 0m,
+                    ItemPriceBaseQuantity = reader.Decimal(i++) ?? 0m,
+                    ItemPriceBaseQuantityUnit = reader.String(i++),
+                    ItemPriceDiscount = reader.Decimal(i++) ?? 0m,
+                    ItemGrossPrice = reader.Decimal(i++) ?? 0m,
+                });
+            }
+
+            return result;
+        }
     }
 }

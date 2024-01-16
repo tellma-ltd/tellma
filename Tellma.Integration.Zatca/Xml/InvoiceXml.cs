@@ -21,8 +21,8 @@ namespace Tellma.Integration.Zatca
     public class InvoiceXml
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-        public const string TIME_FORMAT = "HH:mm:ss";
-        public const string DATETIME_FORMAT = "yyyy-MM-ddTHH:mm:ss";
+        public const string TIME_FORMAT = "HH:mm:ssZ";
+        public const string DATETIME_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
         public const string DECIMAL_FORMAT = "0.00";
         public const string UUID_FORMAT = "D";
 
@@ -68,8 +68,8 @@ namespace Tellma.Integration.Zatca
                     new XElement(cbc + "ProfileID", "reporting:1.0"),
                     new XElement(cbc + "ID", _inv.InvoiceNumber),
                     new XElement(cbc + "UUID", _inv.UniqueInvoiceIdentifier.ToString(UUID_FORMAT)),
-                    new XElement(cbc + "IssueDate", _inv.InvoiceIssueDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
-                    new XElement(cbc + "IssueTime", _inv.InvoiceIssueDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
+                    new XElement(cbc + "IssueDate", _inv.InvoiceIssueDateTime.UtcDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
+                    new XElement(cbc + "IssueTime", _inv.InvoiceIssueDateTime.UtcDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
                     new XElement(cbc + "InvoiceTypeCode",
                         new XAttribute("name", _inv.InvoiceTypeTransactions.ToXml()), // e.g. 0111010
                         ((int)_inv.InvoiceType).ToString() // e.g. 388
@@ -337,7 +337,7 @@ namespace Tellma.Integration.Zatca
             {
                 invoiceElem.Add(
                     new XElement(cac + "InvoiceLine",
-                        new XElement(cbc + "ID", line.Identifier),
+                        new XElement(cbc + "ID", line.Identifier.ToString()),
                         new XElement(cbc + "InvoicedQuantity", line.Quantity.ToString()).Grab(out XElement quantityElem),
                         Amount("LineExtensionAmount", line.NetAmount)
                     ).Grab(out XElement lineElem)
@@ -354,8 +354,8 @@ namespace Tellma.Integration.Zatca
                         new XElement(cac + "DocumentReference",
                             new XElement(cbc + "ID", line.PrepaymentId).Grab(out XElement idElem),
                             // ... Optional UUID goes here ...
-                            new XElement(cbc + "IssueDate", line.PrepaymentIssueDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
-                            new XElement(cbc + "IssueTime", line.PrepaymentIssueDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
+                            new XElement(cbc + "IssueDate", line.PrepaymentIssueDateTime.UtcDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
+                            new XElement(cbc + "IssueTime", line.PrepaymentIssueDateTime.UtcDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
                             new XElement(cbc + "DocumentTypeCode", ((int)InvoiceType.TaxInvoice).ToString()) // always '388'
                         )
                     );
@@ -644,11 +644,8 @@ namespace Tellma.Integration.Zatca
             // Calculate the hash of SignedProperties
             var xwriterSettings = new XmlWriterSettings
             {
-                Indent = true,
-                IndentChars = "    ", // 4 spaces
                 Encoding = Encoding.UTF8,
                 OmitXmlDeclaration = true,
-                NewLineChars = "\n                                " // That's how FATOORA does it ¯\_(ツ)_/¯ 
             };
 
             // Use StringWriter with XmlWriter to write the XDocument
@@ -753,15 +750,9 @@ namespace Tellma.Integration.Zatca
         /// </summary>
         private static string ToString(XDocument doc)
         {
-            var settings = new XmlWriterSettings
-            {
-                Indent = true,
-                IndentChars = "    " // 4 spaces
-            };
-
             using StringWriter swriter = new Utf8StringWriter();
             {
-                using XmlWriter xwriter = XmlWriter.Create(swriter, settings);
+                using XmlWriter xwriter = XmlWriter.Create(swriter);
                 doc.Save(xwriter);
             }
 
@@ -901,13 +892,13 @@ namespace Tellma.Integration.Zatca
         /// </summary>
         private static byte[] DigitalSignature(byte[] invoiceHash, string privateKeyContent)
         {
-            privateKeyContent = privateKeyContent.Replace("\n", "").Replace("\t", "");
-            if (!privateKeyContent.Contains("-----BEGIN EC PRIVATE KEY-----") && !privateKeyContent.Contains("-----END EC PRIVATE KEY-----"))
-                privateKeyContent = $"-----BEGIN EC PRIVATE KEY-----\n{privateKeyContent}\n-----END EC PRIVATE KEY-----\n";
+            string privateKeyPem = @$"-----BEGIN EC PRIVATE KEY-----
+{privateKeyContent}
+-----END EC PRIVATE KEY-----";
 
-            using TextReader reader = new StringReader(privateKeyContent);
-
+            using TextReader reader = new StringReader(privateKeyPem);
             AsymmetricKeyParameter parameters = ((AsymmetricCipherKeyPair)new PemReader(reader).ReadObject()).Private;
+
             ISigner signer = SignerUtilities.GetSigner("SHA-256withECDSA");
             signer.Init(true, parameters);
             signer.BlockUpdate(invoiceHash, 0, invoiceHash.Length); // Is this needed?

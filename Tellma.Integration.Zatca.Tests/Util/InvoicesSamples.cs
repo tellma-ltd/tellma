@@ -73,7 +73,7 @@
                 {
                     new()
                     {
-                        Identifier = "1",
+                        Identifier = 1,
                         Quantity = 44.0m,
                         QuantityUnit = "PCE",
 
@@ -144,7 +144,6 @@
             ContractId = "12345",
             InvoiceNotes = new List<string> { "Note 1", "Note 2" },
             InvoiceTotalVatAmountInAccountingCurrency = 968.0m,
-            AccountingCurrency = "SAR",
 
             PaymentAccountId = "12345",
             PaymentTerms = "payment-terms",
@@ -180,7 +179,7 @@
                 {
                     new()
                     {
-                        Identifier = "1",
+                        Identifier = 1,
                         Quantity = 44.0m,
                         QuantityUnit = "PCE",
 
@@ -220,7 +219,7 @@
 
                     new()
                     {
-                        Identifier = "2",
+                        Identifier = 2,
                         Quantity = 54.0m,
                         QuantityUnit = "PCE",
 

@@ -4557,7 +4557,7 @@ namespace Tellma.Repository.Application
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     // Get the errors if any
-                    result = await reader.LoadInboxStatusResult(validateOnly);
+                    result = await reader.LoadInboxStatusOutput(validateOnly);
                 }
 
                 documentId = GetValue<int>(documentIdParam.Value);
@@ -4606,7 +4606,7 @@ namespace Tellma.Repository.Application
                     using var reader = await cmd.ExecuteReaderAsync();
 
                     // (1) The errors and inbox statuses
-                    result = await reader.LoadInboxStatusResult(validateOnly);
+                    result = await reader.LoadInboxStatusOutput(validateOnly);
                     if (!result.IsError && !validateOnly)
                     {
                         // (2) Load deleted file Ids
@@ -4628,10 +4628,10 @@ namespace Tellma.Repository.Application
             return (result, deletedFileIds);
         }
 
-        public async Task<InboxStatusOutput> Documents__Close(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
+        public async Task<CloseDocumentOutput> Documents__Close(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
-            InboxStatusOutput result = null;
+            CloseDocumentOutput result = null;
 
             await TransactionalDatabaseOperation(async () =>
             {
@@ -4652,6 +4652,13 @@ namespace Tellma.Repository.Application
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output };
+
+
+                cmd.Parameters.Add(prevInvoiceSerialParam);
+                cmd.Parameters.Add(prevInvoiceHashParam);
+
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@ValidateOnly", validateOnly);
@@ -4662,9 +4669,22 @@ namespace Tellma.Repository.Application
                 // Execute
                 try
                 {
+                    InboxStatusOutput inboxStatusOutput;
+                    List<ZatcaInvoice> invoices;
+
                     await conn.OpenAsync();
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    result = await reader.LoadInboxStatusResult(validateOnly);
+                    {
+                        using var reader = await cmd.ExecuteReaderAsync();
+                        inboxStatusOutput = await reader.LoadInboxStatusOutput(validateOnly);
+                        invoices = await reader.NextResultAsync() ? await reader.LoadZatcaInvoices() : new();
+                    }
+
+                    int prevInvoiceSerial = GetValue<int>(prevInvoiceSerialParam.Value);
+                    string prevInvoiceHash = GetValue<string>(prevInvoiceSerialParam.Value);
+
+                    // (3) Return the result
+                    result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, inboxStatusOutput.Errors, inboxStatusOutput.InboxStatuses);
+
                 }
                 catch (SqlException ex) when (IsCustomScriptError(ex))
                 {
@@ -4672,6 +4692,56 @@ namespace Tellma.Repository.Application
                 }
             },
             DatabaseName(connString), nameof(Documents__Close));
+
+            return result;
+        }
+
+        public async Task<CloseDocumentOutput> Zatca_GetInvoices(List<int> ids, CancellationToken cancellation = default)
+        {
+            var connString = await GetConnectionString(cancellation);
+            CloseDocumentOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Zatca_GetInvoices)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 5000 };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add(prevInvoiceSerialParam);
+                cmd.Parameters.Add(prevInvoiceHashParam);
+
+                // Execute
+                await conn.OpenAsync();
+                List<ZatcaInvoice> invoices;
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    invoices = await reader.LoadZatcaInvoices(cancellation);
+                }
+
+                int prevInvoiceSerial = GetValue<int>(prevInvoiceSerialParam.Value);
+                string prevInvoiceHash = GetValue<string>(prevInvoiceHashParam.Value);
+
+                // Return the result
+                result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, new List<ValidationError>(), new List<InboxStatus>());
+            },
+            DatabaseName(connString), nameof(Zatca_GetInvoices), cancellation);
 
             return result;
         }
@@ -4710,7 +4780,7 @@ namespace Tellma.Repository.Application
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult(validateOnly);
+                result = await reader.LoadInboxStatusOutput(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Open));
 
@@ -4751,7 +4821,7 @@ namespace Tellma.Repository.Application
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult(validateOnly);
+                result = await reader.LoadInboxStatusOutput(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Cancel));
 
@@ -4792,7 +4862,7 @@ namespace Tellma.Repository.Application
                 // Execute
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();
-                result = await reader.LoadInboxStatusResult(validateOnly);
+                result = await reader.LoadInboxStatusOutput(validateOnly);
             },
             DatabaseName(connString), nameof(Documents__Uncancel));
 
