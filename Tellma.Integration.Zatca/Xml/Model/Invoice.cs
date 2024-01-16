@@ -25,7 +25,7 @@
         /// <br/> 
         /// The date/time when the Invoice was issued  as per Article 53 of the VAT Implementing Regulation.
         /// </summary>
-        public DateTime InvoiceIssueDateTime { get; set; }
+        public DateTimeOffset InvoiceIssueDateTime { get; set; }
 
         /// <summary>
         /// <b>BT-3</b> 
@@ -103,16 +103,6 @@
         /// More details can be found in the <see href="https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf">Security Features Implementation Standard</see>.  <br/>
         /// </summary>
         public string? PreviousInvoiceHash { get; set; }
-
-        ///// <summary>
-        ///// <b>KSA-15</b> 
-        ///// <br/> 
-        ///// Invoice cryptographic stamp
-        ///// <para/>
-        ///// More details can be found in the <see href="https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf">Security Features Implementation Standard</see>.  <br/>
-        ///// </summary>
-        //[Display(Name = "Cryptographic stamp")]
-        //public string? CryptographicStamp { get; set; }
 
         /// <summary>
         /// The seller.
@@ -230,13 +220,6 @@
         /// The VAT amount in accounting currency is not used in the calculation of the Invoice totals.
         /// </summary>
         public decimal InvoiceTotalVatAmountInAccountingCurrency { get; set; }
-
-        /// <summary>
-        /// <b>BT-6</b> 
-        /// <br/> 
-        /// Currency for invoice total VAT amount in accounting currency.
-        /// </summary>
-        public string? AccountingCurrency { get; set; }
 
         /// <summary>
         /// <b>BT-112</b> 

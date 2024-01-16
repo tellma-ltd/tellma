@@ -17,4 +17,8 @@ BEGIN
 		@Ids = @Ids,
 		@AssigneeId = NULL,
 		@UserId = @UserId;
+
+	-- Return the ZATCA invoices
+	EXEC [dal].[Zatca_GetInvoices]
+		@Ids = @Ids;
 END;
