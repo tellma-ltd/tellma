@@ -14,9 +14,21 @@ BEGIN
   SET @FromDate = DATEADD(MONTH, @FullMonths, @FromDate);
   DECLARE @FullDays INT =  dbo.fn_FromDate_ToDate__FullDays(@Calendar, @FromDate, @ToDate); 
   RETURN 
-  IIf (
-	@FullYears = 0 and @FullMonths < 6,
-	0,
-	24 * @FullYears + 2 * @FullMonths + @FullDays * 2.0 / 30)
+ -- IIf (
+	--@FullYears = 0 and @FullMonths < 6,
+	--0,
+	--24 * @FullYears + 2 * @FullMonths + @FullDays * 2.0 / 30)
+	CASE
+		WHEN @FullYears = 0 and @FullMonths < 6 THEN 0
+		-- Option 1A
+		WHEN @FullYears = 0 and @FullMonths >= 6 THEN 2.0 * (@FullMonths - 6 + @FullDays / 30.0)
+		-- Option 1B
+		WHEN @FullYears = 0 and @FullMonths >= 6 THEN 2.0 * (@FullMonths + @FullDays / 30.0)
+		-- Option 2A
+		WHEN @FullYears > 0 THEN 12 + 30 * (@FullYears - 1) + 2.5 * (@FullMonths + @FullDays / 30.0)
+		-- Option 2B
+		WHEN @FullYears > 0 THEN 30 * @FullYears + 2.5 * (@FullMonths + @FullDays / 30.0)
+	END
+
 END
 GO

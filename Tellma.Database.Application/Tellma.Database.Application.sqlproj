@@ -959,6 +959,8 @@
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToCashFromSalesInvoice.sql" />
     <Build Include="dal\Functions\dal.fn_Settings__DefaultVATRate.sql" />
+    <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation.sql" />
+    <Build Include="dal\Functions\dal.fn_Account_Currency_Agent_Resource_AsOfDate_ExcludeId__Balance.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
