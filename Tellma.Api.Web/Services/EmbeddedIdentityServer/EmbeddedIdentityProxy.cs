@@ -42,9 +42,15 @@ namespace Tellma.Services.EmbeddedIdentityServer
         public bool CanCreateUsers => true;
         public bool CanInviteUsers => _notificationsQueue.EmailEnabled;
 
-        public async Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false)
+        public async Task CreateUserIfNotExist(string email, string password)
         {
-            bool confirmed = emailConfirmed || !CanInviteUsers;
+            var idUser = await GetOrCreateUser(email, emailConfirmed: false);
+            await _userManager.AddPasswordAsync(idUser, password);
+        }
+
+        public async Task CreateUsersIfNotExist(IEnumerable<string> emails)
+        {
+            bool confirmed = !CanInviteUsers;
             foreach (var email in emails)
             {
                 await GetOrCreateUser(email, emailConfirmed: confirmed);

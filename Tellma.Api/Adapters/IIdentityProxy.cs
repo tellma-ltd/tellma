@@ -17,12 +17,22 @@ namespace Tellma.Api
         public bool CanCreateUsers { get; }
 
         /// <summary>
+        /// Create a user if not already exist, and set the password to 
+        /// <paramref name="password"/> if not already set. This is used
+        /// to create the initial user when setting up a new installation.
+        /// </summary>
+        /// <param name="email">The email of the user.</param>
+        /// <param name="password">The password of the user.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public Task CreateUserIfNotExist(string email, string password);
+
+        /// <summary>
         /// For each email in <paramref name="emails"/> create a user in the identity server
         /// with that email if that user does not exist.
         /// </summary>
         /// <param name="emails">The collection of emails to create as users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false);
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails);
 
         /// <summary>
         /// Whether or not implementations can send email invitations to users.

@@ -84,8 +84,7 @@ namespace Tellma
             var identity = scope.ServiceProvider.GetRequiredService<Api.IIdentityProxy>();
             if (identity.CanCreateUsers)
             {
-                var singleton = new System.Collections.Generic.List<string> { email };
-                await identity.CreateUsersIfNotExist(singleton, emailConfirmed: true);
+                await identity.CreateUserIfNotExist(email, password);
             }
         }
     }
