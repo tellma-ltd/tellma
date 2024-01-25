@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[LD_InvoiceNotDuplicate__Validate]
+﻿CREATE PROCEDURE [bll].[LD_InvoiceNotDuplicate__Validate] -- TODO: PUBLISH
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
@@ -42,6 +42,7 @@ JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
+AND SIGN(BE.[Direction] * BE.[MonetaryValue]) > 0 AND SIGN(FE.[Direction] * FE.[MonetaryValue]) > 0
 AND BL.[State] >= 0;--4;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)

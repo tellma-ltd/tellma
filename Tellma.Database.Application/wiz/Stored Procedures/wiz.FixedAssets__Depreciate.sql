@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [wiz].[FixedAssets__Depreciate]
 	@DocumentIndex	INT = 0,
-	@DepreciationPeriodStarts DATE =  N'2022.06.01',
-	@DepreciationPeriodEnds DATE =  N'2022.06.30',
+	@DepreciationPeriodStarts DATE =  N'2023.09.01',
+	@DepreciationPeriodEnds DATE =  N'2023.09.30',
 	@LineType TINYINT = 100 -- 100: Normal, 120: Regulatory
 	-- TODO: Rewrite it so it relies on the table valued function [wiz].[ft_FixedAssets__Depreciate]
 	-- or better, replace the call everywhere to this one.
@@ -69,6 +69,7 @@ AS
 		WHERE L.[State] = 4
 		AND Time1 < @DepreciationPeriodStarts
 	)
+	AND L.[PostingDate] < @DepreciationPeriodEnds -- Changed from <= to <, to exclude opening balance transactions at end of month
 	AND L.[PostingDate] <= @DepreciationPeriodEnds
 	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	GROUP BY E.[ResourceId], E.[BaseUnitId], E.[CurrencyId], E.[CenterId], E.[AgentId], E.[NotedAgentId], E.[NotedResourceId], A.[EntryTypeId]
@@ -131,11 +132,15 @@ AS
 			) AS [NetResidualValue]
 	FROM map.DetailsEntries() E
 	JOIN dbo.Lines L ON E.LineId = L.Id
+	JOIN map.Documents() D ON D.Id = L.DocumentId
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @FAAccountIds A ON E.AccountId = A.[Id]
 	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
+	-- MA: Added 2024-01-17 line below to exclude FA added by JV as opening balance. Note using < instead of <=
+	-- it is necessary since opening balance is last date of month
+	AND L.[PostingDate] < @DepreciationPeriodEnds 
 	AND E.Time1 Between @DepreciationPeriodStarts AND @DepreciationPeriodEnds
 	AND ET.[Concept] IN (
 		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',--		N'InternalTransferPropertyPlantAndEquipmentExtension',
@@ -208,4 +213,3 @@ AS
 	LEFT JOIN @OpeningAgentNotedResourceNotedAgentEntryTypes OANRNAET ON OANRNAET.[ResourceId] = NPD.[ResourceId];
 
 	SELECT * FROM @WideLines;
-GO
