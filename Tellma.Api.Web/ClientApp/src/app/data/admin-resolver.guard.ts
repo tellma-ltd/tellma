@@ -6,7 +6,7 @@ import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
 import { Versioned } from './dto/versioned';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
-import { CanActivate } from '@angular/router';
+
 import { ProgressOverlayService } from './progress-overlay.service';
 import { AdminSettingsForClient } from './dto/admin-settings-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
@@ -79,7 +79,7 @@ export function handleFreshUserSettings(
 @Injectable({
   providedIn: 'root'
 })
-export class AdminResolverGuard implements CanActivate {
+export class AdminResolverGuard  {
 
   // Note: we used a guard here instead of a resolver to guarantee that the user cannot
   // navigate to the admin portal until the global values are retrieved first

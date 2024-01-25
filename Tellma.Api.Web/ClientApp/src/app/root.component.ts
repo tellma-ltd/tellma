@@ -100,7 +100,7 @@ export class RootComponent {
     // This allows any component in the app to display a context menu with ease
     contextMenu.registerShowMenu(this.showContextMenu);
 
-    console.log('Client v8.0');
+    console.log('Client v9.0');
 
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
     const appIsStable$ = appRef.isStable.pipe(
@@ -119,8 +119,8 @@ export class RootComponent {
     });
 
     // listen for notifications from the service worker that a new version of the client is available
-    this.serviceWorker.available.subscribe(_ => {
-      this.showNewUpdateIsAvailable = true;
+    this.serviceWorker.versionUpdates.subscribe(e => {
+      this.showNewUpdateIsAvailable = e.type === 'VERSION_READY';
     });
 
     // show a message if the user opens the app on Internet Explorer

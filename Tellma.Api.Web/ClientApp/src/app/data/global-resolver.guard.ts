@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { StorageService } from './storage.service';
@@ -96,7 +96,7 @@ export let appsettings: AppSettings = {};
 @Injectable({
   providedIn: 'root'
 })
-export class GlobalResolverGuard implements CanActivate {
+export class GlobalResolverGuard  {
 
   constructor(
     private workspace: WorkspaceService, private storage: StorageService, public http: HttpClient,

@@ -1,6 +1,5 @@
 import { Component, Input, ElementRef, ViewChild, HostBinding } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { isNumber } from 'util';
 
 export interface SelectorChoice {
   /**

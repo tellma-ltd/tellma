@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { inject, NgModule } from '@angular/core';
+import { Routes, RouterModule, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { AdminMainMenuComponent } from './admin-main-menu/admin-main-menu.component';
 import { AdminPageNotFoundComponent } from './admin-page-not-found/admin-page-not-found.component';
 import { AdminShellComponent } from './admin-shell/admin-shell.component';
-import { UnsavedChangesGuard } from '../data/unsaved-changes.guard';
+import { unsavedChangesGuard } from '../data/unsaved-changes.guard';
 import { AdminResolverGuard } from '../data/admin-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
-import { SaveInProgressGuard } from '../data/save-in-progress.guard';
+import { saveInProgressGuard } from '../data/save-in-progress.guard';
 import { AdminUsersMasterComponent } from './admin-users/admin-users-master.component';
 import { AdminUsersDetailsComponent } from './admin-users/admin-users-details.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -22,47 +22,47 @@ const routes: Routes = [
     path: 'console',
     component: AdminShellComponent,
     canActivate: [AdminResolverGuard],
-    canActivateChild: [AuthGuard],
+    canActivateChild: [(_: ActivatedRouteSnapshot, s: RouterStateSnapshot) => inject(AuthGuard).canActivateChild(s)],
     children: [
       // Identity Server Users
       {
         path: 'identity-server-users',
         component: IdentityServerUsersMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'identity-server-users/:id',
         component: IdentityServerUsersDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Identity Server Clients
       {
         path: 'identity-server-clients',
         component: IdentityServerClientsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'identity-server-clients/:id',
         component: IdentityServerClientsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Admin Users
       {
         path: 'admin-users',
         component: AdminUsersMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'admin-users/:id',
         component: AdminUsersDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
       {
         path: 'main-menu',
         component: AdminMainMenuComponent,
-        canDeactivate: [SaveInProgressGuard] // for saving my user
+        canDeactivate: [saveInProgressGuard] // for saving my user
       },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: AdminPageNotFoundComponent },

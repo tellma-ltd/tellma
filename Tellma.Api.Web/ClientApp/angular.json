@@ -104,21 +104,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tellma:build"
+            "buildTarget": "tellma:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tellma:build:production"
+              "buildTarget": "tellma:build:production"
             },
             "local": {
-              "browserTarget": "tellma:build:local"
+              "buildTarget": "tellma:build:local"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tellma:build"
+            "buildTarget": "tellma:build"
           }
         },
         "test": {
@@ -139,19 +139,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -167,7 +154,6 @@
       }
     }
   },
-  "defaultProject": "tellma",
   "cli": {
     "analytics": "11a283f4-ae09-458e-94b4-11ab21da5f0a"
   }
