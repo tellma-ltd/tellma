@@ -136,7 +136,9 @@
 	[Text4Visibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__Text4Visibility] CHECK ([Text4Visibility] IN (N'None', N'Optional', N'Required')),
 	[Text4Label]						NVARCHAR (50),
 	[Text4Label2]						NVARCHAR (50),
-	[Text4Label3]						NVARCHAR (50),		
+	[Text4Label3]						NVARCHAR (50),
+
+	[HasAddress]						BIT				NOT NULL DEFAULT 0,
 
 	[PreprocessScript]					NVARCHAR (MAX),
 	[ValidateScript]					NVARCHAR (MAX),

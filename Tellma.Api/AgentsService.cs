@@ -232,11 +232,24 @@ namespace Tellma.Api
             entities.ForEach(entity =>
             {
                 // Makes everything that follows easier
-                entity.Users ??= new List<AgentUserForSave>();
+                entity.Users ??= [];
 
                 if (!(def.HasAttachments ?? false))
                 {
                     entity.Attachments = null;
+                }
+
+                if (!def.HasAddress)
+                {
+                    entity.AddressStreet = null;
+                    entity.AddressAdditionalStreet = null;
+                    entity.AddressBuildingNumber = null;
+                    entity.AddressAdditionalNumber = null;
+                    entity.AddressCity = null;
+                    entity.AddressPostalCode = null;
+                    entity.AddressProvince = null;
+                    entity.AddressDistrict = null;
+                    entity.AddressCountryCode = null;
                 }
 
                 // Contact Email

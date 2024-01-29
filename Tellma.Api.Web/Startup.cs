@@ -239,7 +239,7 @@ namespace Tellma
                     {
                         stopwatch.Stop();
                         var millis = stopwatch.ElapsedMilliseconds;
-                        context.Response.Headers.Add("server-timing", $"Total;dur={millis}");
+                        context.Response.Headers.Append("server-timing", $"Total;dur={millis}");
 
                         return Task.CompletedTask;
                     });

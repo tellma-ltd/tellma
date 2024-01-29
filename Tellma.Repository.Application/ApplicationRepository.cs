@@ -4610,7 +4610,7 @@ namespace Tellma.Repository.Application
                     if (!result.IsError && !validateOnly)
                     {
                         // (2) Load deleted file Ids
-                        deletedFileIds = new List<string>();
+                        deletedFileIds = [];
                         await reader.NextResultAsync();
                         while (await reader.ReadAsync())
                         {
@@ -4653,7 +4653,7 @@ namespace Tellma.Repository.Application
                 };
 
                 var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
 
 
                 cmd.Parameters.Add(prevInvoiceSerialParam);
@@ -4721,7 +4721,7 @@ namespace Tellma.Repository.Application
                 };
 
                 var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 5000 };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add(prevInvoiceSerialParam);

@@ -155,6 +155,12 @@ namespace Tellma.Model.Application
         [Required]
         public bool? InternalReferenceIsCommon { get; set; }
 
+        [Display(Name = "Entity_Lookup1")]
+        public int? Lookup1Id { get; set; }
+
+        [Display(Name = "Entity_Lookup2")]
+        public int? Lookup2Id { get; set; }
+
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
 
@@ -267,6 +273,14 @@ namespace Tellma.Model.Application
         [Display(Name = "Entry_ReferenceSource")]
         [ForeignKey(nameof(ReferenceSourceId))]
         public Agent ReferenceSource { get; set; }
+
+        [Display(Name = "Entity_Lookup1")]
+        [ForeignKey(nameof(Lookup1Id))]
+        public Lookup Lookup1 { get; set; }
+
+        [Display(Name = "Entity_Lookup2")]
+        [ForeignKey(nameof(Lookup2Id))]
+        public Lookup Lookup2 { get; set; }
 
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]

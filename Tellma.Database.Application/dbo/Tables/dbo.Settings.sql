@@ -2,9 +2,25 @@
 	-- General Settings
 	[CreatedAt]								DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]							INT					NOT NULL CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),
-	[ShortCompanyName]						NVARCHAR (255)		NOT NULL,
+	[CompanyName]							NVARCHAR (255), -- Full company name as it appears in government records
+	[CompanyName2]							NVARCHAR (255),
+	[CompanyName3]							NVARCHAR (255),
+
+	[CustomFieldsJson]  					NVARCHAR (MAX),
+		/*
+			Address.BuildingNumber
+			Address.Street
+			Address.SecondaryNumber
+			Address.District
+			Address.PostalCode
+			Address.City
+		*/
+	[CountryCode]							NVARCHAR(2),
+
+	[ShortCompanyName]						NVARCHAR (255)		NOT NULL, -- Appears under the user's name and when browsing My Companies
 	[ShortCompanyName2]						NVARCHAR (255),
 	[ShortCompanyName3]						NVARCHAR (255),
+	
 	[PrimaryLanguageId]						NVARCHAR (5)		NOT NULL,
 	[PrimaryLanguageSymbol]					NVARCHAR (5),
 	[SecondaryLanguageId]					NVARCHAR (5),
@@ -18,6 +34,8 @@
 	[BrandColor]							NCHAR (7),
 	[SupportEmails]							NVARCHAR (4000),
 	[SmsEnabled]							BIT					NOT NULL DEFAULT 0, -- SMS is expensive, this value is only editable from Tellma's admin console
+	
+	-- Versions
 	[DefinitionsVersion]					UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[SettingsVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[SchedulesVersion]						UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),

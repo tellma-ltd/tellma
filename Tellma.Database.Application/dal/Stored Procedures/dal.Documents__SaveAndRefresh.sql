@@ -63,6 +63,8 @@ BEGIN
 				[ReferenceSourceIsCommon],
 				[InternalReference],
 				[InternalReferenceIsCommon],
+				[Lookup1Id],
+				[Lookup2Id],
 
 				ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
@@ -116,6 +118,8 @@ BEGIN
 				t.[ReferenceSourceIsCommon]		= s.[ReferenceSourceIsCommon],
 				t.[InternalReference]			= s.[InternalReference],
 				t.[InternalReferenceIsCommon]	= s.[InternalReferenceIsCommon],
+				t.[Lookup1Id]					= s.[Lookup1Id],
+				t.[Lookup2Id]					= s.[Lookup2Id],
 
 				t.[ModifiedAt]					= @Now,
 				t.[ModifiedById]				= @UserId
@@ -162,6 +166,8 @@ BEGIN
 				[ReferenceSourceIsCommon],
 				[InternalReference],
 				[InternalReferenceIsCommon],
+				[Lookup1Id],
+				[Lookup2Id],
 
 				[CreatedById], 
 				[CreatedAt], 
@@ -212,6 +218,8 @@ BEGIN
 				s.[ReferenceSourceIsCommon],
 				s.[InternalReference],
 				s.[InternalReferenceIsCommon],
+				s.[Lookup1Id],
+				s.[Lookup2Id],
 				@UserId,
 				@Now,
 				@UserId,

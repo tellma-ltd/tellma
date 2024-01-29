@@ -250,6 +250,23 @@ namespace Tellma.Api.Dto
         public short? CenterRequiredState { get; set; }
         public short? CenterReadOnlyState { get; set; }
 
+        // Lookup 1
+        public string Lookup1Label { get; set; }
+        public string Lookup1Label2 { get; set; }
+        public string Lookup1Label3 { get; set; }
+        public string Lookup1Visibility { get; set; }
+        public int? Lookup1DefinitionId { get; set; }
+
+        // Lookup 2
+        public string Lookup2Label { get; set; }
+        public string Lookup2Label2 { get; set; }
+        public string Lookup2Label3 { get; set; }
+        public string Lookup2Visibility { get; set; }
+        public int? Lookup2DefinitionId { get; set; }
+
+        // ZATCA
+        public string ZatcaDocumentType { get; set; }
+
         // Memo
         public string MemoVisibility { get; set; }
         public bool MemoIsCommonVisibility { get; set; }
@@ -866,6 +883,9 @@ namespace Tellma.Api.Dto
         public string Text4Label2 { get; set; }
         public string Text4Label3 { get; set; }
         public string Text4Visibility { get; set; }
+
+        // Address
+        public bool HasAddress { get; set; }
 
         // ExternalReference
         public string ExternalReferenceLabel { get; set; }

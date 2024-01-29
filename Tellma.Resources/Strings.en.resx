@@ -592,6 +592,9 @@
   <data name="Definition_ControlOptions" xml:space="preserve">
     <value>Control Options</value>
   </data>
+  <data name="Definition_HasAddress" xml:space="preserve">
+    <value>Has Address</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>Has Attachments</value>
   </data>
@@ -766,6 +769,21 @@
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>Serial Prefix</value>
   </data>
+  <data name="DocumentDefinition_ZatcaDocumentType" xml:space="preserve">
+    <value>ZATCA Document Type</value>
+  </data>
+  <data name="DocumentDefinition_ZatcaDocumentType_381" xml:space="preserve">
+    <value>Credit Note</value>
+  </data>
+  <data name="DocumentDefinition_ZatcaDocumentType_383" xml:space="preserve">
+    <value>Debit Note</value>
+  </data>
+  <data name="DocumentDefinition_ZatcaDocumentType_386" xml:space="preserve">
+    <value>Prepayment Invoice</value>
+  </data>
+  <data name="DocumentDefinition_ZatcaDocumentType_388" xml:space="preserve">
+    <value>Tax Invoice</value>
+  </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>Document Definition Line Definition</value>
   </data>
@@ -867,6 +885,36 @@
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
+  </data>
+  <data name="Entity_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Entity_AddressAdditionalNumber" xml:space="preserve">
+    <value>Secondary #</value>
+  </data>
+  <data name="Entity_AddressAdditionalStreet" xml:space="preserve">
+    <value>Additional Street</value>
+  </data>
+  <data name="Entity_AddressBuildingNumber" xml:space="preserve">
+    <value>Building #</value>
+  </data>
+  <data name="Entity_AddressCity" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Entity_AddressCountryCode" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Entity_AddressDistrict" xml:space="preserve">
+    <value>District</value>
+  </data>
+  <data name="Entity_AddressPostalCode" xml:space="preserve">
+    <value>Postal Code</value>
+  </data>
+  <data name="Entity_AddressProvince" xml:space="preserve">
+    <value>Province</value>
+  </data>
+  <data name="Entity_AddressStreet" xml:space="preserve">
+    <value>Street</value>
   </data>
   <data name="Entity_Agent1" xml:space="preserve">
     <value>Agent 1</value>
@@ -1182,6 +1230,9 @@
   </data>
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>A system record cannot be edited.</value>
+  </data>
+  <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
+    <value>Cannot open an e-invoice as per ZATCA policy.</value>
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>Cannot sign a {0} document.</value>
@@ -3190,8 +3241,23 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>Brand Color</value>
   </data>
+  <data name="Settings_BuildingNumber" xml:space="preserve">
+    <value>Building #</value>
+  </data>
+  <data name="Settings_City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Settings_CompanyName" xml:space="preserve">
+    <value>Company Name</value>
+  </data>
+  <data name="Settings_CountryCode" xml:space="preserve">
+    <value>Country</value>
+  </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>Date Format</value>
+  </data>
+  <data name="Settings_District" xml:space="preserve">
+    <value>District</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>Salary Period Starts</value>
@@ -3204,6 +3270,9 @@
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>The primary currency used when generating and spending cash</value>
+  </data>
+  <data name="Settings_PostalCode" xml:space="preserve">
+    <value>Postal Code</value>
   </data>
   <data name="Settings_PrimaryCalendar" xml:space="preserve">
     <value>Primary Calendar</value>
@@ -3226,11 +3295,17 @@
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
     <value>Secondary Language Symbol</value>
   </data>
+  <data name="Settings_SecondaryNumber" xml:space="preserve">
+    <value>Secondary #</value>
+  </data>
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>Short Company Name</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>SMS Notifications Enabled</value>
+  </data>
+  <data name="Settings_Street" xml:space="preserve">
+    <value>Street</value>
   </data>
   <data name="Settings_SupportEmails" xml:space="preserve">
     <value>Support Email(s)</value>

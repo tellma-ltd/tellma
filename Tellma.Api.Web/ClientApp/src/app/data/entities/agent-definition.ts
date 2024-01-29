@@ -126,6 +126,7 @@ export interface AgentDefinitionForSave<TReportDefinition = AgentDefinitionRepor
     Text4Label2?: string;
     Text4Label3?: string;
     Text4Visibility?: Visibility;
+    HasAddress?: boolean;
     ExternalReferenceLabel?: string;
     ExternalReferenceLabel2?: string;
     ExternalReferenceLabel3?: string;
@@ -324,6 +325,7 @@ export function metadata_AgentDefinition(wss: WorkspaceService, trx: TranslateSe
                 Text4Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.secondaryPostfix },
                 Text4Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text4') }) + ws.ternaryPostfix },
                 Text4Visibility: visibilityPropDescriptor('Entity_Text4', trx),
+                HasAddress:  { datatype: 'bit', control: 'check', label: () => trx.instant('Definition_HasAddress') },
                 ExternalReferenceLabel: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.primaryPostfix },
                 ExternalReferenceLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.secondaryPostfix },
                 ExternalReferenceLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ExternalReference') }) + ws.ternaryPostfix },

@@ -311,6 +311,17 @@
                         </ng-container>
                     </div>
 
+                    <!-- HasAddress -->
+                    <div class="form-group">
+                        <label class="small" for="hasaddress">{{ 'Definition_HasAddress' | translate }}</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="hasaddress"
+                                [(ngModel)]="model.HasAddress" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label"
+                                for="hasaddress"></label>
+                        </div>
+                    </div>
+                    
                     <!-- HasAttachments -->
                     <div class="form-group">
                         <label class="small" for="hasattachments">{{ 'Definition_HasAttachments' | translate }}</label>

@@ -130,6 +130,8 @@
 	[Text4Label3]						NVARCHAR (50),		
 	[Text4Visibility]					NVARCHAR (50),
 	
+	[HasAddress]						BIT,
+	
 	[PreprocessScript]					NVARCHAR (MAX),
 	[ValidateScript]					NVARCHAR (MAX),
 	-----Properties applicable to contracts only

@@ -261,6 +261,31 @@
                             *ngTemplateOutlet="unlabeledProp; context: { prop: 'Memo', propLower: 'memo', fieldName: 'Memo' }">
                         </ng-container>
                     </ng-container>
+
+                    <ng-container
+                    *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup1', propLower: 'lookup1' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup2', propLower: 'lookup2' }">
+                    </ng-container>
+                    
+
+                    <!-- ZATCA Document Type -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(zatcaDocumentType, serverErrors(model, 'ZatcaDocumentType'))">
+                        <label class="small"
+                            for="zatcaDocumentType">{{ 'DocumentDefinition_ZatcaDocumentType' | translate }}</label>
+                        <select class="form-control t-studio-input" id="zatcaDocumentType"
+                            [(ngModel)]="model.ZatcaDocumentType" (ngModelChange)="onDefinitionChange(model)"
+                            #zatcaDocumentType="ngModel">
+                            <option *ngFor="let c of zatcaDocumentTypeChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: zatcaDocumentType, serverErrors: serverErrors(model, 'UserCardinality') }">
+                        </ng-container>
+                    </div>
+
                     
                     <!-- Attachments Visibility -->
                     <ng-container
@@ -331,6 +356,87 @@
                                 *ngTemplateOutlet="errorsTemplate;context: { control: visibility, serverErrors: serverErrors(model, prop + 'Visibility') }">
                             </ng-container>
                         </div>
+                    </ng-template>
+
+                    <!-- Visibility + Labels + DefinitionId Fields Template -->
+                    <ng-template #definitionedProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
+
+                        <!-- Visibility + Labels -->
+                        <ng-container
+                            *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        </ng-container>
+
+                        <!-- DefinitionId -->
+                        <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
+                            [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
+                            <label
+                                class="small">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) }}</label>
+
+                            <t-lookup-definitions-picker [(ngModel)]="model[prop + 'DefinitionId']"
+                                (ngModelChange)="onDefinitionChange(model)" #defId="ngModel" theme="dark">
+                            </t-lookup-definitions-picker>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: serverErrors(model, prop + 'DefinitionId') }">
+                            </ng-container>
+                        </div>
+
+                    </ng-template>
+
+                    <!-- Visibility + Labels Fields Template -->
+                    <ng-template #labeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
+
+                        <!-- Visibility -->
+                        <ng-container
+                            *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        </ng-container>
+
+                        <!-- Labels -->
+                        <ng-container *ngIf="isVisible(model[prop + 'Visibility'])">
+
+                            <!-- Label -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label, serverErrors(model, prop + 'Label'))">
+                                <label class="small"
+                                    for="{{propLower}}label">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label" type="text"
+                                    [(ngModel)]="model[prop + 'Label']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label, serverErrors: serverErrors(model, prop + 'Label') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label2 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label2, serverErrors(model, prop + 'Label2'))"
+                                *ngIf="ws.settings?.SecondaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label2">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.secondaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label2" type="text"
+                                    [(ngModel)]="model[prop + 'Label2']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label2')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label2="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label2, serverErrors: serverErrors(model, prop + 'Label2') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label3 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label3, serverErrors(model, prop + 'Label3'))"
+                                *ngIf="ws.settings?.TernaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label3">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.ternaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label3" type="text"
+                                    [(ngModel)]="model[prop + 'Label3']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label3')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label3="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label3, serverErrors: serverErrors(model, prop + 'Label3') }">
+                                </ng-container>
+                            </div>
+                        </ng-container>
                     </ng-template>
                 </div>
 

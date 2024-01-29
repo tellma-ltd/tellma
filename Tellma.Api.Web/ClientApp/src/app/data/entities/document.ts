@@ -2,7 +2,7 @@
 // tslint:disable:max-line-length
 import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor, NavigationPropDescriptor, BitPropDescriptor } from './base/metadata';
+import { EntityDescriptor, NavigationPropDescriptor, BitPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line } from './line';
@@ -59,6 +59,8 @@ export interface DocumentForSave<TLine = LineForSave, TLineDefinitionEntry = Doc
     ReferenceSourceIsCommon?: boolean;
     InternalReference?: string;
     InternalReferenceIsCommon?: boolean;
+    Lookup1Id?: number;
+    Lookup2Id?: number;
 
     Lines?: TLine[];
     LineDefinitionEntries?: TLineDefinitionEntry[];
@@ -181,7 +183,12 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 ReferenceSourceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_ReferenceSource') }) },
                 InternalReference: { datatype: 'string', control: 'text', label: () => trx.instant('Entry_InternalReference') },
                 InternalReferenceIsCommon: { datatype: 'bit', control: 'check', label: () => trx.instant('Field0IsCommon', { 0: trx.instant('Entry_InternalReference') }) },
-
+                
+                Lookup1Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup1: { datatype: 'entity', label: () => trx.instant('Entity_Lookup1'), control: 'Lookup', foreignKeyName: 'Lookup1Id' },
+                Lookup2Id: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup2: { datatype: 'entity', label: () => trx.instant('Entity_Lookup2'), control: 'Lookup', foreignKeyName: 'Lookup2Id' },
+        
                 SerialNumber: {
                     datatype: 'numeric',
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
@@ -305,6 +312,39 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             if (!definition.MemoIsCommonVisibility) {
                 delete props.MemoIsCommon;
             }
+
+            
+
+      // Navigation properties with label and definition Id
+      for (const propName of ['1', '2'].map(pf => 'Lookup' + pf)) {
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+          delete entityDesc.properties[propName + 'Id'];
+        } else {
+          const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
+          propDesc.definitionId = definition[propName + 'DefinitionId'];
+
+          // Calculate the default label
+          let defaultLabel: () => string;
+          if (!!propDesc.definitionId) {
+            // If definitionId is specified, the default label is the singular title of the definition
+            const navDef = ws.definitions.Lookups[propDesc.definitionId];
+            if (!!navDef) {
+              defaultLabel = () => ws.getMultilingualValueImmediate(navDef, 'TitleSingular');
+            } else {
+              console.error(`Missing definitionId ${propDesc.definitionId} for ${propName}.`);
+              defaultLabel = propDesc.label;
+            }
+          } else {
+            // If definition is not specified, the default label is the generic name of the column (e.g. Lookup 1)
+            defaultLabel = propDesc.label;
+          }
+          propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+
+          const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+          idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+        }
+      }
         }
 
         _cache[key] = entityDesc;

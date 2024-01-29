@@ -5,7 +5,9 @@
 	@Top INT = 200,
 	@UserId INT,
 	@Culture NVARCHAR(50) = N'en',
-	@NeutralCulture NVARCHAR(50) = N'en'
+	@NeutralCulture NVARCHAR(50) = N'en',
+    @PreviousInvoiceSerialNumber INT OUTPUT,
+    @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -39,6 +41,8 @@ BEGIN
 	EXEC [dal].[Documents__Close]
 		@DefinitionId = @DefinitionId,
 		@Ids = @Ids, 
-		@UserId = @UserId;
+		@UserId = @UserId,
+		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber,
+		@PreviousInvoiceHash = @PreviousInvoiceHash;
 END;
 GO

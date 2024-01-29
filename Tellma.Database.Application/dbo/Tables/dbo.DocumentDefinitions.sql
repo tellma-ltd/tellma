@@ -22,6 +22,20 @@
 	[PostingDateVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CONSTRAINT [CK_DocumentDefinitions__PostingDateVisibility] CHECK ([PostingDateVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CONSTRAINT [CK_DocumentDefinitions__CenterVisibility] CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 
+	[Lookup1Visibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__Lookup1Visibility] CHECK ([Lookup1Visibility] IN (N'None', N'Required', N'Optional')),
+	[Lookup1DefinitionId]		INT				CONSTRAINT [FK_DocumentDefinitions__Lookup1DefinitionId] REFERENCES [dbo].[LookupDefinitions]([Id]),
+	[Lookup1Label]				NVARCHAR (50),
+	[Lookup1Label2]				NVARCHAR (50),
+	[Lookup1Label3]				NVARCHAR (50),
+	
+	[Lookup2Visibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__Lookup2Visibility] CHECK ([Lookup2Visibility] IN (N'None', N'Optional', N'Required')),
+	[Lookup2DefinitionId]		INT				CONSTRAINT [FK_DocumentDefinitions__Lookup2DefinitionId] REFERENCES [dbo].[LookupDefinitions]([Id]),
+	[Lookup2Label]				NVARCHAR (50),
+	[Lookup2Label2]				NVARCHAR (50),
+	[Lookup2Label3]				NVARCHAR (50),
+
+	[ZatcaDocumentType]			NVARCHAR (3), -- 381, 383, 388, 389
+
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__ClearanceVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__MemoVisibility] CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 	

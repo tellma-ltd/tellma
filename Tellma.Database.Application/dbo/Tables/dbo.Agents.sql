@@ -47,6 +47,17 @@
 	[Text3]						NVARCHAR (255), -- 
 	[Text4]						NVARCHAR (255), -- 
 
+	-- Address
+	[AddressStreet]				NVARCHAR (50),
+	[AddressAdditionalStreet]	NVARCHAR (50),
+	[AddressBuildingNumber]		NVARCHAR (50),
+	[AddressAdditionalNumber]	NVARCHAR (50),
+	[AddressCity]				NVARCHAR (50),
+	[AddressPostalCode]			NVARCHAR (50),
+	[AddressProvince]			NVARCHAR (50),
+	[AddressDistrict]			NVARCHAR (50),
+	[AddressCountryCode]		NVARCHAR (2),
+
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs
 	[BankAccountNumber]			NVARCHAR (34),

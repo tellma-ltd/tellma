@@ -279,6 +279,7 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text4Label2) ||
         areServerErrors(model.serverErrors.Text4Label3) ||
         areServerErrors(model.serverErrors.Text4Visibility) ||
+        areServerErrors(model.serverErrors.HasAddress) ||
         areServerErrors(model.serverErrors.HasAttachments) ||
 
         // Agent Only

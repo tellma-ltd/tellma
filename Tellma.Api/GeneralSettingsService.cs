@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Tellma.Api
             _settingsCache = settingsCache;
             _behavior = deps.Behavior;
         }
-        
+
         protected override string View => "general-settings";
 
         public async Task<Versioned<SettingsForClient>> SettingsForClient(CancellationToken cancellation)
@@ -50,12 +51,17 @@ namespace Tellma.Api
                 .Select(args.Select)
                 .Expand(args.Expand)
                 .OrderBy("PrimaryLanguageId")
-                .FirstOrDefaultAsync(ctx, cancellation);
+                .FirstOrDefaultAsync(ctx, cancellation) ?? throw new InvalidOperationException("Bug: Settings have not been initialized");
 
-            if (settings == null)
+            // Upon read, JSON takes precedent
+            try
             {
-                // Programmer mistake
-                throw new InvalidOperationException("Bug: Settings have not been initialized");
+                settings.CustomFields = JsonConvert.DeserializeObject<GeneralSettings.Custom>(settings.CustomFieldsJson ?? "{}");
+            }
+            catch
+            {
+                // A way out in case the DB contains invalid JSON for some reason
+                settings.CustomFields = new();
             }
 
             return settings;
@@ -63,6 +69,8 @@ namespace Tellma.Api
 
         protected override Task<GeneralSettingsForSave> SavePreprocess(GeneralSettingsForSave settingsForSave)
         {
+            // Upon save, object takes precedent
+            settingsForSave.CustomFieldsJson = JsonConvert.SerializeObject(settingsForSave.CustomFields ?? new());
             return base.SavePreprocess(settingsForSave);
         }
 
@@ -159,7 +167,7 @@ namespace Tellma.Api
                     top: ModelState.RemainingErrors,
                     userId: UserId);
 
-            AddLocalizedErrors(result.Errors, _localizer); 
+            AddLocalizedErrors(result.Errors, _localizer);
             ModelState.ThrowIfInvalid();
         }
     }

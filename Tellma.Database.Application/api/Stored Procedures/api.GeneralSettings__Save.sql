@@ -1,4 +1,9 @@
 ﻿CREATE PROCEDURE [api].[GeneralSettings__Save]
+	@CompanyName NVARCHAR(255) = NULL,
+	@CompanyName2 NVARCHAR(255) = NULL,
+	@CompanyName3 NVARCHAR(255) = NULL,
+	@CustomFieldsJson NVARCHAR(MAX) = NULL,
+	@CountryCode NVARCHAR(2) = NULL,
 	@ShortCompanyName NVARCHAR(255),
 	@ShortCompanyName2 NVARCHAR(255) = NULL,
 	@ShortCompanyName3 NVARCHAR(255) = NULL,
@@ -26,6 +31,11 @@ BEGIN
 
 	DECLARE @IsError BIT;
 	EXEC [bll].[GeneralSettings_Validate__Save]
+		@CompanyName = @CompanyName,
+		@CompanyName2 = @CompanyName2,
+		@CompanyName3 = @CompanyName3,
+		@CustomFieldsJson = @CustomFieldsJson,
+		@CountryCode = @CountryCode,
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
 		@ShortCompanyName3 = @ShortCompanyName3,
@@ -49,6 +59,11 @@ BEGIN
 		RETURN;
 	
 	EXEC [dal].[GeneralSettings__Save]
+		@CompanyName = @CompanyName,
+		@CompanyName2 = @CompanyName2,
+		@CompanyName3 = @CompanyName3,
+		@CustomFieldsJson = @CustomFieldsJson,
+		@CountryCode = @CountryCode,
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
 		@ShortCompanyName3 = @ShortCompanyName3,

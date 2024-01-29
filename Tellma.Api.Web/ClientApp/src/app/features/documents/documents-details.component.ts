@@ -1337,6 +1337,42 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_InternalReference');
   }
 
+  public get Lookup1_isVisible(): boolean {
+    return !!this.definition.Lookup1Visibility;
+  }
+
+  public get Lookup1_isRequired(): boolean {
+    return this.definition.Lookup1Visibility === 'Required';
+  }
+
+  public get Lookup1_label(): string {
+    return !!this.definition.Lookup1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup1Label') :
+      this.translate.instant('Entity_Lookup1');
+  }
+
+  public get Lookup1_DefinitionId(): number {
+    return this.definition.Lookup1DefinitionId;
+  }
+
+  public get Lookup2_isVisible(): boolean {
+    return !!this.definition.Lookup2Visibility;
+  }
+
+  public get Lookup2_isRequired(): boolean {
+    return this.definition.Lookup2Visibility === 'Required';
+  }
+
+  public get Lookup2_label(): string {
+    return !!this.definition.Lookup2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup2Label') :
+      this.translate.instant('Entity_Lookup2');
+  }
+
+  public get Lookup2_DefinitionId(): number {
+    return this.definition.Lookup2DefinitionId;
+  }
+
   private _computeDocumentSettingsDoc: Document;
   private _computeDocumentSettingsDef: DocumentDefinitionForClient;
 

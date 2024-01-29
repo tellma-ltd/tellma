@@ -526,6 +526,9 @@
   <data name="Definition_ControlOptions" xml:space="preserve">
     <value>خيارات الحقل</value>
   </data>
+  <data name="Definition_HasAddress" xml:space="preserve">
+    <value>له عنوان</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>يدعم المرفقات</value>
   </data>
@@ -700,6 +703,12 @@
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>بادئة الرقم المتسلسل</value>
   </data>
+  <data name="DocumentDefinition_ZatcaDocumentType" xml:space="preserve">
+    <value>نوع مستند هيئة الزكاة</value>
+  </data>
+  <data name="DocumentDefinition_ZatcaDocumentType_388" xml:space="preserve">
+    <value>فاتورة ضريبية</value>
+  </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>تعريف سطر مستند</value>
   </data>
@@ -801,6 +810,36 @@
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Entity_Address" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Entity_AddressAdditionalNumber" xml:space="preserve">
+    <value>الرقم الفرعي</value>
+  </data>
+  <data name="Entity_AddressAdditionalStreet" xml:space="preserve">
+    <value>الشارع الفرعي</value>
+  </data>
+  <data name="Entity_AddressBuildingNumber" xml:space="preserve">
+    <value>رقم المبنى</value>
+  </data>
+  <data name="Entity_AddressCity" xml:space="preserve">
+    <value>المدينة</value>
+  </data>
+  <data name="Entity_AddressCountryCode" xml:space="preserve">
+    <value>البلد</value>
+  </data>
+  <data name="Entity_AddressDistrict" xml:space="preserve">
+    <value>الحي</value>
+  </data>
+  <data name="Entity_AddressPostalCode" xml:space="preserve">
+    <value>الرمز البريدي</value>
+  </data>
+  <data name="Entity_AddressProvince" xml:space="preserve">
+    <value>المقاطعة</value>
+  </data>
+  <data name="Entity_AddressStreet" xml:space="preserve">
+    <value>الشارع</value>
   </data>
   <data name="Entity_Agent1" xml:space="preserve">
     <value>الذمة 1</value>
@@ -1089,6 +1128,9 @@
   </data>
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان من النظام.</value>
+  </data>
+  <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
+    <value>لا يمكن فتح الفاتورة إلكترونية حسب توجيهات هيئة الزكاة.</value>
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>لا يمكن توقيع مستند في حالة {1}.</value>
@@ -3067,8 +3109,23 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>لون العلامة التجارية</value>
   </data>
+  <data name="Settings_BuildingNumber" xml:space="preserve">
+    <value>رقم المبنى</value>
+  </data>
+  <data name="Settings_City" xml:space="preserve">
+    <value>المدينة</value>
+  </data>
+  <data name="Settings_CompanyName" xml:space="preserve">
+    <value>اسم المؤسسة</value>
+  </data>
+  <data name="Settings_CountryCode" xml:space="preserve">
+    <value>البلد</value>
+  </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>صيغة التاريخ</value>
+  </data>
+  <data name="Settings_District" xml:space="preserve">
+    <value>الحي</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>بداية شهر المرتبات</value>
@@ -3081,6 +3138,9 @@
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>العملة الرئيسية المستخدمة في المعاملات النقدية</value>
+  </data>
+  <data name="Settings_PostalCode" xml:space="preserve">
+    <value>الرمز البريدي</value>
   </data>
   <data name="Settings_PrimaryCalendar" xml:space="preserve">
     <value>التقويم الرئيسي</value>
@@ -3103,11 +3163,17 @@
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثانوية</value>
   </data>
+  <data name="Settings_SecondaryNumber" xml:space="preserve">
+    <value>الرقم الفرعي</value>
+  </data>
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>اسم المؤسسة</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>ميزة الرسائل القصيرة (SMS)</value>
+  </data>
+  <data name="Settings_Street" xml:space="preserve">
+    <value>الشارع</value>
   </data>
   <data name="Settings_SupportEmails" xml:space="preserve">
     <value>عنوان بريد الدعم</value>

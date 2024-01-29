@@ -757,6 +757,17 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.CenterIsCommonVisibility, def.CenterLabel, def.CenterLabel2, def.CenterLabel3, display);
                     break;
 
+                case nameof(Document.Lookup1):
+                case nameof(Document.Lookup1Id):
+                    display = PropertyDisplay(def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
+                    isRequired = def.Lookup1Visibility == Visibility.Required;
+                    break;
+                case nameof(Document.Lookup2):
+                case nameof(Document.Lookup2Id):
+                    display = PropertyDisplay(def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
+                    isRequired = def.Lookup2Visibility == Visibility.Required;
+                    break;
+
                 case nameof(Document.Memo):
                     display = PropertyDisplay(def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
                     isRequired = def.MemoRequiredState == 0 || def.MemoVisibility == Visibility.Required;

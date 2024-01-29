@@ -19,6 +19,19 @@
 	
 	[PostingDateVisibility]		NVARCHAR (50),
 	[CenterVisibility]			NVARCHAR (50),
+	
+	[Lookup1Label]						NVARCHAR (50),
+	[Lookup1Label2]						NVARCHAR (50),
+	[Lookup1Label3]						NVARCHAR (50),
+	[Lookup1Visibility]					NVARCHAR (50),
+	[Lookup1DefinitionId]				INT,
+	[Lookup2Label]						NVARCHAR (50),
+	[Lookup2Label2]						NVARCHAR (50),
+	[Lookup2Label3]						NVARCHAR (50),
+	[Lookup2Visibility]					NVARCHAR (50),
+	[Lookup2DefinitionId]				INT,
+
+	[ZatcaDocumentType]			NVARCHAR (3), -- 381, 383, 388, 389
 
 	[ClearanceVisibility]		NVARCHAR (50),
 	[MemoVisibility]			NVARCHAR (50),

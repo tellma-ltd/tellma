@@ -77,6 +77,9 @@ namespace Tellma.Api
             // Start the transaction
             using var trx = TransactionFactory.ReadCommitted();
 
+            // Preprocess
+            settingsForSave = await SavePreprocess(settingsForSave);
+
             // Persist
             await SaveExecute(settingsForSave, args);
 

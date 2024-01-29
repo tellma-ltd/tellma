@@ -64,6 +64,8 @@ namespace Tellma.Api
                 e.MemoVisibility ??= Visibility.None;
                 e.PostingDateVisibility ??= Visibility.None;
                 e.CenterVisibility ??= Visibility.None;
+                e.Lookup1Visibility ??= Visibility.None;
+                e.Lookup2Visibility ??= Visibility.None;
                 e.ClearanceVisibility ??= Visibility.None;
                 e.AttachmentVisibility ??= Visibility.None;
             });

@@ -162,6 +162,16 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         Text3: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text3') },
         Text4: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Text4') },
 
+        AddressStreet: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressStreet') },
+        AddressAdditionalStreet: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressAdditionalStreet') },
+        AddressBuildingNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressBuildingNumber') },
+        AddressAdditionalNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressAdditionalNumber') },
+        AddressCity: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressCity') },
+        AddressPostalCode: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressPostalCode') },
+        AddressProvince: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressProvince') },
+        AddressDistrict: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressDistrict') },
+        AddressCountryCode: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressCountryCode') },
+
         // Agent Only
 
         TaxIdentificationNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
@@ -216,6 +226,18 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         delete entityDesc.properties.Description;
         delete entityDesc.properties.Description2;
         delete entityDesc.properties.Description3;
+      }
+
+      if (!definition.HasAddress) {
+        delete entityDesc.properties.AddressStreet;
+        delete entityDesc.properties.AddressAdditionalStreet;
+        delete entityDesc.properties.AddressBuildingNumber;
+        delete entityDesc.properties.AddressAdditionalNumber;
+        delete entityDesc.properties.AddressCity;
+        delete entityDesc.properties.AddressPostalCode;
+        delete entityDesc.properties.AddressProvince;
+        delete entityDesc.properties.AddressDistrict;
+        delete entityDesc.properties.AddressCountryCode;
       }
 
       // Location, special case

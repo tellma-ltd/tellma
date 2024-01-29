@@ -1,4 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[GeneralSettings__Save]
+	@CompanyName NVARCHAR(255) = NULL,
+	@CompanyName2 NVARCHAR(255) = NULL,
+	@CompanyName3 NVARCHAR(255) = NULL,
+	@CustomFieldsJson NVARCHAR(MAX) = NULL,
+	@CountryCode NVARCHAR(2) = NULL,
 	@ShortCompanyName NVARCHAR(255),
 	@ShortCompanyName2 NVARCHAR(255) = NULL,
 	@ShortCompanyName3 NVARCHAR(255) = NULL,
@@ -22,6 +27,11 @@ BEGIN
 
 	UPDATE [dbo].[Settings]
 	SET 
+		[CompanyName]			= @CompanyName,
+		[CompanyName2]			= @CompanyName2,
+		[CompanyName3]			= @CompanyName3,
+		[CustomFieldsJson]		= @CustomFieldsJson,
+		[CountryCode]			= @CountryCode,
 		[ShortCompanyName]		= @ShortCompanyName,
 		[ShortCompanyName2]		= @ShortCompanyName2,
 		[ShortCompanyName3]		= @ShortCompanyName3,

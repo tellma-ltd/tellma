@@ -1,13 +1,30 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
 {
     [Display(Name = "GeneralSettings", GroupName = "GeneralSettings")]
-    public class GeneralSettingsForSave : Entity
+    public class GeneralSettingsForSave : Entity, IEntityWithCustomFields<GeneralSettingsForSave.Custom>
     {
+        [Display(Name = "Settings_CompanyName")]
+        [StringLength(255)]
+        public string CompanyName { get; set; }
+
+        [Display(Name = "Settings_CompanyName")]
+        [StringLength(255)]
+        public string CompanyName2 { get; set; }
+
+        [Display(Name = "Settings_CompanyName")]
+        [StringLength(255)]
+        public string CompanyName3 { get; set; }
+
+        [Display(Name = "Settings_CountryCode")]
+        [StringLength(2)]
+        public string CountryCode { get; set; }
+
         [Display(Name = "Settings_ShortCompanyName")]
         [Required, ValidateRequired]
         [StringLength(255)]
@@ -75,6 +92,33 @@ namespace Tellma.Model.Application
         [Display(Name = "Settings_SupportEmails")]
         [StringLength(255)]
         public string SupportEmails { get; set; } // e.g. #0284AB
+
+        #region Custom Fields
+
+        [JsonIgnore]
+        public string CustomFieldsJson { get; set; } // On Read this, takes precedent
+
+        [NotMapped]
+        public Custom CustomFields { get; set; } // On Save, this takes precedent
+
+        public class Custom : CustomFieldsBase
+        {
+            public override int Version => 1;
+            public string BuildingNumber { get; set; }
+            public string Street { get; set; }
+            public string Street2 { get; set; }
+            public string Street3 { get; set; }
+            public string SecondaryNumber { get; set; }
+            public string District { get; set; }
+            public string District2 { get; set; }
+            public string District3 { get; set; }
+            public string PostalCode { get; set; }
+            public string City { get; set; }
+            public string City2 { get; set; }
+            public string City3 { get; set; }
+        }
+
+        #endregion
     }
 
     public class GeneralSettings : GeneralSettingsForSave

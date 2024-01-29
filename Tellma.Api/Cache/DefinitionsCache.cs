@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
@@ -299,6 +301,8 @@ namespace Tellma.Api
                 Text4Label2 = def.Text4Label2,
                 Text4Label3 = def.Text4Label3,
                 Text4Visibility = MapVisibility(def.Text4Visibility),
+
+                HasAddress = def.HasAddress,
 
                 ExternalReferenceLabel = def.ExternalReferenceLabel,
                 ExternalReferenceLabel2 = def.ExternalReferenceLabel2,
@@ -794,6 +798,21 @@ namespace Tellma.Api
 
                 PostingDateVisibility = MapVisibility(def.PostingDateVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
+
+                Lookup1Label = def.Lookup1Label,
+                Lookup1Label2 = def.Lookup1Label2,
+                Lookup1Label3 = def.Lookup1Label3,
+                Lookup1Visibility = MapVisibility(def.Lookup1Visibility),
+                Lookup1DefinitionId = def.Lookup1DefinitionId,
+
+                Lookup2Label = def.Lookup2Label,
+                Lookup2Label2 = def.Lookup2Label2,
+                Lookup2Label3 = def.Lookup2Label3,
+                Lookup2Visibility = MapVisibility(def.Lookup2Visibility),
+                Lookup2DefinitionId = def.Lookup2DefinitionId,
+
+                ZatcaDocumentType = def.ZatcaDocumentType,
+
                 MemoVisibility = MapVisibility(def.MemoVisibility),
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
 
@@ -1463,6 +1482,20 @@ namespace Tellma.Api
                 result.MemoLabel = null;
                 result.MemoLabel2 = null;
                 result.MemoLabel3 = null;
+
+                // Lookup1
+                result.Lookup1Visibility = Visibility.None;
+                result.Lookup1DefinitionId = null;
+                result.Lookup1Label = null;
+                result.Lookup1Label2 = null;
+                result.Lookup1Label3 = null;
+
+                // Lookup2
+                result.Lookup2Visibility = Visibility.None;
+                result.Lookup2DefinitionId = null;
+                result.Lookup2Label = null;
+                result.Lookup2Label2 = null;
+                result.Lookup2Label3 = null;
 
                 result.CurrencyVisibility = false;
 

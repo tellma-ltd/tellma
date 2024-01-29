@@ -549,6 +549,112 @@
   <!-- Tabs -->
   <ng-container *ngIf="showTabs(isEdit, model)">
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [(activeId)]="activeTab">
+      
+      <!-- Address -->
+      <li ngbNavItem="address" *ngIf="Address_isVisible">
+        <a ngbNavLink>
+          <span *ngIf="Address_showError(model)" class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+          <span class="small t-slightly-bold">{{ 'Entity_Address' | translate }}</span>
+        </a>
+        <ng-template ngbNavContent>
+          <div class="row m-0 pt-2 pt-sm-3">
+
+            <!-- AddressStreet -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressStreet' | translate"
+              [serverErrors]="model?.serverErrors?.AddressStreet">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressStreet">
+                <div>{{ model?.AddressStreet }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressStreet" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+            
+            <!-- AddressAdditionalStreet -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressAdditionalStreet' | translate"
+              [serverErrors]="model?.serverErrors?.AddressAdditionalStreet">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressAdditionalStreet">
+                <div>{{ model?.AddressAdditionalStreet }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressAdditionalStreet" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressBuildingNumber -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressBuildingNumber' | translate"
+              [serverErrors]="model?.serverErrors?.AddressBuildingNumber">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressBuildingNumber">
+                <div>{{ model?.AddressBuildingNumber }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressBuildingNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressAdditionalNumber -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressAdditionalNumber' | translate"
+              [serverErrors]="model?.serverErrors?.AddressAdditionalNumber">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressAdditionalNumber">
+                <div>{{ model?.AddressAdditionalNumber }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressAdditionalNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressCity -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressCity' | translate"
+              [serverErrors]="model?.serverErrors?.AddressCity">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressCity">
+                <div>{{ model?.AddressCity }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressCity" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressPostalCode -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressPostalCode' | translate"
+              [serverErrors]="model?.serverErrors?.AddressPostalCode">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressPostalCode">
+                <div>{{ model?.AddressPostalCode }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressPostalCode" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressProvince -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressProvince' | translate"
+              [serverErrors]="model?.serverErrors?.AddressProvince">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressProvince">
+                <div>{{ model?.AddressProvince }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressProvince" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+            <!-- AddressDistrict -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressDistrict' | translate"
+              [serverErrors]="model?.serverErrors?.AddressDistrict">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressDistrict">
+                <div>{{ model?.AddressDistrict }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressDistrict" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+            
+            <!-- AddressCountryCode -->
+            <t-form-group class="t-form-group" [label]="'Entity_AddressCountryCode' | translate"
+              [serverErrors]="model?.serverErrors?.AddressCountryCode">
+              <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AddressCountryCode">
+                <div>{{ model?.AddressCountryCode }}</div>
+              </t-restricted>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="model.AddressCountryCode" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            </t-form-group>
+
+          </div>
+        </ng-template>
+      </li>
 
       <!-- Users -->
       <li ngbNavItem="users" *ngIf="Users_isVisible">

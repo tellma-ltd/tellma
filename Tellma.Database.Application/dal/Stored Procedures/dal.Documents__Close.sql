@@ -1,7 +1,9 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Close]
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@UserId INT
+	@UserId INT,
+    @PreviousInvoiceSerialNumber INT OUTPUT,
+    @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -20,5 +22,7 @@ BEGIN
 
 	-- Return the ZATCA invoices
 	EXEC [dal].[Zatca_GetInvoices]
-		@Ids = @Ids;
+		@Ids = @Ids,
+		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber,
+		@PreviousInvoiceHash = @PreviousInvoiceHash;
 END;

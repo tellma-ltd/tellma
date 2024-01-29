@@ -46,6 +46,9 @@ RETURN (
 		D.[ReferenceSourceIsCommon],
 		D.[InternalReference],
 		D.[InternalReferenceIsCommon],
+		D.[Lookup1Id],
+		D.[Lookup2Id],
+
 		D.[CreatedAt],
 		D.[CreatedById],
 		D.[ModifiedAt],
