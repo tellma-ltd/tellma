@@ -4696,7 +4696,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<CloseDocumentOutput> Zatca_GetInvoices(List<int> ids, CancellationToken cancellation = default)
+        public async Task<CloseDocumentOutput> Zatca__GetInvoices(List<int> ids, CancellationToken cancellation = default)
         {
             var connString = await GetConnectionString(cancellation);
             CloseDocumentOutput result = null;
@@ -4710,7 +4710,7 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Zatca_GetInvoices)}]";
+                cmd.CommandText = $"[dal].[{nameof(Zatca__GetInvoices)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -4741,7 +4741,7 @@ namespace Tellma.Repository.Application
                 // Return the result
                 result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, new List<ValidationError>(), new List<InboxStatus>());
             },
-            DatabaseName(connString), nameof(Zatca_GetInvoices), cancellation);
+            DatabaseName(connString), nameof(Zatca__GetInvoices), cancellation);
 
             return result;
         }

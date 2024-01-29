@@ -21,7 +21,7 @@ BEGIN
 		@UserId = @UserId;
 
 	-- Return the ZATCA invoices
-	EXEC [dal].[Zatca_GetInvoices]
+	EXEC [dal].[Zatca__GetInvoices]
 		@Ids = @Ids,
 		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber,
 		@PreviousInvoiceHash = @PreviousInvoiceHash;
