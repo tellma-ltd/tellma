@@ -1,28 +1,10 @@
-﻿CREATE FUNCTION [bll].[ft_Widelines_Period_EventFromModel__Generate]
+﻿CREATE FUNCTION [bll].[ft_FixedAssets__Depreciation_V2]
 (
---DECLARE
-	@ContractLineDefinitionId INT,
-	@ContractAmendmentLineDefinitionId INT, -- This was a mistake. Need to be removed.
-	@ContractTerminationLineDefinitionId INT,
-	@FromDate DATE,
-	@ToDate DATE,
-	@DurationUnitId INT,
-	@EntryIndex	INT,
-	@AgentId INT = NULL,
-	@ResourceId INT = NULL,
-	@NotedAgentId INT = NULL,
-	@NotedResourceId INT = NULL,
-	@CenterId INT = NULL
-	-- Should be adding also
-	-- Quantity DECIMAL (19, 6) = 1, -- to work as multiplying factor for PIT
-	-- CurrencyId NCHAR (3) = NULL
-	-- EntryTypeId INT = NULL
-	--SELECT @FromDate = '2022-11-01', @ToDate = '2022-11-30', @DurationUnitId = dal.fn_UnitCode__Id('mo');
-	--SET @ContractLineDefinitionId  = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccruals.M');
-	--SET @ContractAmendmentLineDefinitionId  = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsAmended.M');
-	--SET @ContractTerminationLineDefinitionId  = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsTerminated.M');
-	--SELECT @EntryIndex = 0, @NotedAgentId = 16; SET @ResourceId = null;
-	)
+-- Must always compare and copy from the logic in [wiz].[FixedAssets__Depreciate_V2]
+	@ResourceIds IdList READONLY,
+	@PostingDate DATE,
+	@LineType TINYINT = 100 -- 100: Normal, 120: Regulatory
+)
 	RETURNS @Widelines TABLE
 	(
 		[Index]						INT	,
@@ -438,193 +420,151 @@
 		[NotedDate15]				DATE,
 		[NotedResourceId15]			INT
 	)
-	AS
-	BEGIN
-	SET @ContractAmendmentLineDefinitionId = ISNULL(@ContractAmendmentLineDefinitionId, 0);
-	SET @ContractTerminationLineDefinitionId = ISNULL(@ContractTerminationLineDefinitionId, 0);
---	IF ISNULL(@ToDate,  N'9999-12-31') = N'9999-12-31' SET @ToDate = N'9999-12-30';
-	SET @ToDate = ISNULL(@ToDate,  N'9999-12-31');
-	DECLARE @OldContractAmendmentLineDefinitionId INT;
-	IF @ContractAmendmentLineDefinitionId <> 0
-	BEGIN
-		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
-		--IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
-		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
-	END
+AS
+BEGIN
+	DECLARE @PeriodStart DATE = DATEFROMPARTS(YEAR(@PostingDate), MONTH(@PostingDate), 1); -- seed value changes in the loop
+	DECLARE @PeriodEnd DATE = EOMONTH(@PostingDate); -- fixed
+	DECLARE @MonthUnit INT = dal.fn_UnitCode__Id(N'mo');
+	-- Return the list of assets that have depreciable life, with Time1 = last depreciable date + 1
+	-- Time2 is decided by posting date
+--	DECLARE @WideLines [WidelineList];
+	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');
+	DECLARE @ROUNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'RightofuseAssets');
+	DECLARE @IANode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'IntangibleAssetsOtherThanGoodwill');
+	DECLARE @FunctionalCurrencyId NCHAR (3) = dal.fn_FunctionalCurrencyId();
 
-	DECLARE @Hour INT = dal.fn_UnitCode__Id(N'hr'), @Day INT = dal.fn_UnitCode__Id(N'd');
-	DECLARE @LdEntryCount INT = (SELECT COUNT(*) FROM LineDefinitionEntries WHERE [LineDefinitionId] = @ContractLineDefinitionId);
-
-	-- @T splits any time limited line into two lines
-	DECLARE @T TABLE (
-		[Id]	INT IDENTITY PRIMARY KEY,
-		[LineKey] INT, [EntryIndex] INT, 
-		[DurationUnitId] INT, --[Decimal1] DECIMAL (19, 6), 
-		[Time1] DATE, [Time2] DATE,
-		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
-		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
-		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4)
-	--	INDEX ([LineKey], [Time1])
-		--UNIQUE ([LineKey], [EntryIndex], [Time1], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]) -- MA: added 2023-03-24 because they were changing after contract termination
+	DECLARE @FAAccountIds TABLE ([Id] INT PRIMARY KEY, [EntryTypeId] INT)
+	INSERT INTO @FAAccountIds([Id] , [EntryTypeId])
+	SELECT A.[Id], 
+	CASE
+			WHEN AC.[Node].IsDescendantOf(@PPENode) = 1 THEN dal.fn_EntryTypeConcept__Id(N'DepreciationPropertyPlantAndEquipment')
+			WHEN AC.[Node].IsDescendantOf(@ROUNode) = 1 THEN dal.fn_EntryTypeConcept__Id(N'DepreciationPropertyPlantAndEquipment')
+			WHEN AC.[Node].IsDescendantOf(@IANode) = 1 THEN dal.fn_EntryTypeConcept__Id(N'AmortisationIntangibleAssetsOtherThanGoodwill')
+			ELSE NULL
+	END AS [EntryTypeId]
+	FROM dbo.[Accounts] A
+	JOIN dbo.[AccountTypes] AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE A.[IsActive] = 1
+	AND (
+		AC.[Node].IsDescendantOf(@PPENode) = 1 OR
+		AC.[Node].IsDescendantOf(@ROUNode) = 1 OR
+		AC.[Node].IsDescendantOf(@IANode) = 1
 	);
-	WITH FilteredLines AS (
-		SELECT DISTINCT L.[LineKey]--, L.[Decimal1]
+	-- select * from @FAAccountIds
+--DECLARE @Widelines WidelineList;
+DECLARE @FixedAssetsDepreciations TABLE (
+	[ResourceId]				INT PRIMARY KEY,
+	[BookMinusResidual]			DECIMAL (19, 6), -- till period start
+	[RemainingLifeTime]			DECIMAL (19, 6), -- till period start
+	[PeriodUsage]				DECIMAL (19, 6), -- from period start till next activity which is NOT depreciation
+	[PeriodEnd]					DATE,
+	[CorrectPeriodDepreciation]	DECIMAL (19, 6),
+	[PostedPeriodDepreciation]	DECIMAL (19, 6), -- from period start to period end, inclusive
+	[VariancePeriodDepreciation]DECIMAL (19, 6),
+	[CenterId]					INT,
+	[AgentId]					INT,
+	[NotedResourceId]			INT,
+	[NotedAgentId]				INT,
+	[EntryTypeId]				INT
+);
+DECLARE @DepreciationEntryTypes StringList;
+INSERT INTO @DepreciationEntryTypes VALUES (N'DepreciationPropertyPlantAndEquipment'), (N'DepreciationInvestmentProperty'), (N'AmortisationIntangibleAssetsOtherThanGoodwill');
+WHILE @PeriodStart IS NOT NULL
+BEGIN
+	DELETE FROM @FixedAssetsDepreciations; 
+	INSERT INTO @FixedAssetsDepreciations([ResourceId], [BookMinusResidual], [RemainingLifeTime], [PeriodUsage], [PeriodEnd], [PostedPeriodDepreciation],
+											[Centerid], [AgentId], [NotedResourceId], [NotedAgentId], [EntryTypeId])
+	SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue] - E.[Direction] * ISNULL(E.[NotedAmount], 0)) AS [BookMinusResidual], 
+			SUM(E.[Direction] * E.[Quantity]) AS [RemainingLifeTime], dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, @PeriodEnd), @PeriodEnd, 0,
+			E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+	WHERE L.[State] = 4 
+--	AND L.[PostingDate] < @ExcludePostedOnOrAfter
+	AND (E.[Time1] <= @PeriodStart AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
+		OR E.[Time2] < @PeriodStart AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes))
+	--AND (@ResourceId IS NULL OR E.[ResourceId] = @ResourceId)
+	AND (E.[ResourceId] IN (SELECT * FROM @ResourceIds))
+	GROUP BY E.[ResourceId], E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
+	HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0;
+
+	-- The next noted date is the date before the next activity
+	WITH UsageTill AS (
+		SELECT E.[ResourceId], DATEADD(DAY, -1, MIN(E.[Time1])) AS [NotedDate]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
-															@OldContractAmendmentLineDefinitionId)
-		AND (L.[State] = 2)
-		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId) -- Should be moved to the line level, and renamed to @FrequencyId
-		-- next line is needed when terminating contracts but not when ag salaries
-		--AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day))
-		AND (E.[Index] = @EntryIndex) -- Primary entry whose data needs to be filtered
-		AND (E.[Time1] <= @ToDate)
-		AND (ISNULL(E.[Time2], '9999-12-31') >= @FromDate)
-		AND (@AgentId IS NULL OR AgentId = @AgentId)
-		AND (@ResourceId IS NULL OR ResourceId = @ResourceId)
-		AND (@NotedAgentId IS NULL OR NotedAgentId = @NotedAgentId)
-		AND (@NotedResourceId IS NULL OR NotedResourceId = @NotedResourceId)
-		AND (@CenterId IS NULL OR CenterId = @CenterId)
-	),--select * from FilteredLines
-	FilteredEntries AS  (
-		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index] , E.[DurationUnitId], --FL.[Decimal1],
-			IIF(E.[Time1]<= @FromDate, @FromDate, E.[Time1]) AS [Time1], '9999-12-31' AS [Time2],
-			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			[Quantity], [MonetaryValue], [Value], [NotedAmount]
-		FROM dbo.Entries E -- MA: Should it be BaseQuantity, to allow entering templates of different unit?
-		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
-															@OldContractAmendmentLineDefinitionId)
-		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
-		UNION ALL
-		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index], E.[DurationUnitId], --FL.[Decimal1],
-			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
-			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			- [Quantity] AS [Quantity], - [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
-		FROM dbo.Entries E
-		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
-		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
-															@OldContractAmendmentLineDefinitionId)
---		MA: 2023-10-16. The following line was commented out because it was causing an overflow. Rewrote the logic
---		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
-		AND L.[State] = 2 AND ISNULL(E.[Time2], '9999-12-31') < @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
-	) --  select * from FilteredEntries 
-	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], --[Decimal1], 
-		[Time1],[Direction],[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Time2], [Quantity], [MonetaryValue], [Value], [NotedAmount])
-	SELECT [LineKey], [Index], [DurationUnitId], --MAX([Decimal1]) AS [Decimal1], 
-		[Time1], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		DATEADD(DAY, -1, LEAD([Time1]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
-											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
-						ORDER BY [Time1])) AS [Time2],
-		SUM([Quantity]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
-											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
-						ORDER BY [Time1]) AS [Quantity],
-		SUM([MonetaryValue]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
-											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
-						ORDER BY [Time1]) AS [MonetaryValue], 
-		SUM([Value]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
-											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
-						ORDER BY [Time1]) AS [Value], 
-		SUM([NotedAmount]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
-											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
-						ORDER BY [Time1]) AS [NotedAmount]
-	FROM (
-		SELECT
-			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], [Direction], [AccountId], [CenterId], [AgentId],
-			[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value], SUM([NotedAmount]) AS [NotedAmount]
-		FROM FilteredEntries
-		GROUP BY --[LineId], 
-			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], Direction, AccountId, CenterId, AgentId, ResourceId, UnitId, [CurrencyId], NotedAgentId, NotedResourceId, EntryTypeId
-	) AFE -- Aggregated filtered entries. To act on the total resulting entries
-	-- MA: next line is helpful to know which employees are causing anmalies
-	-- select ISNULL(NotedAgentId, AgentId), sum(Direction*[Value]) from @T  group by ISNULL(NotedAgentId, AgentId) Having Sum([Direction]*[Value]) <> 0
-	DELETE FROM @T
-	WHERE [Time2] < [Time1]
-	OR [Id] IN ( -- If a workflow (LineKey) adds up to zero, for a period [Time1, *], remove ALL entries
-		SELECT [Id]
-		FROM @T T1
-		JOIN (
-			SELECT [LineKey], [Time1], [Time2]
-			FROM @T
-			GROUP BY [LineKey], [Time1], [Time2]
-			HAVING SUM([MonetaryValue]) = 0
-		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
+		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+		WHERE L.[State] = 4 
+		AND E.[Time1] > @PeriodStart
+		AND E.[Time1] <= @PeriodEnd
+		AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
+		AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
+		GROUP BY E.[ResourceId]
 	)
-	-- MA: 2023-07-20, commented because it caused errors in July SS Contribution for Tenant (303)
-	-- MA: 2023-09-01, uncommented because it is needed to remove 0 results for amendments starting beginning of month
-	OR [Id] IN (
-		SELECT [Id]
-		FROM @T T1
-		JOIN (
-			SELECT [LineKey], [Time1], [Time2], [EntryIndex] --  MA: 2023-09-01 Added Entry Index 
-			FROM @T
-			WHERE [MonetaryValue] <> 0
-		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
-			AND T2.[EntryIndex] = T1.[EntryIndex] --  MA: 2023-09-01 Added to mitigate the SS Contribution 
-		WHERE [MonetaryValue] = 0
-	);
---	select * from @T   order by LineKey, time1, entryIndex; 
+	UPDATE T
+	SET -- 
+		[PeriodUsage] = dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, UT.[NotedDate]),
+		[PeriodEnd]	= UT.[NotedDate]
+	FROM @FixedAssetsDepreciations T
+	JOIN UsageTill UT ON UT.ResourceId = T.[ResourceId];
 
-	-- MA 2023-11-03. The following garbage collection was added to handle a bug resulting from transfer of centers with zero Monetary Value
-	IF @LdEntryCount= 3
-	BEGIN -- If a center appears once, delete it.
-		DELETE FROM @T
-		WHERE [Id] IN (
-			SELECT [Id]
-			FROM @T T1
-			INNER JOIN (
-				SELECT [CenterId], [LineKey]
-				FROM @T
-				GROUP BY [CenterId], [LineKey]
-				HAVING COUNT(*) = 1
-			) T2 ON T1.[CenterId] = T2.[CenterId] AND T1.[LineKey] = T2.LineKey
-		)
-		AND [LineKey] IN (
-			SELECT [LineKey]
-			FROM @T
-			GROUP BY CenterId, [LineKey]
-			HAVING COUNT(*) = 3
-		)
-	END;
+	UPDATE @FixedAssetsDepreciations
+	SET [CorrectPeriodDepreciation] = IIF([RemainingLifeTime] = 0, 0, [BookMinusResidual] / [RemainingLifeTime] * [PeriodUsage]);
 
-	DECLARE @Lines LineList, @Entries EntryList;
+	WITH PeriodDepreciations AS (
+		SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue]) AS Amount
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+		WHERE L.[State] = 4
+--		AND L.[PostingDate] < @ExcludePostedOnOrAfter
+		AND E.[Time2] >= @PeriodStart
+		AND E.[Time2] <= @PeriodEnd
+		AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
+		AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes)
+		GROUP BY E.[ResourceId]
+	)
+	UPDATE T
+		SET T.[PostedPeriodDepreciation] = PD.[Amount]
+	FROM @FixedAssetsDepreciations T
+	JOIN PeriodDepreciations PD ON PD.ResourceId = T.[ResourceId];
 
-	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		[Quantity], [UnitId], [MonetaryValue], [Value], [NotedAmount], [Time1], [Time2], [DurationUnitId])
-	SELECT
-		ROW_NUMBER () OVER(PARTITION BY [EntryIndex]
-			ORDER BY [Time1], [LineKey], [EntryIndex]
-		) - 1 AS [LineIndex],
-		[EntryIndex] AS [Index], 0 AS [DocumentIndex],  0 AS [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-		1, [UnitId], [MonetaryValue], [Value], [NotedAmount], [Time1], ISNULL([Time2], @ToDate) AS [Time2], [DurationUnitId]
-	FROM @T
+	UPDATE @FixedAssetsDepreciations SET [VariancePeriodDepreciation] = [CorrectPeriodDepreciation] - [PostedPeriodDepreciation];
+--	select * from @FixedAssetsDepreciations;
+	DECLARE @LastIndex INT = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
+	INSERT INTO @WideLines([Index],
+	[DocumentIndex], 
+	[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
+	[CenterId1], [CurrencyId1], [AgentId1], [ResourceId1], [NotedAgentId1], [NotedResourceId1], [Quantity1], [UnitId1], [MonetaryValue1], [Value1], [Time11], [Time21],[EntryTypeId1]
+	)
+	SELECT ROW_NUMBER() OVER(ORDER BY T.[ResourceId]) + @LastIndex,
+			0,
+			T.[CenterId] AS [CenterId0], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS [AgentId0], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId0], T.[NotedResourceId] AS [NotedResourceId0],
+			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], @PeriodStart, T.PeriodEnd, bll.fn_Center__EntryType(T.[CenterId], NULL) AS [EntryTypeId0],
+			T.[CenterId] AS [CenterId1], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS  [AgentId], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId1], T.[NotedResourceId] AS [NotedResourceId1],
+			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], @PeriodStart, T.PeriodEnd, T.[EntryTypeId] AS [EntryTypeId1]
+	FROM @FixedAssetsDepreciations T
+	JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
+	WHERE R.[Code] <> '0';
 
-	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
-	SELECT DISTINCT
-		ROW_NUMBER () OVER(--PARTITION BY T2.[EntryIndex]
-			ORDER BY T.[Time1], T.[LineKey] --, T2.[EntryIndex]
-		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], LDLK.[Decimal1]
-	FROM @T T
-	JOIN dbo.[LineDefinitionLineKeys] LDLK ON LDLK.[Id] = T.[LineKey]
-	WHERE T.[EntryIndex] = @EntryIndex
---	select * from @lines
-	INSERT INTO @Widelines
-	SELECT * FROM bll.fi_Lines__Pivot(@Lines, @Entries)
---	select * from @widelines
-
-	DECLARE @WidelinesSequencing TABLE ([Index] INT PRIMARY KEY IDENTITY (0, 1), [WLIndex] INT, UNIQUE([WLIndex]))
-	INSERT INTO @WidelinesSequencing ([WLIndex]) SELECT [Index] FROM @Widelines;
-	--select * from @WidelinesSequencing
-
-	UPDATE WL
-	SET WL.[Index] = WS.[Index]
-	FROM @Widelines WL
-	JOIN @WidelinesSequencing WS ON WS.[WLIndex] = WL.[Index]
-
+	SET @PeriodStart = (
+		SELECT MIN(E.[Time1])
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+		WHERE L.[State] = 4
+--		AND L.[PostingDate] < @ExcludePostedOnOrAfter
+		AND E.[Time1] > @PeriodStart
+		AND E.[Time1] <= @PeriodEnd
+		AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
+		AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
+	)
+END
 	RETURN
 END
 GO

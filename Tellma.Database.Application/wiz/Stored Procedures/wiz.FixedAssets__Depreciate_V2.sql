@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [wiz].[FixedAssets__Depreciate_V2] --TODO: PUBLISH
+﻿CREATE PROCEDURE [wiz].[FixedAssets__Depreciate_V2]
 -- Better version, allows correct depreciation even when the asset changes center during the month
 	@PostingDate DATE,
 	@ResourceId INT = NULL,
@@ -64,9 +64,11 @@ BEGIN
 			E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
 	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 	WHERE L.[State] = 4 
+	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	AND L.[PostingDate] < @ExcludePostedOnOrAfter
 	AND (E.[Time1] <= @PeriodStart AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
 		OR E.[Time2] < @PeriodStart AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes))
@@ -152,3 +154,4 @@ END
 
 SELECT * FROM @Widelines;
 END
+GO

@@ -883,7 +883,7 @@
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__FullDays.sql" />
     <Build Include="bll\Functions\bll.fn_Salary_DateParts__EOS_SA.sql" />
     <Build Include="dbo\Functions\dbo.fn_DB_Name__Country.sql" />
-    <Build Include="dal\Functions\dal.fn_Settings__Country.sql" />
+    <Build Include="dal\Functions\dal.fn_Settings__GetCountry.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Citizenship.sql" />
     <Build Include="bll\Functions\bll.fn_Basic_Breach_Occurrence_Measure__Penalty_SA.sql" />
     <Build Include="bll\Functions\bll.fn_Breach_Occurrence__Memo_SA.sql" />
@@ -948,7 +948,9 @@
     <Build Include="dbo\User Defined Types\dbo.ResourceAttachmentList.sql" />
     <Build Include="map\map.ResourceAttachments.sql" />
     <Build Include="dal\Functions\dal.fn_NullCenter.sql" />
-    <Build Include="dal\Stored Procedures\dal.Zatca__GetInvoices.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.FixedAssets__Depreciate_V2.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_AE.sql" />
+    <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation_V2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

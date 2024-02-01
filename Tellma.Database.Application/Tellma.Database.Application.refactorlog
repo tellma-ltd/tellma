@@ -88,4 +88,11 @@
     <Property Name="NewSchema" Value="bll" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="186114f4-0990-4ee1-a9f7-9e8efce5a1ee" ChangeDateTime="01/25/2024 20:08:56">
+    <Property Name="ElementName" Value="[dal].[fn_Settings__Country]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Settings__GetCountry]" />
+  </Operation>
 </Operations>
