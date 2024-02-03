@@ -589,8 +589,6 @@ begin
 	if @ScriptHasAnError=1 	raiserror('Script has errors - please review the log.',16,1)
 end
 GO
-print 'Execute AzureSQLMaintenance to get help' 
-
 
 /*
 Examples
