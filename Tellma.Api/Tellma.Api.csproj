@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BarcodeLib" Version="3.0.3" />
+    <PackageReference Include="BarcodeLib" Version="2.4.0" />
     <PackageReference Include="Cronos" Version="0.8.2" />
     <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.1" />

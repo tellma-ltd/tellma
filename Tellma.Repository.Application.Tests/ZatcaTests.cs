@@ -29,8 +29,8 @@ namespace Tellma.Repository.Application.Tests
         #endregion
 
         [Theory(DisplayName = "[dal].[Zatca__GetInvoices] works ")]
-        [InlineData(15)] // Each one is a document Id
-        [InlineData(16)]
+        [InlineData(11448)] // Each one is a document Id
+        [InlineData(11449)]
         public async Task Zatca__GetInvoices(int docId)
         {
             // These were obtained from the FATOORA portal and CLI tool
