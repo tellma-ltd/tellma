@@ -690,7 +690,7 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   public showTabs(isEdit: boolean, model: Agent): boolean {
-    return this.Users_isVisible || this.Location_isVisible || this.Attachments_isVisible
+    return this.Users_isVisible || this.Address_isVisible || this.Location_isVisible || this.Attachments_isVisible
       || (this.reports.length > 0 && this.showReports(isEdit, model));
   }
 
@@ -708,6 +708,16 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   public Users_showError(model: AgentForSave): boolean {
     return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
+  }
+
+  // Address
+
+  public get Address_isVisible(): boolean {
+    return !!this.definition.HasAddress;
+  }
+
+  public Address_showError(model: AgentForSave): boolean {
+    return !!model && !!model.serverErrors && Object.keys(model.serverErrors).some(e => e.startsWith('Address'));
   }
 
   // Attachments

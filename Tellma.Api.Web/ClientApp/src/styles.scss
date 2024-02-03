@@ -2121,3 +2121,7 @@ $knob-border-color: rgb(190, 190, 190);
 //     display: block !important;
 //   }
 // }
+
+ngb-modal-backdrop {
+  z-index: 1050 !important;
+}

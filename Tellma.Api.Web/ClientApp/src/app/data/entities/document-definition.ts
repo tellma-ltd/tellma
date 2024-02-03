@@ -6,7 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, statePropDescriptor } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, statePropDescriptor, lookupDefinitionIdPropDescriptor, lookupDefinitionPropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 import { DocumentDefinitionLineDefinitionForSave, DocumentDefinitionLineDefinition } from './document-definition-line-definition';
 import { TimeGranularity } from './base/metadata-types';
@@ -28,6 +28,20 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
 
     PostingDateVisibility?: Visibility;
     CenterVisibility?: Visibility;
+
+    Lookup1Label?: string;
+    Lookup1Label2?: string;
+    Lookup1Label3?: string;
+    Lookup1Visibility?: Visibility;
+    Lookup1DefinitionId?: number;
+    Lookup2Label?: string;
+    Lookup2Label2?: string;
+    Lookup2Label3?: string;
+    Lookup2Visibility?: Visibility;
+    Lookup2DefinitionId?: number;
+
+    ZatcaDocumentType?: string;
+
     ClearanceVisibility?: Visibility;
     MemoVisibility?: Visibility;
     AttachmentVisibility?: Visibility;
@@ -97,6 +111,27 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
 
                 PostingDateVisibility: visibilityPropDescriptor('Document_PostingDate', trx),
                 CenterVisibility: visibilityPropDescriptor('Document_Center', trx),
+                Lookup1Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.primaryPostfix },
+                Lookup1Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.secondaryPostfix },
+                Lookup1Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.ternaryPostfix },
+                Lookup1Visibility: visibilityPropDescriptor('Entity_Lookup1', trx),
+                Lookup1DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup1', trx),
+                Lookup1Definition: lookupDefinitionPropDescriptor('Entity_Lookup1', 'Lookup1DefinitionId', trx),
+                Lookup2Label: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.primaryPostfix },
+                Lookup2Label2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.secondaryPostfix },
+                Lookup2Label3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.ternaryPostfix },
+                Lookup2Visibility: visibilityPropDescriptor('Entity_Lookup2', trx),
+                Lookup2DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup2', trx),
+                Lookup2Definition: lookupDefinitionPropDescriptor('Entity_Lookup2', 'Lookup2DefinitionId', trx),
+
+                ZatcaDocumentType: { 
+                    datatype: 'string', 
+                    control: 'choice', 
+                    label: () => trx.instant('DocumentDefinition_ZatcaDocumentType'),
+                    choices: ['381', '383', '388', '386'],
+                    format: (choice: number) => !!choice ? trx.instant('DocumentDefinition_ZatcaDocumentType_' + choice) : '' 
+                },
+                
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),
                 MemoVisibility: visibilityPropDescriptor('Memo', trx),
                 AttachmentVisibility: visibilityPropDescriptor('Document_Attachments', trx),

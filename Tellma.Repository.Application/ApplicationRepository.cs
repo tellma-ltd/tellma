@@ -4610,7 +4610,7 @@ namespace Tellma.Repository.Application
                     if (!result.IsError && !validateOnly)
                     {
                         // (2) Load deleted file Ids
-                        deletedFileIds = new List<string>();
+                        deletedFileIds = [];
                         await reader.NextResultAsync();
                         while (await reader.ReadAsync())
                         {
@@ -4653,7 +4653,7 @@ namespace Tellma.Repository.Application
                 };
 
                 var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
 
 
                 cmd.Parameters.Add(prevInvoiceSerialParam);
@@ -4696,7 +4696,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<CloseDocumentOutput> Zatca_GetInvoices(List<int> ids, CancellationToken cancellation = default)
+        public async Task<CloseDocumentOutput> Zatca__GetInvoices(List<int> ids, CancellationToken cancellation = default)
         {
             var connString = await GetConnectionString(cancellation);
             CloseDocumentOutput result = null;
@@ -4710,7 +4710,7 @@ namespace Tellma.Repository.Application
                 using var cmd = conn.CreateCommand();
                 cmd.CommandTimeout = TimeoutInSeconds;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Zatca_GetInvoices)}]";
+                cmd.CommandText = $"[dal].[{nameof(Zatca__GetInvoices)}]";
 
                 // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
@@ -4721,7 +4721,7 @@ namespace Tellma.Repository.Application
                 };
 
                 var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 5000 };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
 
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add(prevInvoiceSerialParam);
@@ -4741,7 +4741,7 @@ namespace Tellma.Repository.Application
                 // Return the result
                 result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, new List<ValidationError>(), new List<InboxStatus>());
             },
-            DatabaseName(connString), nameof(Zatca_GetInvoices), cancellation);
+            DatabaseName(connString), nameof(Zatca__GetInvoices), cancellation);
 
             return result;
         }

@@ -188,6 +188,22 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CenterRequiredState?: PositiveLineState | 5;
     CenterReadOnlyState?: PositiveLineState | 5;
 
+    // Lookup 1
+    Lookup1Label?: string;
+    Lookup1Label2?: string;
+    Lookup1Label3?: string;
+    Lookup1Visibility?: Visibility;
+    Lookup1DefinitionId?: number;
+
+    // Lookup 2
+    Lookup2Label?: string;
+    Lookup2Label2?: string;
+    Lookup2Label3?: string;
+    Lookup2Visibility?: Visibility;
+    Lookup2DefinitionId?: number;
+
+    ZatcaDocumentType?: string;
+
     // Memo
     MemoVisibility?: Visibility;
     MemoIsCommonVisibility?: boolean;
@@ -812,6 +828,8 @@ export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClie
     Text4Visibility: Visibility;
 
     // Agent Only
+    
+    HasAddress: boolean;
 
     // ExternalReference
     ExternalReferenceLabel: string;

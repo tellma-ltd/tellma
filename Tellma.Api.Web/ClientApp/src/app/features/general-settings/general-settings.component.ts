@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { formatDate, formatTime } from '~/app/data/date-time-formats';
 import { SettingsBaseComponent } from '~/app/shared/settings-base/settings-base';
 import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
+import { GeneralSettingsForSave } from '~/app/data/entities/general-settings';
 
 @Component({
   selector: 't-general-settings',
@@ -91,5 +92,10 @@ export class GeneralSettingsComponent extends SettingsBaseComponent {
     }
 
     return this._timeFormats;
+  }
+
+  public customFields(model: GeneralSettingsForSave) {
+    model.CustomFields = model.CustomFields || {};
+    return model.CustomFields;
   }
 }

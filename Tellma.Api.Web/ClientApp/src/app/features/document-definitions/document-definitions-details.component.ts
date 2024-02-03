@@ -16,6 +16,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { DocumentDefinitionLineDefinition } from '~/app/data/entities/document-definition-line-definition';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
 
 @Component({
   selector: 't-document-definitions-details',
@@ -29,7 +30,7 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private documentDefinitionsApi = this.api.documentDefinitionsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'LineDefinitions.LineDefinition';
+  public expand = 'Lookup1Definition,Lookup2Definition,LineDefinitions.LineDefinition';
 
   create = () => {
     const result: DocumentDefinitionForSave = {};
@@ -42,6 +43,9 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.PostingDateVisibility = 'Required';
+    result.CenterVisibility = 'Required';
+    result.Lookup1Visibility = 'None';
+    result.Lookup2Visibility = 'None';
     result.CenterVisibility = 'Required';
     result.ClearanceVisibility = 'None';
     result.MemoVisibility = 'Optional';
@@ -82,6 +86,23 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public get ws() {
     return this.workspace.currentTenant;
+  }
+
+  public savePreprocessing = (entity: DocumentDefinition) => {
+    // Server validation on hidden properties will be confusing to the user
+    if (entity.Lookup1Visibility === 'None') {
+      delete entity.Lookup1Label;
+      delete entity.Lookup1Label2;
+      delete entity.Lookup1Label3;
+      delete entity.Lookup1DefinitionId;
+    }
+
+    if (entity.Lookup2Visibility === 'None') {
+      delete entity.Lookup2Label;
+      delete entity.Lookup2Label2;
+      delete entity.Lookup2Label3;
+      delete entity.Lookup2DefinitionId;
+    }
   }
 
   public collapseDefinition = false;
@@ -151,6 +172,17 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.ClearanceVisibility) ||
         areServerErrors(model.serverErrors.PostingDateVisibility) ||
         areServerErrors(model.serverErrors.CenterVisibility) ||
+        areServerErrors(model.serverErrors.Lookup1Label) ||
+        areServerErrors(model.serverErrors.Lookup1Label2) ||
+        areServerErrors(model.serverErrors.Lookup1Label3) ||
+        areServerErrors(model.serverErrors.Lookup1Visibility) ||
+        areServerErrors(model.serverErrors.Lookup1DefinitionId) ||
+        areServerErrors(model.serverErrors.Lookup2Label) ||
+        areServerErrors(model.serverErrors.Lookup2Label2) ||
+        areServerErrors(model.serverErrors.Lookup2Label3) ||
+        areServerErrors(model.serverErrors.Lookup2Visibility) ||
+        areServerErrors(model.serverErrors.Lookup2DefinitionId) ||
+        areServerErrors(model.serverErrors.ZatcaDocumentType) ||
         areServerErrors(model.serverErrors.MemoVisibility) ||
         areServerErrors(model.serverErrors.Prefix) ||
         areServerErrors(model.serverErrors.CodeWidth) ||
@@ -232,6 +264,14 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
 
       if (result.CenterVisibility === 'None') {
         delete result.CenterVisibility;
+      }
+
+      if (result.Lookup1Visibility === 'None') {
+        delete result.Lookup1Visibility;
+      }
+
+      if (result.Lookup2Visibility === 'None') {
+        delete result.Lookup2Visibility;
       }
 
       if (result.MemoVisibility === 'None') {
@@ -708,6 +748,22 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
         result.MemoLabel2 = null;
         result.MemoLabel3 = null;
 
+        // Lookup1
+        result.Lookup1Visibility = 'None';
+        result.Lookup1DefinitionId = null;
+        result.Lookup1Label = null;
+        result.Lookup1Label2 = null;
+        result.Lookup1Label3 = null;
+
+        // Lookup2
+        result.Lookup2Visibility = 'None';
+        result.Lookup2DefinitionId = null;
+        result.Lookup2Label = null;
+        result.Lookup2Label2 = null;
+        result.Lookup2Label3 = null;
+
+        result.ZatcaDocumentType = null;
+
         result.CurrencyVisibility = false;
 
         result.AgentVisibility = false;
@@ -734,6 +790,11 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._getForClientResult;
   }
 
+  public get zatcaDocumentTypeChoices(): SelectorChoice[] {
+    const desc = metadata_DocumentDefinition(this.workspace, this.translate).properties.ZatcaDocumentType as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
   private _visibilityChoices: SelectorChoice[];
   public get visibilityChoices(): SelectorChoice[] {
     if (!this._visibilityChoices) {
@@ -745,6 +806,10 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this._visibilityChoices;
+  }
+
+  public isVisible(visibility: DefinitionVisibility) {
+    return visibility === 'Optional' || visibility === 'Required';
   }
 
   // Menu stuff

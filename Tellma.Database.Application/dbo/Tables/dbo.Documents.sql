@@ -53,6 +53,15 @@
 	[InternalReference]				NVARCHAR (50),
 	[InternalReferenceIsCommon]		BIT				NOT NULL DEFAULT 0,
 
+	[Lookup1Id]						INT	CONSTRAINT [FK_Documents__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
+	[Lookup2Id]						INT	CONSTRAINT [FK_Documents__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
+
+	[ZatcaState]					INT,				-- 1=Pending, 10=Reported, -10=Error
+	[ZatcaError]					NVARCHAR (MAX),		-- When reporting fails
+	[ZatcaSerialNumber]				INT,				-- The invoice serial #, to be included in the next invoice
+	[ZatcaHash]						NVARCHAR (MAX),		-- The invoice hash, to be included in the next invoice
+	[ZatcaUuid]						UNIQUEIDENTIFIER,	-- The invoice UUID to link to the XML invoice file
+
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]					INT	NOT NULL CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),

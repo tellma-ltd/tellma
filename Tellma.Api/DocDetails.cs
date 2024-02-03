@@ -35,7 +35,9 @@ namespace Tellma.Api
             .Concat(UnitPaths(nameof(Document.DurationUnit)))
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
-            .Concat(UserPaths(nameof(Document.Assignee)));
+            .Concat(UserPaths(nameof(Document.Assignee)))
+            .Concat(LookupPaths(nameof(Document.Lookup1)))
+            .Concat(LookupPaths(nameof(Document.Lookup2)));
         public static IEnumerable<string> LineDefinitionEntryPaths(string path = null) => LineDefinitionEntryProps
             .Concat(CurrencyPaths(nameof(DocumentLineDefinitionEntry.Currency)))
             .Concat(CenterPaths(nameof(DocumentLineDefinitionEntry.Center)))
@@ -101,6 +103,8 @@ namespace Tellma.Api
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> UserPaths(string path = null) => UserProps
             .Select(p => path == null ? p : $"{path}.{p}");
+        public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
+            .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
             .Select(p => path == null ? p : $"{path}.{p}");
         public static IEnumerable<string> EntryTypeParentPaths(string path = null) => EntryTypeParentProps
@@ -134,6 +138,7 @@ namespace Tellma.Api
         public static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
         public static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
         public static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
+        public static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
         public static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         public static IEnumerable<string> ResourceUnitsProps => Enum();
         public static IEnumerable<string> AgentProps => Enum(nameof(Agent.Name), nameof(Agent.Name2), nameof(Agent.Name3), nameof(Agent.DefinitionId));

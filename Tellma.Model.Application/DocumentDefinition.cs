@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using Tellma.Model.Common;
 
 namespace Tellma.Model.Application
@@ -73,6 +74,60 @@ namespace Tellma.Model.Application
         [Required, ValidateRequired]
         public string CenterVisibility { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Lookup1")]
+        [StringLength(50)]
+        public string Lookup1Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup1")]
+        [StringLength(50)]
+        public string Lookup1Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup1")]
+        [StringLength(50)]
+        public string Lookup1Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup1"), VisibilityChoiceList]
+        [Required]
+        public string Lookup1Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
+        public int? Lookup1DefinitionId { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup2")]
+        [StringLength(50)]
+        public string Lookup2Label { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup2")]
+        [StringLength(50)]
+        public string Lookup2Label2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Lookup2")]
+        [StringLength(50)]
+        public string Lookup2Label3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Lookup2"), VisibilityChoiceList]
+        [Required]
+        public string Lookup2Visibility { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
+        public int? Lookup2DefinitionId { get; set; }
+
+        [ChoiceList(new object[] {
+               "381",
+               "383",
+               "388",
+               "386"
+            },
+            new string[] {
+               "DocumentDefinition_ZatcaDocumentType_381",
+               "DocumentDefinition_ZatcaDocumentType_383",
+               "DocumentDefinition_ZatcaDocumentType_388",
+               "DocumentDefinition_ZatcaDocumentType_386"
+            })]
+        [Display(Name = "DocumentDefinition_ZatcaDocumentType")]
+        [StringLength(3)]
+        public string ZatcaDocumentType { get; set; }
+
         [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
         [Required, ValidateRequired]
         public string ClearanceVisibility { get; set; }
@@ -127,6 +182,14 @@ namespace Tellma.Model.Application
                 DefStateNames.Visible, 
                 DefStateNames.Archived })]
         public string State { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
+        [ForeignKey(nameof(Lookup1DefinitionId))]
+        public LookupDefinition Lookup1Definition { get; set; }
+
+        [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
+        [ForeignKey(nameof(Lookup2DefinitionId))]
+        public LookupDefinition Lookup2Definition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [Required]

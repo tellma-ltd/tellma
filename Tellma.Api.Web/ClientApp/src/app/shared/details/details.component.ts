@@ -23,8 +23,6 @@ import { SaveArguments } from '~/app/data/dto/save-arguments';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { PrintingUsage } from '~/app/data/entities/printing-template';
-import { Cardinality, NotificationUsage } from '~/app/data/entities/email-template';
-import { EmailCommandPreview, EmailCommandVersions, EmailPreview, EmailVersion } from '~/app/data/dto/email-command-preview';
 
 export interface DropdownAction {
   template: TemplateRef<any>;

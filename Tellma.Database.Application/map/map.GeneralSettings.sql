@@ -3,6 +3,11 @@ RETURNS TABLE
 AS
 RETURN (
 	SELECT
+		[CompanyName],
+		[CompanyName2],
+		[CompanyName3],
+		[CustomFieldsJson],
+		[CountryCode],
 		[ShortCompanyName],
 		[ShortCompanyName2],
 		[ShortCompanyName3],
@@ -24,6 +29,6 @@ RETURN (
 		[CreatedAt],
 		[CreatedById],
 		[GeneralModifiedAt],
-		[GeneralModifiedById]	
+		[GeneralModifiedById]
 	FROM [dbo].[Settings]
 );

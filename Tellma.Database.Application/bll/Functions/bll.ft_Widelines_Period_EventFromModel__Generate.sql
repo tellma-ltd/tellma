@@ -531,7 +531,16 @@
 		SUM([NotedAmount]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
 											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
 						ORDER BY [Time1]) AS [NotedAmount]
-	FROM FilteredEntries
+	FROM (
+		SELECT
+			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], [Direction], [AccountId], [CenterId], [AgentId],
+			[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+			SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value], SUM([NotedAmount]) AS [NotedAmount]
+		FROM FilteredEntries
+		GROUP BY --[LineId], 
+			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], Direction, AccountId, CenterId, AgentId, ResourceId, UnitId, [CurrencyId], NotedAgentId, NotedResourceId, EntryTypeId
+	) AFE -- Aggrefated filtered entries. To act on the total resulting entries
+
 	DELETE FROM @T
 	WHERE [Time2] < [Time1]
 	OR [Id] IN ( -- If a workflow (LineKey) adds up to zero, for a period [Time1, *], remove ALL entries
@@ -559,6 +568,28 @@
 	);
 --	select * from @T   order by LineKey, time1, entryIndex; 
 
+	-- MA 2023-11-03. The following garbage collection was added to handle a bug resulting from transfer of centers with zero Monetary Value
+	IF @LdEntryCount= 3
+	BEGIN -- If a center appears once, delete it.
+		DELETE FROM @T
+		WHERE [Id] IN (
+			SELECT [Id]
+			FROM @T T1
+			INNER JOIN (
+				SELECT [CenterId], [LineKey]
+				FROM @T
+				GROUP BY [CenterId], [LineKey]
+				HAVING COUNT(*) = 1
+			) T2 ON T1.[CenterId] = T2.[CenterId] AND T1.[LineKey] = T2.LineKey
+		)
+		AND [LineKey] IN (
+			SELECT [LineKey]
+			FROM @T
+			GROUP BY CenterId, [LineKey]
+			HAVING COUNT(*) = 3
+		)
+	END;
+
 	DECLARE @Lines LineList, @Entries EntryList;
 
 	INSERT INTO @Entries([LineIndex], [Index], [DocumentIndex], [Id], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
@@ -577,7 +608,7 @@
 			ORDER BY T.[Time1], T.[LineKey] --, T2.[EntryIndex]
 		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], LDLK.[Decimal1]
 	FROM @T T
-	JOIN dbo.[LineDefinitionLineKeys] LDLK ON T.[LineKey] = LDLK.[Id]
+	JOIN dbo.[LineDefinitionLineKeys] LDLK ON LDLK.[Id] = T.[LineKey]
 	WHERE T.[EntryIndex] = @EntryIndex
 --	select * from @lines
 	INSERT INTO @Widelines

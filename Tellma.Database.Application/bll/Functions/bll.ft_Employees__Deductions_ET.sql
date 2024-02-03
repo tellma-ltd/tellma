@@ -36,7 +36,7 @@ AS BEGIN
 	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'RepresentationAllowance');
 
 	UPDATE @T -- IF TransportationAllowance < 2,200 and less than 25% of Basic Salary. Any excess will not be exempt.
-	SET [ValueSubjectToEmployeeIncomeTax] = IIF([Value] > 800, [Value] - 800, 0)
+	SET [ValueSubjectToEmployeeIncomeTax] = IIF([Value] > 600, [Value] - 600, 0) -- 2024-10-01 changed from 800
 	WHERE [ResourceCode] IN (N'TransportationAllowance');
 	
 	INSERT INTO @MyResult

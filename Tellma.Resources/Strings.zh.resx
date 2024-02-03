@@ -449,7 +449,7 @@
     <value>仪表板定义</value>
   </data>
   <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
-    <value>自动消除时期（分钟）</value>
+    <value>自动退缩期（分钟）</value>
   </data>
   <data name="DashboardDefinition_Height" xml:space="preserve">
     <value>高度（瓷砖）</value>
@@ -525,6 +525,9 @@
   </data>
   <data name="Definition_ControlOptions" xml:space="preserve">
     <value>控制选项</value>
+  </data>
+  <data name="Definition_HasAddress" xml:space="preserve">
+    <value>有地址</value>
   </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>有附件</value>
@@ -793,6 +796,33 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
   </data>
+  <data name="Entity_AddressAdditionalNumber" xml:space="preserve">
+    <value>次要＃</value>
+  </data>
+  <data name="Entity_AddressAdditionalStreet" xml:space="preserve">
+    <value>额外的街道</value>
+  </data>
+  <data name="Entity_AddressBuildingNumber" xml:space="preserve">
+    <value>建筑 ＃</value>
+  </data>
+  <data name="Entity_AddressCity" xml:space="preserve">
+    <value>城市</value>
+  </data>
+  <data name="Entity_AddressCountryCode" xml:space="preserve">
+    <value>国家</value>
+  </data>
+  <data name="Entity_AddressDistrict" xml:space="preserve">
+    <value>区</value>
+  </data>
+  <data name="Entity_AddressPostalCode" xml:space="preserve">
+    <value>邮政编码</value>
+  </data>
+  <data name="Entity_AddressProvince" xml:space="preserve">
+    <value>省</value>
+  </data>
+  <data name="Entity_AddressStreet" xml:space="preserve">
+    <value>街道</value>
+  </data>
   <data name="Entity_Agent1" xml:space="preserve">
     <value>代理1</value>
   </data>
@@ -1034,7 +1064,7 @@
     <value>找不到代理商。</value>
   </data>
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>无法找到Agent DefinitionID'{0}'。</value>
+    <value>无法找到代理定义'{0}'。</value>
   </data>
   <data name="Error_AgentDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
     <value>{0}' 未在帐户类型“{1}”或其后代中使用。</value>
@@ -1340,7 +1370,7 @@
     <value>{0}'{1}'在{2}'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
-    <value>帐户'{0}'具有无效代理'{1}'。</value>
+    <value>帐户'{0}'具有无活性代理'{1}'。</value>
   </data>
   <data name="Error_TheAccount0HasInActiveNotedAgent1" xml:space="preserve">
     <value>帐户'{0}'具有无活动的注释代理'{1}'。</value>
@@ -1385,7 +1415,7 @@
     <value>帐户'{0}'在{1} {2}中使用中心'{3}'中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
-    <value>帐户'{0}'在{1} {2}中使用货币'{3}'。</value>
+    <value>{1} {2}中使用currency'{3}'中的帐户'{0}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
     <value>{1} {2}中使用了account' {0}'，并使用资源'{3}'使用。</value>
@@ -1466,7 +1496,7 @@
     <value>日期{1}的货币'{0}'的汇率已重复。</value>
   </data>
   <data name="Error_TheCurrency0IsInactive" xml:space="preserve">
-    <value>货币'{0}'是不活跃的。</value>
+    <value>货币'{0}'是不活动的。</value>
   </data>
   <data name="Error_TheCurrency0IsUsedInAccount1" xml:space="preserve">
     <value>货币'{0}'在帐户'{1}中使用。</value>
@@ -1634,7 +1664,7 @@
     <value>单位'{0}'与{1}'{2}'不兼容。</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
-    <value>未知导入模式'{0}'，允许的值为：{1}</value>
+    <value>未知的导入模式'{0}'，允许的值为：{1}</value>
   </data>
   <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
     <value>行定义ID {0}不存在。</value>
@@ -2027,7 +2057,7 @@
     <value>unsign脚本</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
-    <value>查看默认形式</value>
+    <value>查看默认值以形式</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
     <value>工作流程</value>
@@ -2896,20 +2926,38 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>品牌颜色</value>
   </data>
+  <data name="Settings_BuildingNumber" xml:space="preserve">
+    <value>建筑 ＃</value>
+  </data>
+  <data name="Settings_City" xml:space="preserve">
+    <value>城市</value>
+  </data>
+  <data name="Settings_CompanyName" xml:space="preserve">
+    <value>品牌颜色</value>
+  </data>
+  <data name="Settings_CountryCode" xml:space="preserve">
+    <value>品牌颜色</value>
+  </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>日期格式</value>
+  </data>
+  <data name="Settings_District" xml:space="preserve">
+    <value>区</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>薪水期开始</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>计算薪水的一天</value>
+    <value>计算薪水之前的一天</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>功能货币</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>功能货币</value>
+  </data>
+  <data name="Settings_PostalCode" xml:space="preserve">
+    <value>邮政编码</value>
   </data>
   <data name="Settings_PrimaryCalendar" xml:space="preserve">
     <value>主日历</value>
@@ -2932,11 +2980,17 @@
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
     <value>第二语言符号</value>
   </data>
+  <data name="Settings_SecondaryNumber" xml:space="preserve">
+    <value>次要＃</value>
+  </data>
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>公司简称</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>SMS通知启用</value>
+  </data>
+  <data name="Settings_Street" xml:space="preserve">
+    <value>街道</value>
   </data>
   <data name="Settings_SupportEmails" xml:space="preserve">
     <value>支持电子邮件</value>
@@ -3104,7 +3158,7 @@
     <value>来自州</value>
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
-    <value>说明</value>
+    <value>陈述</value>
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -3296,7 +3350,7 @@
     <value>邀请</value>
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
-    <value>被邀请</value>
+    <value>邀请</value>
   </data>
   <data name="User_IsService" xml:space="preserve">
     <value>是服务帐户</value>
@@ -3404,7 +3458,7 @@
     <value>签名</value>
   </data>
   <data name="Workflow_ToState" xml:space="preserve">
-    <value>说明</value>
+    <value>陈述</value>
   </data>
   <data name="Workflows" xml:space="preserve">
     <value>工作流程</value>

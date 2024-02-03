@@ -14,10 +14,20 @@ namespace Tellma.Api
 
         public bool CanInviteUsers => false;
 
+        public Task CreateUserIfNotExist(string email, string password)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task CreateUsersIfNotExist(IEnumerable<string> emails, bool emailConfirmed = false)
         {
             // Bug
             throw new InvalidOperationException("Attempt to create users through an identity proxy that does not support user creation.");
+        }
+
+        public Task CreateUsersIfNotExist(IEnumerable<string> emails)
+        {
+            throw new NotImplementedException();
         }
 
         public Task InviteUsersToAdmin(IEnumerable<AdminUserForInvitation> users)

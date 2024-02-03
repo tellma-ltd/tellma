@@ -52,8 +52,7 @@ BEGIN
 			JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
 			JOIN dbo.ReconciliationExternalEntries REE ON REE.ReconciliationId = R.Id
 			JOIN dbo.ExternalEntries EE ON REE.ExternalEntryId = EE.Id
-			WHERE EE.PostingDate <=  @AsOfDate	
-		
+--			WHERE EE.PostingDate <=  @AsOfDate	
 		) T ON T.[EntryId] = E.[Id]
 		WHERE
 			T.[EntryId] IS NULL

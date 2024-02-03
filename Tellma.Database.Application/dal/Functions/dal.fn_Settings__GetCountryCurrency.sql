@@ -9,5 +9,8 @@ BEGIN -- this is a hack. Better use field from table settings instead
 		WHEN @CountryId = N'LB' THEN 'LBP'
 		WHEN @CountryId = N'SA' THEN 'SAR'
 		WHEN @CountryId = N'SD' THEN 'SDG'
+		WHEN @CountryId = N'BA' THEN 'BAM'
+		WHEN @CountryId = N'AE' THEN 'AED'
 	END
 END
+GO

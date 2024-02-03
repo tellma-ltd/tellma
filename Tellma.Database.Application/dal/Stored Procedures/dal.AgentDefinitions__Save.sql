@@ -146,6 +146,8 @@ BEGIN
 				[Text4Label3],	
 				[Text4Visibility],
 
+				[HasAddress],
+
 				[PreprocessScript],
 				[ValidateScript],
 				-----Properties applicable to Agent only
@@ -311,6 +313,8 @@ BEGIN
 				t.[Text4Label3]				= s.[Text4Label3],
 				t.[Text4Visibility]			= s.[Text4Visibility],
 
+				t.[HasAddress]				= s.[HasAddress],
+
 				t.[PreprocessScript]		= s.[PreprocessScript],
 				t.[ValidateScript]			= s.[ValidateScript],
 				-----Properties applicable to Agents only
@@ -468,6 +472,8 @@ BEGIN
 				[Text4Label3],	
 				[Text4Visibility],
 
+				[HasAddress],
+
 				[PreprocessScript],
 				[ValidateScript],
 				-----Properties applicable to Agents only
@@ -617,6 +623,8 @@ BEGIN
 				s.[Text4Label2],
 				s.[Text4Label3],	
 				s.[Text4Visibility],
+
+				s.[HasAddress],
 
 				s.[PreprocessScript],
 				s.[ValidateScript],

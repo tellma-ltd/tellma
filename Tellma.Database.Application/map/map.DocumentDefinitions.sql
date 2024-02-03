@@ -21,6 +21,20 @@ RETURN (
 	
 		DD.[PostingDateVisibility]	,
 		DD.[CenterVisibility]	,
+			
+		DD.[Lookup1Visibility],
+		DD.[Lookup1DefinitionId],
+		DD.[Lookup1Label],
+		DD.[Lookup1Label2],
+		DD.[Lookup1Label3],
+	
+		DD.[Lookup2Visibility],
+		DD.[Lookup2DefinitionId],
+		DD.[Lookup2Label],
+		DD.[Lookup2Label2],
+		DD.[Lookup2Label3],
+
+		DD.[ZatcaDocumentType],
 
 		DD.[ClearanceVisibility],
 		DD.[MemoVisibility],

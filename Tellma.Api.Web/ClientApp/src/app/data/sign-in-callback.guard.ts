@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { map, catchError } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { OAuthErrorEvent } from 'angular-oauth2-oidc';
 @Injectable({
   providedIn: 'root'
 })
-export class SignInCallbackGuard implements CanActivate {
+export class SignInCallbackGuard {
 
   // this guard parses the authentication tokens from the hash fragmentin the URL
   // and then redirects the user to the originally requested url

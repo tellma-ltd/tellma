@@ -1,4 +1,9 @@
 ﻿CREATE PROCEDURE [bll].[GeneralSettings_Validate__Save]
+	@CompanyName NVARCHAR(255) = NULL,
+	@CompanyName2 NVARCHAR(255) = NULL,
+	@CompanyName3 NVARCHAR(255) = NULL,
+	@CustomFieldsJson NVARCHAR(MAX) = NULL,
+	@CountryCode NVARCHAR(2) = NULL,
 	@ShortCompanyName NVARCHAR(255),
 	@ShortCompanyName2 NVARCHAR(255) = NULL,
 	@ShortCompanyName3 NVARCHAR(255) = NULL,

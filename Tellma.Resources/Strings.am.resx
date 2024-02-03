@@ -526,6 +526,9 @@
   <data name="Definition_ControlOptions" xml:space="preserve">
     <value>የመቆጣጠር አማራጮች</value>
   </data>
+  <data name="Definition_HasAddress" xml:space="preserve">
+    <value>አድራሻ አለው</value>
+  </data>
   <data name="Definition_HasAttachments" xml:space="preserve">
     <value>አባሪዎች አሉት</value>
   </data>
@@ -792,6 +795,33 @@
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>የእርስዎን ኢሜይል ያስገቡ</value>
+  </data>
+  <data name="Entity_AddressAdditionalNumber" xml:space="preserve">
+    <value>ሁለተኛ ደረጃ #</value>
+  </data>
+  <data name="Entity_AddressAdditionalStreet" xml:space="preserve">
+    <value>ተጨማሪ ጎዳና</value>
+  </data>
+  <data name="Entity_AddressBuildingNumber" xml:space="preserve">
+    <value>መገንባት #</value>
+  </data>
+  <data name="Entity_AddressCity" xml:space="preserve">
+    <value>ከተማ</value>
+  </data>
+  <data name="Entity_AddressCountryCode" xml:space="preserve">
+    <value>ሀገር</value>
+  </data>
+  <data name="Entity_AddressDistrict" xml:space="preserve">
+    <value>ወረዳ</value>
+  </data>
+  <data name="Entity_AddressPostalCode" xml:space="preserve">
+    <value>የፖስታ መላኪያ ኮድ</value>
+  </data>
+  <data name="Entity_AddressProvince" xml:space="preserve">
+    <value>ክፍለ ሀገር</value>
+  </data>
+  <data name="Entity_AddressStreet" xml:space="preserve">
+    <value>ጎዳና</value>
   </data>
   <data name="Entity_Agent1" xml:space="preserve">
     <value>ወኪል 1</value>
@@ -2929,8 +2959,23 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>ብራንድ ቀለም</value>
   </data>
+  <data name="Settings_BuildingNumber" xml:space="preserve">
+    <value>መገንባት #</value>
+  </data>
+  <data name="Settings_City" xml:space="preserve">
+    <value>ከተማ</value>
+  </data>
+  <data name="Settings_CompanyName" xml:space="preserve">
+    <value>ብራንድ ቀለም</value>
+  </data>
+  <data name="Settings_CountryCode" xml:space="preserve">
+    <value>ብራንድ ቀለም</value>
+  </data>
   <data name="Settings_DateFormat" xml:space="preserve">
     <value>የቀን ቅርጸት</value>
+  </data>
+  <data name="Settings_District" xml:space="preserve">
+    <value>ወረዳ</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>የደመወዝ ጊዜ ይጀምራል</value>
@@ -2943,6 +2988,9 @@
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>በማመንጨት እና ገንዘብ በማሳለፍ ጊዜ ተቀዳሚ ምንዛሪ ተጠቅሟል</value>
+  </data>
+  <data name="Settings_PostalCode" xml:space="preserve">
+    <value>የፖስታ መላኪያ ኮድ</value>
   </data>
   <data name="Settings_PrimaryCalendar" xml:space="preserve">
     <value>የመጀመሪያ የቀን መቁጠሪያ</value>
@@ -2965,11 +3013,17 @@
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
     <value>ሁለተኛ ቋንቋ ምልክት</value>
   </data>
+  <data name="Settings_SecondaryNumber" xml:space="preserve">
+    <value>ሁለተኛ ደረጃ #</value>
+  </data>
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>አጭር ኩባንያ ስም</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
     <value>የኤስኤምኤስ ማሳወቂያዎች ነቅተዋል</value>
+  </data>
+  <data name="Settings_Street" xml:space="preserve">
+    <value>ጎዳና</value>
   </data>
   <data name="Settings_SupportEmails" xml:space="preserve">
     <value>ድጋፍ ኢሜል (ቶች)</value>

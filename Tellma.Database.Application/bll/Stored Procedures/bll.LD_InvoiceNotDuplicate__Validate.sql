@@ -42,7 +42,7 @@ JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
-AND BL.[State] >= 4;
+AND BL.[State] >= 0;--4;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;

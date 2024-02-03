@@ -458,6 +458,10 @@ namespace Tellma.Model.Application
         [Required]
         public string Text4Visibility { get; set; }
 
+        [Required]
+        [Display(Name = "Definition_HasAddress")]
+        public bool HasAddress { get; set; }
+
         [Display(Name = "Definition_PreprocessScript")]
         public string PreprocessScript { get; set; }
 

@@ -24,6 +24,6 @@
         /// <summary>
         /// An invoice the invoicee is producing instead of the seller.
         /// </summary>
-        SelfBilledInvoice = 389
+        PrepaymentInvoice = 386
     }
 }

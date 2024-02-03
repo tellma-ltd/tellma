@@ -46,6 +46,9 @@
 	[InternalReference]				NVARCHAR (50),
 	[InternalReferenceIsCommon]		BIT,
 	
+	[Lookup1Id]						INT,
+	[Lookup2Id]						INT,
+	
 	-- Extra Columns not in Document.cs
 	[UpdateAttachments]				BIT
 );

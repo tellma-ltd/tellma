@@ -132,6 +132,8 @@ RETURN (
 		[Text4Label2],
 		[Text4Label3],		
 		[Text4Visibility],
+		
+		[HasAddress],
 
 		[PreprocessScript],
 		[ValidateScript],

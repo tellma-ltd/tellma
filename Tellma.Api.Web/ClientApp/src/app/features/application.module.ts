@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { inject, NgModule } from '@angular/core';
+import { ActivatedRouteSnapshot, RouterModule, RouterStateSnapshot, Routes } from '@angular/router';
 import { EllipsisModule } from 'ngx-ellipsis';
 import { SharedModule } from '../shared/shared.module';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
@@ -7,8 +7,8 @@ import { UnitsMasterComponent } from './units/units-master.component';
 import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UnitsDetailsComponent } from './units/units-details.component';
-import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
-import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
+import { saveInProgressGuard } from '~/app/data/save-in-progress.guard';
+import { unsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
@@ -325,183 +325,183 @@ const routes: Routes = [
   {
     path: ':tenantId',
     component: ApplicationShellComponent,
-    canActivate: [TenantResolverGuard],
-    canActivateChild: [AuthGuard],
+    canActivate: [(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => inject(TenantResolverGuard).canActivate(next, state)],
+    canActivateChild: [(_: ActivatedRouteSnapshot, s: RouterStateSnapshot) => inject(AuthGuard).canActivateChild(s)],
     children: [
       // Units
       {
         path: 'units',
         component: UnitsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'units/:id',
         component: UnitsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Roles
       {
         path: 'roles',
         component: RolesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'roles/:id',
         component: RolesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Users
       {
         path: 'users',
         component: UsersMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'users/:id',
         component: UsersDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Agents
       {
         path: 'agents',
         component: AgentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'agents/:definitionId',
         component: AgentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'agents/:definitionId/:id',
         component: AgentsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Lookups
       {
         path: 'lookups',
         component: LookupsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'lookups/:definitionId',
         component: LookupsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'lookups/:definitionId/:id',
         component: LookupsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Currencies
       {
         path: 'currencies',
         component: CurrenciesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'currencies/:id',
         component: CurrenciesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Resources
       {
         path: 'resources',
         component: ResourcesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'resources/:definitionId',
         component: ResourcesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'resources/:definitionId/:id',
         component: ResourcesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Account Classifications
       {
         path: 'account-classifications',
         component: AccountClassificationsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'account-classifications/:id',
         component: AccountClassificationsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // IFRS Concepts
       {
         path: 'ifrs-concepts',
         component: IfrsConceptsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'ifrs-concepts/:id',
         component: IfrsConceptsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Account Types
       {
         path: 'account-types',
         component: AccountTypesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'account-types/:id',
         component: AccountTypesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Accounts
       {
         path: 'accounts',
         component: AccountsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'accounts/:id',
         component: AccountsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Entry Types
       {
         path: 'entry-types',
         component: EntryTypesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'entry-types/:id',
         component: EntryTypesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Documents
       {
         path: 'documents',
         component: DocumentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'documents/:definitionId',
         component: DocumentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'documents/:definitionId/:id',
         component: DocumentsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
       // Those redirects help shorten notification links (especially SMS)
       {
@@ -515,298 +515,298 @@ const routes: Routes = [
       {
         path: 'inbox',
         component: InboxComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'outbox',
         component: OutboxComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Report Definitions
       {
         path: 'report-definitions',
         component: ReportDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'report-definitions/:id',
         component: ReportDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Dashboard Definitions
       {
         path: 'dashboard-definitions',
         component: DashboardDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'dashboard-definitions/:id',
         component: DashboardDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Centers
       {
         path: 'centers',
         component: CentersMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'centers/:id',
         component: CentersDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Exchange Rates
       {
         path: 'exchange-rates',
         component: ExchangeRatesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'exchange-rates/:id',
         component: ExchangeRatesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Details Entries: TODO
       {
         path: 'details-entries',
         component: DetailsEntriesComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'details-entries/:id',
         component: DetailsEntriesComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Message Commands
       {
         path: 'message-commands',
         component: MessageCommandsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'message-commands/:id',
         component: MessageCommandsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Message Templates
       {
         path: 'message-templates',
         component: MessageTemplatesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'message-templates/:id',
         component: MessageTemplatesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Message Templates
       {
         path: 'message/:templateId',
         component: MessageStandaloneComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Email Templates
       {
         path: 'email/:templateId',
         component: EmailStandaloneComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Email Commands
       {
         path: 'email-commands',
         component: EmailCommandsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'email-commands/:id',
         component: EmailCommandsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Email Templates
       {
         path: 'email-templates',
         component: EmailTemplatesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'email-templates/:id',
         component: EmailTemplatesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Printing Templates
       {
         path: 'printing-templates',
         component: PrintingTemplatesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'printing-templates/:id',
         component: PrintingTemplatesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Agent Definitions
       {
         path: 'agent-definitions',
         component: AgentDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'agent-definitions/:id',
         component: AgentDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Resource Definitions
       {
         path: 'resource-definitions',
         component: ResourceDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'resource-definitions/:id',
         component: ResourceDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Lookup Definitions
       {
         path: 'lookup-definitions',
         component: LookupDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'lookup-definitions/:id',
         component: LookupDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Line Definitions
       {
         path: 'line-definitions',
         component: LineDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'line-definitions/:id',
         component: LineDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Document Definitions
       {
         path: 'document-definitions',
         component: DocumentDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'document-definitions/:id',
         component: DocumentDefinitionsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Report
       {
         path: 'report/:definitionId',
         component: ReportComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Dashboard
       {
         path: 'dashboard/:definitionId',
         component: DashboardComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Drilldown
       {
         path: 'drilldown/:definitionId',
         component: DrilldownComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Account Statement
       {
         path: 'account-statement',
         component: AccountStatementComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'agent-statement/:definitionId',
         component: AgentStatementComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Bank Reconciliation
       {
         path: 'reconciliation',
         component: ReconciliationComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Emails
       {
         path: 'emails',
         component: EmailsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'emails/:id',
         component: EmailsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Messages
       {
         path: 'messages',
         component: MessagesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
       {
         path: 'messages/:id',
         component: MessagesDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // General Settings
       {
         path: 'general-settings',
         component: GeneralSettingsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // General Settings
       {
         path: 'financial-settings',
         component: FinancialSettingsComponent,
-        canDeactivate: [UnsavedChangesGuard]
+        canDeactivate: [unsavedChangesGuard]
       },
 
       // Standalone Print
       {
         path: 'print/:templateId',
         component: PrintComponent,
-        canDeactivate: [SaveInProgressGuard]
+        canDeactivate: [saveInProgressGuard]
       },
 
       // Misc
       {
         path: 'main-menu',
         component: MainMenuComponent,
-        canDeactivate: [SaveInProgressGuard] // for saving my user
+        canDeactivate: [saveInProgressGuard] // for saving my user
       },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },

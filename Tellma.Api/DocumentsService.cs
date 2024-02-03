@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -559,7 +560,16 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
-            // ...
+            if (transition == nameof(Open))
+            {
+                // ZATCA documents cannot be reopened
+                var def = await Definition();
+                if (!string.IsNullOrWhiteSpace(def.ZatcaDocumentType))
+                {
+                    // ModelState.AddError("[0]", _localizer["Error_CannotOpenAZatcaDocument"]);
+                }
+            }
+            ModelState.ThrowIfInvalid();
 
             // Transaction
             using var trx = TransactionFactory.ReadCommitted();

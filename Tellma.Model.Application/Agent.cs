@@ -143,6 +143,42 @@ namespace Tellma.Model.Application
         [StringLength(255)]
         public string Text4 { get; set; }
 
+        [Display(Name = "Entity_AddressStreet")]
+        [StringLength(50)]
+        public string AddressStreet { get; set; }
+
+        [Display(Name = "Entity_AddressAdditionalStreet")]
+        [StringLength(50)]
+        public string AddressAdditionalStreet { get; set; }
+
+        [Display(Name = "Entity_AddressBuildingNumber")]
+        [StringLength(50)]
+        public string AddressBuildingNumber { get; set; }
+
+        [Display(Name = "Entity_AddressAdditionalNumber")]
+        [StringLength(50)]
+        public string AddressAdditionalNumber { get; set; }
+
+        [Display(Name = "Entity_AddressCity")]
+        [StringLength(50)]
+        public string AddressCity { get; set; }
+
+        [Display(Name = "Entity_AddressPostalCode")]
+        [StringLength(50)]
+        public string AddressPostalCode { get; set; }
+
+        [Display(Name = "Entity_AddressProvince")]
+        [StringLength(50)]
+        public string AddressProvince { get; set; }
+
+        [Display(Name = "Entity_AddressDistrict")]
+        [StringLength(50)]
+        public string AddressDistrict { get; set; }
+
+        [Display(Name = "Entity_AddressCountryCode")]
+        [StringLength(50)]
+        public string AddressCountryCode { get; set; }
+
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }

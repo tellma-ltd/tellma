@@ -2,21 +2,16 @@
 	@TradeReceivableAccountId INT,
 	@DueOnOrBefore DATE,
 	@CashAccountId INT,
-	@PostingDate DATE = NULL
+	@PostingDate DATE = NULL,
+	@DueOnOrAfter DATE = NULL
 AS
 	DECLARE @CurrencyId0 NCHAR (3) = dal.fn_Agent__CurrencyId(@CashAccountId);
 	SET @PostingDate = ISNULL(@PostingDate, GETDATE());
 	
 	IF @CashAccountId IS NULL
-	BEGIN
-		RAISERROR(N'Please specify the cash account in the document header', 16, 1);
-		RETURN
-	END
-	ELSE IF @CurrencyId0 IS NULL
-	BEGIN
-		RAISERROR(N'Please specify the currency in the cash account', 16, 1);
-		RETURN
-	END
+		THROW 50000, N'Please specify the cash account in the document header', 1;
+	IF @CurrencyId0 IS NULL
+		THROW 50000, N'Please specify the currency in the cash account', 1;
 
 	DECLARE @WideLines WidelineList;
 	INSERT INTO @WideLines([Index], [DocumentIndex],
@@ -30,6 +25,7 @@ AS
 	JOIN dbo.Agents SI ON SI.[Id] = SS.[AgentId]
 	WHERE SI.[Agent1Id] = @TradeReceivableAccountId
 	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] <= ISNULL(@DueOnOrBefore, @PostingDate))
+	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] >= ISNULL(@DueOnOrAfter, N'1753-01-01'))
 	GROUP BY SI.[Id], SS.[AccountId], SS.[CenterId], SS.[AgentId], SS.[CurrencyId], SI.[ToDate]
 	HAVING SUM(SS.[Balance]) > 0
 

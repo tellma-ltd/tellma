@@ -20,29 +20,30 @@ BEGIN
 	IF @UnitId = @WeekUnit
 		RETURN DATEDIFF(DAY, @From, DATEADD(DAY, 1, @To)) / 7.0
 
-	DECLARE @RemainingDays INT = 0;
+	DECLARE @RemainingDays DECIMAL (19, 6) = 0;
 	DECLARE @MonthsIncluded INT = 0;
-	IF DAY(@From) = 1 AND @To = EOMONTH(@To)
+	IF (DAY(@From) = 1 AND @To = EOMONTH(@To))
 		SET @MonthsIncluded = DATEDIFF(MONTH, @From, @To) + 1;
 	ELSE IF DAY(@From) = 1 AND @To < EOMONTH(@To)
 	BEGIN
 		SET @MonthsIncluded = DATEDIFF(MONTH, @From, @To);
-		SET @RemainingDays = DAY(@To)
+		SET @RemainingDays = 1.0 * DAY(@To) / DAY(EOMONTH(@To))
 	END
 	ELSE IF DAY(@From) > 1 AND @To = EOMONTH(@To)
 	BEGIN
 		SET @MonthsIncluded = DATEDIFF(MONTH, @From, @To);
-		SET @RemainingDays = DATEDIFF(DAY, @From, EOMONTH(@From)) + 1;
+		SET @RemainingDays = (DATEDIFF(DAY, @From, EOMONTH(@From)) + 1.0) / DAY(EOMONTH(@From));
 	END
 	ELSE IF DAY(@From) > 1 AND @To < EOMONTH(@To)
 	BEGIN
 		SET @MonthsIncluded = DATEDIFF(MONTH, @From, @To) - 1;
-		SET @RemainingDays = DAY(@To) + DATEDIFF(DAY, @From, EOMONTH(@From)) + 1;
+		SET @RemainingDays = DAY(@To) * 1.0/DAY(EOMONTH(@To)) + (DATEDIFF(DAY, @From, EOMONTH(@From)) + 1.0) / DAY(EOMONTH(@From));
 	END
-	SET @Result = @MonthsIncluded * 30 + @RemainingDays;
-	RETURN CASE 
-		WHEN @UnitId = @MonthUnit THEN @Result / 30.0
-		WHEN @UnitId = @YearUnit THEN @Result / 360.0
+	SET @Result = @MonthsIncluded + @RemainingDays;
+	RETURN 
+	CASE 
+		WHEN @UnitId = @MonthUnit THEN @Result
+		WHEN @UnitId = @YearUnit THEN @Result / 12.0
 	END
 END
 GO

@@ -1,4 +1,7 @@
 ﻿CREATE FUNCTION [dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate__Balance] (
+-- MA: 2023-12-11. This is used in bll.[LD_AccountHasEnoughBalance__Validate] but causes a bug when
+-- the line under consideration is already posted. Another function
+-- fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance was introduced to handle this case
 	@AccountId	INT,
 	@CenterId	INT,
 	@CurrencyId	NCHAR (3),
