@@ -5,6 +5,7 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
+	[Identifier]				NVARCHAR (50),
 	[CurrencyId]				NCHAR (3),
 	[CenterId]					INT,
 	[Description]				NVARCHAR (2048),
@@ -48,7 +49,7 @@
 	[AddressPostalCode]			NVARCHAR (50),
 	[AddressProvince]			NVARCHAR (50),
 	[AddressDistrict]			NVARCHAR (50),
-	[AddressCountryCode]		NVARCHAR (2),
+	[AddressCountryId]			INT,
 	
 	[TaxIdentificationNumber]	NVARCHAR (18),  -- China has the maximum, 18 characters
 	[BankAccountNumber]			NVARCHAR (34),

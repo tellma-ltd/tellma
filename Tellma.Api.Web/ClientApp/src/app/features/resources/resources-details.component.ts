@@ -560,7 +560,7 @@ Units.Unit,Resource1,Resource2,Attachments.CreatedBy`;
   public get Identifier_label(): string {
     return !!this.definition.IdentifierLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
-      this.translate.instant('Resource_Identifier');
+      this.translate.instant('Entity_Identifier');
   }
 
   public get VatRate_isVisible(): boolean {

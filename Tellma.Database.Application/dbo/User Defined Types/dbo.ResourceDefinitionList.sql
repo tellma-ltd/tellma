@@ -109,12 +109,14 @@
 	
 	[PreprocessScript]					NVARCHAR (MAX),
 	[ValidateScript]					NVARCHAR (MAX),
-	-----Properties applicable to resources only
-	-- Resource properties
+	
 	[IdentifierLabel]					NVARCHAR (50), -- searchable, unique index
 	[IdentifierLabel2]					NVARCHAR (50),
 	[IdentifierLabel3]					NVARCHAR (50),
 	[IdentifierVisibility]				NVARCHAR (50),
+	-----Properties applicable to resources only
+	-- Resource properties
+
 	[VatRateVisibility]					NVARCHAR (50),
 	[DefaultVatRate]					DECIMAL (9,4),
 	-- Inventory

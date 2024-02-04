@@ -209,6 +209,11 @@ export function metadata_AgentDefinition(wss: WorkspaceService, trx: TranslateSe
 
                 // Common with Resource
 
+                IdentifierLabel: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.primaryPostfix },
+                IdentifierLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.secondaryPostfix },
+                IdentifierLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.ternaryPostfix },
+                IdentifierVisibility: visibilityPropDescriptor('Entity_Identifier', trx),
+
                 CurrencyVisibility: visibilityPropDescriptor('Entity_Currency', trx),
                 CenterVisibility: visibilityPropDescriptor('Entity_Center', trx),
                 ImageVisibility: visibilityPropDescriptor('Image', trx),
@@ -369,7 +374,7 @@ export function metadata_AgentDefinition(wss: WorkspaceService, trx: TranslateSe
 
         // Remove multi-lingual properties if the tenant doesn't define the language
         const multiLangProps = ['TitleSingular', 'TitlePlural',
-            'FromDateLabel', 'ToDateLabel',
+            'FromDateLabel', 'IdentifierLabel', 'ToDateLabel',
             'Date1Label', 'Date2Label', 'Date3Label', 'Date4Label',
             'Decimal1Label', 'Decimal2Label',
             'Int1Label', 'Int2Label',

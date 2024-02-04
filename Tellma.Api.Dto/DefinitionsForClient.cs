@@ -68,6 +68,11 @@ namespace Tellma.Api.Dto
         public int ManualLinesDefinitionId { get; set; }
 
         /// <summary>
+        /// The definition Id of the countries lookup 
+        /// </summary>
+        public int CountriesLookupDefinitionId { get; set; }
+
+        /// <summary>
         /// The Ids of the definitions that can be used as a reference source (Read from comma separated settings column).
         /// </summary>
         public IEnumerable<int> ReferenceSourceDefinitionIds { get; set; }
@@ -683,11 +688,12 @@ namespace Tellma.Api.Dto
         public string Text2Label3 { get; set; }
         public string Text2Visibility { get; set; }
 
-        // Resource Only
         public string IdentifierLabel { get; set; }
         public string IdentifierLabel2 { get; set; }
         public string IdentifierLabel3 { get; set; }
         public string IdentifierVisibility { get; set; }
+
+        // Resource Only
 
         public string VatRateVisibility { get; set; }
         public decimal? DefaultVatRate { get; set; }
@@ -734,6 +740,11 @@ namespace Tellma.Api.Dto
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public string IdentifierLabel { get; set; }
+        public string IdentifierLabel2 { get; set; }
+        public string IdentifierLabel3 { get; set; }
+        public string IdentifierVisibility { get; set; }
+
         public string CurrencyVisibility { get; set; }
         public string CenterVisibility { get; set; }
         public string ImageVisibility { get; set; }

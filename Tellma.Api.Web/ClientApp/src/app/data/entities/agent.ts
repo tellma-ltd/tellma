@@ -117,6 +117,7 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         Name2: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { datatype: 'string', control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { datatype: 'string', control: 'text', label: () => trx.instant('Code') },
+        Identifier: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_Identifier') },
         CurrencyId: { datatype: 'string', control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
         Currency: { datatype: 'entity', label: () => trx.instant('Entity_Currency'), control: 'Currency', foreignKeyName: 'CurrencyId' },
         CenterId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -170,7 +171,8 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         AddressPostalCode: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressPostalCode') },
         AddressProvince: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressProvince') },
         AddressDistrict: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressDistrict') },
-        AddressCountryCode: { datatype: 'string', control: 'text', label: () => trx.instant('Entity_AddressCountryCode') },
+        AddressCountryId: { noSeparator: true, datatype: 'numeric', control: 'number', label: () => `${trx.instant('Entity_AddressCountry')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        AddressCountry: { datatype: 'entity', label: () => trx.instant('Entity_AddressCountry'), control: 'Lookup', foreignKeyName: 'AddressCountryId' },
 
         // Agent Only
 
@@ -237,7 +239,8 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         delete entityDesc.properties.AddressPostalCode;
         delete entityDesc.properties.AddressProvince;
         delete entityDesc.properties.AddressDistrict;
-        delete entityDesc.properties.AddressCountryCode;
+        delete entityDesc.properties.AddressCountryId;
+        delete entityDesc.properties.AddressCountry;
       }
 
       // Location, special case

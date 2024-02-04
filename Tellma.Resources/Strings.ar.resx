@@ -826,7 +826,7 @@
   <data name="Entity_AddressCity" xml:space="preserve">
     <value>المدينة</value>
   </data>
-  <data name="Entity_AddressCountryCode" xml:space="preserve">
+  <data name="Entity_AddressCountry" xml:space="preserve">
     <value>البلد</value>
   </data>
   <data name="Entity_AddressDistrict" xml:space="preserve">
@@ -888,6 +888,9 @@
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>من تاريخ</value>
+  </data>
+  <data name="Entity_Identifier" xml:space="preserve">
+    <value>رقم التعريف</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>الصفة العددية 1</value>
@@ -2991,9 +2994,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
-  </data>
-  <data name="Resource_Identifier" xml:space="preserve">
-    <value>رقم التعريف</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>المبلغ</value>

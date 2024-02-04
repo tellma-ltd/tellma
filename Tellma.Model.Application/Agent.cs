@@ -28,6 +28,10 @@ namespace Tellma.Model.Application
 
         #region Common with Resource
 
+        [Display(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string Identifier { get; set; }
+
         [Display(Name = "Entity_Currency")]
         [StringLength(3)]
         public string CurrencyId { get; set; }
@@ -175,9 +179,8 @@ namespace Tellma.Model.Application
         [StringLength(50)]
         public string AddressDistrict { get; set; }
 
-        [Display(Name = "Entity_AddressCountryCode")]
-        [StringLength(50)]
-        public string AddressCountryCode { get; set; }
+        [Display(Name = "Entity_AddressCountry")]
+        public int? AddressCountryId { get; set; }
 
         [NotMapped]
         [Display(Name = "Image")]
@@ -268,6 +271,10 @@ namespace Tellma.Model.Application
         public AgentDefinition Definition { get; set; }
 
         public Geography Location { get; set; }
+
+        [Display(Name = "Entity_AddressCountry")]
+        [ForeignKey(nameof(AddressCountryId))]
+        public Lookup AddressCountry { get; set; }
 
         [Display(Name = "Entity_Center")]
         [ForeignKey(nameof(CenterId))]

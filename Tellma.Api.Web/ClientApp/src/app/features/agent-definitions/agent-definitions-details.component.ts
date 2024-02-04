@@ -174,6 +174,10 @@ export class AgentDefinitionsDetailsComponent extends DetailsBaseComponent {
       ));
     } else if (section === 'Fields') {
       return (!!model.serverErrors && (
+        areServerErrors(model.serverErrors.IdentifierLabel) ||
+        areServerErrors(model.serverErrors.IdentifierLabel2) ||
+        areServerErrors(model.serverErrors.IdentifierLabel3) ||
+        areServerErrors(model.serverErrors.IdentifierVisibility) ||
         areServerErrors(model.serverErrors.CurrencyVisibility) ||
         areServerErrors(model.serverErrors.CenterVisibility) ||
         areServerErrors(model.serverErrors.ImageVisibility) ||

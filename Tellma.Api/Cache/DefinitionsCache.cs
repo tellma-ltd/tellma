@@ -16,6 +16,7 @@ namespace Tellma.Api
     {
         private const string ManualLine = nameof(ManualLine);
         private const string ManualJournalVoucher = nameof(ManualJournalVoucher);
+        private const string CountriesLookup = nameof(CountriesLookup);
 
         private readonly IApplicationRepositoryFactory _repoFactory;
 
@@ -85,6 +86,8 @@ namespace Tellma.Api
             {
                 throw new InvalidOperationException($"Database in an inconsistent state, the built-in line definition: '{ManualLine}' could not be found. TenantId {tenantId}.");
             }
+
+            forClient.CountriesLookupDefinitionId = forClient.Lookups.FirstOrDefault(e => e.Value.Code == CountriesLookup).Key;
 
             return (forClient, version);
         }
@@ -173,6 +176,11 @@ namespace Tellma.Api
                 TitleSingular = def.TitleSingular,
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
+
+                IdentifierLabel = def.IdentifierLabel,
+                IdentifierLabel2 = def.IdentifierLabel2,
+                IdentifierLabel3 = def.IdentifierLabel3,
+                IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
 
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),
@@ -454,12 +462,12 @@ namespace Tellma.Api
                 Text2Label3 = def.Text2Label3,
                 Text2Visibility = MapVisibility(def.Text2Visibility),
 
-                // Resource Only
-
                 IdentifierLabel = def.IdentifierLabel,
                 IdentifierLabel2 = def.IdentifierLabel2,
                 IdentifierLabel3 = def.IdentifierLabel3,
                 IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
+
+                // Resource Only
 
                 VatRateVisibility = MapVisibility(def.VatRateVisibility),
                 DefaultVatRate = def.DefaultVatRate,

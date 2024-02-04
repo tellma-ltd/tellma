@@ -308,12 +308,12 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 PreprocessScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_PreprocessScript') },
                 ValidateScript: { datatype: 'string', control: 'text', label: () => trx.instant('Definition_ValidateScript') },
 
-                // Resource Only
+                IdentifierLabel: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.primaryPostfix },
+                IdentifierLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.secondaryPostfix },
+                IdentifierLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Identifier') }) + ws.ternaryPostfix },
+                IdentifierVisibility: visibilityPropDescriptor('Entity_Identifier', trx),
 
-                IdentifierLabel: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.primaryPostfix },
-                IdentifierLabel2: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.secondaryPostfix },
-                IdentifierLabel3: { datatype: 'string', control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.ternaryPostfix },
-                IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
+                // Resource Only
 
                 VatRateVisibility: visibilityPropDescriptor('Resource_VatRate', trx),
                 DefaultVatRate: { datatype: 'numeric', control: 'percent', label: () => `${trx.instant('Field0Default', { 0: trx.instant('Resource_VatRate') })}`, minDecimalPlaces: 2, maxDecimalPlaces: 4, noSeparator: false },

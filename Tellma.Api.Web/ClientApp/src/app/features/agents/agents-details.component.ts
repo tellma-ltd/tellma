@@ -46,7 +46,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   previewDefinition: AgentDefinitionForClient; // Used in preview mode
 
   public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Lookup5,Lookup6,Lookup7,Lookup8,
-User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
+User,Agent1,Agent2,AddressCountry,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   create = () => {
     const result: AgentForSave = {};
@@ -173,6 +173,20 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
   }
 
   // Shared with Resource
+
+  public get Identifier_isVisible(): boolean {
+    return !!this.definition.IdentifierVisibility;
+  }
+
+  public get Identifier_isRequired(): boolean {
+    return this.definition.IdentifierVisibility === 'Required';
+  }
+
+  public get Identifier_label(): string {
+    return !!this.definition.IdentifierLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
+      this.translate.instant('Entity_Identifier');
+  }
 
   public get Currency_isVisible(): boolean {
     return !!this.definition.CurrencyVisibility;
@@ -714,6 +728,10 @@ User,Agent1,Agent2,Users.User,Attachments.Category,Attachments.CreatedBy`;
 
   public get Address_isVisible(): boolean {
     return !!this.definition.HasAddress;
+  }
+
+  public get AddressCountry_DefinitionId(): number {
+    return this.ws.definitions.CountriesLookupDefinitionId;
   }
 
   public Address_showError(model: AgentForSave): boolean {

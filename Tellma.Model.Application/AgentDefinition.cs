@@ -46,6 +46,22 @@ namespace Tellma.Model.Application
 
         #region Common with Resources
 
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Identifier"), VisibilityChoiceList]
+        [Required]
+        public string IdentifierVisibility { get; set; }
+
         [VisibilityDisplay(Name = "Entity_Currency"), VisibilityChoiceList]
         [Required]
         public string CurrencyVisibility { get; set; }

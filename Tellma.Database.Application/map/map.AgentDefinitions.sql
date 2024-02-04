@@ -11,6 +11,12 @@ RETURN (
 		[TitlePlural],
 		[TitlePlural2],
 		[TitlePlural3],
+
+		[IdentifierLabel],
+		[IdentifierLabel2],
+		[IdentifierLabel3],
+		[IdentifierVisibility],
+		
 		[CurrencyVisibility],
 		[CenterVisibility],
 		[ImageVisibility],

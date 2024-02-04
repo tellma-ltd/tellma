@@ -515,6 +515,10 @@ namespace Tellma.Api.Behaviors
             switch (propName)
             {
                 // Common with Resources
+                case nameof(Agent.Identifier):
+                    display = PropertyDisplay(def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
+                    isRequired = def.IdentifierVisibility == Visibility.Required;
+                    break;
 
                 case nameof(Agent.Description):
                 case nameof(Agent.Description2):
@@ -714,6 +718,7 @@ namespace Tellma.Api.Behaviors
                 nameof(Agent.Lookup8) => def.Lookup8DefinitionId,
                 nameof(Agent.Agent1) => def.Agent1DefinitionId,
                 nameof(Agent.Agent2) => def.Agent2DefinitionId,
+                nameof(Agent.AddressCountryId) => _definitions.CountriesLookupDefinitionId,
                 nameof(Agent.Attachments) => definitionId,
                 _ => null,
             };
