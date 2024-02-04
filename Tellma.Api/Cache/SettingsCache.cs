@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Newtonsoft.Json;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -71,6 +73,23 @@ namespace Tellma.Api
 
             // Feature flags
             forClient.FeatureFlags = featureFlags.ToDictionary(e => e.Key, e => e.Value);
+
+            // Custom fields
+            var fields = JsonConvert.DeserializeObject<GeneralSettings.Custom>(generalSettings.CustomFieldsJson ?? "{}");
+
+            forClient.BuildingNumber = fields.BuildingNumber;
+            forClient.Street = fields.Street;
+            forClient.Street2 = fields.Street2;
+            forClient.Street3 = fields.Street3;
+            forClient.SecondaryNumber = fields.SecondaryNumber;
+            forClient.District = fields.District;
+            forClient.District2 = fields.District2;
+            forClient.District3 = fields.District3;
+            forClient.PostalCode = fields.PostalCode;
+            forClient.City = fields.City;
+            forClient.City2 = fields.City2;
+            forClient.City3 = fields.City3;
+            forClient.CommercialRegistrationNumber = fields.CommercialRegistrationNumber;
 
             return (forClient, version);
         }

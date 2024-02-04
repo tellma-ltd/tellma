@@ -8,12 +8,19 @@
 
 	[CustomFieldsJson]  					NVARCHAR (MAX),
 		/*
-			Address.BuildingNumber
-			Address.Street
-			Address.SecondaryNumber
-			Address.District
-			Address.PostalCode
-			Address.City
+            Version
+            BuildingNumber
+            Street
+            Street2
+            Street3
+            SecondaryNumber
+            District
+            District2
+            District3
+            PostalCode
+            City
+            City2
+            City3
 		*/
 	[CountryCode]							NVARCHAR(2),
 

@@ -3115,6 +3115,9 @@
   <data name="Settings_City" xml:space="preserve">
     <value>المدينة</value>
   </data>
+  <data name="Settings_CommercialRegistrationNumber" xml:space="preserve">
+    <value>رقم السجل التجاري</value>
+  </data>
   <data name="Settings_CompanyName" xml:space="preserve">
     <value>اسم المؤسسة</value>
   </data>

@@ -19,19 +19,28 @@ namespace Tellma.Integration.Zatca
             _zatcaClient = new ZatcaClient(httpClientFactory);
         }
 
-        public async Task Onboard(int tenantId, string vatNumber, string otp, CancellationToken cancellationToken = default)
+        public async Task<(string csid, string secret, string privateKey)> Onboard(
+            int tenantId, 
+            string vatNumber, 
+            string orgName,
+            string orgIndustry,
+            string otp, 
+            CancellationToken cancellationToken = default)
         {
             // 1 - Create the Certificate Signing Request (CSR)
+            // See section 2.2.2 in https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf
+            var csrCommonName = _options.CsrCommonName ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrCommonName)}' should be provided in a configuration provider");
+            var csrHostingDomain = _options.CsrHostingDomain ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrHostingDomain)}' should be provided in a configuration provider");
             var csrInput = new CsrInput(
-                commonName: _options.CsrCommonName,
-                serialNumber: $"1-Tellma|2-{_options.CsrHostingDomain}|3-{tenantId}",
+                commonName: csrCommonName,
+                serialNumber: $"1-Tellma|2-{csrHostingDomain}|3-{tenantId}",
                 organizationIdentifier: vatNumber,
-                organizationUnitName: "Riyad Branch",
-                organizationName: "Tellma",
+                organizationUnitName: orgName,
+                organizationName: orgName,
                 countryCode: "SA",
                 invoiceType: "1100",
-                location: "Tahlia St",
-                industry: "Software"
+                location: csrHostingDomain,
+                industry: orgIndustry
             );
 
             var csrResult = new CsrBuilder(csrInput).GenerateCsr();
@@ -64,6 +73,8 @@ namespace Tellma.Integration.Zatca
             string csid = csidResult.BinarySecurityToken ?? throw new ZatcaException("ZATCA Production CSID API returned null binarySecurityToken");
             string secret = csidResult.Secret ?? throw new ZatcaException("ZATCA Production CSID API returned null secret");
             string privateKey = csrResult.PrivateKey;
+
+            return (csid, secret, privateKey);
         }
 
         public async Task Renew(string otp)
@@ -71,21 +82,21 @@ namespace Tellma.Integration.Zatca
 
         }
 
-        public async Task Report(Invoice inv)
+        public async Task<(string invoiceXml, string invoiceHash)> Report(Invoice inv)
         {
-
+            return ("", "");
         }
 
-        public async Task<SignatureInfo> Clear(Invoice inv)
+        public async Task<(string invoiceXml, string invoiceHash)> Clear(Invoice inv)
         {
-            return null;
+            return ("", "");
         }
     }
 
     public class ZatcaOptions
     {
-        public string CsrCommonName { get; set; }
-        public string CsrHostingDomain { get; set; }
+        public string? CsrCommonName { get; set; }
+        public string? CsrHostingDomain { get; set; }
     }
 
     public class ZatcaException : ReportableException

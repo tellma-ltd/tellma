@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Tellma.Integration.Zatca;
 
-namespace Tellma.Integration.Zatca
-{
+namespace Microsoft.Extensions.DependencyInjection
+{ 
     public static class ZatcaCollectionExtensions
     {
         private const string SectionName = "Zatca";
@@ -10,7 +10,7 @@ namespace Tellma.Integration.Zatca
         /// <summary>
         /// Registers the <see cref="ZatcaService"/> providing access to ZATCA e-invoice integration functionality.
         /// </summary>
-        public static IServiceCollection AddApplicationRepository(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddZatca(this IServiceCollection services, IConfiguration config)
         {
             if (services is null)
             {
@@ -26,6 +26,7 @@ namespace Tellma.Integration.Zatca
             services.Configure<ZatcaOptions>(zatcaSection);
 
             // Add services
+            services.AddHttpClient();
             services.AddSingleton<ZatcaService>();
 
             return services;

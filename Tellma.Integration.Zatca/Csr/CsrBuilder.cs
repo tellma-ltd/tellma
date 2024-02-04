@@ -24,7 +24,7 @@ namespace Tellma.Integration.Zatca
             string error = ValidateInput();
             if (!string.IsNullOrWhiteSpace(error))
             {
-                throw new ArgumentException(error);
+                throw new ZatcaException(error);
             }
         }
 
@@ -149,13 +149,13 @@ namespace Tellma.Integration.Zatca
         {
             // Serial Number
             if (string.IsNullOrEmpty(_info.SerialNumber))
-                return "Serial number is mandatory field";
+                return "Serial number is a mandatory field";
             else if (!SerialNumberRegex().Match(_info.SerialNumber).Success)
                 return "Invalid serial number, serial number should be in regular expression format (1-...|2-...|3-....)";
 
             // Org identifier
             if (string.IsNullOrEmpty(_info.OrganizationIdentifier))
-                return "Organization identifier is mandatory field";
+                return "Organization identifier is a mandatory field";
             else
             {
                 if (_info.OrganizationIdentifier.Length != 15)
@@ -168,33 +168,33 @@ namespace Tellma.Integration.Zatca
 
             // Org unit name
             if (string.IsNullOrEmpty(_info.OrganizationUnitName))
-                return "Organization unit name is mandatory field";
+                return "Organization unit name is a mandatory field";
             else if (_info.OrganizationIdentifier.Substring(10, 1) == "1" && _info.OrganizationUnitName.Length != 10)
                 return "Invalid organization unit name, please provide a valid 10 digit of your group tin number";
 
             // Org name
             if (string.IsNullOrEmpty(_info.OrganizationName))
-                return "Organization name is mandatory field";
+                return "Organization name is a mandatory field";
 
             // Country code
             if (string.IsNullOrEmpty(_info.CountryCode))
-                return "Country code name is mandatory field";
+                return "Country code name is a mandatory field";
             else if (_info.CountryCode.Length > 3 || _info.CountryCode.Length < 2)
                 return "Invalid country code name, please provide a valid country code name";
 
             // Invoice Type
             if (string.IsNullOrEmpty(_info.InvoiceType))
-                return "Invoice type is mandatory field";
+                return "Invoice type is a mandatory field";
             else if (_info.InvoiceType.Length != 4 || !InvoiceTypeRegex().Match(_info.InvoiceType).Success)
                 return "Invalid invoice type, please provide a valid invoice type";
 
             // Location
             if (string.IsNullOrEmpty(_info.Location))
-                return "Location is mandatory field";
+                return "Location is a mandatory field";
 
             // Industry
             if (string.IsNullOrEmpty(_info.Industry))
-                return "Industry is mandatory filed";
+                return "Industry is a mandatory filed";
 
             return string.Empty;
         }
@@ -204,60 +204,5 @@ namespace Tellma.Integration.Zatca
 
         [GeneratedRegex("^[0-1]{4}$", RegexOptions.IgnoreCase, "en-US")]
         private static partial Regex InvoiceTypeRegex();
-    }
-
-    public class CsrResult
-    {
-        public CsrResult(string csrContent, string privateKey)
-        {
-            CsrContent = csrContent;
-            PrivateKey = privateKey;
-        }
-
-        public string CsrContent { get; }
-        public string PrivateKey { get; }
-    }
-
-    public class CsrInput
-    {
-        public CsrInput(
-          string commonName,
-          string serialNumber,
-          string organizationIdentifier,
-          string organizationUnitName,
-          string organizationName,
-          string countryCode,
-          string invoiceType,
-          string location,
-          string industry)
-        {
-            CommonName = commonName;
-            SerialNumber = serialNumber;
-            OrganizationIdentifier = organizationIdentifier;
-            OrganizationUnitName = organizationUnitName;
-            OrganizationName = organizationName;
-            CountryCode = countryCode;
-            InvoiceType = invoiceType;
-            Location = location;
-            Industry = industry;
-        }
-
-        public string CommonName { get; }
-
-        public string SerialNumber { get; }
-
-        public string OrganizationIdentifier { get; }
-
-        public string OrganizationUnitName { get; }
-
-        public string OrganizationName { get; }
-
-        public string CountryCode { get; }
-
-        public string InvoiceType { get; }
-
-        public string Location { get; }
-
-        public string Industry { get; }
     }
 }

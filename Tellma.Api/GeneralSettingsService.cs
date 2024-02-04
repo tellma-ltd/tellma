@@ -3,13 +3,16 @@ using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
+using Tellma.Integration.Zatca;
 using Tellma.Model.Application;
+using Tellma.Model.Common;
 using Tellma.Repository.Common;
 
 namespace Tellma.Api
@@ -17,6 +20,7 @@ namespace Tellma.Api
     public class GeneralSettingsService : ApplicationSettingsServiceBase<GeneralSettingsForSave, GeneralSettings>
     {
         private readonly IStringLocalizer _localizer;
+        private readonly ZatcaService _zatcaService;
         private readonly ISettingsCache _settingsCache;
         private readonly ApplicationServiceBehavior _behavior;
         private static readonly EmailAddressAttribute emailAtt = new();
@@ -24,9 +28,11 @@ namespace Tellma.Api
         public GeneralSettingsService(
             ApplicationSettingsServiceDependencies deps,
             IStringLocalizer<Strings> localizer,
+            ZatcaService zatcaService,
             ISettingsCache settingsCache) : base(deps)
         {
             _localizer = localizer;
+            _zatcaService = zatcaService;
             _settingsCache = settingsCache;
             _behavior = deps.Behavior;
         }
@@ -169,6 +175,27 @@ namespace Tellma.Api
 
             AddLocalizedErrors(result.Errors, _localizer);
             ModelState.ThrowIfInvalid();
+        }
+
+
+        public async Task OnboardWithZatca(string otp)
+        {
+            await Initialize();
+
+            // Check permissions
+            var updatePermissions = await UserPermissions(PermissionActions.Update, cancellation: default);
+            if (!updatePermissions.Any())
+            {
+                throw new ForbiddenException();
+            }
+
+            // Onboard with Zatca
+            var settings = await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion);
+            var vatNumber = settings.Data.TaxIdentificationNumber;
+
+            // var (csid, secret, privateKey) = await _zatcaService.Onboard(TenantId, vatNumber, otp);
+
+            // await Repository.Zatca__SaveSettings(csid, secret, privateKey);
         }
     }
 }

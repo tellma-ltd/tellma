@@ -44,4 +44,5 @@ export interface Custom {
     City?: string;
     City2?: string;
     City3?: string;
+    CommercialRegistration?: string;
 }

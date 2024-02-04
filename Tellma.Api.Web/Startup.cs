@@ -72,6 +72,9 @@ namespace Tellma
                 // Dependency for the GlobalController and the GlobalFilter
                 services.AddScoped<GlobalSettingsProvider>();
 
+                // Add services to allow integration with ZATCA
+                services.AddZatca(_config);
+
                 // Add optoinal services
                 if (_opt.EmailEnabled)
                 {
