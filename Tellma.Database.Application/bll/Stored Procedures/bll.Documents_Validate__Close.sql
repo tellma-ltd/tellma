@@ -12,17 +12,8 @@ BEGIN
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 	SET @IsError = 0;
-	-- cannot close if the document posting date falls in an archived period. Logic repeated at line level
+	-- cannot close if the line posting date falls in an archived period. Logic repeated at line level
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT DISTINCT TOP (@Top)
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-	--	N'Error_FallsinArchivedPeriod', NULL
-	--FROM @Ids FE
-	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	--WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	--UNION
-	-- cannot close if the lines posting date falls in an archived period.
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_FallsinArchivedPeriod', NULL
@@ -142,6 +133,22 @@ BEGIN
 	-- MA: removed CurrencyId From GROUP BY, 2021.12.11
 	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
+
+	-- cannot close a document with sales invoice, if it violates one of the following
+	DECLARE @Country NCHAR (2) = dal.fn_Settings__Country();
+	IF @Country = N'SA' AND @DefinitionId <> @ManualJV
+	AND EXISTS(
+		SELECT *
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN @Ids D ON D.[Id] = L.[DocumentId]
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	)
+	BEGIN
+		PRINT N'Validate all Zatca rules'
+	END
 
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 	-- Verify that workflow-less lines in Documents can be in their final state
