@@ -11,10 +11,25 @@ BEGIN
 		@Ids = @Ids,
 		@State = 0,
 		@UserId = @UserId;
-		
+	
 	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
 		@AssigneeId = @UserId,
 		@UserId = @UserId;
+
+	-- Delete all reconciliations pertaining to the cash entries in this document, if any.
+	DELETE FROM Reconciliations WHERE Id IN	(
+		SELECT ReconciliationId
+		FROM ReconciliationEntries
+		WHERE EntryId IN (
+			SELECT Id
+			FROM dbo.Entries
+			WHERE LineId IN (
+				SELECT Id
+				FROM dbo.Lines
+				WHERE documentId IN (SELECT Id FROM @Ids)
+			)
+		)
+	)
 END;
