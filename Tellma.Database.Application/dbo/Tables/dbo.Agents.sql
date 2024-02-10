@@ -7,6 +7,7 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (50),
+	[Identifier]				NVARCHAR (50),
 
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Agents__CurrencyId] REFERENCES [dbo].[Currencies]([Id]),
 	[CenterId]					INT					CONSTRAINT [FK_Agents__CenterId] REFERENCES [dbo].[Centers]([Id]),
@@ -56,7 +57,7 @@
 	[AddressPostalCode]			NVARCHAR (50),
 	[AddressProvince]			NVARCHAR (50),
 	[AddressDistrict]			NVARCHAR (50),
-	[AddressCountryCode]		NVARCHAR (2),
+	[AddressCountryId]			INT					CONSTRAINT [FK_Agents__AddressCountryId] REFERENCES [dbo].[Lookups] ([Id]),
 
 	[TaxIdentificationNumber]	NVARCHAR (18),
 	[JobId]						INT, -- FK to table Jobs

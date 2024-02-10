@@ -249,7 +249,7 @@ namespace Tellma.Api
                     entity.AddressPostalCode = null;
                     entity.AddressProvince = null;
                     entity.AddressDistrict = null;
-                    entity.AddressCountryCode = null;
+                    entity.AddressCountryId = null;
                 }
 
                 // Contact Email
@@ -610,8 +610,9 @@ namespace Tellma.Api
                 var name3 = nameof(Agent.Name3);
                 var code = nameof(Agent.Code);
                 var tin = nameof(Agent.TaxIdentificationNumber);
+                var identifier = nameof(Agent.Identifier);
 
-                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {tin} contains '{search}'";
+                var filterString = $"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}' or {tin} contains '{search}' or {identifier} contains '{search}'";
                 query = query.Filter(ExpressionFilter.Parse(filterString));
             }
 

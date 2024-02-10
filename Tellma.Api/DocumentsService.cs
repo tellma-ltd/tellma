@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -15,6 +15,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
 using Tellma.Api.Notifications;
+using Tellma.Integration.Zatca;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Application;
@@ -35,6 +36,7 @@ namespace Tellma.Api
         private readonly IBlobService _blobService;
         private readonly IClientProxy _clientProxy;
         private readonly NotificationsQueue _notificationsQueue;
+        private readonly ZatcaService _zatcaService;
         private readonly MetadataProvider _metadata;
 
         /// <summary>
@@ -54,7 +56,8 @@ namespace Tellma.Api
             CrudServiceDependencies deps,
             IBlobService blobService,
             IClientProxy clientProxy,
-            NotificationsQueue notificationsQueue) : base(deps)
+            NotificationsQueue notificationsQueue,
+            ZatcaService zatcaService) : base(deps)
         {
             _behavior = behavior;
             _localizer = deps.Localizer;
@@ -62,6 +65,7 @@ namespace Tellma.Api
             _blobService = blobService;
             _clientProxy = clientProxy;
             _notificationsQueue = notificationsQueue;
+            _zatcaService = zatcaService;
             _metadata = deps.Metadata;
         }
 
@@ -550,6 +554,180 @@ namespace Tellma.Api
             return await UpdateDocumentState(ids, args, nameof(Uncancel));
         }
 
+        #region ZATCA Mapping
+
+        public static Invoice MapInvoice(ZatcaInvoice inv, SettingsForClient settings, int previousCounterValue, string previousInvoiceHash)
+        {
+            return new Invoice
+            {
+                InvoiceNumber = inv.InvoiceNumber,
+                UniqueInvoiceIdentifier = inv.UniqueInvoiceIdentifier,
+                InvoiceIssueDateTime = inv.InvoiceIssueDateTime,
+                InvoiceType = (InvoiceType)inv.InvoiceType,
+                InvoiceTypeTransactions = ToInvoiceTransaction(inv),
+                InvoiceNotes = string.IsNullOrWhiteSpace(inv.InvoiceNote) ? new() : new() { inv.InvoiceNote },
+                InvoiceCurrency = inv.InvoiceCurrency,
+                PurchaseOrderId = inv.PurchaseOrderId,
+                BillingReferenceId = inv.BillingReferenceId,
+                ContractId = inv.ContractId,
+                InvoiceCounterValue = (previousCounterValue + 1).ToString(),
+                PreviousInvoiceHash = previousInvoiceHash,
+                Seller = new Party
+                {
+                    Id = new(PartyIdScheme.CommercialRegistration, settings.CommercialRegistrationNumber),
+                    Address = new Address
+                    {
+                        Street = settings.Street,
+                        AdditionalStreet = null,
+                        BuildingNumber = settings.BuildingNumber,
+                        AdditionalNumber = settings.SecondaryNumber,
+                        District = settings.District,
+                        City = settings.City,
+                        PostalCode = settings.PostalCode,
+                        Province = null,
+                        CountryCode = "SA",
+                    },
+                    VatNumber = settings.TaxIdentificationNumber,
+                    Name = settings.CompanyName
+                },
+                Buyer = new Party
+                {
+                    Id = inv.BuyerIdScheme == "VAT" ? null : new(ToPartyIdSchema(inv.BuyerIdScheme), inv.BuyerId),
+                    Address = new Address
+                    {
+                        Street = inv.BuyerAddressStreet,
+                        AdditionalStreet = inv.BuyerAddressAdditionalStreet,
+                        BuildingNumber = inv.BuyerAddressBuildingNumber,
+                        AdditionalNumber = inv.BuyerAddressAdditionalNumber,
+                        District = inv.BuyerAddressDistrict,
+                        City = inv.BuyerAddressCity,
+                        PostalCode = inv.BuyerAddressPostalCode,
+                        Province = inv.BuyerAddressProvince,
+                        CountryCode = inv.BuyerAddressCountryCode,
+                    },
+                    VatNumber = inv.BuyerIdScheme == "VAT" ? inv.BuyerId : null,
+                    Name = inv.BuyerName
+                },
+                SupplyDate = inv.SupplyDate,
+                SupplyEndDate = inv.SupplyEndDate,
+                PaymentMeans = (PaymentMeans)inv.PaymentMeans,
+                ReasonsForIssuanceOfCreditDebitNote = string.IsNullOrWhiteSpace(inv.ReasonForIssuanceOfCreditDebitNote) ? new() : new() { inv.ReasonForIssuanceOfCreditDebitNote },
+                PaymentTerms = inv.PaymentTerms,
+                PaymentAccountId = inv.PaymentAccountId,
+                AllowanceCharges = inv.AllowanceCharges.Select(ac => new AllowanceCharge
+                {
+                    Indicator = ac.IsCharge ? AllowanceChargeType.Charge : AllowanceChargeType.Allowance,
+                    Amount = ac.Amount,
+                    Reason = ac.Reason,
+                    ReasonCode = ac.ReasonCode,
+                    VatCategory = ToVatCategory(ac.VatCategory),
+                    VatRate = ac.VatRate,
+                }).ToList(),
+                InvoiceTotalVatAmountInAccountingCurrency = inv.InvoiceTotalVatAmountInAccountingCurrency,
+                PrepaidAmount = inv.PrepaidAmount,
+                RoundingAmount = inv.RoundingAmount,
+                VatCategoryTaxableAmount = inv.VatCategoryTaxableAmount,
+                VatCategory = ToVatCategory(inv.VatCategory),
+                VatRate = inv.VatRate,
+                VatExemptionReason = inv.VatExemptionReason,
+                VatExemptionReasonCode = inv.VatExemptionReasonCode,
+                Lines = inv.Lines.Select((line, index) => new InvoiceLine
+                {
+                    Identifier = index + 1,
+                    PrepaymentId = line.PrepaymentId,
+                    PrepaymentUuid = line.PrepaymentUuid,
+                    PrepaymentIssueDateTime = line.PrepaymentIssueDateTime,
+                    Quantity = line.Quantity,
+                    QuantityUnit = line.QuantityUnit,
+                    NetAmount = line.NetAmount,
+                    AllowanceCharge = new LineAllowanceCharge
+                    {
+                        Indicator = line.AllowanceChargeIsCharge ? AllowanceChargeType.Charge : AllowanceChargeType.Allowance,
+                        Amount = line.AllowanceChargeAmount,
+                        Reason = line.AllowanceChargeReason,
+                        ReasonCode = line.AllowanceChargeReasonCode,
+                    },
+                    VatAmount = line.VatAmount,
+                    PrepaymentVatCategoryTaxableAmount = line.PrepaymentVatCategoryTaxableAmount,
+                    ItemName = line.ItemName,
+                    ItemBuyerIdentifier = line.ItemBuyerIdentifier,
+                    ItemSellerIdentifier = line.ItemSellerIdentifier,
+                    ItemStandardIdentifier = line.ItemStandardIdentifier,
+                    ItemNetPrice = line.ItemNetPrice,
+                    ItemVatCategory = ToVatCategory(line.ItemVatCategory),
+                    ItemVatRate = line.ItemVatRate,
+                    PrepaymentVatCategory = ToVatCategory(line.PrepaymentVatCategory),
+                    PrepaymentVatRate = line.PrepaymentVatRate,
+                    ItemPriceBaseQuantity = line.ItemPriceBaseQuantity,
+                    ItemPriceBaseQuantityUnit = line.ItemPriceBaseQuantityUnit,
+                    ItemPriceDiscount = line.ItemPriceDiscount,
+                    ItemGrossPrice = line.ItemGrossPrice,
+                }).ToList(),
+            };
+        }
+
+        private static InvoiceTransaction ToInvoiceTransaction(ZatcaInvoice inv)
+        {
+            InvoiceTransaction result = 0;
+
+            result |= inv.IsSimplified ? InvoiceTransaction.Simplified : InvoiceTransaction.Standard;
+            if (inv.IsThirdParty)
+                result |= InvoiceTransaction.ThirdParty;
+            if (inv.IsNominal)
+                result |= InvoiceTransaction.Nominal;
+            if (inv.IsExports)
+                result |= InvoiceTransaction.Exports;
+            if (inv.IsSummary)
+                result |= InvoiceTransaction.Summary;
+            if (inv.IsSelfBilled)
+                result |= InvoiceTransaction.SelfBilled;
+
+            return result;
+        }
+
+        private static PartyIdScheme ToPartyIdSchema(string scheme)
+        {
+            return scheme switch
+            {
+                "TIN" => PartyIdScheme.TaxIdentificationNumber,
+                "CRN" => PartyIdScheme.CommercialRegistration,
+                "MOM" => PartyIdScheme.Momrah,
+                "MLS" => PartyIdScheme.Mhrsd,
+                "700" => PartyIdScheme.Number700,
+                "SAG" => PartyIdScheme.Misa,
+                "NAT" => PartyIdScheme.NationalId,
+                "GCC" => PartyIdScheme.GccId,
+                "IQA" => PartyIdScheme.IqamaNumber,
+                "PAS" => PartyIdScheme.PassportId,
+                "OTH" => PartyIdScheme.OtherId,
+                _ => throw new InvalidOperationException($"Unrecognized Party ID scheme {scheme}"),
+            };
+        }
+
+        private static VatCategory ToVatCategory(string category)
+        {
+            return category switch
+            {
+                "E" => VatCategory.ExemptFromTax,
+                "S" => VatCategory.StandardRate,
+                "Z" => VatCategory.ZeroRatedGoods,
+                "O" => VatCategory.NotSubjectToTax,
+                _ => throw new InvalidOperationException($"Unrecognized VAT Category {category}"),
+            };
+        }
+
+        private static string InvoiceBlobName(string guid, bool isSandbox)
+        {
+            string stage = isSandbox ? "Sandbox" : "Production";
+            return $"Zatca/{stage}/{guid[0..2]}/{guid[2..4]}/{guid}";
+        }
+
+        #endregion
+
+        #region Helpers
+
+        #endregion
+
         private async Task<DocumentsResult> UpdateDocumentState(List<int> ids, ActionArguments args, string transition)
         {
             await Initialize();
@@ -574,9 +752,10 @@ namespace Tellma.Api
             // Transaction
             using var trx = TransactionFactory.ReadCommitted();
 
+            CloseDocumentOutput dcOutput = null;
             InboxStatusOutput output = transition switch
             {
-                nameof(Close) => await _behavior.Repository.Documents__Close(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
+                nameof(Close) => dcOutput = await _behavior.Repository.Documents__Close(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
                 nameof(Open) => await _behavior.Repository.Documents__Open(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
                 nameof(Cancel) => await _behavior.Repository.Documents__Cancel(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
                 nameof(Uncancel) => await _behavior.Repository.Documents__Uncancel(DefinitionId, ids, ModelState.IsError, ModelState.RemainingErrors, UserId),
@@ -596,9 +775,35 @@ namespace Tellma.Api
             // Non-transactional stuff
 
             // ZATCA integration goes here ...
-            if (transition == nameof(Close))
+            if (dcOutput != null && dcOutput.Invoices.Any())
             {
+                if (dcOutput.Invoices.Count() > 1)
+                {
+                    throw new ZatcaException("Closing multiple ZATCA invoices is not currently supported");
+                }
 
+                var settings = await _behavior.Settings();
+                var inv = dcOutput.Invoices.Single();
+                var invoice = MapInvoice(inv, settings, dcOutput.PreviousCounterValue, dcOutput.PreviousInvoiceHash);
+                string invoiceXml;
+                string invoiceHash;
+                bool isSandbox;
+                if (inv.IsSimplified)
+                {
+                    (invoiceXml, invoiceHash) = await _zatcaService.Report(invoice);
+                } 
+                else
+                {
+                    (invoiceXml, invoiceHash) = await _zatcaService.Clear(invoice);
+                }
+
+                //await _behavior.Repository.Zatca__UpdateDocumentInfo(10, null, dcOutput.PreviousCounterValue, invoiceHash, inv.UniqueInvoiceIdentifier);
+
+                //// Save the invoice XML
+                //var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier, isSandbox);
+                //var blobBytes = Encoding.UTF8.GetBytes(invoiceXml);
+                //var blobs = new List<(string name, byte[] content)>() { (GetBlobName(inv.UniqueInvoiceIdentifier), )) };
+                //await _blobService.SaveBlobsAsync(TenantId, )
             }
 
             var statuses = output.InboxStatuses;

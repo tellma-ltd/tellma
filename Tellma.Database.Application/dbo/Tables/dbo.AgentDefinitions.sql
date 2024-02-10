@@ -9,6 +9,11 @@
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 	-----Contract properties common with resources
+	[IdentifierVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_RAgentDefinitions__IdentifierVisibility] CHECK ([IdentifierVisibility] IN (N'None', N'Optional', N'Required')),
+	[IdentifierLabel]					NVARCHAR (50),
+	[IdentifierLabel2]					NVARCHAR (50),
+	[IdentifierLabel3]					NVARCHAR (50),
+
 	[CurrencyVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__CurrencyVisibility] CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__CenteryVisibility] CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_AgentDefinitions__ImageVisibility] CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),

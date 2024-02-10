@@ -22,6 +22,7 @@ export interface DefinitionsForClient {
 
     ManualJournalVouchersDefinitionId: number;
     ManualLinesDefinitionId: number;
+    CountriesLookupDefinitionId: number;
     ReferenceSourceDefinitionIds: number[];
 }
 
@@ -620,12 +621,12 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Text2Label3: string;
     Text2Visibility: Visibility;
 
-    // Resource Only
-
     IdentifierLabel: string;
     IdentifierLabel2: string;
     IdentifierLabel3: string;
     IdentifierVisibility: Visibility;
+
+    // Resource Only
 
     VatRateVisibility: Visibility;
     DefaultVatRate?: number;
@@ -677,6 +678,11 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 }
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
+
+    IdentifierLabel: string;
+    IdentifierLabel2: string;
+    IdentifierLabel3: string;
+    IdentifierVisibility: Visibility;
 
     CurrencyVisibility: Visibility;
     CenterVisibility: Visibility;

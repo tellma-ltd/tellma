@@ -808,7 +808,7 @@
   <data name="Entity_AddressCity" xml:space="preserve">
     <value>ከተማ</value>
   </data>
-  <data name="Entity_AddressCountryCode" xml:space="preserve">
+  <data name="Entity_AddressCountry" xml:space="preserve">
     <value>ሀገር</value>
   </data>
   <data name="Entity_AddressDistrict" xml:space="preserve">
@@ -870,6 +870,9 @@
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>የሚገኝ በመሆኑ</value>
+  </data>
+  <data name="Entity_Identifier" xml:space="preserve">
+    <value>መለያ</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>ኢንቲጀር መገለጫ ባህሪ 1</value>
@@ -2841,9 +2844,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
-  </data>
-  <data name="Resource_Identifier" xml:space="preserve">
-    <value>መለያ</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>መጠን</value>

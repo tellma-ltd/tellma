@@ -9,6 +9,11 @@
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 	-----Contract properties common with resources
+	[IdentifierLabel]					NVARCHAR (50),
+	[IdentifierLabel2]					NVARCHAR (50),
+	[IdentifierLabel3]					NVARCHAR (50),
+	[IdentifierVisibility]				NVARCHAR (50),
+
 	[CurrencyVisibility]				NVARCHAR (50),
 	[CenterVisibility]					NVARCHAR (50),
 	[ImageVisibility]					NVARCHAR (50),

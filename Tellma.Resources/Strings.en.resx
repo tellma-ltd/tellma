@@ -901,7 +901,7 @@
   <data name="Entity_AddressCity" xml:space="preserve">
     <value>City</value>
   </data>
-  <data name="Entity_AddressCountryCode" xml:space="preserve">
+  <data name="Entity_AddressCountry" xml:space="preserve">
     <value>Country</value>
   </data>
   <data name="Entity_AddressDistrict" xml:space="preserve">
@@ -963,6 +963,9 @@
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>From Date</value>
+  </data>
+  <data name="Entity_Identifier" xml:space="preserve">
+    <value>Identifier</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>Integer 1</value>
@@ -3124,9 +3127,6 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
-  <data name="Resource_Identifier" xml:space="preserve">
-    <value>Identifier</value>
-  </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
   </data>
@@ -3246,6 +3246,9 @@
   </data>
   <data name="Settings_City" xml:space="preserve">
     <value>City</value>
+  </data>
+  <data name="Settings_CommercialRegistrationNumber" xml:space="preserve">
+    <value>Commercial Registration Number</value>
   </data>
   <data name="Settings_CompanyName" xml:space="preserve">
     <value>Company Name</value>

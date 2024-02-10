@@ -5,6 +5,12 @@ namespace Tellma.Api.Dto
 {
     public class SettingsForClient
     {
+        public string CompanyName { get; set; }
+
+        public string CompanyName2 { get; set; }
+
+        public string CompanyName3 { get; set; }
+
         public string ShortCompanyName { get; set; }
 
         public string ShortCompanyName2 { get; set; }
@@ -68,5 +74,20 @@ namespace Tellma.Api.Dto
         public bool SmsEnabled { get; set; }
 
         public Dictionary<string, bool> FeatureFlags { get; set; }
+
+        // Custom Fields
+        public string BuildingNumber { get; set; }
+        public string Street { get; set; }
+        public string Street2 { get; set; }
+        public string Street3 { get; set; }
+        public string SecondaryNumber { get; set; }
+        public string District { get; set; }
+        public string District2 { get; set; }
+        public string District3 { get; set; }
+        public string PostalCode { get; set; }
+        public string City { get; set; }
+        public string City2 { get; set; }
+        public string City3 { get; set; }
+        public string CommercialRegistrationNumber { get; set; }
     }
 }

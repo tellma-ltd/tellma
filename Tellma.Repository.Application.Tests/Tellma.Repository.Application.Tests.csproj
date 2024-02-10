@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tellma.Api\Tellma.Api.csproj" />
     <ProjectReference Include="..\Tellma.Integration.Zatca\Tellma.Integration.Zatca.csproj" />
     <ProjectReference Include="..\Tellma.Repository.Application\Tellma.Repository.Application.csproj" />
   </ItemGroup>

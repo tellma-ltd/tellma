@@ -118,11 +118,11 @@ namespace Tellma.Model.Application
 
         #endregion
 
-        #region Resource Only
-
-        [Display(Name = "Resource_Identifier")]
+        [Display(Name = "Entity_Identifier")]
         [StringLength(50)]
         public string Identifier { get; set; }
+
+        #region Resource Only
 
         [Display(Name = "Resource_VatRate")]
         public decimal? VatRate { get; set; }

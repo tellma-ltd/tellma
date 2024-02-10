@@ -449,7 +449,7 @@
     <value>仪表板定义</value>
   </data>
   <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
-    <value>自动退缩期（分钟）</value>
+    <value>自动消除时期（分钟）</value>
   </data>
   <data name="DashboardDefinition_Height" xml:space="preserve">
     <value>高度（瓷砖）</value>
@@ -808,7 +808,7 @@
   <data name="Entity_AddressCity" xml:space="preserve">
     <value>城市</value>
   </data>
-  <data name="Entity_AddressCountryCode" xml:space="preserve">
+  <data name="Entity_AddressCountry" xml:space="preserve">
     <value>国家</value>
   </data>
   <data name="Entity_AddressDistrict" xml:space="preserve">
@@ -870,6 +870,9 @@
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
     <value>由于可用</value>
+  </data>
+  <data name="Entity_Identifier" xml:space="preserve">
+    <value>识别码</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>整数属性1</value>
@@ -1856,7 +1859,7 @@
     <value>标签标题</value>
   </data>
   <data name="InheritsFrom_2" xml:space="preserve">
-    <value>文档标题</value>
+    <value>文档标头</value>
   </data>
   <data name="Integer" xml:space="preserve">
     <value>整数</value>
@@ -1994,7 +1997,7 @@
     <value>条形码列</value>
   </data>
   <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
-    <value>现有的物品处理</value>
+    <value>现有项目处理</value>
   </data>
   <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
     <value>条形码字段</value>
@@ -2809,9 +2812,6 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
-  <data name="Resource_Identifier" xml:space="preserve">
-    <value>识别码</value>
-  </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
   </data>
@@ -3158,7 +3158,7 @@
     <value>来自州</value>
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
-    <value>陈述</value>
+    <value>说明</value>
   </data>
   <data name="StateReason_LineDefinition" xml:space="preserve">
     <value>行定义</value>
@@ -3458,7 +3458,7 @@
     <value>签名</value>
   </data>
   <data name="Workflow_ToState" xml:space="preserve">
-    <value>陈述</value>
+    <value>说明</value>
   </data>
   <data name="Workflows" xml:space="preserve">
     <value>工作流程</value>

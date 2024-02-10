@@ -116,6 +116,7 @@ namespace Tellma.Model.Application
             public string City { get; set; }
             public string City2 { get; set; }
             public string City3 { get; set; }
+            public string CommercialRegistrationNumber { get; set; }
         }
 
         #endregion

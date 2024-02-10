@@ -405,27 +405,27 @@ namespace Tellma.Model.Application
         [Display(Name = "Definition_ValidateScript")]
         public string ValidateScript { get; set; }
 
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Entity_Identifier")]
+        [StringLength(50)]
+        public string IdentifierLabel3 { get; set; }
+
+        [VisibilityDisplay(Name = "Entity_Identifier"), VisibilityChoiceList]
+        [Required]
+        public string IdentifierVisibility { get; set; }
+
         #endregion
 
         #region Resources Only
 
         // Resource Properties
-
-        [DefinitionLabelDisplay(Name = "Resource_Identifier")]
-        [StringLength(50)]
-        public string IdentifierLabel { get; set; }
-
-        [DefinitionLabelDisplay(Name = "Resource_Identifier")]
-        [StringLength(50)]
-        public string IdentifierLabel2 { get; set; }
-
-        [DefinitionLabelDisplay(Name = "Resource_Identifier")]
-        [StringLength(50)]
-        public string IdentifierLabel3 { get; set; }
-
-        [VisibilityDisplay(Name = "Resource_Identifier"), VisibilityChoiceList]
-        [Required]
-        public string IdentifierVisibility { get; set; }
 
         [VisibilityDisplay(Name = "Resource_VatRate"), VisibilityChoiceList]
         [Required]

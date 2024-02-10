@@ -23,7 +23,12 @@ BEGIN
 				[TitlePlural],
 				[TitlePlural2],
 				[TitlePlural3],
-				-----Agent properties common with resources
+				-----Agent properties common with resources				
+				[IdentifierLabel],
+				[IdentifierLabel2],
+				[IdentifierLabel3],
+				[IdentifierVisibility],
+
 				[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
@@ -189,7 +194,12 @@ BEGIN
 				t.[TitleSingular3]			= s.[TitleSingular3],
 				t.[TitlePlural]				= s.[TitlePlural],
 				t.[TitlePlural2]			= s.[TitlePlural2],
-				t.[TitlePlural3]			= s.[TitlePlural3],
+				t.[TitlePlural3]			= s.[TitlePlural3],		
+				
+				t.[IdentifierLabel]			= s.[IdentifierLabel],
+				t.[IdentifierLabel2]		= s.[IdentifierLabel2],
+				t.[IdentifierLabel3]		= s.[IdentifierLabel3],
+				t.[IdentifierVisibility]	= s.[IdentifierVisibility],
 
 				t.[CurrencyVisibility]		= s.[CurrencyVisibility],
 				t.[CenterVisibility]		= s.[CenterVisibility],
@@ -351,6 +361,11 @@ BEGIN
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3],
+				[IdentifierLabel],
+				[IdentifierLabel2],
+				[IdentifierLabel3],
+				[IdentifierVisibility],
+
 				[CurrencyVisibility],
 				[CenterVisibility],
 				[ImageVisibility],
@@ -503,6 +518,11 @@ BEGIN
 
 				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey], [SavedById])
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
+				s.[IdentifierLabel],
+				s.[IdentifierLabel2],
+				s.[IdentifierLabel3],
+				s.[IdentifierVisibility],
+
 				s.[CurrencyVisibility],
 				s.[CenterVisibility],
 				s.[ImageVisibility],
