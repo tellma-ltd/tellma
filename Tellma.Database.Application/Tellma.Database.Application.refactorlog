@@ -88,4 +88,16 @@
     <Property Name="NewSchema" Value="bll" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Move Schema" Key="782a9742-756b-4085-a44b-ddbf43ac2c53" ChangeDateTime="02/08/2024 09:09:38">
+    <Property Name="ElementName" Value="[dbo].[fn_DocumentDefinition__IsZatcaDocumentType]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="78f605e8-3a6a-4a4a-948b-37edeb42eca6" ChangeDateTime="02/08/2024 09:09:54">
+    <Property Name="ElementName" Value="[dbo].[fn_DocumentDefinition__ZatcaDocumentType]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

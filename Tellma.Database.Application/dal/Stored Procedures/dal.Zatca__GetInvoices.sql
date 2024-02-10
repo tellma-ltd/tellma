@@ -26,20 +26,23 @@ BEGIN
 		CAST(D.[Id] AS NVARCHAR), -- BT-1, Max 127 chars
 		NEWID() AS [UniqueInvoiceIdentifier], -- KSA-1
         D.[StateAt] AS [InvoiceIssueDateTime], -- BT-2 and KSA-25
-        381 AS [InvoiceType], -- BT-3: [381, 383, 388, 389] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
-        CAST(0 AS BIT) AS [IsSimplified], -- KSA-2: 0 for Standard, 1 for Simplified
-        CAST(0 AS BIT) AS [IsThirdParty], -- KSA-2
-        CAST(0 AS BIT) AS [IsNominal], -- KSA-2
-        CAST(0 AS BIT) AS [IsExports], -- KSA-2
-        CAST(0 AS BIT) AS [IsSummary], -- KSA-2
-        CAST(0 AS BIT) AS [IsSelfBilled], -- KSA-2
-        N'Bla bla' AS [InvoiceNote], -- BT-22: max 1000 chars
-        N'USD' AS [InvoiceCurrency], -- BT-5
+		-- ZatcaDocumentType SMALLINT in DD
+        [dal].[fn_DocumentDefinition__ZatcaDocumentType](D.[DefinitionId]) AS [InvoiceType], -- BT-3: [381, 383, 388, 389] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
+		-- In Documents Lookup1: InvoiceTypeTransactions ITT000000, ... Read from left to right.
+        CAST(SUBSTRING(LK1.[Code], 1, 1) AS BIT) AS [IsSimplified], -- KSA-2: 0 for Standard, 1 for Simplified
+        CAST(SUBSTRING(LK1.[Code], 2, 1) AS BIT) AS [IsThirdParty], -- KSA-2
+        CAST(SUBSTRING(LK1.[Code], 3, 1) AS BIT) AS [IsNominal], -- KSA-2
+        CAST(SUBSTRING(LK1.[Code], 4, 1) AS BIT) AS [IsExports], -- KSA-2
+        CAST(SUBSTRING(LK1.[Code], 5, 1) AS BIT) AS [IsSummary], -- KSA-2
+        CAST(SUBSTRING(LK1.[Code], 6, 1) AS BIT) AS [IsSelfBilled], -- KSA-2
+        D.[Memo] AS [InvoiceNote], -- BT-22: max 1000 chars
+        NAG.[CurrencyId] AS [InvoiceCurrency], -- BT-5
         N'ABC' AS [PurchaseOrderId], -- BT-13, max 127 chars
         N'ABC' AS [BillingReferenceId], -- BT-25, max 5000 chars, required for Debit/Credit Notes, NULL otherwise
         N'ABC' AS [ContractId], -- BT-12, max 127 chars
         N'300075588800003' AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
         N'VAT' AS [BuyerIdScheme], -- Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
+		-- Agents: AddressStreet, ..., AddressCountryCode
         N'Main street 1' AS [BuyerAddressStreet], -- BT-50, max 1000 chars
         N'PO Box 14' AS [BuyerAddressAdditionalStreet], -- BT-51, max 127 chars
         N'123' AS [BuyerAddressBuildingNumber], -- KSA-18
@@ -65,8 +68,10 @@ BEGIN
         N'A good reason' AS [VatExemptionReason], -- BT-120, max 1000 chars, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
         N'VATEX-SA-29' AS [VatExemptionReasonCode] -- BT-121, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
 	
-    FROM [map].[Documents]() AS D
-	INNER JOIN @Ids AS I ON D.[Id] = I.[Id]
+    FROM [map].[Documents]() D
+	INNER JOIN @Ids I ON I.[Id] = D.[Id]
+	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
+	INNER JOIN dbo.Agents NAG ON NAG.[Id] = D.[NotedAgentId]
 
     --=-=-= 2 - Invoice Allowances/Charges =-=-=--
     SELECT
@@ -78,14 +83,14 @@ BEGIN
         N'E' AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
         0.0 AS [VatRate] -- BT-119: between 0.00 and 1.00 (NOT 100.00)
     
-    FROM [map].[Documents]() AS D
-	INNER JOIN @Ids AS I ON D.[Id] = I.[Id]
+    FROM [map].[Documents]() D
+	INNER JOIN @Ids I ON I.[Id] = D.[Id] 
 
     --=-=-= 3 - Invoice Lines =-=-=--
     SELECT TOP 1
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Id] AS [Id],
-
+		-- removeany field which is pure computation
         N'12902348' AS [PrepaymentId], -- KSA-26
         NEWID() AS [PrepaymentUuid], -- KSA-27
         DATETIMEOFFSETFROMPARTS(2024, 1, 31, 14, 23, 23, 0, 12, 0, 7) AS [PrepaymentIssueDateTime],
@@ -111,8 +116,9 @@ BEGIN
         N'PCE' AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
         10.00 AS [ItemPriceDiscount], -- BT-147
         750.00 AS [ItemGrossPrice] -- BT-148
-    FROM [map].[Lines]() AS L
-    INNER JOIN [map].[Documents]() AS D ON L.[DocumentId] = D.[Id]
-	INNER JOIN @Ids AS I ON D.[Id] = I.[Id]
+    FROM [map].[Lines]() L
+    INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
+	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
+	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
 
 END;

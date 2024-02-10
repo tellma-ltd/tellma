@@ -963,13 +963,14 @@
     <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation.sql" />
     <Build Include="dal\Functions\dal.fn_Account_Currency_Agent_Resource_AsOfDate_ExcludeId__Balance.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__GetInvoices.sql" />
+    <Build Include="dbo\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
+    <Build Include="dbo\Functions\dal.fn_DocumentDefinition__IsZatcaDocumentType.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
     <None Include="100.BananSD.publish.xml" />
     <None Include="299.BananETDemos.publish.xml" />
     <None Include="200.BananET.publish.xml" />
-    <None Include="399.BananSADemos.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
     <None Include="199.BananSDDemos.publish.xml" />
