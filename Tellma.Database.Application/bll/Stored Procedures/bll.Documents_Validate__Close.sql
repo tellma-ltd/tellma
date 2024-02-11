@@ -12,17 +12,8 @@ BEGIN
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 	SET @IsError = 0;
-	-- cannot close if the document posting date falls in an archived period. Logic repeated at line level
+	-- cannot close if the line posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT DISTINCT TOP (@Top)
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-	--	N'Error_FallsinArchivedPeriod', NULL
-	--FROM @Ids FE
-	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	--WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	--UNION
-	-- cannot close if the lines posting date falls in an archived period.
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_FallsinArchivedPeriod', NULL
@@ -143,6 +134,35 @@ BEGIN
 	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
 
+	-- If there are ZATCA documents, assert that all ZATCA rules are observed
+	IF [dal].[fn_DocumentDefinition__IsZatcaDocumentType](@DefinitionId) = 1
+	BEGIN
+		INSERT INTO @ValidationErrors([Key], [ErrorName])
+		-- Missing document type
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentHasMissingZatcaDocumentType'
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[Lookup1Id] IS NULL
+		UNION
+		-- Missing invoice
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentHasMissingInvoice'
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[NotedAgentId] IS NULL
+		UNION
+		-- Missing invoice currency
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheInvoiceHasMissingCurrency'
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents NAG ON NAG.[Id] = D.[NotedAgentId]
+		WHERE NAG.[CurrencyId] IS NULL
+	END
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 	-- Verify that workflow-less lines in Documents can be in their final state
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
@@ -322,4 +342,3 @@ DONE:
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
-GO
