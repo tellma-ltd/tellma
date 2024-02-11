@@ -3247,8 +3247,8 @@
   <data name="Settings_City" xml:space="preserve">
     <value>City</value>
   </data>
-  <data name="Settings_CommercialRegistrationNumber" xml:space="preserve">
-    <value>Commercial Registration Number</value>
+  <data name="Settings_CommercialRegistration" xml:space="preserve">
+    <value>Commercial Registration #</value>
   </data>
   <data name="Settings_CompanyName" xml:space="preserve">
     <value>Company Name</value>

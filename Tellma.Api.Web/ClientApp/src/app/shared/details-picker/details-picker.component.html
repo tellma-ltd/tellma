@@ -1,9 +1,9 @@
-<div ngbDropdown [placement]="placement" #dropdown="ngbDropdown">
+<div ngbDropdown [open]="!!status" [placement]="placement" #dropdown="ngbDropdown">
 
   <!-- The Search Field -->
   <div class="input-group" [class.t-disabled-background]="isDisabled">
     <input class="form-control" [class.t-input]="!isDark" [class.t-studio-input]="isDark" #input (blur)="onBlur()"
-      [disabled]="isDisabled" (keydown)="onKeyDown($event)" ngbDropdownAnchor autocomplete="off" />
+      [disabled]="isDisabled" (keydown)="onKeyDown($event)" ngbDropdownAnchor autocomplete="xxx" />
     <button class="btn btn-sm t-white-button p-0 px-1" [class.btn-light]="!isDark" [class.text-primary]="!isDark"
       [class.btn-secondary]="isDark" [class.t-text-whitish]="isDark" tabindex="-1"
       *ngIf="showEditSelected && !isDisabled" type="button" title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()"
@@ -19,11 +19,11 @@
   </div>
 
   <!-- The Results Dropdown -->
-  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050" [class.t-less-dark]="isDark">
+  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1051" [class.t-less-dark]="isDark">
     <ng-container *ngIf="showResults">
       <button class="dropdown-item" *ngFor="let item of searchResults; let i = index"
         [class.active]="i===highlightedIndex" (mouseenter)="onMouseEnter(i)" style="cursor:default"
-        (focus)="onFocus(item)">
+        (focus)="onFocus(item)" (click)="$event.target.focus()">
         {{ formatterInner(item) }}
       </button>
     </ng-container>

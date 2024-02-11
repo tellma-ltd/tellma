@@ -116,7 +116,7 @@
     <value>帐户分类</value>
   </data>
   <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
-    <value>帐户类型父</value>
+    <value>帐户类型父母</value>
   </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>帐户分类</value>
@@ -449,7 +449,7 @@
     <value>仪表板定义</value>
   </data>
   <data name="DashboardDefinition_AutoRefreshPeriodInMinutes" xml:space="preserve">
-    <value>自动消除时期（分钟）</value>
+    <value>自动退缩期（分钟）</value>
   </data>
   <data name="DashboardDefinition_Height" xml:space="preserve">
     <value>高度（瓷砖）</value>
@@ -1412,7 +1412,7 @@
     <value>{1} {2}中使用了帐户'{0}'，带有不兼容的输入类型'{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
-    <value>{1} {2}中使用Actim' {3}'在{1} {2}中使用帐户'{0}'。</value>
+    <value>{1} {2}中使用Actim' {3}'中的帐户'{0}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户'{0}'在{1} {2}中使用中心'{3}'中使用。</value>
@@ -1859,7 +1859,7 @@
     <value>标签标题</value>
   </data>
   <data name="InheritsFrom_2" xml:space="preserve">
-    <value>文档标头</value>
+    <value>文档标题</value>
   </data>
   <data name="Integer" xml:space="preserve">
     <value>整数</value>
@@ -1997,7 +1997,7 @@
     <value>条形码列</value>
   </data>
   <data name="LineDefinition_BarcodeExistingItemHandling" xml:space="preserve">
-    <value>现有项目处理</value>
+    <value>现有的物品处理</value>
   </data>
   <data name="LineDefinition_BarcodeProperty" xml:space="preserve">
     <value>条形码字段</value>

@@ -341,19 +341,11 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     );
   }
 
-  private get status(): SearchStatus {
+  public get status(): SearchStatus {
     return this._status;
   }
 
-  private set status(val: SearchStatus) {
-
-    if (!this._status && !!val) {
-      this.resultsDropdown.open();
-    }
-    if (!!this._status && !val) {
-      this.resultsDropdown.close();
-    }
-
+  public set status(val: SearchStatus) {
     this._status = val;
   }
 
@@ -575,6 +567,11 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     // Restart input stream and cancel existing backend calls
     this.cancelRunningCall$.next();
+    
+    // Hide the dropdown
+    // Use setTimeout in case the user is clicking the dropdown with their mouse
+    // This allows the onFocus(item) handler to trigger before the dropdown is gone
+    setTimeout(() => this.status = null);
 
     // Signal on touched
     this.onTouched();
