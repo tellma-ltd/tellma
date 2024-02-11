@@ -2,7 +2,7 @@
 @EmployeeIds IdList READONLY
 AS
 BEGIN
-	SET NOCOUNT ON;
+	SET NOCOUNT OFF;
 	DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccruals.M');
 	DECLARE @ContractAmendmentLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsAmended.M');
 	DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsTerminated.M');
@@ -23,7 +23,7 @@ BEGIN
 		@ContractLineDefinitionId,
 		@ContractAmendmentLineDefinitionId,
 		@ContractTerminationLineDefinitionId,
-		@FromDate, '9999-12-31', -- assuming retoractive termination of one month back only
+		@FromDate, '9999-12-31', -- assuming retoractive termination of 3 months back only
 		@DurationUnitId,
 		0,
 		NULL, --@AgentId INT = NULL,
@@ -34,6 +34,7 @@ BEGIN
 	)
 	WHERE @EmployeeCount = 0 OR [NotedAgentId0] IN (SELECT [Id] FROM @EmployeeIds)
 	GROUP BY [NotedAgentId0];
+
 	UPDATE AG
 	SET
 		AG.ToDate = ISNULL(TD.[TerminationDate], AG.ToDate)
@@ -47,17 +48,18 @@ BEGIN
 		(AG.[ToDate] <> TD.[TerminationDate])
 	);
 	PRINT @@ROWCOUNT;
+	
 	UPDATE dbo.Agents
 	SET ToDate = NULL
 	WHERE ToDate >= '9999-12-30'; -- to handle a bug. Can be removed later
-
+	
 	-- Update Centers
 	DECLARE @EmployeeCenters TABLE (
 		EmployeeId INT PRIMARY KEY,
 		CenterId INT
 	);
 	INSERT INTO @EmployeeCenters(EmployeeId, CenterId)
-	SELECT DISTINCT [NotedAgentId0] AS EmployeeId, [CenterId0] AS CenterId
+	SELECT [NotedAgentId0] AS EmployeeId, MIN([CenterId0]) AS CenterId
 	FROM [bll].[ft_Widelines_Period_EventFromModel__Generate]
 	(
 		@ContractLineDefinitionId,
@@ -72,7 +74,10 @@ BEGIN
 		NULL, --@NotedResourceId INT = NULL,
 		NULL --@CenterId INT = NULL
 	)
-	WHERE @EmployeeCount = 0 OR [NotedAgentId0] IN (SELECT [Id] FROM @EmployeeIds);
+	WHERE @EmployeeCount = 0 OR [NotedAgentId0] IN (SELECT [Id] FROM @EmployeeIds)
+	GROUP BY [NotedAgentId0]
+	HAVING MIN([CenterId0]) = MAX([CenterId0]);
+
 	UPDATE AG
 	SET
 		AG.[CenterId] = ISNULL(EC.[CenterId], AG.[CenterId])
@@ -86,5 +91,25 @@ BEGIN
 		( AG.[CenterId] <> EC.CenterId)
 	);
 	PRINT @@ROWCOUNT;
+
+	SELECT [NotedAgentId0] AS EmployeeId_WithMultipleCenters, MIN([CenterId0]) AS Center1Id, MAX([CenterId0]) AS Center2Id
+	FROM [bll].[ft_Widelines_Period_EventFromModel__Generate]
+	(
+		@ContractLineDefinitionId,
+		@ContractAmendmentLineDefinitionId,
+		@ContractTerminationLineDefinitionId,
+		GETDATE(), GETDATE(),
+		@DurationUnitId,
+		0,
+		NULL, --@AgentId INT = NULL,
+		@BasicSalaryRS, -- @ResourceId
+		NULL, --@NotedAgentId INT = NULL,
+		NULL, --@NotedResourceId INT = NULL,
+		NULL --@CenterId INT = NULL
+	)
+	WHERE @EmployeeCount = 0 OR [NotedAgentId0] IN (SELECT [Id] FROM @EmployeeIds)
+	GROUP BY [NotedAgentId0]
+	HAVING MIN([CenterId0]) <> MAX([CenterId0]);
+	
 END
 GO
