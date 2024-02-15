@@ -4,7 +4,8 @@
 RETURNS DECIMAL (19, 6)
 AS
 BEGIN
-	RETURN (
+	RETURN ISNULL(
+	(
 		SELECT SUM(E.[Direction] * E.[Value])
 		FROM dbo.Entries E
 		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
@@ -12,6 +13,6 @@ BEGIN
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.[DocumentId] = @DocumentId
 		AND AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	)
+	), 0)
 END
 GO

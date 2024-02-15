@@ -34,7 +34,7 @@
 	[Lookup2Label2]				NVARCHAR (50),
 	[Lookup2Label3]				NVARCHAR (50),
 
-	[ZatcaDocumentType]			NVARCHAR (3)  CONSTRAINT [CK_DocumentDefinitions__ZatcaDocumentType] CHECK ([ZatcaDocumentType] IN (N'381', N'383', N'386', N'388')),
+	[ZatcaDocumentType]			NVARCHAR (3)  CONSTRAINT [CK_DocumentDefinitions__ZatcaDocumentType] CHECK ([ZatcaDocumentType] IN (N'381', N'383', N'386', N'388', N'389')),
 
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__ClearanceVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__MemoVisibility] CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
