@@ -37,20 +37,17 @@ AS BEGIN
 	SET [ValueSubjectToEmployeeIncomeTax] = IIF([Value] > 600, [Value] - 600, 0) -- 2023-10-01 changed from 800
 	WHERE [ResourceCode] IN (N'TransportationAllowance');
 
-	WITH BasicSalaries AS (
-		SELECT [EmployeeId], [Value] AS BasicSalary
+	WITH BusinessVisitsExemptions AS (
+		SELECT [EmployeeId], IIF(0.25 * [Value] > 2200, 2200, 0.25 * [Value]) AS Amount
 		FROM @T
-		WHERE [ResourceCode] = N'BasicSalary'
+		WHERE [ResourceCode] IN (N'BasicSalary')
 	)
-	UPDATE T -- IF TransportationAllowance < 2,200 and less than 25% of Basic Salary. Any excess will not be exempt.
-	SET [ValueSubjectToEmployeeIncomeTax] = CASE
-		WHEN [Value] < 2200 AND [Value] < 0.25 * B.BasicSalary THEN 0
-		WHEN [Value] < 2200 AND [Value] > 0.25 * B.BasicSalary THEN [Value] - 0.25 * B.BasicSalary
-		ELSE [Value] - 2200
-	END
+	UPDATE @T
+	SET [ValueSubjectToEmployeeIncomeTax] =
+		IIF([Value] > VE.[Amount], VE.[Amount], 0)
 	FROM @T T
-	LEFT JOIN BasicSalaries B ON B.[EmployeeId] = T.[EmployeeId]
-	WHERE [ResourceCode] IN (N'BusinessVisitAllowance');
+	JOIN BusinessVisitsExemptions VE ON VE.[EmployeeId] = T.[EmployeeId]
+	WHERE T.[ResourceCode] IN (N'BusinessVisitAllowance');
 	
 	INSERT INTO @MyResult
 	SELECT DISTINCT [EmployeeId], 0, 0

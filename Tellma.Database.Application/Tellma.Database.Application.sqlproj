@@ -952,6 +952,8 @@
     <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_AE.sql" />
     <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation_V2.sql" />
     <Build Include="rpt\Functions\rpt.ft_TellmaUsage.sql" />
+    <Build Include="dal\Functions\dal.ft_EmployeesDates__EmployeesProfiles.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdDateList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
