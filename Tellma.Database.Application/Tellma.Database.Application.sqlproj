@@ -954,6 +954,7 @@
     <Build Include="rpt\Functions\rpt.ft_TellmaUsage.sql" />
     <Build Include="dal\Functions\dal.ft_EmployeesDates__EmployeesProfiles.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdDateList.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.LongScript_History__Recover.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
