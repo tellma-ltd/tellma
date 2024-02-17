@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE OR ALTER PROCEDURE [dal].[Zatca__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -23,25 +23,26 @@ BEGIN
 	SELECT
 		I.[Index] AS [Index],
 		D.[Id] AS [Id],
-		CAST(D.[Id] AS NVARCHAR), -- BT-1, Max 127 chars
+		CAST(D.[Id] AS NVARCHAR) AS [InvoiceNumber], -- BT-1, Max 127 chars
 		NEWID() AS [UniqueInvoiceIdentifier], -- KSA-1
         D.[StateAt] AS [InvoiceIssueDateTime], -- BT-2 and KSA-25
 		-- ZatcaDocumentType NVARCHAR (3) in DD but INT in C#
-        CAST([dal].[fn_DocumentDefinition__ZatcaDocumentType](D.[DefinitionId]) AS INT) AS [InvoiceType], -- BT-3: [381, 383, 388, 389] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
+        CAST(DD.ZatcaDocumentType AS INT) AS [InvoiceType], -- BT-3: [381, 383, 386, 388, 389] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
 		-- In Documents Lookup1: InvoiceTypeTransactions ITT000000, ... Read from left to right.
         CAST(SUBSTRING(LK1.[Code], 4, 1) AS BIT) AS [IsSimplified], -- KSA-2: 0 for Standard, 1 for Simplified
-        CAST(SUBSTRING(LK1.[Code], 5, 1) AS BIT) AS [IsThirdParty], -- KSA-2
-        CAST(SUBSTRING(LK1.[Code], 6, 1) AS BIT) AS [IsNominal], -- KSA-2
-        CAST(SUBSTRING(LK1.[Code], 7, 1) AS BIT) AS [IsExports], -- KSA-2
-        CAST(SUBSTRING(LK1.[Code], 8, 1) AS BIT) AS [IsSummary], -- KSA-2
-        CAST(SUBSTRING(LK1.[Code], 9, 1) AS BIT) AS [IsSelfBilled], -- KSA-2
+        CAST(SUBSTRING(LK1.[Code], 5, 1) AS BIT) AS [IsThirdParty], -- KSA-2: Not used. Always 0.
+        CAST(SUBSTRING(LK1.[Code], 6, 1) AS BIT) AS [IsNominal], -- KSA-2: Not used. Always 0.
+        CAST(SUBSTRING(LK1.[Code], 7, 1) AS BIT) AS [IsExports], -- KSA-2: Export invoices cannot be simplified
+        CAST(SUBSTRING(LK1.[Code], 8, 1) AS BIT) AS [IsSummary], -- KSA-2:Not used. Always 0.
+        CAST(SUBSTRING(LK1.[Code], 9, 1) AS BIT) AS [IsSelfBilled], -- KSA-2: only with invoice type 389
         D.[Memo] AS [InvoiceNote], -- BT-22: max 1000 chars
         NAG.[CurrencyId] AS [InvoiceCurrency], -- BT-5
         D.[ExternalReference] AS [PurchaseOrderId], -- BT-13, max 127 chars
         [dal].[fn_Document__BillingReferenceId](D.[Id]) AS [BillingReferenceId], -- BT-25, max 5000 chars, required for Debit/Credit Notes, NULL otherwise
         AG1.[Code] AS [ContractId], -- BT-12, max 127 chars
         AG1.TaxIdentificationNumber AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
-        N'VAT' AS [BuyerIdScheme], -- Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
+		-- Customer Accounts Lookup is Buyer Scheme
+        ISNULL(dal.fn_Lookup__Code(AG1.Lookup5Id), N'VAT') AS [BuyerIdScheme], -- AG1.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
 		-- Agents: AddressStreet, ..., AddressCountryCode
         AG1.[AddressStreet] AS [BuyerAddressStreet], -- BT-50, max 1000 chars
         AG1.[AddressAdditionalStreet] AS [BuyerAddressAdditionalStreet], -- BT-51, max 127 chars
@@ -55,13 +56,16 @@ BEGIN
         AG1.[Name2] AS [BuyerName], -- BT-44, max 1000 chars
         [dal].[fn_Document__SupplyDate](D.[Id], NAG.[Id]) AS [SupplyDate], -- KSA-5
         [dal].[fn_Document__SupplyEndDate](D.[Id], NAG.[Id]) AS [SupplyEndDate], -- KSA-24
-        10 AS [PaymentMeans], -- BT-81: [1, 10, 30, 42, 48] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred4461.htm
-        IIF([dal].[fn_DocumentDefinition__ZatcaDocumentType](D.[DefinitionId]) IN (N'381', N'383'),
-			dal.fn_Lookup__Name2(D.[Lookup2Id]), NULL) AS [ReasonForIssuanceOfCreditDebitNote], -- KSA-10, max 1000 chars, required for Debit/Credit Notes, NULL otherwise
-        N'Foo' AS [PaymentTerms], -- KSA-22, max 1000 chars
-        N'Bar' AS [PaymentAccountId], -- BT-84, max 127 chars
+		-- Sales invoice Lookup 5, payment means
+        CAST(ISNULL(dal.fn_Lookup__Code(NAG.Lookup1Id), '10') AS INT) AS [PaymentMeans], -- BT-81: [1, 10, 30, 42, 48] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred4461.htm
+        -- Document Lookup 2 is reason of issuance
+		IIF(DD.ZatcaDocumentType IN (N'381', N'383'), dal.fn_Lookup__Name2(D.[Lookup2Id]),
+			NULL) AS [ReasonForIssuanceOfCreditDebitNote], -- KSA-10, max 1000 chars, required for Debit/Credit Notes, NULL otherwise
+		-- Sales invoice Lookup 6, payment terms
+        IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(NAG.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
+        NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
-        0.00 AS [PrepaidAmount], -- BT-113
+        dal.fn_PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
         0.00 AS [RoundingAmount], -- BT-114
         1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
@@ -73,7 +77,9 @@ BEGIN
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
 	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
 	INNER JOIN dbo.Agents NAG ON NAG.[Id] = D.[NotedAgentId]
-	INNER JOIN dbo.Agents AG1 ON AG1.[Id] = NAG.[Agent1Id];
+	INNER JOIN dbo.Agents AG1 ON AG1.[Id] = NAG.[Agent1Id]
+	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
+	WHERE DD.[ZatcaDocumentType] IS NOT NULL
 
     --=-=-= 2 - Invoice Allowances/Charges =-=-=--
     SELECT
@@ -121,6 +127,11 @@ BEGIN
     FROM [map].[Lines]() L
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
-	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
+--	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
+
+-- MA: 2024-02-17
+--=-=-= 4 - VAT Category lines Lines =-=-=--
+
+
 
 END;
