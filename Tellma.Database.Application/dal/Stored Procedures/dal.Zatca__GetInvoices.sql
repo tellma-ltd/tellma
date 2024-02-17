@@ -66,12 +66,13 @@ BEGIN
         NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         dal.fn_PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
-        0.00 AS [RoundingAmount], -- BT-114
-        1230.00 AS [VatCategoryTaxableAmount], -- BT-116
-        N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
-        0.15 AS [VatRate], -- BT-119: between 0.00 and 1.00 (NOT 100.00)
-        N'A good reason' AS [VatExemptionReason], -- BT-120, max 1000 chars, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
-        N'VATEX-SA-29' AS [VatExemptionReasonCode] -- BT-121, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
+        0.00 AS [RoundingAmount] -- BT-114
+		-- Following is auto computed
+        --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
+        --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
+        --0.15 AS [VatRate], -- BT-119: between 0.00 and 1.00 (NOT 100.00)
+        --N'A good reason' AS [VatExemptionReason], -- BT-120, max 1000 chars, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
+        --N'VATEX-SA-29' AS [VatExemptionReasonCode] -- BT-121, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
 	
     FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
@@ -89,7 +90,7 @@ BEGIN
         N'A good reason' AS [Reason], -- BT-97 for allowances, BT-104 for charges, max 1000 chars
         N'29' AS [ReasonCode], -- BT-98 for allowances, BT-105 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
         N'E' AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
-        0.0 AS [VatRate] -- BT-119: between 0.00 and 1.00 (NOT 100.00)
+        0.0 AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
     
     FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id] 
@@ -128,10 +129,4 @@ BEGIN
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 --	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
-
--- MA: 2024-02-17
---=-=-= 4 - VAT Category lines Lines =-=-=--
-
-
-
 END;
