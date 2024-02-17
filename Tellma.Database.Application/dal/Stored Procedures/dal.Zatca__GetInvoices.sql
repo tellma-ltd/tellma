@@ -99,37 +99,47 @@ BEGIN
     --=-=-= 3 - Invoice Lines =-=-=--
     SELECT TOP 1
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
-		L.[Id] AS [Id],
-		-- removeany field which is pure computation
+		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
+		-- remove any field which is pure computation
         N'12902348' AS [PrepaymentId], -- KSA-26
         NEWID() AS [PrepaymentUuid], -- KSA-27
         DATETIMEOFFSETFROMPARTS(2024, 1, 31, 14, 23, 23, 0, 12, 0, 7) AS [PrepaymentIssueDateTime],
-        2.00 AS [Quantity], -- BT-129
-        N'PCE' AS [QuantityUnit], -- BT-130
-        1330.00 AS [NetAmount], -- BT-131
-        CAST(0 AS BIT) AS [AllowanceChargeIsCharge], -- 1 for charge, 0 for allowance
-        150.00 AS [AllowanceChargeAmount], -- BT-136 for allowances, BT-141 for charges
-        N'A good reason' AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
-        N'29' AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
-        20.00 AS [VatAmount], -- KSA-11
-        1000.00 AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
-        N'Apples' AS [ItemName], -- BT-153, max 1000 chars
-        N'123' AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
-        N'456' AS [ItemSellerIdentifier], -- BT-155, max 127 chars
-        N'789' AS [ItemStandardIdentifier], -- BT-157, max 127 chars
-        740.00 AS [ItemNetPrice], -- BT-146
-        N'E' AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
-        0.0 AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
+        -E.[Direction] * E.[Quantity] AS [Quantity], -- BT-129
+        U.[Code] AS [QuantityUnit], -- BT-130
+        -E.[Direction] * E.[NotedAmount] AS [NetAmount], -- BT-131
+       -- CAST(0 AS BIT) AS [AllowanceChargeIsCharge], -- 1 for charge, 0 for allowance
+		NULL AS [AllowanceChargeIsCharge], -- intends to return allocances and charges all at the document level
+        NULL AS [AllowanceChargeAmount], -- BT-136 for allowances, BT-141 for charges
+        NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
+        NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
+        -E.[Direction] * E.[MonetaryValue] AS [VatAmount], -- KSA-11
+        -E.[Direction] * E.[NotedAmount] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
+        NR.[Name2] AS [ItemName], -- BT-153, max 1000 chars
+        NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
+        NR.[Code] AS [ItemSellerIdentifier], -- BT-155, max 127 chars
+        NR.[Identifier] AS [ItemStandardIdentifier], -- BT-157, max 127 chars
+        -E.[Direction] * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemNetPrice], -- BT-146
+		-- Resource 
+        ISNULL(LK4.[Code], 'S') AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
+        ISNULL(NR.[VatRate], 0.15) AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
+		
 		N'VATEX-SA-EDU' AS [ItemVatExemptionReasonCode],
 		N'Private Education to citizen' AS [ItemVatExemptionReasonText],
-        N'E' AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
+		N'E' AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
         0.0 AS [PrepaymentVatRate], -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
         N'PCE' AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
         10.00 AS [ItemPriceDiscount], -- BT-147
         750.00 AS [ItemGrossPrice] -- BT-148
     FROM [map].[Lines]() L
+	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	LEFT JOIN dbo.Lookups LK4 ON LK4.[Id] = NR.[Lookup4Id]
+	INNER JOIN dbo.Units U ON U.[Id] = E.[UnitId]
+	INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
+	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
 --	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
 END;
