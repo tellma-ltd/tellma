@@ -66,7 +66,8 @@ BEGIN
         NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         dal.fn_PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
-        0.00 AS [RoundingAmount] -- BT-114
+		-- Rounding amount can be read from a separate LD.
+        dal.fn_RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
 		-- Following is auto computed
         --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
@@ -119,6 +120,8 @@ BEGIN
         740.00 AS [ItemNetPrice], -- BT-146
         N'E' AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
         0.0 AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
+		N'VATEX-SA-EDU' AS [ItemVatExemptionReasonCode],
+		N'Private Education to citizen' AS [ItemVatExemptionReasonText],
         N'E' AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
         0.0 AS [PrepaymentVatRate], -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
