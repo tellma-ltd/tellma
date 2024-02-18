@@ -12,7 +12,7 @@ BEGIN
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 		WHERE L.[DocumentId] = @DocumentId
-		AND AC.[Concept] = N'CurrentValueAddedTaxPayables'
+		AND AC.[Concept] = N'DeferredIncomeClassifiedAsCurrent'
 		AND R.[Code] LIKE 'Prepayment%'
 	), 0)
 	RETURN 0; -- 386: Prepayment invoice 
