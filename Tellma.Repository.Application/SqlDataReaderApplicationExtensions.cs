@@ -192,11 +192,11 @@ namespace Tellma.Repository.Application
                     InvoiceTotalVatAmountInAccountingCurrency = reader.Decimal(i++) ?? 0m,
                     PrepaidAmount = reader.Decimal(i++) ?? 0m,
                     RoundingAmount = reader.Decimal(i++) ?? 0m,
-                    VatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
-                    VatCategory = reader.String(i++), // E, S, Z, O
-                    VatRate = reader.Decimal(i++) ?? 0m,
-                    VatExemptionReason = reader.String(i++),
-                    VatExemptionReasonCode = reader.String(i++),
+                    //VatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
+                    //VatCategory = reader.String(i++), // E, S, Z, O
+                    //VatRate = reader.Decimal(i++) ?? 0m,
+                    //VatExemptionReason = reader.String(i++),
+                    //VatExemptionReasonCode = reader.String(i++),
                 };
             }
 
@@ -249,6 +249,8 @@ namespace Tellma.Repository.Application
                     ItemNetPrice = reader.Decimal(i++) ?? 0m,
                     ItemVatCategory = reader.String(i++), // E, S, Z, O
                     ItemVatRate = reader.Decimal(i++) ?? 0m,
+                    ItemVatExemptionReasonCode = reader.String(i++),
+                    ItemVatExemptionReasonText = reader.String(i++),
                     PrepaymentVatCategory = reader.String(i++), // E, S, Z, O
                     PrepaymentVatRate = reader.Decimal(i++) ?? 0m,
                     ItemPriceBaseQuantity = reader.Decimal(i++) ?? 0m,

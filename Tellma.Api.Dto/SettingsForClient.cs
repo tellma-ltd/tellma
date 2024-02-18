@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Tellma.Api.Dto
 {
@@ -89,5 +90,23 @@ namespace Tellma.Api.Dto
         public string City2 { get; set; }
         public string City3 { get; set; }
         public string CommercialRegistrationNumber { get; set; }
+
+
+        // Server Only Fields
+
+
+        [JsonIgnore]
+        public string ZatcaEncryptedPrivateKey { get; set; }
+
+        [JsonIgnore]
+        public string ZatcaEncryptedSecret { get; set; }
+
+        [JsonIgnore]
+        public string ZatcaEncryptedSecurityToken { get; set; }
+
+        [JsonIgnore]
+        public int ZatcaEncryptionKeyIndex { get; set; }
+
+        public bool ZatcaUseSandbox { get; set; }
     }
 }

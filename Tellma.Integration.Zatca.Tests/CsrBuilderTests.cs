@@ -57,7 +57,7 @@ namespace Tellma.Integration.Zatca.Tests
             );
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ZatcaException>(() =>
             {
                 var result = new CsrBuilder(input).GenerateCsr();
             });

@@ -91,7 +91,7 @@
         /// <br/> 
         /// Invoice counter value.
         /// </summary>
-        public string? InvoiceCounterValue { get; set; }
+        public int InvoiceCounterValue { get; set; }
 
         /// <summary>
         /// <b>KSA-13</b> 
@@ -208,9 +208,9 @@
         /// <b>BT-110</b> 
         /// <br/> 
         /// The total VAT amount for the Invoice. <br/>
-        /// Auto-calculated as <see cref="VatCategoryTaxAmount"/>.
+        /// Auto-calculated as sum of <see cref="VatBreakdownEntry.VatCategoryTaxAmount"/>.
         /// </summary>
-        public decimal InvoiceTotalVatAmount => VatCategoryTaxAmount; // Rule BR-CO-14
+        public decimal InvoiceTotalVatAmount => VatBreakdown.Sum(e => e.VatCategoryTaxAmount); // Rule BR-CO-14
 
         /// <summary>
         /// <b>BT-111</b> 
@@ -254,6 +254,39 @@
         public decimal AmountDueForPayment => InvoiceTotalAmountWithVat - PrepaidAmount + RoundingAmount; // Rule BR-CO-16
 
         /// <summary>
+        /// VAT Breakdown
+        /// </summary>
+        public List<VatBreakdownEntry> VatBreakdown => Lines
+            .GroupBy(e => new { Category = e.ItemVatCategory, Rate = e.ItemVatRate, Reason = e.ItemVatExemptionReasonCode })
+            .Select(g =>
+            {
+                var allowancesCharges = AllowanceCharges
+                    .Where(e => e.VatCategory == g.Key.Category && e.VatRate == g.Key.Rate);
+
+                return new VatBreakdownEntry
+                {
+                    VatCategoryTaxableAmount = g.Sum(e => e.NetAmount)
+                        - allowancesCharges.Where(e => e.Indicator == AllowanceChargeType.Allowance).Sum(e => e.Amount)
+                        + allowancesCharges.Where(e => e.Indicator == AllowanceChargeType.Charge).Sum(e => e.Amount),
+
+                    VatCategory = g.Key.Category,
+                    VatRate = g.Key.Rate,
+                    VatExemptionReasonCode = g.Key.Reason,
+                    VatExemptionReasonText = g.Select(e => e.ItemVatExemptionReasonText).FirstOrDefault()
+                };
+
+            })
+            .ToList();
+
+        /// <summary>
+        /// Line items.
+        /// </summary>
+        public List<InvoiceLine> Lines { get; set; } = new();
+    }
+
+    public class VatBreakdownEntry
+    {
+        /// <summary>
         /// <b>BT-116</b> 
         /// <br/> 
         /// Sum of all taxable amounts subject to a specific VAT category code and VAT category rate (if the VAT category rate is applicable). <br/>
@@ -288,18 +321,13 @@
         /// <br/> 
         /// A textual statement of the reason why the amount is exempted from VAT or why no VAT is being charged.
         /// </summary>
-        public string? VatExemptionReason { get; set; }
+        public string? VatExemptionReasonText { get; set; }
 
         /// <summary>
         /// <b>BT-121</b> 
         /// <br/> 
         /// A coded statement of the reason for why the amount is exempted from VAT.
         /// </summary>
-        public string? VatExemptionReasonCode { get; set; }
-
-        /// <summary>
-        /// Line items.
-        /// </summary>
-        public List<InvoiceLine> Lines { get; set; } = new();
+        public VatExemptionReason? VatExemptionReasonCode { get; set; }
     }
 }

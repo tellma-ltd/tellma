@@ -570,7 +570,7 @@ namespace Tellma.Api
                 PurchaseOrderId = inv.PurchaseOrderId,
                 BillingReferenceId = inv.BillingReferenceId,
                 ContractId = inv.ContractId,
-                InvoiceCounterValue = (previousCounterValue + 1).ToString(),
+                InvoiceCounterValue = previousCounterValue + 1,
                 PreviousInvoiceHash = previousInvoiceHash,
                 Seller = new Party
                 {
@@ -626,11 +626,11 @@ namespace Tellma.Api
                 InvoiceTotalVatAmountInAccountingCurrency = inv.InvoiceTotalVatAmountInAccountingCurrency,
                 PrepaidAmount = inv.PrepaidAmount,
                 RoundingAmount = inv.RoundingAmount,
-                VatCategoryTaxableAmount = inv.VatCategoryTaxableAmount,
-                VatCategory = ToVatCategory(inv.VatCategory),
-                VatRate = inv.VatRate,
-                VatExemptionReason = inv.VatExemptionReason,
-                VatExemptionReasonCode = inv.VatExemptionReasonCode,
+                //VatCategoryTaxableAmount = inv.VatCategoryTaxableAmount,
+                //VatCategory = ToVatCategory(inv.VatCategory),
+                //VatRate = inv.VatRate,
+                //VatExemptionReason = inv.VatExemptionReason,
+                //VatExemptionReasonCode = inv.VatExemptionReasonCode,
                 Lines = inv.Lines.Select((line, index) => new InvoiceLine
                 {
                     Identifier = index + 1,
@@ -656,6 +656,8 @@ namespace Tellma.Api
                     ItemNetPrice = line.ItemNetPrice,
                     ItemVatCategory = ToVatCategory(line.ItemVatCategory),
                     ItemVatRate = line.ItemVatRate,
+                    ItemVatExemptionReasonCode = ToVatExemptionReason(line.ItemVatExemptionReasonCode),
+                    ItemVatExemptionReasonText = line.ItemVatExemptionReasonText,
                     PrepaymentVatCategory = ToVatCategory(line.PrepaymentVatCategory),
                     PrepaymentVatRate = line.PrepaymentVatRate,
                     ItemPriceBaseQuantity = line.ItemPriceBaseQuantity,
@@ -716,6 +718,35 @@ namespace Tellma.Api
             };
         }
 
+        private static VatExemptionReason ToVatExemptionReason(string reasonCode)
+        {
+            return reasonCode switch
+            {
+                // E
+                "VATEX-SA-29" => VatExemptionReason.VATEX_SA_29,
+                "VATEX-SA-29-7" => VatExemptionReason.VATEX_SA_29_7,
+                "VATEX-SA-30" => VatExemptionReason.VATEX_SA_30,
+
+                // Z
+                "VATEX-SA-32" => VatExemptionReason.VATEX_SA_32,
+                "VATEX-SA-33" => VatExemptionReason.VATEX_SA_33,
+                "VATEX-SA-34-1" => VatExemptionReason.VATEX_SA_34_1,
+                "VATEX-SA-34-2" => VatExemptionReason.VATEX_SA_34_2,
+                "VATEX-SA-34-3" => VatExemptionReason.VATEX_SA_34_3,
+                "VATEX-SA-34-4" => VatExemptionReason.VATEX_SA_34_4,
+                "VATEX-SA-34-5" => VatExemptionReason.VATEX_SA_34_5,
+                "VATEX-SA-35" => VatExemptionReason.VATEX_SA_35,
+                "VATEX-SA-36" => VatExemptionReason.VATEX_SA_36,
+                "VATEX-SA-EDU" => VatExemptionReason.VATEX_SA_EDU,
+                "VATEX-SA-HEA" => VatExemptionReason.VATEX_SA_HEA,
+                "VATEX-SA-MLTRY" => VatExemptionReason.VATEX_SA_MLTRY,
+
+                // O
+                "VATEX-SA-OOS" => VatExemptionReason.VATEX_SA_OOS,
+                _ => throw new InvalidOperationException($"Unrecognized VAT Exemption reason code {reasonCode}"),
+            };
+        }
+
         private static string InvoiceBlobName(string guid, bool isSandbox)
         {
             string stage = isSandbox ? "Sandbox" : "Production";
@@ -773,41 +804,53 @@ namespace Tellma.Api
             await CheckActionPermissionsAfter(actionFilter, ids, result.Data);
 
             // Non-transactional stuff
+            var statuses = output.InboxStatuses;
+            _clientProxy.UpdateInboxStatuses(TenantId, statuses);
 
             // ZATCA integration goes here ...
             if (dcOutput != null && dcOutput.Invoices.Any())
             {
-                if (dcOutput.Invoices.Count() > 1)
+                if (dcOutput.Invoices.Count() != 1)
                 {
                     throw new ZatcaException("Closing multiple ZATCA invoices is not currently supported");
                 }
 
                 var settings = await _behavior.Settings();
+                var isSandbox = settings.ZatcaUseSandbox;
                 var inv = dcOutput.Invoices.Single();
                 var invoice = MapInvoice(inv, settings, dcOutput.PreviousCounterValue, dcOutput.PreviousInvoiceHash);
-                string invoiceXml;
-                string invoiceHash;
-                bool isSandbox;
+               
+                var secrets = new ZatcaSecrets(
+                    encryptedSecurityToken: settings.ZatcaEncryptedSecurityToken, 
+                    encryptedSecret: settings.ZatcaEncryptedSecret, 
+                    encryptedPrivateKey: settings.ZatcaEncryptedPrivateKey, 
+                    keyIndex: settings.ZatcaEncryptionKeyIndex);
+
+                ClearanceReport report;
                 if (inv.IsSimplified)
                 {
-                    (invoiceXml, invoiceHash) = await _zatcaService.Report(invoice);
+                    report = await _zatcaService.Report(invoice, secrets, isSandbox);
                 } 
                 else
                 {
-                    (invoiceXml, invoiceHash) = await _zatcaService.Clear(invoice);
+                    report = await _zatcaService.Clear(invoice, secrets, isSandbox);
                 }
 
-                //await _behavior.Repository.Zatca__UpdateDocumentInfo(10, null, dcOutput.PreviousCounterValue, invoiceHash, inv.UniqueInvoiceIdentifier);
+                // Update the document info
+                await _behavior.Repository.Zatca__UpdateDocumentInfo(
+                    inv.Id, 
+                    ZatcaState.Reported, 
+                    null, 
+                    invoice.InvoiceCounterValue, 
+                    report.InvoiceHash, 
+                    invoice.UniqueInvoiceIdentifier);
 
-                //// Save the invoice XML
-                //var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier, isSandbox);
-                //var blobBytes = Encoding.UTF8.GetBytes(invoiceXml);
-                //var blobs = new List<(string name, byte[] content)>() { (GetBlobName(inv.UniqueInvoiceIdentifier), )) };
-                //await _blobService.SaveBlobsAsync(TenantId, )
+                // Save the invoice XML in Blob storage
+                var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), isSandbox);
+                var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
+                var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
+                await _blobService.SaveBlobsAsync(TenantId, blobs);
             }
-
-            var statuses = output.InboxStatuses;
-            _clientProxy.UpdateInboxStatuses(TenantId, statuses);
 
             // Commit and return
             trx.Complete();

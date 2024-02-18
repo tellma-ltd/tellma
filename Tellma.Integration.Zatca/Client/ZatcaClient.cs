@@ -32,6 +32,7 @@ namespace Tellma.Integration.Zatca
         #region Constants
 
         const string PRODUCTION_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal"; // TODO: Replace with production URL
+        const string SANDBOX_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
 
         #endregion
 
@@ -44,38 +45,25 @@ namespace Tellma.Integration.Zatca
 
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ZatcaClient(string baseUrl, IHttpClientFactory httpClientFactory)
+        public ZatcaClient(bool useSandbox, IHttpClientFactory httpClientFactory)
         {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentException($"'{nameof(baseUrl)}' cannot be null or whitespace.", nameof(baseUrl));
-            }
-
-            _baseUrl = baseUrl;
+            _baseUrl = useSandbox ? SANDBOX_BASE_URL : PRODUCTION_BASE_URL;
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public ZatcaClient(IHttpClientFactory httpClientFactory) : this(PRODUCTION_BASE_URL, httpClientFactory)
+        public ZatcaClient(IHttpClientFactory httpClientFactory) : this(useSandbox: false, httpClientFactory)
         {
         }
 
-        public ZatcaClient(string baseUrl, HttpClient client)
+        public ZatcaClient(bool useSandbox, HttpClient client)
         {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                throw new ArgumentException($"'{nameof(baseUrl)}' cannot be null or whitespace.", nameof(baseUrl));
-            }
+            ArgumentNullException.ThrowIfNull(client);
 
-            if (client is null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            _baseUrl = baseUrl;
+            _baseUrl = useSandbox ? SANDBOX_BASE_URL : PRODUCTION_BASE_URL;
             _httpClientFactory = new StaticHttpClientFactory(client);
         }
 
-        public ZatcaClient(HttpClient client) : this(PRODUCTION_BASE_URL, client)
+        public ZatcaClient(HttpClient client) : this(useSandbox: false, client)
         {
         }
 

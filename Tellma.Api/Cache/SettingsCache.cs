@@ -36,6 +36,7 @@ namespace Tellma.Api
             var version = settingsResult.Version.ToString();
             var generalSettings = settingsResult.GeneralSettings;
             var financialSettings = settingsResult.FinancialSettings;
+            var zatcaSettings = settingsResult.ZatcaSettings;
             var singleBusinessUnitId = settingsResult.SingleBusinessUnitId;
             var featureFlags = settingsResult.FeatureFlags;
 
@@ -90,6 +91,13 @@ namespace Tellma.Api
             forClient.City2 = fields.City2;
             forClient.City3 = fields.City3;
             forClient.CommercialRegistrationNumber = fields.CommercialRegistrationNumber;
+
+            // ZATCA fields
+            forClient.ZatcaEncryptedPrivateKey = zatcaSettings.ZatcaEncryptedPrivateKey;
+            forClient.ZatcaEncryptedSecret = zatcaSettings.ZatcaEncryptedSecret;
+            forClient.ZatcaEncryptedSecurityToken = zatcaSettings.ZatcaEncryptedSecurityToken;
+            forClient.ZatcaEncryptionKeyIndex = zatcaSettings.ZatcaEncryptionKeyIndex;
+            forClient.ZatcaUseSandbox = zatcaSettings.ZatcaUseSandbox;
 
             return (forClient, version);
         }

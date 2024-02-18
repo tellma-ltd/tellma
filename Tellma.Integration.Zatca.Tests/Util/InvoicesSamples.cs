@@ -13,7 +13,7 @@
             InvoiceIssueDateTime = new DateTime(2022, 3, 13, 14, 40, 40),
             InvoiceTypeTransactions = InvoiceTransaction.Standard | InvoiceTransaction.ThirdParty | InvoiceTransaction.Nominal | InvoiceTransaction.Summary,
             InvoiceCurrency = "SAR",
-            InvoiceCounterValue = "62",
+            InvoiceCounterValue = 62,
             PreviousInvoiceHash = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==",
             Seller = new Party
             {
@@ -54,7 +54,7 @@
             SupplyDate = new DateTime(2022, 3, 13),
             SupplyEndDate = new DateTime(2022, 3, 15),
             PaymentMeans = PaymentMeans.InCash,
-            AllowanceCharges = new() { new AllowanceCharge
+            AllowanceCharges = [ new AllowanceCharge
                 {
                     Indicator = AllowanceChargeType.Allowance,
                     Reason = "discount",
@@ -62,15 +62,15 @@
                     VatCategory = VatCategory.StandardRate,
                     VatRate = 0.15m
                 }
-            },
-            VatCategoryTaxableAmount = 966.00m,
-            VatCategory = VatCategory.StandardRate,
-            VatRate = 0.1500m,
+            ],
+            //VatCategoryTaxableAmount = 966.00m,
+            //VatCategory = VatCategory.StandardRate,
+            //VatRate = 0.1500m,
             InvoiceTotalVatAmountInAccountingCurrency = 144.9m,
             PrepaidAmount = 0.00m,
 
-            Lines = new List<InvoiceLine>
-                {
+            Lines =
+                [
                     new()
                     {
                         Identifier = 1,
@@ -87,7 +87,7 @@
                         ItemNetPrice = 22.00m,
                         ItemPriceDiscount = 2.00m,
                     }
-                }
+                ]
         };
 
         /// <summary>
@@ -101,7 +101,7 @@
             InvoiceIssueDateTime = new DateTime(2022, 3, 13, 14, 40, 40),
             InvoiceTypeTransactions = InvoiceTransaction.Simplified | InvoiceTransaction.Nominal | InvoiceTransaction.Exports | InvoiceTransaction.Summary,
             InvoiceCurrency = "SAR",
-            InvoiceCounterValue = "62",
+            InvoiceCounterValue = 62,
             PreviousInvoiceHash = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==",
             Seller = new Party
             {
@@ -142,21 +142,19 @@
 
             BillingReferenceId = "billing-reference-id",
             ContractId = "12345",
-            InvoiceNotes = new List<string> { "Note 1", "Note 2" },
+            InvoiceNotes = ["Note 1", "Note 2"],
             InvoiceTotalVatAmountInAccountingCurrency = 968.0m,
 
             PaymentAccountId = "12345",
             PaymentTerms = "payment-terms",
             PurchaseOrderId = "12345",
-            ReasonsForIssuanceOfCreditDebitNote = new List<string> { "Reason 1", "Reason 2" },
+            ReasonsForIssuanceOfCreditDebitNote = ["Reason 1", "Reason 2"],
             RoundingAmount = 0.21m,
-            VatExemptionReason = "vat-exemption-reason",
-            VatExemptionReasonCode = "vat-exemption-reason-code",
 
             SupplyDate = new DateTime(2022, 3, 13),
             SupplyEndDate = new DateTime(2022, 3, 15),
             PaymentMeans = PaymentMeans.InCash,
-            AllowanceCharges = new() { 
+            AllowanceCharges = [ 
                 new AllowanceCharge
                 {
                     Indicator = AllowanceChargeType.Allowance,
@@ -168,15 +166,15 @@
                     Percentage = 0.15m,
                     ReasonCode = "99"
                 }
-            },
-            VatCategoryTaxableAmount = 966.00m,
-            VatCategory = VatCategory.StandardRate,
-            VatRate = 0.1500m,
+            ],
+            //VatCategoryTaxableAmount = 966.00m,
+            //VatCategory = VatCategory.StandardRate,
+            //VatRate = 0.1500m,
 
             PrepaidAmount = 0.00m,
 
-            Lines = new List<InvoiceLine>
-                {
+            Lines =
+                [
                     new()
                     {
                         Identifier = 1,
@@ -187,8 +185,10 @@
                         VatAmount = 145.20m,
 
                         ItemName = "dsd",
-                        ItemVatCategory = VatCategory.StandardRate,
+                        ItemVatCategory = VatCategory.ZeroRatedGoods,
                         ItemVatRate = 0.15m,
+                        ItemVatExemptionReasonText = "Some reason",
+                        ItemVatExemptionReasonCode = VatExemptionReason.VATEX_SA_32,
 
                         ItemNetPrice = 22.00m,
                         ItemPriceDiscount = 2.00m,
@@ -218,7 +218,7 @@
                     },
 
                     new()
-                    {
+                    { 
                         Identifier = 2,
                         Quantity = 54.0m,
                         QuantityUnit = "PCE",
@@ -229,6 +229,8 @@
                         ItemName = "dsds",
                         ItemVatCategory = VatCategory.StandardRate,
                         ItemVatRate = 0.15m,
+                        ItemVatExemptionReasonText = null,
+                        ItemVatExemptionReasonCode = null,
 
                         ItemNetPrice = 122.00m,
                         ItemPriceDiscount = 12.00m,
@@ -256,7 +258,7 @@
                         PrepaymentVatCategoryTaxableAmount= 1600.0m,
                         PrepaymentVatRate = 0.15m
                     }
-                }
+                ]
         };
     }
 }

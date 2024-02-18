@@ -4,22 +4,28 @@ using Tellma.Model.Application;
 
 namespace Tellma.Repository.Application
 {
-    public class SettingsOutput
+    public class SettingsOutput(
+        Guid version,
+        int? singleBusinessUnitId,
+        GeneralSettings gSettings,
+        FinancialSettings fSettings,
+        ZatcaSettings zSettings,
+        IDictionary<string, bool> featureFlags)
     {
-        public SettingsOutput(Guid version, int? singleBusinessUnitId, GeneralSettings gSettings, FinancialSettings fSettings, IDictionary<string, bool> featureFlags)
-        {
-            Version = version;
-            SingleBusinessUnitId = singleBusinessUnitId;
-            GeneralSettings = gSettings;
-            FinancialSettings = fSettings;
-            FeatureFlags = featureFlags;
-        }
+        public Guid Version { get; } = version;
+        public int? SingleBusinessUnitId { get; } = singleBusinessUnitId;
+        public GeneralSettings GeneralSettings { get; } = gSettings;
+        public FinancialSettings FinancialSettings { get; } = fSettings;
+        public ZatcaSettings ZatcaSettings { get; } = zSettings;
+        public IDictionary<string, bool> FeatureFlags { get; } = featureFlags;
+    }
 
-        public Guid Version { get; }
-        public int? SingleBusinessUnitId { get; } // Set when there is exactly one business unitId
-        public GeneralSettings GeneralSettings { get; }
-        public FinancialSettings FinancialSettings { get; }
-
-        public IDictionary<string, bool> FeatureFlags { get; }
+    public class ZatcaSettings
+    {
+        public string ZatcaEncryptedPrivateKey { get; set; }
+        public string ZatcaEncryptedSecret { get; set; }
+        public string ZatcaEncryptedSecurityToken { get; set; }
+        public int ZatcaEncryptionKeyIndex { get; set; }
+        public bool ZatcaUseSandbox { get; set; }
     }
 }

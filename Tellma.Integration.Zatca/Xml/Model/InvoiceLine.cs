@@ -143,6 +143,20 @@ namespace Tellma.Integration.Zatca
         public decimal ItemVatRate { get; set; }
 
         /// <summary>
+        /// <b>BT-???</b>
+        /// <br/> 
+        /// This is required if <see cref="ItemVatCategory"/> is non-standard.
+        /// </summary>
+        public VatExemptionReason? ItemVatExemptionReasonCode { get; set; }
+
+        /// <summary>
+        /// <b>BT-???</b>
+        /// <br/> 
+        /// This is required if <see cref="ItemVatCategory"/> is non-standard.
+        /// </summary>
+        public string? ItemVatExemptionReasonText { get; set; }
+
+        /// <summary>
         /// <b>KSA-33</b>
         /// <br/> 
         /// The VAT category code (BT-118) of the associated Prepayment invoice(s).
