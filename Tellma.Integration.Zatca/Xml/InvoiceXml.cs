@@ -18,7 +18,7 @@ namespace Tellma.Integration.Zatca
     /// <summary>
     /// Class for generating and signing ZATCA-compliant invoice XML.
     /// </summary>
-    public class InvoiceXml
+    public class InvoiceXml(Invoice inv)
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
         public const string TIME_FORMAT = "HH:mm:ssZ";
@@ -36,13 +36,8 @@ namespace Tellma.Integration.Zatca
         readonly XNamespace ds = "http://www.w3.org/2000/09/xmldsig#";
         readonly XNamespace xades = "http://uri.etsi.org/01903/v1.3.2#";
 
-        private readonly Invoice _inv;
+        private readonly Invoice _inv = inv ?? throw new ArgumentNullException(nameof(inv));
         private XDocument? _xdoc;
-
-        public InvoiceXml(Invoice inv)
-        {
-            _inv = inv ?? throw new ArgumentNullException(nameof(inv));
-        }
 
         protected virtual string GetCurrentTime() =>
             DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
@@ -107,7 +102,7 @@ namespace Tellma.Integration.Zatca
             invoiceElem.Add(
                 new XElement(cac + "AdditionalDocumentReference",
                     new XElement(cbc + "ID", "ICV"),
-                    new XElement(cbc + "UUID", _inv.InvoiceCounterValue)
+                    new XElement(cbc + "UUID", _inv.InvoiceCounterValue.ToString())
                 ),
                 new XElement(cac + "AdditionalDocumentReference",
                     new XElement(cbc + "ID", "PIH"),
@@ -275,27 +270,32 @@ namespace Tellma.Integration.Zatca
                 // Rule BR-KSAEN16931-08
                 invoiceElem.Add(
                     new XElement(cac + "TaxTotal",
-                        Amount("TaxAmount", _inv.InvoiceTotalVatAmount),
-                        new XElement(cac + "TaxSubtotal",
-                            Amount("TaxableAmount", _inv.VatCategoryTaxableAmount),
-                            Amount("TaxAmount", _inv.VatCategoryTaxAmount),
-                            new XElement(cac + "TaxCategory",
-                                new XElement(cbc + "ID", _inv.VatCategory.ToXml()),
-                                new XElement(cbc + "Percent", (_inv.VatRate * 100).ToString(DECIMAL_FORMAT)),
-                                // ... Optional stuff can go here ...
-                                new XElement(cac + "TaxScheme",
-                                    new XElement(cbc + "ID", "VAT")
-                                ).Grab(out XElement taxSchemeElem)
-                            )
-                        )
-                    )
+                        Amount("TaxAmount", _inv.InvoiceTotalVatAmount)
+                    ).Grab(out XElement taxAmountElem)
                 );
 
-                if (!string.IsNullOrWhiteSpace(_inv.VatExemptionReasonCode))
-                    taxSchemeElem.AddBeforeSelf(new XElement(cbc + "TaxExemptionReasonCode", _inv.VatExemptionReasonCode));
+                foreach (var vatEntry in _inv.VatBreakdown)
+                {
+                    taxAmountElem.Add(new XElement(cac + "TaxSubtotal",
+                           Amount("TaxableAmount", vatEntry.VatCategoryTaxableAmount),
+                           Amount("TaxAmount", vatEntry.VatCategoryTaxAmount),
+                           new XElement(cac + "TaxCategory",
+                               new XElement(cbc + "ID", vatEntry.VatCategory.ToXml()),
+                               new XElement(cbc + "Percent", (vatEntry.VatRate * 100).ToString(DECIMAL_FORMAT)),
+                               // ... Optional elements go here ...
+                               new XElement(cac + "TaxScheme",
+                                   new XElement(cbc + "ID", "VAT")
+                               ).Grab(out XElement taxSchemeElem)
+                           )
+                       )
+                    );
 
-                if (!string.IsNullOrWhiteSpace(_inv.VatExemptionReason))
-                    taxSchemeElem.AddBeforeSelf(new XElement(cbc + "TaxExemptionReason", _inv.VatExemptionReason));
+                    if (vatEntry.VatExemptionReasonCode != null)
+                        taxSchemeElem.AddBeforeSelf(new XElement(cbc + "TaxExemptionReasonCode", vatEntry.VatExemptionReasonCode.Value.ToXml()));
+
+                    if (!string.IsNullOrWhiteSpace(vatEntry.VatExemptionReasonText))
+                        taxSchemeElem.AddBeforeSelf(new XElement(cbc + "TaxExemptionReason", vatEntry.VatExemptionReasonText));
+                }
             }
 
             // VAT amount in accounting currency (Rule BR-KSAEN16931-09)
@@ -713,13 +713,13 @@ namespace Tellma.Integration.Zatca
 
             // Return the XML document
             return new SignatureInfo(
-                signingTime, 
-                certHash, 
-                certIssuerName, 
-                certSerialNumber, 
-                digitalSignature, 
-                signedPropsHash, 
-                invoiceHash, 
+                signingTime,
+                certHash,
+                certIssuerName,
+                certSerialNumber,
+                digitalSignature,
+                signedPropsHash,
+                invoiceHash,
                 qrCode);
         }
 
@@ -1026,6 +1026,36 @@ namespace Tellma.Integration.Zatca
                 VatCategory.ZeroRatedGoods => "Z",
                 VatCategory.NotSubjectToTax => "O",
                 _ => "",
+            };
+        }
+
+        internal static string ToXml(this VatExemptionReason v)
+        {
+            return v switch
+            {
+                // E
+                VatExemptionReason.VATEX_SA_29 => "VATEX-SA-29",
+                VatExemptionReason.VATEX_SA_29_7 => "VATEX-SA-29-7",
+                VatExemptionReason.VATEX_SA_30 => "VATEX-SA-30",
+
+                // Z
+                VatExemptionReason.VATEX_SA_32 => "VATEX-SA-32",
+                VatExemptionReason.VATEX_SA_33 => "VATEX-SA-33",
+                VatExemptionReason.VATEX_SA_34_1 => "VATEX-SA-34-1",
+                VatExemptionReason.VATEX_SA_34_2 => "VATEX-SA-34-2",
+                VatExemptionReason.VATEX_SA_34_3 => "VATEX-SA-34-3",
+                VatExemptionReason.VATEX_SA_34_4 => "VATEX-SA-34-4",
+                VatExemptionReason.VATEX_SA_34_5 => "VATEX-SA-34-5",
+                VatExemptionReason.VATEX_SA_35 => "VATEX-SA-35",
+                VatExemptionReason.VATEX_SA_36 => "VATEX-SA-36",
+                VatExemptionReason.VATEX_SA_EDU => "VATEX-SA-EDU",
+                VatExemptionReason.VATEX_SA_HEA => "VATEX-SA-HEA",
+                VatExemptionReason.VATEX_SA_MLTRY => "VATEX-SA-MLTRY",
+
+                // O
+                VatExemptionReason.VATEX_SA_OOS => "VATEX-SA-OOS",
+
+                _ => throw new InvalidOperationException($"Unrecognized VAT Exemption reason code {v}"),
             };
         }
 

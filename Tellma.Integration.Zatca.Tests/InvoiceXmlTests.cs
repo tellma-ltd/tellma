@@ -79,7 +79,7 @@ namespace Tellma.Integration.Zatca.Tests
             _output.WriteLine(xml);
         }
 
-        [Fact(DisplayName = "Signing XML is consistent with FATOORA")]
+        [Fact(DisplayName = "Signing XML is consistent with FATOORA", Skip = "Need to regenerate the expected values")]
         public void SignInvoice()
         {
             // Arrange

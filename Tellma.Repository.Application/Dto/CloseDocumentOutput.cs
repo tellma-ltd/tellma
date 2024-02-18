@@ -70,11 +70,6 @@ namespace Tellma.Repository.Application
         public string AccountingCurrency { get; set; }
         public decimal PrepaidAmount { get; set; }
         public decimal RoundingAmount { get; set; }
-        public decimal VatCategoryTaxableAmount { get; set; }
-        public string VatCategory { get; set; } // E, S, Z, O
-        public decimal VatRate { get; set; }   
-        public string VatExemptionReason { get; set; }
-        public string VatExemptionReasonCode { get; set; }
         public List<ZatcaAllowanceCharge> AllowanceCharges { get; } = new();
         public List<ZatcaInvoiceLine> Lines { get; } = new();
     }
@@ -111,6 +106,8 @@ namespace Tellma.Repository.Application
         public decimal ItemNetPrice { get; set; }
         public string ItemVatCategory { get; set; } // E, S, Z, O
         public decimal ItemVatRate { get; set; }
+        public string ItemVatExemptionReasonCode { get; set; }
+        public string ItemVatExemptionReasonText { get; set; }
         public string PrepaymentVatCategory { get; set; } // E, S, Z, O
         public decimal PrepaymentVatRate { get; set; }
         public decimal ItemPriceBaseQuantity { get; set; }

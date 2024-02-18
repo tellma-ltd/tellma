@@ -1,15 +1,11 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System.Reflection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tellma.Integration.Zatca.Tests
 {
     public partial class ZatcaClientTests
     {
         private const string _sectionName = "ZatcaSandbox";
-
-        private static readonly string _zatcaSandboxBaseUri = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
         private static readonly HttpClient _httpClient = new();
 
         readonly ZatcaSandboxOptions _options;
@@ -22,7 +18,7 @@ namespace Tellma.Integration.Zatca.Tests
             _options = builder
                 .Build()
                 .GetSection(_sectionName)
-                .Get<ZatcaSandboxOptions>() 
+                .Get<ZatcaSandboxOptions>()
                 ?? throw new InvalidOperationException($"Running {nameof(ZatcaClientTests)} requires a '{_sectionName}' section in the Test project user secrets");
         }
 
@@ -44,7 +40,7 @@ namespace Tellma.Integration.Zatca.Tests
             var result = response.Result;
             Assert.NotNull(result);
             Assert.Equal(Constants.ReportingStatus.REPORTED, result.ReportingStatus);
-            
+
             var validationResults = result.ValidationResults;
             Assert.NotNull(validationResults);
             Assert.Equal(Constants.ValidationStatus.WARNING, validationResults.Status);
@@ -237,7 +233,7 @@ namespace Tellma.Integration.Zatca.Tests
             // Act
             var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Valid.json");
             var response = await client.CreateComplianceCsid(request, invalidOtp);
-            
+
             // Assert
             Assert.Equal(ResponseStatus.InvalidRequest, response.Status);
             Assert.False(response.IsSuccess);
@@ -426,7 +422,7 @@ namespace Tellma.Integration.Zatca.Tests
             new(_options.Renewal?.Username ?? _options.Default?.Username ?? "",
                 _options.Renewal?.Password ?? _options.Default?.Password ?? "");
 
-        private static ZatcaClient GetZatcaClient() => new(_zatcaSandboxBaseUri, _httpClient);
+        private static ZatcaClient GetZatcaClient() => new(useSandbox: true, _httpClient);
 
         private static async Task<T> GetFileContent<T>(string fileName)
         {

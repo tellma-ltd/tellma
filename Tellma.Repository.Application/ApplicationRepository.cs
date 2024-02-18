@@ -379,6 +379,7 @@ namespace Tellma.Repository.Application
                 int? singleBusinessUnitId;
                 GeneralSettings gSettings = new();
                 FinancialSettings fSettings = new();
+                ZatcaSettings zSettings = new();
                 Dictionary<string, bool> featureFlags = new();
 
                 // Connection
@@ -406,7 +407,7 @@ namespace Tellma.Repository.Application
                     throw new InvalidOperationException($"[dal].[{nameof(Settings__Load)}] first data set was empty. TenantId: {_tenantId}.");
                 }
 
-                // General + Financial Settings
+                // General + Financial + ZATCA Settings
                 await reader.NextResultAsync(cancellation);
 
                 if (await reader.ReadAsync(cancellation))
@@ -425,6 +426,15 @@ namespace Tellma.Repository.Application
                         // get property value
                         var propValue = reader.Value(prop.Name);
                         prop.SetValue(fSettings, propValue);
+                    }
+
+                    // ZATCA
+                    {
+                        zSettings.ZatcaEncryptedSecurityToken = reader.GetString(nameof(zSettings.ZatcaEncryptedSecurityToken));
+                        zSettings.ZatcaEncryptedSecret = reader.GetString(nameof(zSettings.ZatcaEncryptedSecret));
+                        zSettings.ZatcaEncryptedPrivateKey = reader.GetString(nameof(zSettings.ZatcaEncryptedPrivateKey));
+                        zSettings.ZatcaEncryptionKeyIndex = reader.GetInt32(nameof(zSettings.ZatcaEncryptionKeyIndex));
+                        zSettings.ZatcaUseSandbox = reader.GetBoolean(nameof(zSettings.ZatcaUseSandbox));
                     }
                 }
                 else
@@ -464,7 +474,7 @@ namespace Tellma.Repository.Application
                     }
                 }
 
-                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings, featureFlags);
+                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings, zSettings, featureFlags);
             },
             DatabaseName(connString), nameof(Settings__Load), cancellation);
 
@@ -4696,56 +4706,6 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task<CloseDocumentOutput> Zatca__GetInvoices(List<int> ids, CancellationToken cancellation = default)
-        {
-            var connString = await GetConnectionString(cancellation);
-            CloseDocumentOutput result = null;
-
-            await TransactionalDatabaseOperation(async () =>
-            {
-                // Connection
-                using var conn = new SqlConnection(connString);
-
-                // Command
-                using var cmd = conn.CreateCommand();
-                cmd.CommandTimeout = TimeoutInSeconds;
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Zatca__GetInvoices)}]";
-
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
-
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add(prevInvoiceSerialParam);
-                cmd.Parameters.Add(prevInvoiceHashParam);
-
-                // Execute
-                await conn.OpenAsync();
-                List<ZatcaInvoice> invoices;
-                {
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    invoices = await reader.LoadZatcaInvoices(cancellation);
-                }
-
-                int prevInvoiceSerial = GetValue<int>(prevInvoiceSerialParam.Value);
-                string prevInvoiceHash = GetValue<string>(prevInvoiceHashParam.Value);
-
-                // Return the result
-                result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, new List<ValidationError>(), new List<InboxStatus>());
-            },
-            DatabaseName(connString), nameof(Zatca__GetInvoices), cancellation);
-
-            return result;
-        }
-
         public async Task<InboxStatusOutput> Documents__Open(int definitionId, List<int> ids, bool validateOnly, int top, int userId)
         {
             var connString = await GetConnectionString();
@@ -8631,6 +8591,115 @@ namespace Tellma.Repository.Application
             DatabaseName(connString), nameof(Users__Invite));
 
             return (result, users);
+        }
+
+        #endregion
+
+        #region ZATCA
+
+
+        public async Task<CloseDocumentOutput> Zatca__GetInvoices(List<int> ids, CancellationToken cancellation = default)
+        {
+            var connString = await GetConnectionString(cancellation);
+            CloseDocumentOutput result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Zatca__GetInvoices)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var prevInvoiceSerialParam = new SqlParameter("@PreviousInvoiceSerialNumber", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var prevInvoiceHashParam = new SqlParameter("@PreviousInvoiceHash", SqlDbType.NVarChar) { Direction = ParameterDirection.Output, Size = 4000 };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add(prevInvoiceSerialParam);
+                cmd.Parameters.Add(prevInvoiceHashParam);
+
+                // Execute
+                await conn.OpenAsync();
+                List<ZatcaInvoice> invoices;
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    invoices = await reader.LoadZatcaInvoices(cancellation);
+                }
+
+                int prevInvoiceSerial = GetValue<int>(prevInvoiceSerialParam.Value);
+                string prevInvoiceHash = GetValue<string>(prevInvoiceHashParam.Value);
+
+                // Return the result
+                result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, new List<ValidationError>(), new List<InboxStatus>());
+            },
+            DatabaseName(connString), nameof(Zatca__GetInvoices), cancellation);
+
+            return result;
+        }
+
+        public async Task Zatca__UpdateDocumentInfo(int id, ZatcaState zatcaState, string zatcaError, int zatcaSerialNumber, string zatcaHash, Guid zatcaUuid)
+        {
+            var connString = await GetConnectionString();
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Zatca__UpdateDocumentInfo)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Id", id);
+                cmd.Parameters.Add("@ZatcaError", zatcaError);
+                cmd.Parameters.Add("@ZatcaSerialNumber", zatcaSerialNumber);
+                cmd.Parameters.Add("@ZatcaHash", zatcaHash);
+                cmd.Parameters.Add("@ZatcaState", zatcaState);
+                cmd.Parameters.Add("@ZatcaUuid", zatcaUuid);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Zatca__UpdateDocumentInfo));
+        }
+
+        public async Task Zatca__SaveSecrets(string encryptedCsid, string encryptedSecret, string encryptedPrivateKey, int encryptionKeyIndex)
+        {
+            var connString = await GetConnectionString();
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Zatca__SaveSecrets)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@EncryptedCsid", encryptedCsid);
+                cmd.Parameters.Add("@EncryptedSecret", encryptedSecret);
+                cmd.Parameters.Add("@EncryptedPrivateKey", encryptedPrivateKey);
+                cmd.Parameters.Add("@EncryptionKeyIndex", encryptionKeyIndex);
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(Zatca__SaveSecrets));
         }
 
         #endregion

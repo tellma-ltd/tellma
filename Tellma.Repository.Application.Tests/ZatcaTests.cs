@@ -73,7 +73,7 @@ namespace Tellma.Repository.Application.Tests
             var xml = xmlBuilder.GetXml();
 
             // Prepare the call the ZATCA sandbox
-            var client = new ZatcaClient(ZATCA_SANDBOX_BASE_URL, _httpClient);
+            var client = new ZatcaClient(useSandbox: true, _httpClient);
             var credentials = new Credentials(username: securityToken, password: secret);
             Response response;
             string responseBody;

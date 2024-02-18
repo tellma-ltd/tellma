@@ -965,6 +965,7 @@
     <Build Include="dal\Stored Procedures\dal.Zatca__GetInvoices.sql" />
     <Build Include="dbo\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
     <Build Include="dbo\Functions\dal.fn_DocumentDefinition__IsZatcaDocumentType.sql" />
+    <Build Include="dal\Stored Procedures\dal.Zatca__UpdateDocumentInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

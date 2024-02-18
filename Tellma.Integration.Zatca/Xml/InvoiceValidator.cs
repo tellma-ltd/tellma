@@ -202,8 +202,8 @@ namespace Tellma.Integration.Zatca
                     yield return new("BR-KSA-17", $"Debit and credit note (invoice type code (BT-3) is equal to 383 or 381) must contain the reason (KSA-10) for this invoice type issuing.");
             }
 
-            if (!Enum.IsDefined(inv.VatCategory))
-                yield return new("BR-KSA-18", $"VAT category code must contain one of the values ({VatCategory.StandardRate}, {VatCategory.ZeroRatedGoods}, {VatCategory.ExemptFromTax}, {VatCategory.NotSubjectToTax}). Current value is {inv.VatCategory}.");
+            //if (!Enum.IsDefined(inv.VatCategory))
+            //    yield return new("BR-KSA-18", $"VAT category code must contain one of the values ({VatCategory.StandardRate}, {VatCategory.ZeroRatedGoods}, {VatCategory.ExemptFromTax}, {VatCategory.NotSubjectToTax}). Current value is {inv.VatCategory}.");
 
             foreach (var charge in inv.AllowanceCharges.Where(e => e.Indicator == AllowanceChargeType.Charge))
             {
