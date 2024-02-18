@@ -6,3 +6,4 @@ AS
 BEGIN
 	RETURN (SELECT [ZatcaDocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @Id)
 END
+GO

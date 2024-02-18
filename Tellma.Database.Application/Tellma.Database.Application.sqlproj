@@ -965,20 +965,18 @@
     <Build Include="dal\Stored Procedures\dal.Zatca__GetInvoices.sql" />
     <Build Include="dbo\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
     <Build Include="dbo\Functions\dal.fn_DocumentDefinition__IsZatcaDocumentType.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__ZatcaDocumentType.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__IsZatcaDocument.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__BillingReferenceId.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__SupplyDate.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__SupplyEndDate.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__UpdateDocumentInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
-    <None Include="100.BananSD.publish.xml" />
-    <None Include="299.BananETDemos.publish.xml" />
-    <None Include="200.BananET.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
-    <None Include="199.BananSDDemos.publish.xml" />
-    <None Include="201.Soreti.publish.xml" />
-    <None Include="202.Lifan.publish.xml" />
-    <None Include="001.Album.publish.xml" />
-    <None Include="101.Sunagas.publish.xml" />
     <None Include="_Azure\Azure.Staging101.publish.xml" />
     <None Include="_Azure\1.SD\Azure.100.BananSD.publish.xml" />
     <None Include="_Azure\1.SD\Azure.101.Sunagas.publish.xml" />
@@ -989,11 +987,9 @@
     <None Include="_Azure\2.ET\Azure.203.Pharo.publish.xml" />
     <None Include="_Azure\3.SA\Azure.399.SADemos.publish.xml" />
     <None Include="_Azure\4.LB\Azure.401.Ittihad.publish.xml" />
-    <None Include="204.Transport.publish.xml" />
     <None Include="_Azure\2.ET\Azure.299.ETDemos.publish.xml" />
     <None Include="_Azure\1.SD\Azure.102.Mico.publish.xml" />
     <None Include="_Azure\Azure.001.Album.publish.xml" />
-    <None Include="301.Ayadi.publish.xml" />
     <None Include="_Azure\3.SA\Azure.301.Ayadi.publish.xml" />
     <None Include="_Azure\1.SD\Azure.103.Mawarid.publish.xml" />
     <None Include="_Azure\Azure.1001.Album.publish.xml" />
@@ -1001,7 +997,7 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
-    <None Include="Tellma_1.Database.Application.publish.xml" />
+    <None Include="Tellma.Spectra20240210.publish.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

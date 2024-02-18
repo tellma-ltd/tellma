@@ -138,7 +138,7 @@ BEGIN
 	IF [dal].[fn_DocumentDefinition__IsZatcaDocumentType](@DefinitionId) = 1
 	BEGIN
 		INSERT INTO @ValidationErrors([Key], [ErrorName])
-		-- Missing document type
+		-- Missing invoice type transaction
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_TheDocumentHasMissingZatcaDocumentType'
@@ -342,3 +342,4 @@ DONE:
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
+GO
