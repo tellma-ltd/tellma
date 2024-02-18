@@ -771,11 +771,10 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
-            DocumentDefinitionForClient def = null;
+            var def = await Definition();
             if (transition == nameof(Open))
             {
                 // ZATCA documents cannot be reopened
-                def ??= await Definition();
                 if (!string.IsNullOrWhiteSpace(def.ZatcaDocumentType))
                 {
                     // ModelState.AddError("[0]", _localizer["Error_CannotOpenAZatcaDocument"]);
@@ -851,9 +850,12 @@ namespace Tellma.Api
                 if (!report.IsSuccess || report.HasWarnings)
                 {
                     var level = !report.IsSuccess ? TenantLogLevel.Error : TenantLogLevel.Warning;
-                    def ??= await Definition();
                     await _behavior.LogZatcaErrorOrWarning(DefinitionId, def.TitleSingular, inv.Id, report.InvoiceXml, report.ValidationResultsJson(), level);
                 }
+
+                // TODO: What if a failure happens here before we commit the transaction.
+                // We would lose the invoice XML, and the document will remain open, even
+                // though it was already cleared with ZATCA API.
                 if (report.IsSuccess)
                 {
                     // If calling ZATCA API was successful...
@@ -871,10 +873,6 @@ namespace Tellma.Api
                     var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
                     var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
                     await _blobService.SaveBlobsAsync(TenantId, blobs);
-
-                    // Note we do this in a post commit action, since if there is a failure after
-                    // the doc has been reported to ZATCA, we would prefer to keep the document closed
-                    // even though we had failed to capture
                 }
                 else
                 {
