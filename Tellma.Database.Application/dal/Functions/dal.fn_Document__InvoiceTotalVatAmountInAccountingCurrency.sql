@@ -14,7 +14,6 @@ BEGIN
 		JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 		WHERE L.[DocumentId] = @DocumentId
 		AND AC.[Concept] = N'CurrentValueAddedTaxPayables'
-		AND R.[Code] NOT LIKE 'Prepayment%'
 	), 0)
 END
 GO

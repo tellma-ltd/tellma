@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -65,7 +65,7 @@ BEGIN
         IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(NAG.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
         NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
-        dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
+        -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
         dal.fn_RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
 		-- Following is auto computed
@@ -135,33 +135,41 @@ BEGIN
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NR.[Code] NOT LIKE N'Prepayment%'
 
    --=-=-= 4 - Prepayment Invoice Lines =-=-=--
+   /*
+	Upon issuing prepayment invoice
+	Dr. Cash
+	  Cr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15
+	  Cr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
+
+	Upon applying the prepayment
+	Dr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
+	  Cr. Account Receivable: SI
+   */
     SELECT TOP 1
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
 		-- remove any field which is pure computation
-        E.[InternalReference] AS [PrepaymentId], -- KSA-26
+        E.[AgentId] AS [PrepaymentId], -- KSA-26
         NEWID() AS [PrepaymentUuid], -- KSA-27
         DATETIMEOFFSETFROMPARTS(2024, 1, 31, 14, 23, 23, 0, 12, 0, 7) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
         0 AS [Quantity], -- BT-129
         N'PCE' AS [QuantityUnit], -- BT-130
         E.[Direction] * E.[NotedAmount] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
-		E.[Direction] * E.[MonetaryValue] AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
-        E.[Direction] * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemNetPrice], -- BT-146
+		E.[Direction] * E.[NotedAmount] * R.[VatRate] AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
+		E.[Direction] * E.[MonetaryValue] AS [PrepaidAmountBreakdown], -- to accumulate in BT-113
 		-- Resource Lookup 3: VAT Category
 		ISNULL(LK3.[Code], 'S') AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
-        ISNULL(NR.[VatRate], 0.15) AS [PrepaymentVatRate] -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
+        ISNULL(R.[VatRate], 0.15) AS [PrepaymentVatRate] -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
     FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
-	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
-	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = NR.[Lookup3Id]
-	INNER JOIN dbo.Units U ON U.[Id] = E.[UnitId]
+	INNER JOIN dbo.Resources R ON R.[Id] = E.[NotedResourceId]
+	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = R.[Lookup3Id]
 	INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 	INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
-	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NR.[Code] LIKE N'Prepayment%'
+	WHERE AC.[Concept] = N'DeferredIncomeClassifiedAsCurrent'
+	AND R.[Code] LIKE N'Prepayment%'
 END;
