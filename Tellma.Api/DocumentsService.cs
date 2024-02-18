@@ -814,7 +814,7 @@ namespace Tellma.Api
             {
                 if (dcOutput.Invoices.Count() != 1)
                 {
-                    throw new ZatcaException("Closing multiple ZATCA invoices is not currently supported");
+                    throw new ServiceException("Closing multiple ZATCA invoices is not currently supported");
                 }
 
                 var settings = await _behavior.Settings();
@@ -822,7 +822,7 @@ namespace Tellma.Api
 
                 if (!useSandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
                 {
-                    throw new ZatcaException(_localizer["Error_NotOnboardedWithZatca"]);
+                    throw new ServiceException(_localizer["Error_NotOnboardedWithZatca"]);
                 }
 
                 var inv = dcOutput.Invoices.Single();
@@ -876,10 +876,16 @@ namespace Tellma.Api
                 }
                 else
                 {
-                    // If calling ZATCA API failed, throw an exception to roll back the transaction
-                    throw new ZatcaException(@$"Error while clearing the invoice with ZATCA: 
+                    IEnumerable<string> errors = []; 
+                    if (report.ValidationResults?.ErrorMessages != null)
+                    {
+                        errors = report.ValidationResults?.ErrorMessages?.Select(e => " - " + e.Message);
+                    }
 
-{report.ValidationResultsJson()}");
+                    // If calling ZATCA API failed, throw an exception to roll back the transaction
+                    throw new InvalidOperationException(@$"Error(s) while clearing the invoice with ZATCA: 
+
+{string.Join("\n", errors)}");
                 }
             }
 
