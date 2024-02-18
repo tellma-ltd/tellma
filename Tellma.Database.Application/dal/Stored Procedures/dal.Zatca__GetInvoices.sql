@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
