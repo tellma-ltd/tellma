@@ -65,7 +65,7 @@ BEGIN
         IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(NAG.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
         NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
-        dal.fn_PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
+        dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
         dal.fn_RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
 		-- Following is auto computed

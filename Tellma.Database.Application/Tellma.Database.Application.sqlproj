@@ -971,6 +971,8 @@
     <Build Include="dal\Functions\dal.fn_Document__SupplyDate.sql" />
     <Build Include="dal\Functions\dal.fn_Document__SupplyEndDate.sql" />
     <Build Include="dal\Functions\dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__PrepaidAmount.sql" />
+    <Build Include="dal\Functions\dal.fn_Document__RoundingAmount.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
