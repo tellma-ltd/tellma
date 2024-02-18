@@ -109,12 +109,12 @@ namespace Tellma.Repository.Application.Tests
             }
 
             // Print the response for debugging
-            _output.WriteLine("----- Sandbox Response -----");
+            _output.WriteLine("----- Response from Sandbox -----");
             _output.WriteLine(responseBody);
             _output.WriteLine("");
 
             // Print the XML for debugging
-            _output.WriteLine("----- Signed XML -----");
+            _output.WriteLine("----- Invoice XML sent to Sandbox -----");
             _output.WriteLine(xml);
 
             // Assert success

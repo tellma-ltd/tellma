@@ -46,7 +46,7 @@
         /// <br/> 
         /// Textual notes that give unstructured information that is relevant to the Invoice as a whole.
         /// </summary>
-        public List<string> InvoiceNotes { get; set; } = new();
+        public List<string> InvoiceNotes { get; set; } = [];
 
         /// <summary>
         /// <b>BT-5</b> 
@@ -147,7 +147,7 @@
         /// - In case of goods or services refund. <br/>
         /// - In case of change in Seller's or Buyer's information. <br/>
         /// </summary>
-        public List<string> ReasonsForIssuanceOfCreditDebitNote { get; set; } = new();
+        public List<string> ReasonsForIssuanceOfCreditDebitNote { get; set; } = [];
 
         /// <summary>
         /// <b>KSA-22</b> 
@@ -167,7 +167,7 @@
         /// <summary>
         /// Document-level Allowance/Charge.
         /// </summary>
-        public List<AllowanceCharge> AllowanceCharges { get; set; } = new();
+        public List<AllowanceCharge> AllowanceCharges { get; set; } = [];
 
         // Auto computed fields?
 
@@ -235,7 +235,7 @@
         /// The sum of amounts which have been paid in advance including VAT.
         /// This amount is subtracted from the <see cref="InvoiceTotalAmountWithVat"/> to calculate the <see cref="AmountDueForPayment"/>.
         /// </summary>
-        public decimal PrepaidAmount { get; set; }
+        public decimal PrepaidAmount { get; set; } // TODO: => Lines.Sum(e => e.PrepaymentVatCategoryTaxableAmount + e.PrepaymentVatCategoryTaxAmount);
 
         /// <summary>
         /// <b>BT-114</b> 
@@ -257,31 +257,42 @@
         /// VAT Breakdown
         /// </summary>
         public List<VatBreakdownEntry> VatBreakdown => Lines
-            .GroupBy(e => new { Category = e.ItemVatCategory, Rate = e.ItemVatRate, Reason = e.ItemVatExemptionReasonCode })
-            .Select(g =>
+            .Select(e => new
             {
-                var allowancesCharges = AllowanceCharges
-                    .Where(e => e.VatCategory == g.Key.Category && e.VatRate == g.Key.Rate);
+                Category = e.ItemVatCategory,
+                Rate = e.ItemVatRate,
+                ReasonCode = e.ItemVatExemptionReasonCode,
+                ReasonText = e.ItemVatExemptionReasonText ?? "",
+                Amount = e.NetAmount
+            }).Union(AllowanceCharges.Select(e => new
+            {
+                Category = e.VatCategory,
+                Rate = e.VatRate,
+                ReasonCode = (VatExemptionReason?)null,
+                ReasonText = "",
+                Amount = e.Indicator == AllowanceChargeType.Allowance ? (-e.Amount) : e.Amount
+            }))
+            .GroupBy(e => new { e.Category, e.Rate })
+            .Select(g => new VatBreakdownEntry
+            {
+                VatCategoryTaxableAmount = g.Sum(e => e.Amount),
+                VatCategory = g.Key.Category,
+                VatRate = g.Key.Rate,
 
-                return new VatBreakdownEntry
-                {
-                    VatCategoryTaxableAmount = g.Sum(e => e.NetAmount)
-                        - allowancesCharges.Where(e => e.Indicator == AllowanceChargeType.Allowance).Sum(e => e.Amount)
-                        + allowancesCharges.Where(e => e.Indicator == AllowanceChargeType.Charge).Sum(e => e.Amount),
-
-                    VatCategory = g.Key.Category,
-                    VatRate = g.Key.Rate,
-                    VatExemptionReasonCode = g.Key.Reason,
-                    VatExemptionReasonText = g.Select(e => e.ItemVatExemptionReasonText).FirstOrDefault()
-                };
-
+                // TODO: Unfortunately, it is not clear what to do in the following case:
+                // 1 - You have a line with with VAT category zero (Z) and exemption reason VATEX-SA-EDU
+                // 2 - You also have a line with with VAT category zero (Z) and exemption reason VATEX-SA-HEA 
+                // 3 - You also have a document level allowance with VAT category zero (Z)
+                // What is the VAT breakdown in this case?
+                VatExemptionReasonCode = g.FirstOrDefault(e => e.ReasonCode != null)?.ReasonCode, // It is not obvious what to do here, when multiple lines have different reasons
+                VatExemptionReasonText = g.FirstOrDefault(e => e.ReasonCode != null)?.ReasonText
             })
             .ToList();
 
         /// <summary>
         /// Line items.
         /// </summary>
-        public List<InvoiceLine> Lines { get; set; } = new();
+        public List<InvoiceLine> Lines { get; set; } = [];
     }
 
     public class VatBreakdownEntry

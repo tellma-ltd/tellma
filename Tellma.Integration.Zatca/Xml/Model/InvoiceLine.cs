@@ -87,7 +87,7 @@ namespace Tellma.Integration.Zatca
         /// <b>KSA-32</b>
         /// <br/> 
         /// The sum total of VAT category tax amount (BT-117) subject to specific VAT Category code of the associated Prepayment invoice(s). <br/>
-        /// Auto-calculated as <see cref="PrepaymentVatCategoryTaxableAmount"/> + <see cref="PrepaymentVatRate"/>.
+        /// Auto-calculated as <see cref="PrepaymentVatCategoryTaxableAmount"/> x <see cref="PrepaymentVatRate"/>.
         /// </summary>
         public decimal PrepaymentVatCategoryTaxAmount => decimal.Round(PrepaymentVatCategoryTaxableAmount * PrepaymentVatRate, 2); // Rule BR-KSA-79
 
