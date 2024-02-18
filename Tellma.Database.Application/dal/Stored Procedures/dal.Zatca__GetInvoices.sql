@@ -86,13 +86,22 @@ BEGIN
     SELECT
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
         CAST(0 AS BIT) AS [IsCharge], -- 1 for charge, 0 for allowance
-        100.00 AS [Amount], -- BT-92 for allowances, BT-99 for charges,
-        N'A good reason' AS [Reason], -- BT-97 for allowances, BT-104 for charges, max 1000 chars
-        N'29' AS [ReasonCode], -- BT-98 for allowances, BT-105 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
-        N'E' AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
-        0.0 AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
-    FROM [map].[Documents]() D
-	INNER JOIN @Ids I ON I.[Id] = D.[Id] 
+        E.[Direction] * E.[NotedAmount] AS [Amount], -- BT-92 for allowances, BT-99 for charges,
+        NR.[Name] AS [Reason], -- BT-97 for allowances, BT-104 for charges, max 1000 chars
+        NR.[Code] AS [ReasonCode], -- BT-98 for allowances, BT-105 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
+        LK3.[Code] AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
+        NR.[VatRate] AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
+   FROM [map].[Lines]() L
+	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	INNER JOIN dbo.ResourceDefinitions NRD ON NRD.[Id] = NR.[DefinitionId]
+	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = NR.[Lookup3Id]
+	INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+    INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
+	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
+	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	AND NRD.[Code] = N'Discounts'
 
     --=-=-= 3 -Regular Invoice Lines =-=-=--
     SELECT TOP 1
@@ -127,6 +136,7 @@ BEGIN
     FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	INNER JOIN dbo.ResourceDefinitions NRD ON NRD.[Id] = NR.[DefinitionId]
 	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = NR.[Lookup3Id]
 	LEFT JOIN dbo.Lookups LK4 ON LK4.[Id] = NR.[Lookup4Id]
 	INNER JOIN dbo.Units U ON U.[Id] = E.[UnitId]
@@ -135,6 +145,7 @@ BEGIN
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	AND NRD.[Code] <> N'Discounts'
 
    --=-=-= 4 - Prepayment Invoice Lines =-=-=--
    /*
@@ -153,11 +164,11 @@ BEGIN
 		-- remove any field which is pure computation
         E.[AgentId] AS [PrepaymentId], -- KSA-26
         NEWID() AS [PrepaymentUuid], -- KSA-27
-        DATETIMEOFFSETFROMPARTS(2024, 1, 31, 14, 23, 23, 0, 12, 0, 7) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
+        [dal].[fn_Invoice__IssueDateTime] (D.[NotedAgentId]) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
         0 AS [Quantity], -- BT-129
         N'PCE' AS [QuantityUnit], -- BT-130
         E.[Direction] * E.[NotedAmount] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
-		E.[Direction] * E.[NotedAmount] * R.[VatRate] AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
+		E.[Direction] * E.[NotedAmount] * ISNULL(R.[VatRate], 0.15) AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
 		E.[Direction] * E.[MonetaryValue] AS [PrepaidAmountBreakdown], -- to accumulate in BT-113
 		-- Resource Lookup 3: VAT Category
 		ISNULL(LK3.[Code], 'S') AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
