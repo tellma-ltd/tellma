@@ -61,7 +61,7 @@
 	-- Zatca
 	[ZatcaEncryptedPrivateKey]				NVARCHAR(MAX),
 	[ZatcaEncryptedSecret]					NVARCHAR(MAX),
-	[ZatcaEncryptedCsid]					NVARCHAR(MAX),
+	[ZatcaEncryptedSecurityToken]			NVARCHAR(MAX),
 	[ZatcaEncryptionKeyIndex]				INT					NOT NULL DEFAULT 0,
 	[ZatcaUseSandbox]						BIT					NOT NULL DEFAULT 1,
 

@@ -1438,6 +1438,9 @@
   <data name="Error_NotedResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
     <value>{0}' is not used in account type '{1}' or its descendents.</value>
   </data>
+  <data name="Error_NotOnboardedWithZatca" xml:space="preserve">
+    <value>Not onboarded with ZATCA, please contact your system administrator.</value>
+  </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>Number of data points exceeds the maximum of {0}.</value>
   </data>
@@ -3247,7 +3250,7 @@
   <data name="Settings_City" xml:space="preserve">
     <value>City</value>
   </data>
-  <data name="Settings_CommercialRegistration" xml:space="preserve">
+  <data name="Settings_CommercialRegistrationNumber" xml:space="preserve">
     <value>Commercial Registration #</value>
   </data>
   <data name="Settings_CompanyName" xml:space="preserve">

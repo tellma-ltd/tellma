@@ -116,7 +116,7 @@
     <value>帐户分类</value>
   </data>
   <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
-    <value>帐户类型父母</value>
+    <value>帐户类型父</value>
   </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>帐户分类</value>
@@ -1049,7 +1049,7 @@
     <value>与帐户'{0}'一起排列，需要与自身单位的另一行。</value>
   </data>
   <data name="Error_Account0ServiceBalanceIsNegative" xml:space="preserve">
-    <value>帐户“ {0}”的服务价值余额将变为负面。</value>
+    <value>帐户“ {0}”的服务值余额将变为负面。</value>
   </data>
   <data name="Error_Account0ValueBalanceIsNegative" xml:space="preserve">
     <value>帐户“ {0}”的价值平衡将变为负面。</value>
@@ -1412,7 +1412,7 @@
     <value>{1} {2}中使用了帐户'{0}'，带有不兼容的输入类型'{3}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithAgent3" xml:space="preserve">
-    <value>{1} {2}中使用Actim' {3}'中的帐户'{0}'。</value>
+    <value>{1} {2}中使用Actim' {3}'在{1} {2}中使用帐户'{0}'。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
     <value>帐户'{0}'在{1} {2}中使用中心'{3}'中使用。</value>
@@ -2060,7 +2060,7 @@
     <value>unsign脚本</value>
   </data>
   <data name="LineDefinition_ViewDefaultsToForm" xml:space="preserve">
-    <value>查看默认值以形式</value>
+    <value>查看默认形式</value>
   </data>
   <data name="LineDefinition_Workflows" xml:space="preserve">
     <value>工作流程</value>
@@ -3350,7 +3350,7 @@
     <value>邀请</value>
   </data>
   <data name="User_InvitedAt" xml:space="preserve">
-    <value>邀请</value>
+    <value>被邀请</value>
   </data>
   <data name="User_IsService" xml:space="preserve">
     <value>是服务帐户</value>

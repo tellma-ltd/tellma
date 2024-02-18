@@ -42,7 +42,7 @@ BEGIN
 		@DefinitionId = @DefinitionId,
 		@Ids = @Ids, 
 		@UserId = @UserId,
-		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber,
-		@PreviousInvoiceHash = @PreviousInvoiceHash;
+		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber OUTPUT,
+		@PreviousInvoiceHash = @PreviousInvoiceHash OUTPUT;
 END;
 GO

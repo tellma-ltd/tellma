@@ -124,6 +124,11 @@ namespace Tellma.Integration.Zatca
                 (_sandboxReportingUsername, _sandboxReportingPassword, _sandboxPrivateKey) :
                 DecryptSecrets(secrets);
 
+            if (useSandbox && inv.Seller != null)
+            {
+                inv.Seller.VatNumber = "300075588700003"; // To match the certificate
+            }
+
             // Create Invoice XML
             string certificateContent = Encoding.UTF8.GetString(Convert.FromBase64String(securityToken));
             var builder = new InvoiceXml(inv);
@@ -143,11 +148,7 @@ namespace Tellma.Integration.Zatca
             if (response.IsSuccess)
             {
                 var result = response.ResultOrThrow();
-                var warnings = result?.ValidationResults?.WarningMessages == null ? [] :
-                    result.ValidationResults.WarningMessages.Select(w => w.Message ?? "").ToList();
-
-                // Return the XML and hash
-                return new(xml, signatureInfo.InvoiceHash, warnings);
+                return new(xml, signatureInfo.InvoiceHash, result?.ValidationResults);
             }
             else
             {
@@ -168,6 +169,11 @@ namespace Tellma.Integration.Zatca
                 (_sandboxClearingUsername, _sandboxClearingPassword, _sandboxPrivateKey) :
                 DecryptSecrets(secrets);
 
+            if (useSandbox && inv.Seller != null)
+            {
+                inv.Seller.VatNumber = "300075588700003"; // To match the certificate
+            }
+
             // Create Invoice XML
             string certificateContent = Encoding.UTF8.GetString(Convert.FromBase64String(securityToken));
             var builder = new InvoiceXml(inv);
@@ -187,10 +193,7 @@ namespace Tellma.Integration.Zatca
 
             if (response.IsSuccess)
             {
-                // Get any warnings
                 var result = response.ResultOrThrow();
-                var warnings = result.ValidationResults?.WarningMessages == null ? [] :
-                    result.ValidationResults.WarningMessages.Select(w => w.Message ?? "").ToList();
 
                 // Get the invoice XML returned by ZATCA API
                 var zatcaXmlEncoded = result.ClearedInvoice ?? throw new ZatcaException("ZATCA Clearance API returned null clearedInvoice");
@@ -207,7 +210,7 @@ namespace Tellma.Integration.Zatca
 
                 // When clearing, we use the xml
                 // and hash returned from ZATCA
-                return new(zatcaXml, zatcaHash, warnings);
+                return new(zatcaXml, zatcaHash, result.ValidationResults);
             }
             else if (response.Status == ResponseStatus.ClearanceDeactivated)
             {
@@ -269,6 +272,12 @@ namespace Tellma.Integration.Zatca
     {
     }
 
+    public class ZatcaReportingException(string msg, string invoiceXml, ResponseValidationResults results) : ReportableException(msg)
+    {
+        public string InvoiceXml { get; } = invoiceXml;
+        public ResponseValidationResults Results { get; } = results;
+    }
+
     public class ZatcaSecrets(
         string encryptedSecurityToken,
         string encryptedSecret,
@@ -296,11 +305,11 @@ namespace Tellma.Integration.Zatca
         public int KeyIndex { get; set; } = keyIndex;
     }
 
-    public class ClearanceReport(string invoiceXml, string invoiceHash, IEnumerable<string> warnings)
+    public class ClearanceReport(string invoiceXml, string invoiceHash, ResponseValidationResults? validationResults)
     {
         public string InvoiceXml { get; set; } = invoiceXml;
         public string InvoiceHash { get; set; } = invoiceHash;
-        public IEnumerable<string> Warnings { get; } = warnings;
+        public ResponseValidationResults? ValidationResults { get; } = validationResults;
     }
 
     /// <summary>

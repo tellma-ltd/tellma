@@ -1038,7 +1038,7 @@
   "Settings_BrandColorDescription": "The color of the navigation bar at the top of the user interface",
   "Settings_BuildingNumber": "Building #",
   "Settings_City": "City",
-  "Settings_CommercialRegistration": "Commercial Registration #",
+  "Settings_CommercialRegistrationNumber": "Commercial Registration #",
   "Settings_CompanyName": "Company Name",
   "Settings_CompanyNameDescription": "The company name as registered with the government",
   "Settings_CountryCode": "Country",

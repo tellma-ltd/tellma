@@ -1336,6 +1336,9 @@
   <data name="Error_NotedResourceDefinition0IsNotUsedInAccountType1OrItsDescendents" xml:space="preserve">
     <value>({0}) غير مستخدم في نوع الحساب ({1}) أو ما يتفرع منه.</value>
   </data>
+  <data name="Error_NotOnboardedWithZatca" xml:space="preserve">
+    <value>لم يتم إعداد التكامل مع هيئة الزكاة، يرجى التواصل مع مسؤول النظام.</value>
+  </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
   </data>
@@ -3115,7 +3118,7 @@
   <data name="Settings_City" xml:space="preserve">
     <value>المدينة</value>
   </data>
-  <data name="Settings_CommercialRegistration" xml:space="preserve">
+  <data name="Settings_CommercialRegistrationNumber" xml:space="preserve">
     <value>رقم السجل التجاري</value>
   </data>
   <data name="Settings_CompanyName" xml:space="preserve">

@@ -23,6 +23,6 @@ BEGIN
 	-- Return the ZATCA invoices
 	EXEC [dal].[Zatca__GetInvoices]
 		@Ids = @Ids,
-		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber,
-		@PreviousInvoiceHash = @PreviousInvoiceHash;
+		@PreviousInvoiceSerialNumber = @PreviousInvoiceSerialNumber OUTPUT,
+		@PreviousInvoiceHash = @PreviousInvoiceHash OUTPUT;
 END;

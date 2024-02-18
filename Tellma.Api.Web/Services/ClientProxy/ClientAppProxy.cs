@@ -223,6 +223,30 @@ namespace Tellma.Services.ClientProxy
 
                 result.Body = bldr.ToString();
             }
+//            else if (le is ZatcaErrorLogEntry zle)
+//            {
+//                result.Subject = $@"{zle.TenantName}: Zatca API error or warning";
+
+//                var entityIds = zle.EntityIds.ToList() ?? new List<int>();
+//                var entityIdsMax = 20;
+
+//                StringBuilder bldr = new($@"<span>An unhandled error occured while running the {HtmlEncode(cle.Collection)} Definition ""{HtmlEncode(cle.DefinitionName)}"" {HtmlEncode(cle.ScriptName)} in Tenant {HtmlEncode(cle.TenantName)}.</span><br/>
+//<span style=""font-weight: bold"">Log Entry Id:</span><span> {cle.Id}</span><br/>
+//<span style=""font-weight: bold"">Tenant Id:</span><span> {cle.TenantId}</span><br/>
+//<span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(cle.TenantName)}</span><br/>
+//<span style=""font-weight: bold"">Collection:</span><span> {HtmlEncode(cle.Collection)}</span><br/>
+//<span style=""font-weight: bold"">Definition Id:</span><span> {cle.DefinitionId}</span><br/>
+//<span style=""font-weight: bold"">{HtmlEncode(cle.Collection)} Definition:</span><span> <a href=""{DefinitionUrl(cle)}"">{HtmlEncode(cle.DefinitionName)}</a></span><br/>
+//<span style=""font-weight: bold"">Script:</span><span> {HtmlEncode(cle.ScriptName)}</span><br/>
+//<span style=""font-weight: bold"">{HtmlEncode(cle.DefinitionName)} Id{(entityIds.Count > 1 ? "s" : "")}:</span><span> {string.Join(", ", entityIds.Take(entityIdsMax).Select(id => id.ToString()))}{(entityIds.Count > entityIdsMax ? "..." : "")}</span><br/>
+//<span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(cle.UserEmail)}</span><br/>
+//<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(cle.UserName)}</span><br/>
+//<span style=""font-weight: bold"">SQL Error Number:</span><span> {cle.ErrorNumber}</span><br/>
+//<span style=""font-weight: bold"">SQL Error Message:</span><span> {HtmlEncode(cle.ErrorMessage)}</span><br/>");
+
+//                result.Body = bldr.ToString();
+
+//            }
             else
             {
                 // Generic email

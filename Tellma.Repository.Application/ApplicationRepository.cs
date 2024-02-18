@@ -430,9 +430,9 @@ namespace Tellma.Repository.Application
 
                     // ZATCA
                     {
-                        zSettings.ZatcaEncryptedSecurityToken = reader.GetString(nameof(zSettings.ZatcaEncryptedSecurityToken));
-                        zSettings.ZatcaEncryptedSecret = reader.GetString(nameof(zSettings.ZatcaEncryptedSecret));
-                        zSettings.ZatcaEncryptedPrivateKey = reader.GetString(nameof(zSettings.ZatcaEncryptedPrivateKey));
+                        zSettings.ZatcaEncryptedSecurityToken = reader.String(reader.GetOrdinal(nameof(zSettings.ZatcaEncryptedSecurityToken)));
+                        zSettings.ZatcaEncryptedSecret = reader.String(reader.GetOrdinal(nameof(zSettings.ZatcaEncryptedSecret)));
+                        zSettings.ZatcaEncryptedPrivateKey = reader.String(reader.GetOrdinal(nameof(zSettings.ZatcaEncryptedPrivateKey)));
                         zSettings.ZatcaEncryptionKeyIndex = reader.GetInt32(nameof(zSettings.ZatcaEncryptionKeyIndex));
                         zSettings.ZatcaUseSandbox = reader.GetBoolean(nameof(zSettings.ZatcaUseSandbox));
                     }
@@ -4690,7 +4690,7 @@ namespace Tellma.Repository.Application
                     }
 
                     int prevInvoiceSerial = GetValue<int>(prevInvoiceSerialParam.Value);
-                    string prevInvoiceHash = GetValue<string>(prevInvoiceSerialParam.Value);
+                    string prevInvoiceHash = GetValue<string>(prevInvoiceHashParam.Value);
 
                     // (3) Return the result
                     result = new CloseDocumentOutput(invoices, prevInvoiceSerial, prevInvoiceHash, inboxStatusOutput.Errors, inboxStatusOutput.InboxStatuses);
@@ -8671,6 +8671,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@ZatcaUuid", zatcaUuid);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Zatca__UpdateDocumentInfo));
@@ -8697,6 +8698,7 @@ namespace Tellma.Repository.Application
                 cmd.Parameters.Add("@EncryptionKeyIndex", encryptionKeyIndex);
 
                 // Execute
+                await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
             },
             DatabaseName(connString), nameof(Zatca__SaveSecrets));

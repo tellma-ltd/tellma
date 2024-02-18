@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Base;
@@ -816,7 +817,13 @@ namespace Tellma.Api
                 }
 
                 var settings = await _behavior.Settings();
-                var isSandbox = settings.ZatcaUseSandbox;
+                var useSandbox = settings.ZatcaUseSandbox;
+
+                if (!useSandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
+                {
+                    throw new ZatcaException(_localizer["Error_NotOnboardedWithZatca"]);
+                }
+
                 var inv = dcOutput.Invoices.Single();
                 var invoice = MapInvoice(inv, settings, dcOutput.PreviousCounterValue, dcOutput.PreviousInvoiceHash);
                
@@ -829,24 +836,24 @@ namespace Tellma.Api
                 ClearanceReport report;
                 if (inv.IsSimplified)
                 {
-                    report = await _zatcaService.Report(invoice, secrets, isSandbox);
+                    report = await _zatcaService.Report(invoice, secrets, useSandbox);
                 } 
                 else
                 {
-                    report = await _zatcaService.Clear(invoice, secrets, isSandbox);
+                    report = await _zatcaService.Clear(invoice, secrets, useSandbox);
                 }
 
                 // Update the document info
                 await _behavior.Repository.Zatca__UpdateDocumentInfo(
                     inv.Id, 
-                    ZatcaState.Reported, 
-                    null, 
+                    ZatcaState.Reported,
+                    report.ValidationResults == null ? null : JsonSerializer.Serialize(report.ValidationResults), 
                     invoice.InvoiceCounterValue, 
                     report.InvoiceHash, 
                     invoice.UniqueInvoiceIdentifier);
 
                 // Save the invoice XML in Blob storage
-                var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), isSandbox);
+                var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), useSandbox);
                 var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
                 var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
                 await _blobService.SaveBlobsAsync(TenantId, blobs);

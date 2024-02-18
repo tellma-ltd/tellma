@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
@@ -890,6 +891,39 @@ namespace Tellma.Api.Behaviors
             var entityIds = entities.Select(e => e.Id).Where(id => id != 0);
             await LogCustomScriptBug(ex, collection, definitionId, defTitle, scriptName, entityIds);
         }
+
+        //public async Task LogZatcaErrorOrWarning()
+        //{
+        //    try
+        //    {
+        //        using var _ = TransactionFactory.Suppress();
+        //        var settings = await Settings();
+        //        var user = await UserSettings();
+
+        //        var supportEmailsConcatenated = settings.SupportEmails ?? "";
+        //        var supportEmails = supportEmailsConcatenated
+        //            .Split(";")
+        //            .Where(e => !string.IsNullOrWhiteSpace(e))
+        //            .Select(e => e.Trim());
+
+        //        _tenantLogger.Log(new CustomScriptErrorLogEntry
+        //        {
+        //            TenantId = TenantId,
+        //            TenantName = settings.ShortCompanyName,
+        //            TenantSupportEmails = supportEmails,
+        //            Collection = collection,
+        //            DefinitionId = definitionId,
+        //            DefinitionName = defTitle,
+        //            EntityIds = entityIds,
+        //            UserEmail = user.Email,
+        //            UserName = user.Name,
+        //            ScriptName = scriptName,
+        //            ErrorMessage = ex.Message,
+        //            ErrorNumber = ex.Number,
+        //        });
+        //    }
+        //    catch { }
+        //}
     }
 
     public class ApplicationBehaviorHelper

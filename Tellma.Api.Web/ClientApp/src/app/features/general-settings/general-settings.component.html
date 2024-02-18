@@ -324,12 +324,12 @@
           required></t-text-editor>
       </t-form-group-settings>
 
-      <!-- CommercialRegistration -->
-      <t-form-group-settings class="t-form-group" [label]="'Settings_CommercialRegistration' | translate"
+      <!-- CommercialRegistrationNumber -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_CommercialRegistrationNumber' | translate"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.CommercialRegistration || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.CommercialRegistration"
-          (ngModelChange)="customFields(model).CommercialRegistration = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+        <div *ngIf="!isEdit">{{ model?.CustomFields?.CommercialRegistrationNumber || '-' }}</div>
+        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.CommercialRegistrationNumber"
+          (ngModelChange)="customFields(model).CommercialRegistrationNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-text-editor>
       </t-form-group-settings>
 
