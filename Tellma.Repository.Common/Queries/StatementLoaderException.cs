@@ -49,7 +49,7 @@ namespace Tellma.Repository.Common
 {stringifiedParams}
 */
 
--- SQL Statement(s):
+--- SQL Statement(s):
 {Sql}";
         }
     }

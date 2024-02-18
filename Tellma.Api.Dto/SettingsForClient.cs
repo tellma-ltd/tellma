@@ -66,8 +66,6 @@ namespace Tellma.Api.Dto
 
         public string BrandColor { get; set; }
 
-        public string SupportEmails { get; set; }
-
         public DateTimeOffset CreatedAt { get; set; }
 
         public int? SingleBusinessUnitId { get; set; }
@@ -94,6 +92,8 @@ namespace Tellma.Api.Dto
 
         // Server Only Fields
 
+        [JsonIgnore]
+        public string SupportEmails { get; set; }
 
         [JsonIgnore]
         public string ZatcaEncryptedPrivateKey { get; set; }

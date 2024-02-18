@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2010.Word;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,6 +16,7 @@ using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
 using Tellma.Api.Notifications;
 using Tellma.Api.Templating;
+using Tellma.Integration.Zatca;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
 using Tellma.Repository.Admin;
@@ -892,38 +894,42 @@ namespace Tellma.Api.Behaviors
             await LogCustomScriptBug(ex, collection, definitionId, defTitle, scriptName, entityIds);
         }
 
-        //public async Task LogZatcaErrorOrWarning()
-        //{
-        //    try
-        //    {
-        //        using var _ = TransactionFactory.Suppress();
-        //        var settings = await Settings();
-        //        var user = await UserSettings();
+        public async Task LogZatcaErrorOrWarning(
+            int docDefId,
+            string docDefName,
+            int docId,
+            string invoiceXml,
+            string validationResultsJson,
+            TenantLogLevel level)
+        {
+            try
+            {
+                using var _ = TransactionFactory.Suppress();
+                var settings = await Settings();
+                var user = await UserSettings();
 
-        //        var supportEmailsConcatenated = settings.SupportEmails ?? "";
-        //        var supportEmails = supportEmailsConcatenated
-        //            .Split(";")
-        //            .Where(e => !string.IsNullOrWhiteSpace(e))
-        //            .Select(e => e.Trim());
+                var supportEmailsConcatenated = settings.SupportEmails ?? "";
+                var supportEmails = supportEmailsConcatenated
+                    .Split(";")
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim());
 
-        //        _tenantLogger.Log(new CustomScriptErrorLogEntry
-        //        {
-        //            TenantId = TenantId,
-        //            TenantName = settings.ShortCompanyName,
-        //            TenantSupportEmails = supportEmails,
-        //            Collection = collection,
-        //            DefinitionId = definitionId,
-        //            DefinitionName = defTitle,
-        //            EntityIds = entityIds,
-        //            UserEmail = user.Email,
-        //            UserName = user.Name,
-        //            ScriptName = scriptName,
-        //            ErrorMessage = ex.Message,
-        //            ErrorNumber = ex.Number,
-        //        });
-        //    }
-        //    catch { }
-        //}
+                _tenantLogger.Log(new ZatcaErrorLogEntry(level)
+                {
+                    TenantId = TenantId,
+                    TenantName = settings.ShortCompanyName,
+                    TenantSupportEmails = supportEmails,
+                    DocumentDefinitionId = docDefId,
+                    DefinitionName = docDefName,
+                    DocumentId = docId,
+                    InvoiceXml = invoiceXml,
+                    ValidationResultsJson = validationResultsJson,
+                    UserEmail = user.Email,
+                    UserName = user.Name,
+                });
+            }
+            catch { }
+        }
     }
 
     public class ApplicationBehaviorHelper
