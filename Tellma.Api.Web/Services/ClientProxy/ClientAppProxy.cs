@@ -225,7 +225,7 @@ namespace Tellma.Services.ClientProxy
             {
                 result.Subject = $@"{zle.TenantName}: ZATCA API {zle.Level}";
 
-                StringBuilder bldr = new($@"<span>An unhandled error occured while calling the ZATCA API in Tenant {HtmlEncode(zle.TenantName)}.</span><br/><br/>
+                StringBuilder bldr = new($@"<span>Encountered a ZATCA API {zle.Level.ToString().ToLower()} in Tenant {HtmlEncode(zle.TenantName)}.</span><br/><br/>
 <span style=""font-weight: bold"">Log Entry Id:</span><span> {zle.Id}</span><br/>
 <span style=""font-weight: bold"">Tenant Id:</span><span> {zle.TenantId}</span><br/>
 <span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(zle.TenantName)}</span><br/>
@@ -233,8 +233,7 @@ namespace Tellma.Services.ClientProxy
 <span style=""font-weight: bold"">Document Definition:</span><span> <a href=""{DefinitionUrl(zle)}"">{HtmlEncode(zle.DefinitionName)}</a></span><br/>
 <span style=""font-weight: bold"">Document Id:</span><span> <a href=""{DocumentUrl(zle.TenantId, zle.DocumentDefinitionId, zle.DocumentId)}"">{zle.DocumentId}</a></span><br/>
 <span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(zle.UserEmail)}</span><br/>
-<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(zle.UserName)}</span><br/>
-<span style=""font-weight: bold"">Error or Warning:</span><span> {HtmlEncode(zle.Level.ToString())}</span><br/>");
+<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(zle.UserName)}</span><br/>");
 
                 bldr.AppendLine(@"<br/>");
                 bldr.AppendLine(@"<span style=""font-weight: bold"">ZATCA Validation Results:</span><br/>");
