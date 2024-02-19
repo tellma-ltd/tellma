@@ -1,4 +1,4 @@
-﻿CREATE  PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -36,49 +36,44 @@ BEGIN
         CAST(SUBSTRING(LK1.[Code], 8, 1) AS BIT) AS [IsSummary], -- KSA-2:Not used. Always 0.
         CAST(SUBSTRING(LK1.[Code], 9, 1) AS BIT) AS [IsSelfBilled], -- KSA-2: only with invoice type 389
         D.[Memo] AS [InvoiceNote], -- BT-22: max 1000 chars
-        NAG.[CurrencyId] AS [InvoiceCurrency], -- BT-5
+        SI.[CurrencyId] AS [InvoiceCurrency], -- BT-5
         D.[ExternalReference] AS [PurchaseOrderId], -- BT-13, max 127 chars
         [dal].[fn_Document__BillingReferenceId](D.[Id]) AS [BillingReferenceId], -- BT-25, max 5000 chars, required for Debit/Credit Notes, NULL otherwise
-        AG1.[Code] AS [ContractId], -- BT-12, max 127 chars
-        AG1.TaxIdentificationNumber AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
-		-- Customer Accounts Lookup is Buyer Scheme
-        ISNULL(dal.fn_Lookup__Code(AG1.Lookup5Id), N'VAT') AS [BuyerIdScheme], -- AG1.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
+        CA.[Code] AS [ContractId], -- BT-12, max 127 chars
+        CA.TaxIdentificationNumber AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
+		-- Customer Accounts Lookup 5: Buyer Scheme
+        ISNULL(dal.fn_Lookup__Code(CA.Lookup5Id), N'VAT') AS [BuyerIdScheme], -- CA.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
 		-- Agents: AddressStreet, ..., AddressCountryCode
-        AG1.[AddressStreet] AS [BuyerAddressStreet], -- BT-50, max 1000 chars
-        AG1.[AddressAdditionalStreet] AS [BuyerAddressAdditionalStreet], -- BT-51, max 127 chars
-        AG1.[AddressBuildingNumber] AS [BuyerAddressBuildingNumber], -- KSA-18
-        AG1.[AddressAdditionalNumber] AS [BuyerAddressAdditionalNumber], -- KSA-19 
-        AG1.[AddressCity] AS [BuyerAddressCity], -- BT-52
-        AG1.[AddressPostalCode] AS [BuyerAddressPostalCode], -- BT-53
-        AG1.[AddressProvince] AS [BuyerAddressProvince], -- BT-54, max 127 chars
-        AG1.[AddressDistrict] AS [BuyerAddressDistrict], -- KSA-4, max 127 chars
-        dal.fn_Lookup__Code(AG1.[AddressCountryId]) AS [BuyerAddressCountryCode], -- BT-55
-        AG1.[Name2] AS [BuyerName], -- BT-44, max 1000 chars
-        [dal].[fn_Document__SupplyDate](D.[Id], NAG.[Id]) AS [SupplyDate], -- KSA-5
-        [dal].[fn_Document__SupplyEndDate](D.[Id], NAG.[Id]) AS [SupplyEndDate], -- KSA-24
-		-- Sales invoice Lookup 5, payment means
-        CAST(ISNULL(dal.fn_Lookup__Code(NAG.Lookup1Id), '10') AS INT) AS [PaymentMeans], -- BT-81: [1, 10, 30, 42, 48] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred4461.htm
-        -- Document Lookup 2 is reason of issuance
+        CA.[AddressStreet] AS [BuyerAddressStreet], -- BT-50, max 1000 chars
+        CA.[AddressAdditionalStreet] AS [BuyerAddressAdditionalStreet], -- BT-51, max 127 chars
+        CA.[AddressBuildingNumber] AS [BuyerAddressBuildingNumber], -- KSA-18
+        CA.[AddressAdditionalNumber] AS [BuyerAddressAdditionalNumber], -- KSA-19 
+        CA.[AddressCity] AS [BuyerAddressCity], -- BT-52
+        CA.[AddressPostalCode] AS [BuyerAddressPostalCode], -- BT-53
+        CA.[AddressProvince] AS [BuyerAddressProvince], -- BT-54, max 127 chars
+        CA.[AddressDistrict] AS [BuyerAddressDistrict], -- KSA-4, max 127 chars
+        dal.fn_Lookup__Code(CA.[AddressCountryId]) AS [BuyerAddressCountryCode], -- BT-55
+        ISNULL(CG.[Name2], CA.[Name2]) AS [BuyerName], -- BT-44, max 1000 chars
+        [dal].[fn_Document__SupplyDate](D.[Id], SI.[Id]) AS [SupplyDate], -- KSA-5
+        [dal].[fn_Document__SupplyEndDate](D.[Id], SI.[Id]) AS [SupplyEndDate], -- KSA-24
+		-- Sales invoice Lookup 5: Payment means
+        CAST(ISNULL(dal.fn_Lookup__Code(SI.Lookup1Id), '10') AS INT) AS [PaymentMeans], -- BT-81: [1, 10, 30, 42, 48] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred4461.htm
+        -- Document Lookup 2: Reason of issuance
 		IIF(DD.ZatcaDocumentType IN (N'381', N'383'), dal.fn_Lookup__Name2(D.[Lookup2Id]),
 			NULL) AS [ReasonForIssuanceOfCreditDebitNote], -- KSA-10, max 1000 chars, required for Debit/Credit Notes, NULL otherwise
-		-- Sales invoice Lookup 6, payment terms
-        IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(NAG.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
-        NAG.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
+		-- Sales invoice Lookup 6: Payment terms
+        IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(SI.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
+        SI.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
         dal.fn_Document__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
-		-- Following is auto computed
-        --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
-        --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
-        --0.15 AS [VatRate], -- BT-119: between 0.00 and 1.00 (NOT 100.00)
-        --N'A good reason' AS [VatExemptionReason], -- BT-120, max 1000 chars, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf
-        --N'VATEX-SA-29' AS [VatExemptionReasonCode] -- BT-121, valid values in section 11.2.4 in the specs https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_XML_Implementation_Standard_%20vF.pdf	
     FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
 	INNER JOIN dbo.Lookups LK1 ON LK1.[Id] = D.[Lookup1Id]
-	INNER JOIN dbo.Agents NAG ON NAG.[Id] = D.[NotedAgentId]
-	INNER JOIN dbo.Agents AG1 ON AG1.[Id] = NAG.[Agent1Id]
+	INNER JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId] -- Sales Invoice
+	INNER JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id] -- Customer Account/Contract
+	LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id] -- Customer
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	WHERE DD.[ZatcaDocumentType] IS NOT NULL
 
@@ -89,8 +84,8 @@ BEGIN
         E.[Direction] * E.[NotedAmount] AS [Amount], -- BT-92 for allowances, BT-99 for charges,
         NR.[Name] AS [Reason], -- BT-97 for allowances, BT-104 for charges, max 1000 chars
         NR.[Code] AS [ReasonCode], -- BT-98 for allowances, BT-105 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
-        LK3.[Code] AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
-        NR.[VatRate] AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
+        ISNULL(LK3.[Code], 'S') AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
+        ISNULL(NR.[VatRate], 0.15) AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
    FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
@@ -122,7 +117,7 @@ BEGIN
         NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
         NR.[Code] AS [ItemSellerIdentifier], -- BT-155, max 127 chars
         NR.[Identifier] AS [ItemStandardIdentifier], -- BT-157, max 127 chars
-        -E.Direction * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemNetPrice], -- BT-146
+        L.[Decimal1] - ISNULL(L.[Decimal2], 0) AS [ItemNetPrice], -- BT-146, Unit Price
 		-- Resource Lookup 3: VAT Category
         ISNULL(LK3.[Code], 'S') AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
         ISNULL(NR.[VatRate], 0.15) AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
@@ -131,10 +126,9 @@ BEGIN
 		LK4.[Name] AS [ItemVatExemptionReasonText], -- N'Private Education to citizen'
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
         N'PCE' AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
-        --ISNULL(L.[Decimal2], 0.0) AS [ItemPriceDiscount], -- BT-147
-		CAST(0.0 AS DECIMAL(19, 6)) AS [ItemPriceDiscount], -- BT-147
+		ISNULL(L.[Decimal2], 0.0) AS [ItemPriceDiscount], -- BT-147
 		  --Item net price: BT-146 = Gross price: BT-148 - Allowance: BT-147 when gross price is provided.",
-		-E.Direction * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemGrossPrice] -- BT-148
+		L.[Decimal1] AS [ItemGrossPrice] -- BT-148
     FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
