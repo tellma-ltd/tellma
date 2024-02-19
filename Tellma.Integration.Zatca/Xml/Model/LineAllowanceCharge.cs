@@ -12,7 +12,7 @@
         public AllowanceChargeType Indicator { get; set; }
 
         /// <summary>
-        /// <b>BT-138</b> 
+        /// <b>BT-138</b> (Allowance), <b>BT-143</b> (Charge)
         /// <br/> 
         /// The percentage that may be used, in conjunction with <see cref="BaseAmount"/>, to calculate the <see cref="Amount"/>. <br/>
         /// Must be a rate between 0.0000 and 1.0000
@@ -22,14 +22,14 @@
         public decimal Percentage { get; set; }
 
         /// <summary>
-        /// <b>BT-136</b> 
+        /// <b>BT-136</b> (Allowance), <b>BT-141</b> (Charge)
         /// <br/> 
         /// The amount of an allowance, without VAT.
         /// </summary>
         public decimal Amount { get; set; }
 
         /// <summary>
-        /// <b>BT-137</b> 
+        /// <b>BT-137</b> (Allowance), <b>BT-142</b> (Charge)
         /// <br/> 
         /// The base amount that may be used, in conjunction with the <see cref="Percentage"/>, to calculate the <see cref="Amount"/>.
         /// <para/>
@@ -38,14 +38,14 @@
         public decimal BaseAmount { get; set; }
 
         /// <summary>
-        /// <b>BT-139</b> 
+        /// <b>BT-139</b> (Allowance), <b>BT-144</b> (Charge)
         /// <br/> 
         /// The reason for allowance on line item-level.
         /// </summary>
         public string? Reason { get; set; }
 
         /// <summary>
-        /// <b>BT-140</b> 
+        /// <b>BT-140</b> (Allowance), <b>BT-145</b> (Charge)
         /// <br/> 
         /// The reason code corresponding to the <see cref="Reason"/> for allowance on line item-level. <br/>
         /// Entries from the <see href="https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm">UNTDID 5189 code list</see> for discounts, 
