@@ -479,15 +479,13 @@ namespace Tellma.Integration.Zatca
 
                     if (line.ItemPriceDiscount != default || line.ItemGrossPrice != default)
                     {
-                        priceElem.Add(new XElement(cac + "AllowanceCharge",
-                            new XElement(cbc + "ChargeIndicator", AllowanceChargeType.Allowance.ToXml())
-                        ).Grab(out XElement allowanceChargeElem));
-
-                        if (line.ItemPriceDiscount != default)
-                            allowanceChargeElem.Add(Amount("Amount", line.ItemPriceDiscount));
-
-                        if (line.ItemGrossPrice != default)
-                            allowanceChargeElem.Add(Amount("BaseAmount", line.ItemGrossPrice));
+                        priceElem.Add(
+                            new XElement(cac + "AllowanceCharge",
+                                new XElement(cbc + "ChargeIndicator", AllowanceChargeType.Allowance.ToXml()),
+                                Amount("Amount", line.ItemPriceDiscount),
+                                Amount("BaseAmount", line.ItemGrossPrice)
+                            )
+                        );
                     }
                 }
             }
