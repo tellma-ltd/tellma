@@ -392,15 +392,11 @@ namespace Tellma.Integration.Zatca
                 // Vat info
                 {
                     lineElem.Add(
-                        new XElement(cac + "TaxTotal").Grab(out XElement taxTotalElem)
+                        new XElement(cac + "TaxTotal",
+                            Amount("TaxAmount", line.VatAmount),
+                            Amount("RoundingAmount", line.AmountIncludingVat)
+                        ).Grab(out XElement taxTotalElem)
                     );
-
-                    // Required for Standard
-                    if (IsStandard || line.VatAmount != default)
-                        taxTotalElem.Add(Amount("TaxAmount", line.VatAmount));
-
-                    // Required
-                    taxTotalElem.Add(Amount("RoundingAmount", line.AmountIncludingVat));
 
                     // Rule BR-KSA-75
                     if (_inv.PrepaidAmount != default) // ??? is this the correct interpretation?

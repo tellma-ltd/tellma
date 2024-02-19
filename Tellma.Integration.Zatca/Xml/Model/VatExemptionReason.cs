@@ -8,7 +8,7 @@
         VATEX_SA_30,
 
         // Zero-Rated Reasons
-        VATEX_SA_32 = 10,
+        VATEX_SA_32,
         VATEX_SA_33,
         VATEX_SA_34_1,
         VATEX_SA_34_2,
