@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -15,8 +13,6 @@ namespace Tellma.Repository.Application.Tests
 {
     public class ZatcaTests : TestsBase, IClassFixture<ApplicationRepositoryFixture>
     {
-        private const string ZATCA_SANDBOX_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
-
         #region Lifecycle
 
         private readonly ITestOutputHelper _output;
