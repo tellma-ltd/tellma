@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dal].[fn_Settings__GetCountryCurrency]()
+﻿CREATE FUNCTION [dal].[fn_Settings__CountryCurrency]()
 RETURNS NCHAR(3)
 AS
 BEGIN -- this is a hack. Better use field from table settings instead

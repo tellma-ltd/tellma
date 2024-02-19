@@ -88,6 +88,27 @@
     <Property Name="NewSchema" Value="bll" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="186114f4-0990-4ee1-a9f7-9e8efce5a1ee" ChangeDateTime="01/25/2024 20:08:56">
+    <Property Name="ElementName" Value="[dal].[fn_Settings__Country]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Settings__GetCountry]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a4eadaa-dd95-44d9-b591-38ed4b545667" ChangeDateTime="02/04/2024 07:17:21">
+    <Property Name="ElementName" Value="[dal].[fn_Settings__GetCountry]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Settings__Country]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6d02d89d-f101-47b3-9298-d57ff16cf969" ChangeDateTime="02/04/2024 07:18:07">
+    <Property Name="ElementName" Value="[dal].[fn_Settings__GetCountryCurrency]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Settings__CountryCurrency]" />
+  </Operation>
   <Operation Name="Move Schema" Key="782a9742-756b-4085-a44b-ddbf43ac2c53" ChangeDateTime="02/08/2024 09:09:38">
     <Property Name="ElementName" Value="[dbo].[fn_DocumentDefinition__IsZatcaDocumentType]" />
     <Property Name="ElementType" Value="SqlScalarFunction" />

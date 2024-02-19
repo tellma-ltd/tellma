@@ -6,7 +6,7 @@
 @Lines LineList READONLY,
 @Entries EntryList READONLY
 AS
-DECLARE @Country NCHAR (2) = dal.fn_Settings__GetCountry();
+DECLARE @Country NCHAR (2) = dal.[fn_Settings__Country]();
 DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayables.M');
 DECLARE @ContractAmendmentLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesAmended.M');
 DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesTerminated.M');
