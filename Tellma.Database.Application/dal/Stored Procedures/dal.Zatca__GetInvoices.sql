@@ -67,7 +67,7 @@ BEGIN
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
-        dal.fn_Documeny__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
+        dal.fn_Document__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
 		-- Following is auto computed
         --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
@@ -117,7 +117,6 @@ BEGIN
         NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
         NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
         -E.[Direction] * E.[MonetaryValue] AS [VatAmount], -- KSA-11
-        -E.[Direction] * E.[NotedAmount] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
         NR.[Name2] AS [ItemName], -- BT-153, max 1000 chars
         NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
         NR.[Code] AS [ItemSellerIdentifier], -- BT-155, max 127 chars
@@ -132,7 +131,7 @@ BEGIN
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
         N'PCE' AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
         10.00 AS [ItemPriceDiscount], -- BT-147
-        750.00 AS [ItemGrossPrice] -- BT-148
+		-E.Direction * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemGrossPrice] -- BT-148
     FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
