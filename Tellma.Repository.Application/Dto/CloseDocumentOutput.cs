@@ -48,6 +48,18 @@ namespace Tellma.Repository.Application
         public string PurchaseOrderId { get; set; }
         public string BillingReferenceId { get; set; }
         public string ContractId { get; set; }
+        public string SellerId { get; set; }
+        public string SellerIdScheme { get; set; } // VAT or else
+        public string SellerAddressStreet { get; set; }
+        public string SellerAddressAdditionalStreet { get; set; }
+        public string SellerAddressBuildingNumber { get; set; }
+        public string SellerAddressAdditionalNumber { get; set; }
+        public string SellerAddressCity { get; set; }
+        public string SellerAddressPostalCode { get; set; }
+        public string SellerAddressProvince { get; set; }
+        public string SellerAddressDistrict { get; set; }
+        public string SellerAddressCountryCode { get; set; }
+        public string SellerName { get; set; }
         public string BuyerId { get; set; }
         public string BuyerIdScheme { get; set; } // VAT or else
         public string BuyerAddressStreet { get; set; }
@@ -68,10 +80,10 @@ namespace Tellma.Repository.Application
         public string PaymentAccountId { get; set; }
         public decimal InvoiceTotalVatAmountInAccountingCurrency { get; set; }
         public string AccountingCurrency { get; set; }
-        public decimal PrepaidAmount { get; set; }
         public decimal RoundingAmount { get; set; }
-        public List<ZatcaAllowanceCharge> AllowanceCharges { get; } = new();
-        public List<ZatcaInvoiceLine> Lines { get; } = new();
+        public List<ZatcaAllowanceCharge> AllowanceCharges { get; } = [];
+        public List<ZatcaInvoiceLine> Lines { get; } = [];
+        public List<ZatcaPrepaymentLine> Prepayments { get; } = [];
     }
 
     public class ZatcaAllowanceCharge
@@ -87,9 +99,6 @@ namespace Tellma.Repository.Application
     public class ZatcaInvoiceLine
     {
         public int Id { get; set; }
-        public string PrepaymentId { get; set; }
-        public Guid PrepaymentUuid { get; set; }
-        public DateTimeOffset PrepaymentIssueDateTime { get; set; }
         public decimal Quantity { get; set; }
         public string QuantityUnit { get; set; }
         public decimal NetAmount { get; set; }
@@ -98,7 +107,6 @@ namespace Tellma.Repository.Application
         public string AllowanceChargeReason { get; set; }
         public string AllowanceChargeReasonCode { get; set; }
         public decimal VatAmount { get; set; }
-        public decimal PrepaymentVatCategoryTaxableAmount { get; set; }
         public string ItemName { get; set; }
         public string ItemBuyerIdentifier { get; set; }
         public string ItemSellerIdentifier { get; set; }
@@ -108,12 +116,21 @@ namespace Tellma.Repository.Application
         public decimal ItemVatRate { get; set; }
         public string ItemVatExemptionReasonCode { get; set; }
         public string ItemVatExemptionReasonText { get; set; }
-        public string PrepaymentVatCategory { get; set; } // E, S, Z, O
-        public decimal PrepaymentVatRate { get; set; }
         public decimal ItemPriceBaseQuantity { get; set; }
         public string ItemPriceBaseQuantityUnit { get; set; }
         public decimal ItemPriceDiscount { get; set; }
         public decimal ItemGrossPrice { get; set; }
+    }
+
+    public class ZatcaPrepaymentLine
+    {
+        public int Id { get; set; }
+        public string PrepaymentId { get; set; }
+        public Guid PrepaymentUuid { get; set; }
+        public DateTimeOffset PrepaymentIssueDateTime { get; set; }
+        public decimal PrepaymentVatCategoryTaxableAmount { get; set; }
+        public string PrepaymentVatCategory { get; set; } // E, S, Z, O
+        public decimal PrepaymentVatRate { get; set; }
     }
 }
 

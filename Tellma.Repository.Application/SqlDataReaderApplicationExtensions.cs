@@ -171,6 +171,18 @@ namespace Tellma.Repository.Application
                     PurchaseOrderId = reader.String(i++),
                     BillingReferenceId = reader.String(i++),
                     ContractId = reader.String(i++),
+                    //SellerId = reader.String(i++),
+                    //SellerIdScheme = reader.String(i++), // VAT or else
+                    //SellerAddressStreet = reader.String(i++),
+                    //SellerAddressAdditionalStreet = reader.String(i++),
+                    //SellerAddressBuildingNumber = reader.String(i++),
+                    //SellerAddressAdditionalNumber = reader.String(i++),
+                    //SellerAddressCity = reader.String(i++),
+                    //SellerAddressPostalCode = reader.String(i++),
+                    //SellerAddressProvince = reader.String(i++),
+                    //SellerAddressDistrict = reader.String(i++),
+                    //SellerAddressCountryCode = reader.String(i++),
+                    //SellerName = reader.String(i++),
                     BuyerId = reader.String(i++),
                     BuyerIdScheme = reader.String(i++), // VAT or else
                     BuyerAddressStreet = reader.String(i++),
@@ -190,17 +202,11 @@ namespace Tellma.Repository.Application
                     PaymentTerms = reader.String(i++),
                     PaymentAccountId = reader.String(i++),
                     InvoiceTotalVatAmountInAccountingCurrency = reader.Decimal(i++) ?? 0m,
-                    PrepaidAmount = reader.Decimal(i++) ?? 0m,
-                    RoundingAmount = reader.Decimal(i++) ?? 0m,
-                    //VatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
-                    //VatCategory = reader.String(i++), // E, S, Z, O
-                    //VatRate = reader.Decimal(i++) ?? 0m,
-                    //VatExemptionReason = reader.String(i++),
-                    //VatExemptionReasonCode = reader.String(i++),
+                    RoundingAmount = reader.Decimal(i++) ?? 0m
                 };
             }
 
-            // 2 - Load the Allowances/Charges
+            // 2 - Load the document level allowances/charges
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
@@ -219,7 +225,7 @@ namespace Tellma.Repository.Application
                 });
             }
 
-            // 3 - Load the Invoice/Lines
+            // 3 - Load the invoice lines
             await reader.NextResultAsync(cancellation);
             while (await reader.ReadAsync(cancellation))
             {
@@ -230,9 +236,6 @@ namespace Tellma.Repository.Application
                 invoice.Lines.Add(new ZatcaInvoiceLine
                 {
                     Id = reader.GetInt32(i++),
-                    PrepaymentId = reader.String(i++),
-                    PrepaymentUuid = reader.Guid(i++) ?? default,
-                    PrepaymentIssueDateTime = reader.GetDateTimeOffset(i++),
                     Quantity = reader.Decimal(i++) ?? 0m,
                     QuantityUnit = reader.String(i++),
                     NetAmount = reader.Decimal(i++) ?? 0m,
@@ -241,7 +244,6 @@ namespace Tellma.Repository.Application
                     AllowanceChargeReason = reader.String(i++),
                     AllowanceChargeReasonCode = reader.String(i++),
                     VatAmount = reader.Decimal(i++) ?? 0m,
-                    PrepaymentVatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
                     ItemName = reader.String(i++),
                     ItemBuyerIdentifier = reader.String(i++),
                     ItemSellerIdentifier = reader.String(i++),
@@ -251,12 +253,30 @@ namespace Tellma.Repository.Application
                     ItemVatRate = reader.Decimal(i++) ?? 0m,
                     ItemVatExemptionReasonCode = reader.String(i++),
                     ItemVatExemptionReasonText = reader.String(i++),
-                    PrepaymentVatCategory = reader.String(i++), // E, S, Z, O
-                    PrepaymentVatRate = reader.Decimal(i++) ?? 0m,
                     ItemPriceBaseQuantity = reader.Decimal(i++) ?? 0m,
                     ItemPriceBaseQuantityUnit = reader.String(i++),
                     ItemPriceDiscount = reader.Decimal(i++) ?? 0m,
                     ItemGrossPrice = reader.Decimal(i++) ?? 0m,
+                });
+            }
+
+            // 4 - Load the prepayment lines
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int invoiceIndex = reader.GetInt32(i++);
+                var invoice = result[invoiceIndex];
+
+                invoice.Prepayments.Add(new ZatcaPrepaymentLine
+                {
+                    Id = reader.GetInt32(i++),
+                    PrepaymentId = reader.String(i++),
+                    PrepaymentUuid = reader.Guid(i++) ?? default,
+                    PrepaymentIssueDateTime = reader.GetDateTimeOffset(i++),
+                    PrepaymentVatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
+                    PrepaymentVatCategory = reader.String(i++), // E, S, Z, O
+                    PrepaymentVatRate = reader.Decimal(i++) ?? 0m,
                 });
             }
 

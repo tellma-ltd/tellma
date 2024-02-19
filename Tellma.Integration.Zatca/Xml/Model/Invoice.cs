@@ -233,9 +233,10 @@
         /// <b>BT-113</b> 
         /// <br/> 
         /// The sum of amounts which have been paid in advance including VAT.
-        /// This amount is subtracted from the <see cref="InvoiceTotalAmountWithVat"/> to calculate the <see cref="AmountDueForPayment"/>.
+        /// This amount is subtracted from the <see cref="InvoiceTotalAmountWithVat"/> to calculate the <see cref="AmountDueForPayment"/>. <br/>
+        /// Auto-calculated as sum of <see cref="InvoiceLine.PrepaymentVatCategoryTaxableAmount"/> + <see cref="InvoiceLine.PrepaymentVatCategoryTaxAmount"/>.
         /// </summary>
-        public decimal PrepaidAmount { get; set; } // TODO: => Lines.Sum(e => e.PrepaymentVatCategoryTaxableAmount + e.PrepaymentVatCategoryTaxAmount);
+        public decimal PrepaidAmount => Lines.Sum(e => e.PrepaymentVatCategoryTaxableAmount + e.PrepaymentVatCategoryTaxAmount); // Rule BR-KSA-80
 
         /// <summary>
         /// <b>BT-114</b> 
@@ -268,24 +269,29 @@
             {
                 Category = e.VatCategory,
                 Rate = e.VatRate,
-                ReasonCode = (VatExemptionReason?)null,
+                ReasonCode = default(VatExemptionReason),
                 ReasonText = "",
                 Amount = e.Indicator == AllowanceChargeType.Allowance ? (-e.Amount) : e.Amount
             }))
             .GroupBy(e => new { e.Category, e.Rate })
-            .Select(g => new VatBreakdownEntry
+            .Select(g =>
             {
-                VatCategoryTaxableAmount = g.Sum(e => e.Amount),
-                VatCategory = g.Key.Category,
-                VatRate = g.Key.Rate,
+                var firstWithReason = g.FirstOrDefault(e => e.ReasonCode != default);
 
-                // TODO: Unfortunately, it is not clear what to do in the following case:
-                // 1 - You have a line with with VAT category zero (Z) and exemption reason VATEX-SA-EDU
-                // 2 - You also have a line with with VAT category zero (Z) and exemption reason VATEX-SA-HEA 
-                // 3 - You also have a document level allowance with VAT category zero (Z)
-                // What is the VAT breakdown in this case?
-                VatExemptionReasonCode = g.FirstOrDefault(e => e.ReasonCode != null)?.ReasonCode, // It is not obvious what to do here, when multiple lines have different reasons
-                VatExemptionReasonText = g.FirstOrDefault(e => e.ReasonCode != null)?.ReasonText
+                return new VatBreakdownEntry
+                {
+                    VatCategoryTaxableAmount = g.Sum(e => e.Amount),
+                    VatCategory = g.Key.Category,
+                    VatRate = g.Key.Rate,
+
+                    // TODO: Unfortunately, it is not clear what to do in the following case:
+                    // 1 - You have a line with with VAT category zero (Z) and exemption reason VATEX-SA-EDU
+                    // 2 - You also have a line with with VAT category zero (Z) and exemption reason VATEX-SA-HEA 
+                    // 3 - You also have a document level allowance with VAT category zero (Z)
+                    // What is the VAT breakdown in this case?
+                    VatExemptionReasonCode = firstWithReason?.ReasonCode, // It is not obvious what to do here, when multiple lines have different reasons
+                    VatExemptionReasonText = firstWithReason?.ReasonText
+                };
             })
             .ToList();
 
@@ -293,52 +299,5 @@
         /// Line items.
         /// </summary>
         public List<InvoiceLine> Lines { get; set; } = [];
-    }
-
-    public class VatBreakdownEntry
-    {
-        /// <summary>
-        /// <b>BT-116</b> 
-        /// <br/> 
-        /// Sum of all taxable amounts subject to a specific VAT category code and VAT category rate (if the VAT category rate is applicable). <br/>
-        /// The sum of <see cref="InvoiceLine.NetAmount"/> minus allowances on document level which are subject to a specific VAT category code and VAT category rate (if the VAT category rate is applicable).
-        /// </summary>
-        public decimal VatCategoryTaxableAmount { get; set; }
-
-        /// <summary>
-        /// <b>BT-117</b> 
-        /// <br/> 
-        /// Auto-computed as <see cref="VatCategoryTaxableAmount"/> x <see cref="VatRate"/> rounded to 2 decimal places.
-        /// </summary>
-        public decimal VatCategoryTaxAmount => decimal.Round(VatCategoryTaxableAmount * VatRate, 2); // Rule BR-CO-17
-
-        /// <summary>
-        /// <b>BT-118</b> 
-        /// <br/> 
-        /// Coded identification of a VAT category.
-        /// </summary>
-        public VatCategory VatCategory { get; set; }
-
-        /// <summary>
-        /// <b>BT-119</b> 
-        /// <br/> 
-        /// The VAT rate, represented as percentage that applies for the relevant VAT category. <br/>
-        /// A rate between 0.0000 and 1.0000
-        /// </summary>
-        public decimal VatRate { get; set; }
-
-        /// <summary>
-        /// <b>BT-120</b> 
-        /// <br/> 
-        /// A textual statement of the reason why the amount is exempted from VAT or why no VAT is being charged.
-        /// </summary>
-        public string? VatExemptionReasonText { get; set; }
-
-        /// <summary>
-        /// <b>BT-121</b> 
-        /// <br/> 
-        /// A coded statement of the reason for why the amount is exempted from VAT.
-        /// </summary>
-        public VatExemptionReason? VatExemptionReasonCode { get; set; }
     }
 }

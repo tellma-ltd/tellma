@@ -147,7 +147,7 @@ namespace Tellma.Integration.Zatca
         /// <br/> 
         /// This is required if <see cref="ItemVatCategory"/> is non-standard.
         /// </summary>
-        public VatExemptionReason? ItemVatExemptionReasonCode { get; set; }
+        public VatExemptionReason ItemVatExemptionReasonCode { get; set; }
 
         /// <summary>
         /// <b>BT-???</b>

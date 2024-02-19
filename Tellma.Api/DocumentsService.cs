@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -592,6 +591,24 @@ namespace Tellma.Api
                     VatNumber = settings.TaxIdentificationNumber,
                     Name = settings.CompanyName
                 },
+                //Seller = new Party
+                //{
+                //    Id = inv.SellerIdScheme == "VAT" ? null : new(ToPartyIdSchema(inv.SellerIdScheme), inv.SellerId),
+                //    Address = new Address
+                //    {
+                //        Street = inv.SellerAddressStreet,
+                //        AdditionalStreet = inv.SellerAddressAdditionalStreet,
+                //        BuildingNumber = inv.SellerAddressBuildingNumber,
+                //        AdditionalNumber = inv.SellerAddressAdditionalNumber,
+                //        District = inv.SellerAddressDistrict,
+                //        City = inv.SellerAddressCity,
+                //        PostalCode = inv.SellerAddressPostalCode,
+                //        Province = inv.SellerAddressProvince,
+                //        CountryCode = inv.SellerAddressCountryCode,
+                //    },
+                //    VatNumber = inv.SellerIdScheme == "VAT" ? inv.SellerId : null,
+                //    Name = inv.SellerName
+                //},
                 Buyer = new Party
                 {
                     Id = inv.BuyerIdScheme == "VAT" ? null : new(ToPartyIdSchema(inv.BuyerIdScheme), inv.BuyerId),
@@ -626,7 +643,6 @@ namespace Tellma.Api
                     VatRate = ac.VatRate,
                 }).ToList(),
                 InvoiceTotalVatAmountInAccountingCurrency = inv.InvoiceTotalVatAmountInAccountingCurrency,
-                PrepaidAmount = inv.PrepaidAmount,
                 RoundingAmount = inv.RoundingAmount,
                 //VatCategoryTaxableAmount = inv.VatCategoryTaxableAmount,
                 //VatCategory = ToVatCategory(inv.VatCategory),
@@ -636,9 +652,6 @@ namespace Tellma.Api
                 Lines = inv.Lines.Select((line, index) => new InvoiceLine
                 {
                     Identifier = index + 1,
-                    PrepaymentId = line.PrepaymentId,
-                    PrepaymentUuid = line.PrepaymentUuid,
-                    PrepaymentIssueDateTime = line.PrepaymentIssueDateTime,
                     Quantity = line.Quantity,
                     QuantityUnit = line.QuantityUnit,
                     NetAmount = line.NetAmount,
@@ -650,7 +663,6 @@ namespace Tellma.Api
                         ReasonCode = line.AllowanceChargeReasonCode,
                     },
                     VatAmount = line.VatAmount,
-                    PrepaymentVatCategoryTaxableAmount = line.PrepaymentVatCategoryTaxableAmount,
                     ItemName = line.ItemName,
                     ItemBuyerIdentifier = line.ItemBuyerIdentifier,
                     ItemSellerIdentifier = line.ItemSellerIdentifier,
@@ -660,13 +672,32 @@ namespace Tellma.Api
                     ItemVatRate = line.ItemVatRate,
                     ItemVatExemptionReasonCode = ToVatExemptionReason(line.ItemVatExemptionReasonCode),
                     ItemVatExemptionReasonText = line.ItemVatExemptionReasonText,
-                    PrepaymentVatCategory = ToVatCategory(line.PrepaymentVatCategory),
-                    PrepaymentVatRate = line.PrepaymentVatRate,
                     ItemPriceBaseQuantity = line.ItemPriceBaseQuantity,
                     ItemPriceBaseQuantityUnit = line.ItemPriceBaseQuantityUnit,
                     ItemPriceDiscount = line.ItemPriceDiscount,
                     ItemGrossPrice = line.ItemGrossPrice,
-                }).ToList(),
+                })
+                .Concat(inv.Prepayments.Select((line, index) => new InvoiceLine
+                {
+                    Identifier = inv.Lines.Count + index + 1,
+                    Quantity = 0m,
+                    QuantityUnit = "PCE",
+                    NetAmount = 0m,
+                    VatAmount = 0m,
+
+                    PrepaymentId = line.PrepaymentId,
+                    PrepaymentUuid = line.PrepaymentUuid,
+                    PrepaymentIssueDateTime = line.PrepaymentIssueDateTime,
+                    PrepaymentVatCategoryTaxableAmount = line.PrepaymentVatCategoryTaxableAmount,
+                    PrepaymentVatCategory = ToVatCategory(line.PrepaymentVatCategory),
+                    PrepaymentVatRate = line.PrepaymentVatRate,
+
+                    ItemName = "Prepayment adjustment",
+                    ItemNetPrice = 0m,
+                    ItemVatCategory = ToVatCategory(line.PrepaymentVatCategory),
+                    ItemVatRate = line.PrepaymentVatRate,
+
+                })).ToList(),
             };
         }
 
@@ -691,7 +722,7 @@ namespace Tellma.Api
 
         private static PartyIdScheme ToPartyIdSchema(string scheme)
         {
-            return scheme switch
+            return (scheme ?? "").Trim().ToUpper() switch
             {
                 "TIN" => PartyIdScheme.TaxIdentificationNumber,
                 "CRN" => PartyIdScheme.CommercialRegistration,
@@ -704,25 +735,27 @@ namespace Tellma.Api
                 "IQA" => PartyIdScheme.IqamaNumber,
                 "PAS" => PartyIdScheme.PassportId,
                 "OTH" => PartyIdScheme.OtherId,
+                "" => default,
                 _ => throw new InvalidOperationException($"Unrecognized Party ID scheme {scheme}"),
             };
         }
 
         private static VatCategory ToVatCategory(string category)
         {
-            return category switch
+            return (category ?? "").Trim().ToUpper() switch
             {
                 "E" => VatCategory.ExemptFromTax,
                 "S" => VatCategory.StandardRate,
                 "Z" => VatCategory.ZeroRatedGoods,
                 "O" => VatCategory.NotSubjectToTax,
+                "" => default,
                 _ => throw new InvalidOperationException($"Unrecognized VAT Category {category}"),
             };
         }
 
         private static VatExemptionReason ToVatExemptionReason(string reasonCode)
         {
-            return reasonCode switch
+            return (reasonCode ?? "").Trim().ToUpper() switch
             {
                 // E
                 "VATEX-SA-29" => VatExemptionReason.VATEX_SA_29,
@@ -745,6 +778,7 @@ namespace Tellma.Api
 
                 // O
                 "VATEX-SA-OOS" => VatExemptionReason.VATEX_SA_OOS,
+                "" => default,
                 _ => throw new InvalidOperationException($"Unrecognized VAT Exemption reason code {reasonCode}"),
             };
         }

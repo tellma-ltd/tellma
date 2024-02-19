@@ -67,7 +67,6 @@
             //VatCategory = VatCategory.StandardRate,
             //VatRate = 0.1500m,
             InvoiceTotalVatAmountInAccountingCurrency = 144.9m,
-            PrepaidAmount = 0.00m,
 
             Lines =
                 [
@@ -171,8 +170,6 @@
             //VatCategory = VatCategory.StandardRate,
             //VatRate = 0.1500m,
 
-            PrepaidAmount = 0.00m,
-
             Lines =
                 [
                     new()
@@ -230,7 +227,7 @@
                         ItemVatCategory = VatCategory.StandardRate,
                         ItemVatRate = 0.15m,
                         ItemVatExemptionReasonText = null,
-                        ItemVatExemptionReasonCode = null,
+                        ItemVatExemptionReasonCode = default,
 
                         ItemNetPrice = 122.00m,
                         ItemPriceDiscount = 12.00m,
