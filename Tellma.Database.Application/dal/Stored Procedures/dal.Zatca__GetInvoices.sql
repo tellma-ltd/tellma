@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE  PROCEDURE [dal].[Zatca__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -68,7 +68,7 @@ BEGIN
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
         dal.fn_Document__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
-		-- Following is auto computed.
+		-- Following is auto computed
         --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
         --0.15 AS [VatRate], -- BT-119: between 0.00 and 1.00 (NOT 100.00)
@@ -110,10 +110,11 @@ BEGIN
 		-- remove any field which is pure computation
         -E.[Direction] * E.[Quantity] AS [Quantity], -- BT-129. Zero for prepayment invoice lines
         U.[Code] AS [QuantityUnit], -- BT-130. PCE for prepayment invoice lines
+		--Net: BT-131  = Quantity: BT-129 * Unit price: BT-146 / Base Qty: BT-149 + Charge: BT-141 - Discounts: BT-136),
         -E.[Direction] * E.[NotedAmount] AS [NetAmount], -- BT-131
        -- CAST(0 AS BIT) AS [AllowanceChargeIsCharge], -- 1 for charge, 0 for allowance
 		NULL AS [AllowanceChargeIsCharge], -- intends to return allocances and charges all at the document level
-        NULL AS [AllowanceChargeAmount], -- BT-136 for allowances, BT-141 for charges
+        CAST(0.0 AS DECIMAL(19, 6)) AS [AllowanceChargeAmount], -- BT-136 for allowances, BT-141 for charges
         NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
         NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
         -E.[Direction] * E.[MonetaryValue] AS [VatAmount], -- KSA-11
@@ -121,7 +122,7 @@ BEGIN
         NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
         NR.[Code] AS [ItemSellerIdentifier], -- BT-155, max 127 chars
         NR.[Identifier] AS [ItemStandardIdentifier], -- BT-157, max 127 chars
-        -E.[Direction] * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemNetPrice], -- BT-146
+        -E.Direction * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemNetPrice], -- BT-146
 		-- Resource Lookup 3: VAT Category
         ISNULL(LK3.[Code], 'S') AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
         ISNULL(NR.[VatRate], 0.15) AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
@@ -130,7 +131,9 @@ BEGIN
 		LK4.[Name] AS [ItemVatExemptionReasonText], -- N'Private Education to citizen'
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
         N'PCE' AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
-        10.00 AS [ItemPriceDiscount], -- BT-147
+        --ISNULL(L.[Decimal2], 0.0) AS [ItemPriceDiscount], -- BT-147
+		CAST(0.0 AS DECIMAL(19, 6)) AS [ItemPriceDiscount], -- BT-147
+		  --Item net price: BT-146 = Gross price: BT-148 - Allowance: BT-147 when gross price is provided.",
 		-E.Direction * (E.[NotedAmount] + E.[MonetaryValue]) AS [ItemGrossPrice] -- BT-148
     FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
