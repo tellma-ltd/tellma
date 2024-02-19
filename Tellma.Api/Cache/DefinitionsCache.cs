@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Api.Dto;
 using Tellma.Model.Application;
-using Tellma.Model.Common;
 using Tellma.Repository.Application;
 using Tellma.Utilities.Caching;
 
@@ -16,7 +14,7 @@ namespace Tellma.Api
     {
         private const string ManualLine = nameof(ManualLine);
         private const string ManualJournalVoucher = nameof(ManualJournalVoucher);
-        private const string CountriesLookup = nameof(CountriesLookup);
+        private const string Country = nameof(Country);
 
         private readonly IApplicationRepositoryFactory _repoFactory;
 
@@ -87,7 +85,7 @@ namespace Tellma.Api
                 throw new InvalidOperationException($"Database in an inconsistent state, the built-in line definition: '{ManualLine}' could not be found. TenantId {tenantId}.");
             }
 
-            forClient.CountriesLookupDefinitionId = forClient.Lookups.FirstOrDefault(e => e.Value.Code == CountriesLookup).Key;
+            forClient.CountriesLookupDefinitionId = forClient.Lookups.FirstOrDefault(e => e.Value.Code == Country).Key;
 
             return (forClient, version);
         }
