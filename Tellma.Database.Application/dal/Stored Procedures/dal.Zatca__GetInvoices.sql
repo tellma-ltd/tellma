@@ -68,7 +68,7 @@ BEGIN
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
         dal.fn_Document__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
-		-- Following is auto computed
+		-- Following is auto computed.
         --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
         --0.15 AS [VatRate], -- BT-119: between 0.00 and 1.00 (NOT 100.00)
