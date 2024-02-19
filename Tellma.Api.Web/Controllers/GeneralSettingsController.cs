@@ -36,6 +36,17 @@ namespace Tellma.Controllers
             return Ok();
         }
 
+
+        [HttpPut("onboard-zatca")]
+        public async Task<ActionResult> OnboardWithZatca(
+            [FromQuery] string otp,
+            [FromQuery] string orgUnitName,
+            [FromQuery] string industry)
+        {
+            await _service.OnboardWithZatca(otp, orgUnitName, industry);
+            return Ok();
+        }
+
         protected override ApplicationSettingsServiceBase<GeneralSettingsForSave, GeneralSettings> GetSettingsService()
         {
             return _service;

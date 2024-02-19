@@ -19,7 +19,7 @@
         /// <br/> 
         /// Auto-computed as <see cref="VatCategoryTaxableAmount"/> x <see cref="VatRate"/> rounded to 2 decimal places.
         /// </summary>
-        public decimal VatCategoryTaxAmount => decimal.Round(VatCategoryTaxableAmount * VatRate, 2); // Rule BR-CO-17
+        public decimal VatCategoryTaxAmount { get; set; } // => decimal.Round(VatCategoryTaxableAmount * VatRate, 2); // Rule BR-CO-17
 
         /// <summary>
         /// <b>BT-118</b> 

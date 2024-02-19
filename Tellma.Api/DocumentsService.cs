@@ -866,7 +866,7 @@ namespace Tellma.Api
                     encryptedSecurityToken: settings.ZatcaEncryptedSecurityToken,
                     encryptedSecret: settings.ZatcaEncryptedSecret,
                     encryptedPrivateKey: settings.ZatcaEncryptedPrivateKey,
-                    keyIndex: settings.ZatcaEncryptionKeyIndex);
+                    encryptionKeyIndex: settings.ZatcaEncryptionKeyIndex);
 
                 // Call the ZATCA API
                 ClearanceReport report;

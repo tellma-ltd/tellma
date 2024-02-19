@@ -975,6 +975,7 @@
     <Build Include="dal\Functions\dal.fn_Document__RoundingAmount.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__UpdateDocumentInfo.sql" />
     <Build Include="dal\Functions\dal.fn_Invoice__IssueDateTime.sql" />
+    <Build Include="dal\Stored Procedures\dal.Zatca__SaveSecrets.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

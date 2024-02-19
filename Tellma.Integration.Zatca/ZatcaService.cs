@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -39,6 +38,7 @@ namespace Tellma.Integration.Zatca
         public async Task<ZatcaSecrets> Onboard(
             int tenantId,
             string vatNumber,
+            string orgUnitName,
             string orgName,
             string orgIndustry,
             string otp,
@@ -61,7 +61,7 @@ namespace Tellma.Integration.Zatca
                 commonName: csrCommonName,
                 serialNumber: $"1-Tellma|2-{csrHostingDomain}|3-{tenantId}",
                 organizationIdentifier: vatNumber,
-                organizationUnitName: orgName,
+                organizationUnitName: orgUnitName,
                 organizationName: orgName,
                 countryCode: "SA",
                 invoiceType: "1100",
@@ -228,12 +228,12 @@ namespace Tellma.Integration.Zatca
         {
             var encryptionKeysString = _options.EncryptionKeys ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.EncryptionKeys)}' should be provided in a configuration provider.");
             var encryptionKeys = encryptionKeysString.Split(",");
-            if (encryptionKeys.Length < secrets.KeyIndex)
+            if (encryptionKeys.Length < secrets.EncryptionKeyIndex)
             {
-                throw new ZatcaException($"The given key index {secrets.KeyIndex} is outside the range of available keys in the 'Zatca:{nameof(_options.EncryptionKeys)}' config.");
+                throw new ZatcaException($"The given key index {secrets.EncryptionKeyIndex} is outside the range of available keys in the 'Zatca:{nameof(_options.EncryptionKeys)}' config.");
             }
 
-            var encryptionKey = encryptionKeys[secrets.KeyIndex].Trim();
+            var encryptionKey = encryptionKeys[secrets.EncryptionKeyIndex].Trim();
 
             string securityToken = CryptoUtil.Decrypt(secrets.EncryptedSecurityToken, encryptionKey);
             string secret = CryptoUtil.Decrypt(secrets.EncryptedSecret, encryptionKey);
@@ -270,7 +270,7 @@ namespace Tellma.Integration.Zatca
         string encryptedSecurityToken,
         string encryptedSecret,
         string encryptedPrivateKey,
-        int keyIndex)
+        int encryptionKeyIndex)
     {
         /// <summary>
         /// Returned by ZATCA Onboarding API.
@@ -290,7 +290,7 @@ namespace Tellma.Integration.Zatca
         /// <summary>
         /// The index of the key used to encrypt the other properties
         /// </summary>
-        public int KeyIndex { get; set; } = keyIndex;
+        public int EncryptionKeyIndex { get; set; } = encryptionKeyIndex;
     }
 
     public class ClearanceReport(

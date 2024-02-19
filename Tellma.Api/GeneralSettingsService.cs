@@ -178,7 +178,7 @@ namespace Tellma.Api
         }
 
 
-        public async Task OnboardWithZatca(string otp)
+        public async Task OnboardWithZatca(string otp, string orgUnitName, string industry)
         {
             await Initialize();
 
@@ -189,13 +189,52 @@ namespace Tellma.Api
                 throw new ForbiddenException();
             }
 
-            // Onboard with Zatca
-            var settings = await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion);
-            var vatNumber = settings.Data.TaxIdentificationNumber;
+            // Validation
+            if (string.IsNullOrWhiteSpace(otp))
+            {
+                throw new ServiceException("Please supply the otp parameter.");
+            }
 
-            // var (csid, secret, privateKey) = await _zatcaService.Onboard(TenantId, vatNumber, otp);
+            if (string.IsNullOrWhiteSpace(orgUnitName))
+            {
+                throw new ServiceException("Please supply the orgUnitName parameter.");
+            }
 
-            // await Repository.Zatca__SaveSettings(csid, secret, privateKey);
+            if (string.IsNullOrWhiteSpace(industry))
+            {
+                throw new ServiceException("Please supply the industry parameter.");
+            }
+
+            var settings = (await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion)).Data;
+            var vatNumber = settings.TaxIdentificationNumber;
+            var orgName = settings.CompanyName;
+            var useSandbox = settings.ZatcaUseSandbox;
+
+            if (string.IsNullOrWhiteSpace(vatNumber))
+            {
+                throw new ServiceException("Please initialize the Tax Identification Number in the financial settings");
+            }
+
+            if (string.IsNullOrWhiteSpace(orgName))
+            {
+                throw new ServiceException("Please initialize the Companyu Name in the general settings");
+            }
+
+            // Onboard with ZATCA
+            var secrets = await _zatcaService.Onboard(
+                tenantId: TenantId,
+                vatNumber: vatNumber,
+                orgUnitName: orgUnitName,
+                orgName: orgName,
+                orgIndustry: industry,
+                otp: otp,
+                useSandbox: useSandbox);
+
+            await Repository.Zatca__SaveSecrets(
+                encryptedSecurityToken: secrets.EncryptedSecurityToken, 
+                encryptedSecret: secrets.EncryptedSecret, 
+                encryptedPrivateKey: secrets.EncryptedPrivateKey,
+                encryptionKeyIndex: secrets.EncryptionKeyIndex);
         }
     }
 }

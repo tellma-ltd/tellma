@@ -264,14 +264,16 @@
                 Rate = e.ItemVatRate,
                 ReasonCode = e.ItemVatExemptionReasonCode,
                 ReasonText = e.ItemVatExemptionReasonText ?? "",
-                Amount = e.NetAmount
+                TaxableAmount = e.NetAmount,
+                TaxAmount = e.VatAmount
             }).Union(AllowanceCharges.Select(e => new
             {
                 Category = e.VatCategory,
                 Rate = e.VatRate,
                 ReasonCode = default(VatExemptionReason),
                 ReasonText = "",
-                Amount = e.Indicator == AllowanceChargeType.Allowance ? (-e.Amount) : e.Amount
+                TaxableAmount = (e.Indicator == AllowanceChargeType.Allowance ? -1 : 1) * e.Amount,
+                TaxAmount = (e.Indicator == AllowanceChargeType.Allowance ? -1 : 1) * e.Amount * e.VatRate
             }))
             .GroupBy(e => new { e.Category, e.Rate })
             .Select(g =>
@@ -280,8 +282,10 @@
 
                 return new VatBreakdownEntry
                 {
-                    VatCategoryTaxableAmount = g.Sum(e => e.Amount),
-                    VatCategory = g.Key.Category,
+                    VatCategoryTaxableAmount = g.Sum(e => e.TaxableAmount),
+                    VatCategoryTaxAmount = g.Sum(e => e.TaxAmount),
+
+                    VatCategory = g.Key.Category, 
                     VatRate = g.Key.Rate,
 
                     // TODO: Unfortunately, it is not clear what to do in the following case:
