@@ -67,7 +67,7 @@ BEGIN
         dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding amount can be read from a separate LD.
-        dal.fn_RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
+        dal.fn_Documeny__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
 		-- Following is auto computed
         --1230.00 AS [VatCategoryTaxableAmount], -- BT-116
         --N'S' AS [VatCategory], -- BT-118: [E, S, Z, O]
