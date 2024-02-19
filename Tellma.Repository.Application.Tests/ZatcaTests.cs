@@ -49,109 +49,21 @@ namespace Tellma.Repository.Application.Tests
 
             invoice.Seller = new Party
             {
-                InvoiceNumber = inv.InvoiceNumber,
-                UniqueInvoiceIdentifier = inv.UniqueInvoiceIdentifier,
-                InvoiceIssueDateTime = inv.InvoiceIssueDateTime,
-                InvoiceType = (InvoiceType)inv.InvoiceType,
-                InvoiceTypeTransactions = ToInvoiceTransaction(inv),
-                InvoiceNotes = string.IsNullOrWhiteSpace(inv.InvoiceNote) ? new() : new() { inv.InvoiceNote },
-                InvoiceCurrency = inv.InvoiceCurrency,
-                PurchaseOrderId = inv.PurchaseOrderId,
-                BillingReferenceId = inv.BillingReferenceId,
-                ContractId = inv.ContractId,
-                InvoiceCounterValue = (output.PreviousCounterValue + 1).ToString(),
-                PreviousInvoiceHash = output.PreviousInvoiceHash,
-                Seller = new Party
+                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Address = new Address
                 {
-                    Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
-                    Address = new Address
-                    {
-                        Street = "Tahlia St",
-                        AdditionalStreet = "123",
-                        BuildingNumber = "1820",
-                        AdditionalNumber = "3104",
-                        District = "Riyadh District",
-                        City = "Riyadh",
-                        PostalCode = "12345",
-                        Province = "Riyadh Province",
-                        CountryCode = "SA",
-                    },
-                    VatNumber = "300075588700003",
-                    Name = "ACME International"
+                    Street = "Tahlia St",
+                    AdditionalStreet = "123",
+                    BuildingNumber = "1820",
+                    AdditionalNumber = "3104",
+                    District = "Riyadh District",
+                    City = "Riyadh",
+                    PostalCode = "12345",
+                    Province = "Riyadh Province",
+                    CountryCode = "SA",
                 },
-                Buyer = new Party
-                {
-                    Id = inv.BuyerIdScheme == "VAT" ? null : new(ToPartyIdSchema(inv.BuyerIdScheme), inv.BuyerId),
-                    Address = new Address
-                    {
-                        Street = inv.BuyerAddressStreet,
-                        AdditionalStreet = inv.BuyerAddressAdditionalStreet,
-                        BuildingNumber = inv.BuyerAddressBuildingNumber,
-                        AdditionalNumber = inv.BuyerAddressAdditionalNumber,
-                        District = inv.BuyerAddressDistrict,
-                        City = inv.BuyerAddressCity,
-                        PostalCode = inv.BuyerAddressPostalCode,
-                        Province = inv.BuyerAddressProvince,
-                        CountryCode = inv.BuyerAddressCountryCode,
-                    },
-                    VatNumber = inv.BuyerIdScheme == "VAT" ? inv.BuyerId : null,
-                    Name = inv.BuyerName
-                },
-                SupplyDate = inv.SupplyDate,
-                SupplyEndDate = inv.SupplyEndDate,
-                PaymentMeans = (PaymentMeans)inv.PaymentMeans,
-                ReasonsForIssuanceOfCreditDebitNote = string.IsNullOrWhiteSpace(inv.ReasonForIssuanceOfCreditDebitNote) ? new() : new() { inv.ReasonForIssuanceOfCreditDebitNote },
-                PaymentTerms = inv.PaymentTerms,
-                PaymentAccountId = inv.PaymentAccountId,
-                AllowanceCharges = inv.AllowanceCharges.Select(ac => new AllowanceCharge
-                {
-                    Indicator = ac.IsCharge ? AllowanceChargeType.Charge : AllowanceChargeType.Allowance,
-                    Amount = ac.Amount,
-                    Reason = ac.Reason,
-                    ReasonCode = ac.ReasonCode,
-                    VatCategory = ToVatCategory(ac.VatCategory),
-                    VatRate = ac.VatRate,
-                }).ToList(),
-                InvoiceTotalVatAmountInAccountingCurrency = inv.InvoiceTotalVatAmountInAccountingCurrency,
-                PrepaidAmount = inv.PrepaidAmount,
-                RoundingAmount = inv.RoundingAmount,
-                VatCategoryTaxableAmount = inv.VatCategoryTaxableAmount,
-                VatCategory = ToVatCategory(inv.VatCategory),
-                VatRate = inv.VatRate,
-                VatExemptionReason = inv.VatExemptionReason,
-                VatExemptionReasonCode = inv.VatExemptionReasonCode,
-                Lines = inv.Lines.Select((line, index) => new InvoiceLine
-                {
-                    Identifier = index + 1,
-                    PrepaymentId = line.PrepaymentId,
-                    PrepaymentUuid = line.PrepaymentUuid,
-                    PrepaymentIssueDateTime = line.PrepaymentIssueDateTime,
-                    Quantity = line.Quantity,
-                    QuantityUnit = line.QuantityUnit,
-                    NetAmount = line.NetAmount,
-                    AllowanceCharge = new LineAllowanceCharge
-                    {
-                        Indicator = line.AllowanceChargeIsCharge ? AllowanceChargeType.Charge : AllowanceChargeType.Allowance,
-                        Amount = line.AllowanceChargeAmount,
-                        Reason = line.AllowanceChargeReason,
-                        ReasonCode = line.AllowanceChargeReasonCode,
-                    },
-                    VatAmount = line.VatAmount,
-                    PrepaymentVatCategoryTaxableAmount = line.PrepaymentVatCategoryTaxableAmount,
-                    ItemName = line.ItemName,
-                    ItemBuyerIdentifier = line.ItemBuyerIdentifier,
-                    ItemSellerIdentifier = line.ItemSellerIdentifier,
-                    ItemStandardIdentifier = line.ItemStandardIdentifier,
-                    ItemNetPrice = line.ItemNetPrice,
-                    ItemVatCategory = ToVatCategory(line.ItemVatCategory),
-                    ItemVatRate = line.ItemVatRate,
-                    PrepaymentVatCategory = ToVatCategory(line.PrepaymentVatCategory),
-                    PrepaymentVatRate = line.PrepaymentVatRate,
-                    ItemPriceBaseQuantity = line.ItemPriceBaseQuantity,
-                    ItemPriceBaseQuantityUnit = line.ItemPriceBaseQuantityUnit,
-                    ItemPriceDiscount = line.ItemPriceDiscount,
-                    ItemGrossPrice = line.ItemGrossPrice,
-                }).ToList(),
+                VatNumber = "300075588700003",
+                Name = "ACME International"
             };
 
             // Build and sign the XML
