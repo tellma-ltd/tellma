@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Azure;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -770,10 +771,10 @@ namespace Tellma.Api
             ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             // C# Validation 
+            var def = await Definition();
             if (transition == nameof(Open))
             {
                 // ZATCA documents cannot be reopened
-                var def = await Definition();
                 if (!string.IsNullOrWhiteSpace(def.ZatcaDocumentType))
                 {
                     // ModelState.AddError("[0]", _localizer["Error_CannotOpenAZatcaDocument"]);
@@ -813,7 +814,7 @@ namespace Tellma.Api
             {
                 if (dcOutput.Invoices.Count() != 1)
                 {
-                    throw new ZatcaException("Closing multiple ZATCA invoices is not currently supported");
+                    throw new ServiceException("Closing multiple ZATCA invoices is not currently supported");
                 }
 
                 var settings = await _behavior.Settings();
@@ -821,46 +822,76 @@ namespace Tellma.Api
 
                 if (!useSandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
                 {
-                    throw new ZatcaException(_localizer["Error_NotOnboardedWithZatca"]);
+                    throw new ServiceException(_localizer["Error_NotOnboardedWithZatca"]);
                 }
 
                 var inv = dcOutput.Invoices.Single();
                 var invoice = MapInvoice(inv, settings, dcOutput.PreviousCounterValue, dcOutput.PreviousInvoiceHash);
-               
+
                 var secrets = new ZatcaSecrets(
-                    encryptedSecurityToken: settings.ZatcaEncryptedSecurityToken, 
-                    encryptedSecret: settings.ZatcaEncryptedSecret, 
-                    encryptedPrivateKey: settings.ZatcaEncryptedPrivateKey, 
+                    encryptedSecurityToken: settings.ZatcaEncryptedSecurityToken,
+                    encryptedSecret: settings.ZatcaEncryptedSecret,
+                    encryptedPrivateKey: settings.ZatcaEncryptedPrivateKey,
                     keyIndex: settings.ZatcaEncryptionKeyIndex);
 
+                // Call the ZATCA API
                 ClearanceReport report;
                 if (inv.IsSimplified)
                 {
                     report = await _zatcaService.Report(invoice, secrets, useSandbox);
-                } 
+                }
                 else
                 {
                     report = await _zatcaService.Clear(invoice, secrets, useSandbox);
                 }
 
-                // Update the document info
-                await _behavior.Repository.Zatca__UpdateDocumentInfo(
-                    inv.Id, 
-                    ZatcaState.Reported,
-                    report.ValidationResults == null ? null : JsonSerializer.Serialize(report.ValidationResults), 
-                    invoice.InvoiceCounterValue, 
-                    report.InvoiceHash, 
-                    invoice.UniqueInvoiceIdentifier);
+                // If there are errors or warnings, notify tenant admins
+                var warnings = report.ValidationResults?.WarningMessages;
+                if (!report.IsSuccess || report.HasWarnings)
+                {
+                    var level = !report.IsSuccess ? TenantLogLevel.Error : TenantLogLevel.Warning;
+                    await _behavior.LogZatcaErrorOrWarning(DefinitionId, def.TitleSingular, inv.Id, report.InvoiceXml, report.ValidationResultsJson(), level);
+                }
 
-                // Save the invoice XML in Blob storage
-                var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), useSandbox);
-                var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
-                var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
-                await _blobService.SaveBlobsAsync(TenantId, blobs);
+                // TODO: What if a failure happens here before we commit the transaction.
+                // We would lose the invoice XML, and the document will remain open, even
+                // though it was already cleared with ZATCA API.
+                if (report.IsSuccess)
+                {
+                    // If calling ZATCA API was successful...
+                    // 1 - Update the document info
+                    await _behavior.Repository.Zatca__UpdateDocumentInfo(
+                        inv.Id,
+                        ZatcaState.Reported,
+                        report.ValidationResults == null ? null : JsonSerializer.Serialize(report.ValidationResults),
+                        invoice.InvoiceCounterValue,
+                        report.InvoiceHash,
+                        invoice.UniqueInvoiceIdentifier);
+
+                    // 2 - Save the invoice XML in Blob storage
+                    var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), useSandbox);
+                    var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
+                    var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
+                    await _blobService.SaveBlobsAsync(TenantId, blobs);
+                }
+                else
+                {
+                    IEnumerable<string> errors = []; 
+                    if (report.ValidationResults?.ErrorMessages != null)
+                    {
+                        errors = report.ValidationResults?.ErrorMessages?.Select(e => " - " + e.Message);
+                    }
+
+                    // If calling ZATCA API failed, throw an exception to roll back the transaction
+                    throw new InvalidOperationException(@$"Error(s) while clearing the invoice with ZATCA: 
+
+{string.Join("\n", errors)}");
+                }
             }
 
             // Commit and return
             trx.Complete();
+
             return result;
         }
 
@@ -1073,7 +1104,7 @@ namespace Tellma.Api
             // ids = await CheckActionPermissionsBefore(actionFilter, ids);
 
             var def = await Definition(cancellation);
-            var lineDef = await LineDefinition(lineDefId, cancellation);            
+            var lineDef = await LineDefinition(lineDefId, cancellation);
             if (!lineDef.GenerateScript)
             {
                 throw new ServiceException(@$"Line definition ""{lineDef.TitleSingular}"" does not have an auto-generate script.");

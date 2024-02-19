@@ -13,6 +13,11 @@ namespace Tellma.Api
         public int DocumentDefinitionId { get; set; }
 
         /// <summary>
+        /// The name of the document definition that caused the problem
+        /// </summary>
+        public string DefinitionName { get; set; }
+
+        /// <summary>
         /// The document that was closed
         /// </summary>
         public int DocumentId { get; set; }
@@ -25,7 +30,7 @@ namespace Tellma.Api
         /// <summary>
         /// The error/warning response from ZATCA.
         /// </summary>
-        public string ZatcaResponse { get; set; }
+        public string ValidationResultsJson { get; set; }
 
         /// <summary>
         /// The email of the user who triggered the error.

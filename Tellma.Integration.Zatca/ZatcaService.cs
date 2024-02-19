@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -145,22 +146,14 @@ namespace Tellma.Integration.Zatca
             };
 
             var response = await _zatcaClient.ReportInvoice(request, credentials);
-            if (response.IsSuccess)
-            {
-                var result = response.ResultOrThrow();
-                return new(xml, signatureInfo.InvoiceHash, result?.ValidationResults);
-            }
-            else
-            {
-                var requestString = JsonSerializer.Serialize(request, _jsonOptions);
-                var responseString = response.Result == null ? "null" : JsonSerializer.Serialize(response.Result, _jsonOptions);
-                throw new ZatcaException($@"Failed to clear invoice
------------- Request ------------
-{requestString}
 
------------- Response ------------
-{responseString}");
-            }
+            // Return report
+            return new(
+                isSuccess: response.IsSuccess,
+                hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
+                invoiceXml: xml,
+                invoiceHash: signatureInfo.InvoiceHash,
+                validationResults: response.Result?.ValidationResults);
         }
 
         public async Task<ClearanceReport> Clear(Invoice inv, ZatcaSecrets secrets, bool useSandbox)
@@ -191,6 +184,8 @@ namespace Tellma.Integration.Zatca
 
             var response = await _zatcaClient.ClearInvoice(request, credentials);
 
+            string invoiceXml = xml;
+            string invoiceHash = signatureInfo.InvoiceHash;
             if (response.IsSuccess)
             {
                 var result = response.ResultOrThrow();
@@ -210,24 +205,23 @@ namespace Tellma.Integration.Zatca
 
                 // When clearing, we use the xml
                 // and hash returned from ZATCA
-                return new(zatcaXml, zatcaHash, result.ValidationResults);
+                // as the final version
+                invoiceXml = zatcaXml;
+                invoiceHash = zatcaHash;
             }
             else if (response.Status == ResponseStatus.ClearanceDeactivated)
             {
                 // TODO add it to the simplified invoice queue
                 return await Report(inv, secrets, useSandbox);
             }
-            else
-            {
-                var requestString = JsonSerializer.Serialize(request, _jsonOptions);
-                var responseString = response.Result == null ? "null" : JsonSerializer.Serialize(response.Result, _jsonOptions);
-                throw new ZatcaException($@"Failed to clear invoice
------------- Request ------------
-{requestString}
 
------------- Response ------------
-{responseString}");
-            }
+            // Return report
+            return new(
+                isSuccess: response.IsSuccess,
+                hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
+                invoiceXml: invoiceXml,
+                invoiceHash: invoiceHash,
+                validationResults: response.Result?.ValidationResults);
         }
 
         private (string securityToken, string secret, string privateKey) DecryptSecrets(ZatcaSecrets secrets)
@@ -272,12 +266,6 @@ namespace Tellma.Integration.Zatca
     {
     }
 
-    public class ZatcaReportingException(string msg, string invoiceXml, ResponseValidationResults results) : ReportableException(msg)
-    {
-        public string InvoiceXml { get; } = invoiceXml;
-        public ResponseValidationResults Results { get; } = results;
-    }
-
     public class ZatcaSecrets(
         string encryptedSecurityToken,
         string encryptedSecret,
@@ -305,11 +293,23 @@ namespace Tellma.Integration.Zatca
         public int KeyIndex { get; set; } = keyIndex;
     }
 
-    public class ClearanceReport(string invoiceXml, string invoiceHash, ResponseValidationResults? validationResults)
+    public class ClearanceReport(
+        bool isSuccess, 
+        bool hasWarnings, 
+        string? invoiceXml, 
+        string? invoiceHash, 
+        ResponseValidationResults? validationResults)
     {
-        public string InvoiceXml { get; set; } = invoiceXml;
-        public string InvoiceHash { get; set; } = invoiceHash;
+
+        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+
+        public bool IsSuccess { get; } = isSuccess;
+        public bool HasWarnings { get; } = hasWarnings;
+        public string? InvoiceXml { get; } = invoiceXml;
+        public string? InvoiceHash { get; } = invoiceHash;
         public ResponseValidationResults? ValidationResults { get; } = validationResults;
+
+        public string ValidationResultsJson() => ValidationResults == null ? "" : JsonSerializer.Serialize(ValidationResults, _jsonOptions);
     }
 
     /// <summary>

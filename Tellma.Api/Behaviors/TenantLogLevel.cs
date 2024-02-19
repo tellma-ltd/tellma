@@ -1,4 +1,4 @@
 ﻿namespace Tellma.Api.Behaviors
 {
-    public enum TenantLogLevel { Error, Warn, Info }
+    public enum TenantLogLevel { Error, Warning, Info }
 }

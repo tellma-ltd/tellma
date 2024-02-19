@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Tellma.Api;
 using Tellma.Api.Notifications;
 using Tellma.Repository.Application;
@@ -16,7 +15,6 @@ using Tellma.Utilities.Email;
 using Tellma.Utilities.Sms;
 using Tellma.Services.Utilities;
 using Tellma.Api.Dto;
-using Tellma.Utilities.Logging;
 using Tellma.Model.Application;
 using Tellma.Api.Behaviors;
 
@@ -223,30 +221,46 @@ namespace Tellma.Services.ClientProxy
 
                 result.Body = bldr.ToString();
             }
-//            else if (le is ZatcaErrorLogEntry zle)
-//            {
-//                result.Subject = $@"{zle.TenantName}: Zatca API error or warning";
+            else if (le is ZatcaErrorLogEntry zle)
+            {
+                result.Subject = $@"{zle.TenantName}: ZATCA API {zle.Level}";
 
-//                var entityIds = zle.EntityIds.ToList() ?? new List<int>();
-//                var entityIdsMax = 20;
+                StringBuilder bldr = new($@"<span>Encountered a ZATCA API {zle.Level.ToString().ToLower()} in Tenant {HtmlEncode(zle.TenantName)}.</span><br/><br/>
+<span style=""font-weight: bold"">Log Entry Id:</span><span> {zle.Id}</span><br/>
+<span style=""font-weight: bold"">Tenant Id:</span><span> {zle.TenantId}</span><br/>
+<span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(zle.TenantName)}</span><br/>
+<span style=""font-weight: bold"">Document Definition Id:</span><span> {zle.DocumentDefinitionId}</span><br/>
+<span style=""font-weight: bold"">Document Definition:</span><span> <a href=""{DefinitionUrl(zle)}"">{HtmlEncode(zle.DefinitionName)}</a></span><br/>
+<span style=""font-weight: bold"">Document Id:</span><span> <a href=""{DocumentUrl(zle.TenantId, zle.DocumentDefinitionId, zle.DocumentId)}"">{zle.DocumentId}</a></span><br/>
+<span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(zle.UserEmail)}</span><br/>
+<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(zle.UserName)}</span><br/>");
 
-//                StringBuilder bldr = new($@"<span>An unhandled error occured while running the {HtmlEncode(cle.Collection)} Definition ""{HtmlEncode(cle.DefinitionName)}"" {HtmlEncode(cle.ScriptName)} in Tenant {HtmlEncode(cle.TenantName)}.</span><br/>
-//<span style=""font-weight: bold"">Log Entry Id:</span><span> {cle.Id}</span><br/>
-//<span style=""font-weight: bold"">Tenant Id:</span><span> {cle.TenantId}</span><br/>
-//<span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(cle.TenantName)}</span><br/>
-//<span style=""font-weight: bold"">Collection:</span><span> {HtmlEncode(cle.Collection)}</span><br/>
-//<span style=""font-weight: bold"">Definition Id:</span><span> {cle.DefinitionId}</span><br/>
-//<span style=""font-weight: bold"">{HtmlEncode(cle.Collection)} Definition:</span><span> <a href=""{DefinitionUrl(cle)}"">{HtmlEncode(cle.DefinitionName)}</a></span><br/>
-//<span style=""font-weight: bold"">Script:</span><span> {HtmlEncode(cle.ScriptName)}</span><br/>
-//<span style=""font-weight: bold"">{HtmlEncode(cle.DefinitionName)} Id{(entityIds.Count > 1 ? "s" : "")}:</span><span> {string.Join(", ", entityIds.Take(entityIdsMax).Select(id => id.ToString()))}{(entityIds.Count > entityIdsMax ? "..." : "")}</span><br/>
-//<span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(cle.UserEmail)}</span><br/>
-//<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(cle.UserName)}</span><br/>
-//<span style=""font-weight: bold"">SQL Error Number:</span><span> {cle.ErrorNumber}</span><br/>
-//<span style=""font-weight: bold"">SQL Error Message:</span><span> {HtmlEncode(cle.ErrorMessage)}</span><br/>");
+                bldr.AppendLine(@"<br/>");
+                bldr.AppendLine(@"<span style=""font-weight: bold"">ZATCA Validation Results:</span><br/>");
+                bldr.AppendLine(@$"<span style=""font-family: 'Courrier New', monospace; "">");
+                foreach (var line in (zle.ValidationResultsJson ?? "").Split(Environment.NewLine))
+                {
+                    int i = 0;
+                    while (i < line.Length && char.IsWhiteSpace(line[i]))
+                    {
+                        bldr.Append("&nbsp;");
+                        i++;
+                    }
 
-//                result.Body = bldr.ToString();
+                    bldr.Append($"{HtmlEncode(line.Trim())}<br/>");
+                }
+                bldr.AppendLine(@$"</span><br/>");
 
-//            }
+                bldr.AppendLine(@"<br/>");
+                bldr.AppendLine(@"<span style=""font-weight: bold"">Invoice XML:</span><br/>");
+                foreach (var line in (zle.InvoiceXml ?? "").Split(Environment.NewLine))
+                {
+                    bldr.AppendLine(@$"<span style=""font-family: 'Courrier New', monospace; "">{HtmlEncode(line)}</span><br/>");
+                }
+
+                result.Body = bldr.ToString();
+
+            }
             else
             {
                 // Generic email
@@ -424,9 +438,9 @@ namespace Tellma.Services.ClientProxy
         /// If a string value comes from user input or a localization file, it is important to encode
         /// it before inserting it into the HTML document, otherwise characters like © will cause trouble.
         /// </summary>
-        private static string HtmlEncode(string value) => HtmlEncoder.Default.Encode(value);
+        private static string HtmlEncode(string value) => value == null ? "" : HtmlEncoder.Default.Encode(value);
 
-        private static string UrlEncode(string value) => UrlEncoder.Default.Encode(value);
+        private static string UrlEncode(string value) => value == null ? "" : UrlEncoder.Default.Encode(value);
 
         private string CompanyUrl(int tenantId)
         {
@@ -490,12 +504,26 @@ namespace Tellma.Services.ClientProxy
         //    return linkUrl;
         //}
 
-        private string DefinitionUrl(CustomScriptErrorLogEntry entry)
+
+        private string DocumentUrl(int tenantId, int defId, int id)
         {
-            // Prepare the document/inbox link
             var clientAppUriBldr = new UriBuilder(ClientAppUri());
             var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
-            string collectionDefSegment = entry.Collection switch
+            clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/d/{defId}/{id}";
+            return clientAppUriBldr.Uri.ToString();
+        }
+
+        private string DefinitionUrl(CustomScriptErrorLogEntry entry) =>
+            DefinitionUrl(entry.TenantId, entry.Collection, entry.DefinitionId);
+        private string DefinitionUrl(ZatcaErrorLogEntry entry) =>
+            DefinitionUrl(entry.TenantId, nameof(Document), entry.DocumentDefinitionId);
+
+        private string DefinitionUrl(int tenantId, string collection, int? defId)
+        {
+            // Prepare the definition screen link
+            var clientAppUriBldr = new UriBuilder(ClientAppUri());
+            var basePath = clientAppUriBldr.Path.WithoutTrailingSlash();
+            string collectionDefSegment = collection switch
             {
                 nameof(Document) => "document-definitions",
                 nameof(Agent) => "agent-definitions",
@@ -510,7 +538,7 @@ namespace Tellma.Services.ClientProxy
                 return null;
             }
 
-            clientAppUriBldr.Path = $"{basePath}/a/{entry.TenantId}/{collectionDefSegment}/{entry.DefinitionId}";
+            clientAppUriBldr.Path = $"{basePath}/a/{tenantId}/{collectionDefSegment}/{defId}";
 
             string linkUrl = clientAppUriBldr.Uri.ToString();
             return linkUrl;
