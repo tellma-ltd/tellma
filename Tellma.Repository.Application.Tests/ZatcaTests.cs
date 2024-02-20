@@ -32,6 +32,9 @@ namespace Tellma.Repository.Application.Tests
         [Theory(DisplayName = "[dal].[Zatca__GetInvoices] works ")]
         [InlineData(16910)] // Each one is a document Id
         [InlineData(16903)]
+        [InlineData(17038)]
+        [InlineData(17039)] // Standard Tax invoice
+        [InlineData(17031)] // Simplified tax invoice
         public async Task Zatca__GetInvoices(int docId)
         {
             // These were obtained from the FATOORA portal and CLI tool
