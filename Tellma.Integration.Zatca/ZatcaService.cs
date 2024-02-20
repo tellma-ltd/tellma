@@ -192,23 +192,28 @@ namespace Tellma.Integration.Zatca
                 var result = response.ResultOrThrow();
 
                 // Get the invoice XML returned by ZATCA API
-                var zatcaXmlEncoded = result.ClearedInvoice ?? throw new ZatcaException("ZATCA Clearance API returned null clearedInvoice");
-                string zatcaXml = Encoding.UTF8.GetString(Convert.FromBase64String(zatcaXmlEncoded));
+                string? zatcaXmlEncoded = result.ClearedInvoice;
+                if (!string.IsNullOrWhiteSpace(zatcaXmlEncoded))
+                {
+                    string zatcaXml = Encoding.UTF8.GetString(Convert.FromBase64String(zatcaXmlEncoded));
+                    invoiceXml = zatcaXml;
 
-                // Find the invoice hash
-                var xdoc = XDocument.Parse(zatcaXml);
-                XNamespace ds = "http://www.w3.org/2000/09/xmldsig#";
-                string zatcaHash = xdoc.Descendants(ds + "Reference")
-                                    .FirstOrDefault(e => e.Attribute("Id")?.Value == "invoiceSignedData")?
-                                    .Element(ds + "DigestValue")?
-                                    .Value ?? throw new ZatcaException($@"ZATCA Clearance API returned an invoice XML without a hash: 
-{zatcaXml}");
+                    // Find the invoice hash
+                    var xdoc = XDocument.Parse(zatcaXml);
+                    XNamespace ds = "http://www.w3.org/2000/09/xmldsig#";
+                    string? zatcaHash = xdoc.Descendants(ds + "Reference")
+                                        .FirstOrDefault(e => e.Attribute("Id")?.Value == "invoiceSignedData")?
+                                        .Element(ds + "DigestValue")?
+                                        .Value;
 
-                // When clearing, we use the xml
-                // and hash returned from ZATCA
-                // as the final version
-                invoiceXml = zatcaXml;
-                invoiceHash = zatcaHash;
+                    // When clearing, we use the xml
+                    // and hash returned from ZATCA
+                    // as the final version
+                    if (!string.IsNullOrWhiteSpace(zatcaHash))
+                    {
+                        invoiceHash = zatcaHash;
+                    }
+                }
             }
             else if (response.Status == ResponseStatus.ClearanceDeactivated)
             {
