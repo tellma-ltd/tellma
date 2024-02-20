@@ -494,7 +494,7 @@ BEGIN
 			[CurrencyId1] = COALESCE(dal.fn_Agent__CurrencyId([AgentId1]), [CurrencyId2], [CurrencyId0]),
 			[MonetaryValue2] = [NotedAmount1] + [MonetaryValue1],
 			[NotedDate1] = IIF(
-				dal.fn_Settings__GetCountry() = N'ET',
+				dal.[fn_Settings__Country]() = N'ET',
 				dbo.fn_EOMONTH_ET([PostingDate]),
 				EOMONTH([PostingDate])
 						),

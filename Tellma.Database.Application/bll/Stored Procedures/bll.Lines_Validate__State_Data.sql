@@ -237,9 +237,13 @@ BEGIN
 			N'Error_TransactionHasDebitCreditDifference0',
 			FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 		FROM @Lines L
-		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]		
 		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+		-- Added to exclude statistical accounts
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 		WHERE LD.[LineType] > 40
+		AND AC.[Concept] NOT IN ('HRExtension')
 		GROUP BY L.[DocumentIndex], L.[Index]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
+﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save] -- TODO: PUBLISH
 	@Entities [dbo].[AccountList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
@@ -398,6 +398,18 @@ SET NOCOUNT ON;
 	FROM @Entities A
 	JOIN dbo.EntryTypes ET ON ET.Id = A.NotedResourceId
 	WHERE ET.IsActive = 0
+
+-- Cannot have non smart, monetary, forex account, since the exchange variance will not catch it.
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAccount0IsMonetaryAndForexAndNotAutoSelected',
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS [Account]
+	FROM @Entities A
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	WHERE AC.[IsMonetary] = 1
+	AND A.[IsAutoSelected] = 0
+	AND A.[CurrencyId] <> dal.fn_FunctionalCurrencyId()
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

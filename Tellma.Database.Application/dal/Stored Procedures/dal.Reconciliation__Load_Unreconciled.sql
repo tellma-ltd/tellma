@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Reconciliation__Load_Unreconciled]
+-- Logic assumes that reconcilation is done on closed documents only.
 	@AccountId		INT, 
 	@AgentId		INT, 
 	@AsOfDate		DATE, 
@@ -15,10 +16,12 @@ WITH RECOMPILE
 AS
 	SELECT @EntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
+	AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 	AND L.[PostingDate] <= @AsOfDate;
 
 	With ReconciledEntriesAsOfDate AS (
@@ -35,9 +38,11 @@ AS
 		SELECT DISTINCT RE.[ReconciliationId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate <= @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND	E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
@@ -45,9 +50,11 @@ AS
 		SELECT DISTINCT RE.[ReconciliationId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate > @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND	E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 	)
@@ -55,10 +62,12 @@ AS
 		@UnreconciledEntriesCount = COUNT(*),
 		@UnreconciledEntriesBalance = SUM(E.[Direction] * E.[MonetaryValue])
 	FROM dbo.Entries E
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
+	AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 	AND	L.[PostingDate] <= @AsOfDate
 	-- Exclude if it was reconciled with an external entry before AsOfDate
 	AND E.[Id] NOT IN (SELECT EntryId FROM ReconciledEntriesAsOfDate)
@@ -75,8 +84,10 @@ AS
 		JOIN dbo.ReconciliationEntries RE ON RE.ReconciliationId = R.Id
 		JOIN dbo.Entries E ON RE.EntryId = E.Id
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate <=  @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 	),
@@ -123,9 +134,11 @@ AS
 		SELECT DISTINCT RE.[ReconciliationId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate <= @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND	E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 		AND RE.ReconciliationId NOT IN (SELECT ReconciliationId FROM dbo.ReconciliationExternalEntries)
@@ -133,9 +146,11 @@ AS
 		SELECT DISTINCT RE.[ReconciliationId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Entries E ON RE.EntryId = E.[Id]
-		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate > @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND	E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 	)
@@ -153,6 +168,7 @@ AS
 	WHERE E.[AgentId] = @AgentId
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
+	AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 	AND L.[PostingDate] <= @AsOfDate
 	-- Exclude if it was reconciled with an external entry before AsOfDate
 	AND E.[Id] NOT IN (SELECT EntryId FROM ReconciledEntriesAsOfDate)
@@ -171,8 +187,10 @@ AS
 		JOIN dbo.ReconciliationEntries RE ON RE.ReconciliationId = R.Id
 		JOIN dbo.Entries E ON RE.EntryId = E.Id
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN dbo.Documents D ON D.[Id] = L.[DocumentId] -- MA: 2024-02-05
 		WHERE L.PostingDate <=  @AsOfDate
 		AND L.[State] = 4
+		AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 		AND E.[AccountId] = @AccountId
 		AND E.[AgentId] = @AgentId
 	),

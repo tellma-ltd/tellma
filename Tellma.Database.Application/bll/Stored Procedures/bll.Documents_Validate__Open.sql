@@ -36,12 +36,12 @@ BEGIN
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].PostingDate',
 		N'Error_FallsinArchivedPeriod'
 	FROM @Ids FE
-	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
-	AND D.[Id] IN (SELECT [DocumentId] FROM dbo.Lines WHERE [State] = 4)
+	JOIN dbo.Lines L ON L.[DocumentId] = FE.[Id]
+	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	AND L.[State] > 0;
 
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [ResourceId], [ResourceIsCommon],

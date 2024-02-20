@@ -5,7 +5,7 @@
 )
 RETURNS DECIMAL (19, 6)
 BEGIN
-	DECLARE @CountryId NCHAR(2) = dal.fn_Settings__GetCountry();
+	DECLARE @CountryId NCHAR(2) = dal.[fn_Settings__Country]();
 	DECLARE @Calendar NCHAR (2) = 'GC';
 
 	DECLARE @JoiningDate DATE = dal.fn_Agent__FromDate(@EmployeeId);

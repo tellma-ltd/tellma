@@ -55,10 +55,10 @@ namespace Tellma.Integration.Zatca
 
             // 1 - Create the Certificate Signing Request (CSR)
             // See section 2.2.2 in https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf
-            var csrCommonName = _options.CsrCommonName ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrCommonName)}' should be provided in a configuration provider");
+            // var csrCommonName = _options.CsrCommonName ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrCommonName)}' should be provided in a configuration provider");
             var csrHostingDomain = _options.CsrHostingDomain ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrHostingDomain)}' should be provided in a configuration provider");
             var csrInput = new CsrInput(
-                commonName: csrCommonName,
+                commonName: csrHostingDomain,
                 serialNumber: $"1-Tellma|2-{csrHostingDomain}|3-{tenantId}",
                 organizationIdentifier: vatNumber,
                 organizationUnitName: orgUnitName,
@@ -70,9 +70,10 @@ namespace Tellma.Integration.Zatca
             );
 
             var csrResult = new CsrBuilder(csrInput).GenerateCsr();
+            var csrBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrResult.CsrContent));
 
             // 2 - Submit CSR to ZATCA to retrieve the compliance Cryptographic Stamp Identifier (CSID)
-            var csrRequest = new CsrRequest { Csr = csrResult.CsrContent };
+            var csrRequest = new CsrRequest { Csr = csrBase64 };
             var csidResponse = await client.CreateComplianceCsid(csrRequest, otp, cancellationToken);
             if (!csidResponse.IsSuccess)
             {
@@ -108,8 +109,8 @@ namespace Tellma.Integration.Zatca
             string privateKey = csrResult.PrivateKey;
 
             string encryptedSecurityToken = CryptoUtil.Encrypt(securityToken, encryptionKey);
-            string encryptedSecret = CryptoUtil.Encrypt(securityToken, secret);
-            string encryptedPrivateKey = CryptoUtil.Encrypt(securityToken, privateKey);
+            string encryptedSecret = CryptoUtil.Encrypt(secret, encryptionKey);
+            string encryptedPrivateKey = CryptoUtil.Encrypt(privateKey, encryptionKey);
 
             return new ZatcaSecrets(encryptedSecurityToken, encryptedSecret, encryptedPrivateKey, encryptionKeyIndex);
         }
@@ -191,23 +192,28 @@ namespace Tellma.Integration.Zatca
                 var result = response.ResultOrThrow();
 
                 // Get the invoice XML returned by ZATCA API
-                var zatcaXmlEncoded = result.ClearedInvoice ?? throw new ZatcaException("ZATCA Clearance API returned null clearedInvoice");
-                string zatcaXml = Encoding.UTF8.GetString(Convert.FromBase64String(zatcaXmlEncoded));
+                string? zatcaXmlEncoded = result.ClearedInvoice;
+                if (!string.IsNullOrWhiteSpace(zatcaXmlEncoded))
+                {
+                    string zatcaXml = Encoding.UTF8.GetString(Convert.FromBase64String(zatcaXmlEncoded));
+                    invoiceXml = zatcaXml;
 
-                // Find the invoice hash
-                var xdoc = XDocument.Parse(zatcaXml);
-                XNamespace ds = "http://www.w3.org/2000/09/xmldsig#";
-                string zatcaHash = xdoc.Descendants(ds + "Reference")
-                                    .FirstOrDefault(e => e.Attribute("Id")?.Value == "invoiceSignedData")?
-                                    .Element(ds + "DigestValue")?
-                                    .Value ?? throw new ZatcaException($@"ZATCA Clearance API returned an invoice XML without a hash: 
-{zatcaXml}");
+                    // Find the invoice hash
+                    var xdoc = XDocument.Parse(zatcaXml);
+                    XNamespace ds = "http://www.w3.org/2000/09/xmldsig#";
+                    string? zatcaHash = xdoc.Descendants(ds + "Reference")
+                                        .FirstOrDefault(e => e.Attribute("Id")?.Value == "invoiceSignedData")?
+                                        .Element(ds + "DigestValue")?
+                                        .Value;
 
-                // When clearing, we use the xml
-                // and hash returned from ZATCA
-                // as the final version
-                invoiceXml = zatcaXml;
-                invoiceHash = zatcaHash;
+                    // When clearing, we use the xml
+                    // and hash returned from ZATCA
+                    // as the final version
+                    if (!string.IsNullOrWhiteSpace(zatcaHash))
+                    {
+                        invoiceHash = zatcaHash;
+                    }
+                }
             }
             else if (response.Status == ResponseStatus.ClearanceDeactivated)
             {

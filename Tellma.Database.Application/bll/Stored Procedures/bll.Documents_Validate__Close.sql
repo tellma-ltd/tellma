@@ -12,7 +12,7 @@ BEGIN
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 	SET @IsError = 0;
-	-- cannot close if the line posting date falls in an archived period.
+	-- cannot close if the line posting date falls in an archived period. Logic repeated at line level
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -133,6 +133,19 @@ BEGIN
 	-- MA: removed CurrencyId From GROUP BY, 2021.12.11
 	GROUP BY D.[Index], [dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]), E.[CenterId], [dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) 
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0
+
+	-- cannot close a document with sales invoice, if it violates one of the following
+	DECLARE @Country NCHAR (2) = dal.fn_Settings__Country();
+	IF @Country = N'SA' AND @DefinitionId <> @ManualJV
+	AND EXISTS(
+		SELECT *
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+		JOIN @Ids D ON D.[Id] = L.[DocumentId]
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	)
 
 	-- If there are ZATCA documents, assert that all ZATCA rules are observed
 	IF [dal].[fn_DocumentDefinition__IsZatcaDocumentType](@DefinitionId) = 1

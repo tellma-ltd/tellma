@@ -6,9 +6,17 @@ UPDATE [dbo].[Settings] SET
 
 -- Change tenant name to indicate clone
 UPDATE [dbo].[Settings] SET 
-	[ShortCompanyName] = IIF([PrimaryLanguageId] = N'en', N'Clone of ' + [ShortCompanyName], N'(✂️) ' + [ShortCompanyName]),
-	[ShortCompanyName2] = IIF([SecondaryLanguageId] = N'en', N'Clone of ' + [ShortCompanyName2], N'(✂️) ' + [ShortCompanyName2]),
-	[ShortCompanyName3] = IIF([TernaryLanguageId] = N'en', N'Clone of ' + [ShortCompanyName3], N'(✂️) ' + [ShortCompanyName3]);
+	[ShortCompanyName] = N'Clone of ' + [ShortCompanyName],
+	[ShortCompanyName2] = N'Clone of ' + [ShortCompanyName2],
+	[ShortCompanyName3] = N'Clone of ' + [ShortCompanyName3];
+	
+-- Reset ZATCA Settings
+UPDATE [dbo].[Settings] SET 
+	[ZatcaEncryptedPrivateKey] = NULL,
+	[ZatcaEncryptedSecret] = NULL,
+	[ZatcaEncryptedSecurityToken] = NULL,
+	[ZatcaEncryptionKeyIndex] = 0,
+	[ZatcaUseSandbox] = 1;
 
 -- Change all Users to New, and update versions
 UPDATE [dbo].[Users] SET 
@@ -24,6 +32,7 @@ UPDATE [dbo].[Agents] SET [ImageId] = NULL
 UPDATE [dbo].[Resources] SET [ImageId] = NULL
 DELETE FROM [dbo].[Attachments]
 DELETE FROM [dbo].[AgentAttachments]
+DELETE FROM [dbo].[ResourceAttachments]
 
 -- Delete email and SMS histories
 DELETE FROM [dbo].[EmailAttachments]
@@ -31,6 +40,14 @@ DELETE FROM [dbo].[Emails]
 DELETE FROM [dbo].[EmailCommands]
 DELETE FROM [dbo].[Messages]
 DELETE FROM [dbo].[MessageCommands]
+
+-- De-link all ZATCA invoices from their attachments
+UPDATE [dbo].[Documents] SET
+	[ZatcaState] = NULL,
+	[ZatcaError] = NULL,
+	[ZatcaSerialNumber] = NULL,
+	[ZatcaHash] = NULL,
+	[ZatcaUuid] = NULL;
 
 -- Disable all automatic notifications
 UPDATE [dbo].[EmailTemplates] SET [IsDeployed] = 0 WHERE [Trigger] = N'Automatic';

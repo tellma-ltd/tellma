@@ -19,7 +19,7 @@ WHERE IsService = 0 AND IsActive = 1
 AND [Name] NOT LIKE N'%test%'
 AND Email NOT LIKE N'%banan-it.com'
 AND Email NOT LIKE N'%tellma.com'
-AND Email NOT IN (N'jiad.akra@banan-it.com', N'mosab.alhaafith@gmail.com', N'amirahakawaty26@gmail.com');
+AND Email NOT IN (N'mosab.alhaafith@gmail.com', N'amirahakawaty26@gmail.com');
 
 INSERT INTO @returntable([ComponentType], [Id], [Component], [Source])
 SELECT [Component Type], [Id], [Component], IIF(MIN([Source]) = MAX([Source]), MIN([Source]), MIN([Source]) + ',' +  MAX([Source])) AS [Source]
@@ -51,6 +51,11 @@ FROM (
 			JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
 			WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
 			AND R.[IsActive] = 1
+			UNION ALL
+			SELECT DISTINCT [Id]
+			FROM dbo.Roles
+			WHERE [IsActive] = 1
+			AND [IsPublic] = 1
 		) R ON R.[RoleId] = P.[RoleId]
 	) T 
 	WHERE [Component] NOT IN (
@@ -119,6 +124,12 @@ FROM (
 			JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
 			WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
 			AND R.[IsActive] = 1
+			UNION ALL
+			SELECT DISTINCT [PrintingTemplateId]
+			FROM dbo.[PrintingTemplateRoles] PTR
+			JOIN dbo.Roles R ON R.[Id] = PTR.[RoleId]
+			WHERE R.[IsActive] = 1
+			AND R.[IsPublic] = 1
 		)
 
 	UNION ALL
@@ -137,6 +148,12 @@ FROM (
 			JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
 			WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
 			AND R.[IsActive] = 1
+			UNION ALL
+			SELECT DISTINCT [ReportDefinitionId]
+			FROM dbo.[ReportDefinitionRoles] RDR
+			JOIN dbo.Roles R ON R.[Id] = RDR.[RoleId]
+			WHERE R.[IsActive] = 1
+			AND R.[IsPublic] = 1
 		)
 
 	UNION
@@ -167,6 +184,11 @@ FROM (
 				JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
 				WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
 				AND R.[IsActive] = 1
+				UNION ALL
+				SELECT DISTINCT [Id]
+				FROM dbo.Roles
+				WHERE [IsActive] = 1
+				AND [IsPublic] = 1
 			) R ON R.[RoleId] = P.[RoleId]
 			WHERE [View] LIKE  N'agents/%' 
 		)
@@ -190,6 +212,11 @@ FROM (
 				JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
 				WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
 				AND R.[IsActive] = 1
+				UNION ALL
+				SELECT DISTINCT [Id]
+				FROM dbo.Roles
+				WHERE [IsActive] = 1
+				AND [IsPublic] = 1
 			) R ON R.[RoleId] = P.[RoleId]
 			WHERE [View] LIKE  N'resources/%' 
 		)
@@ -247,4 +274,3 @@ JOIN (
 
 RETURN
 END
-GO
