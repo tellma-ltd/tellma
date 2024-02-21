@@ -1006,7 +1006,7 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
-    <None Include="Tellma.Spectra20240210.publish.publish.xml" />
+    <None Include="Tellma.TellmaStaging.101.publish.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

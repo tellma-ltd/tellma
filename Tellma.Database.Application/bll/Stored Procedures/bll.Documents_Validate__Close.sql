@@ -154,7 +154,7 @@ BEGIN
 		-- Missing invoice type transaction
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-			N'Error_TheDocumentHasMissingZatcaDocumentType'
+			N'Error_TheDocumentHasMissingInvoiceTypeTransaction'
 		FROM @Ids FE
 		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
 		WHERE D.[Lookup1Id] IS NULL

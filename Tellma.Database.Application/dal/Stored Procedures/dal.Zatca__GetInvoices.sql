@@ -96,7 +96,7 @@ BEGIN
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NRD.[Code] = N'Discounts'
+	AND (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
 
     --=-=-= 3 -Regular Invoice Lines =-=-=--
     SELECT TOP 1
@@ -141,7 +141,7 @@ BEGIN
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NRD.[Code] <> N'Discounts'
+	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
 
    --=-=-= 4 - Prepayment Invoice Lines =-=-=--
    /*
