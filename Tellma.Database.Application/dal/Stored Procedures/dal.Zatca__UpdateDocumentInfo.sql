@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Zatca__UpdateDocumentInfo]
 	@Id INT,
 	@ZatcaState INT,
-	@ZatcaError NVARCHAR(MAX),
+	@ZatcaResult NVARCHAR(MAX),
     @ZatcaSerialNumber INT,
     @ZatcaHash NVARCHAR(MAX),
     @ZatcaUuid UNIQUEIDENTIFIER
@@ -11,7 +11,7 @@ BEGIN
 
     UPDATE [dbo].[Documents]
     SET [ZatcaState] = @ZatcaState,
-        [ZatcaError] = @ZatcaError,
+        [ZatcaResult] = @ZatcaResult,
         [ZatcaSerialNumber] = @ZatcaSerialNumber,
         [ZatcaHash] = @ZatcaHash,
         [ZatcaUuid] = @ZatcaUuid

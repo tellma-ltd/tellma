@@ -422,7 +422,7 @@ namespace Tellma.Integration.Zatca.Tests
             new(_options.Renewal?.Username ?? _options.Default?.Username ?? "",
                 _options.Renewal?.Password ?? _options.Default?.Password ?? "");
 
-        private static ZatcaClient GetZatcaClient() => new(useSandbox: true, _httpClient);
+        private static ZatcaClient GetZatcaClient() => new(env:  Env.Sandbox, _httpClient);
 
         private static async Task<T> GetFileContent<T>(string fileName)
         {

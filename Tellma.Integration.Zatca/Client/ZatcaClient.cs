@@ -9,7 +9,8 @@ namespace Tellma.Integration.Zatca
     {
         #region Constants
 
-        const string PRODUCTION_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal"; // TODO: Replace with production URL
+        const string PRODUCTION_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/";
+        const string SIMULATION_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/simulation/";
         const string SANDBOX_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
 
         #endregion
@@ -23,33 +24,45 @@ namespace Tellma.Integration.Zatca
 
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ZatcaClient(bool useSandbox, IHttpClientFactory httpClientFactory)
+        public ZatcaClient(Env env, IHttpClientFactory httpClientFactory)
         {
-            _baseUrl = useSandbox ? SANDBOX_BASE_URL : PRODUCTION_BASE_URL;
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            ArgumentNullException.ThrowIfNull(httpClientFactory);
+
+            _baseUrl = env switch
+            {
+                Env.Sandbox => SANDBOX_BASE_URL,
+                Env.Simulation => SIMULATION_BASE_URL,
+                Env.Production => PRODUCTION_BASE_URL,
+                _ => throw new InvalidOperationException($"Unrecognized Env {env}"),
+            };
+            _httpClientFactory = httpClientFactory;
         }
 
-        public ZatcaClient(IHttpClientFactory httpClientFactory) : this(useSandbox: false, httpClientFactory)
+        public ZatcaClient(IHttpClientFactory httpClientFactory) : this(env: Env.Production, httpClientFactory)
         {
         }
 
-        public ZatcaClient(bool useSandbox, HttpClient client)
+        public ZatcaClient(Env env, HttpClient client)
         {
             ArgumentNullException.ThrowIfNull(client);
 
-            _baseUrl = useSandbox ? SANDBOX_BASE_URL : PRODUCTION_BASE_URL;
+            _baseUrl = env switch
+            {
+                Env.Sandbox => SANDBOX_BASE_URL,
+                Env.Simulation => SIMULATION_BASE_URL,
+                Env.Production => PRODUCTION_BASE_URL,
+                _ => "",
+            };
             _httpClientFactory = new StaticHttpClientFactory(client);
         }
 
-        public ZatcaClient(HttpClient client) : this(useSandbox: false, client)
+        public ZatcaClient(HttpClient client) : this(env: Env.Production, client)
         {
         }
 
-        private class StaticHttpClientFactory : IHttpClientFactory
+        private class StaticHttpClientFactory(HttpClient client) : IHttpClientFactory
         {
-            private readonly HttpClient _client;
-
-            public StaticHttpClientFactory(HttpClient client) => _client = client;
+            private readonly HttpClient _client = client;
 
             public HttpClient CreateClient(string name) => _client;
         }
@@ -65,15 +78,8 @@ namespace Tellma.Integration.Zatca
         /// </summary>
         public async Task<Response<ReportingResponse>> ReportInvoice(ReportingRequest request, Credentials creds, CancellationToken cancellation = default)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (creds is null)
-            {
-                throw new ArgumentNullException(nameof(creds));
-            }
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(creds);
 
             string url = _baseUrl + "/invoices/reporting/single";
 
@@ -101,15 +107,8 @@ namespace Tellma.Integration.Zatca
         /// </summary>
         public async Task<Response<ClearanceResponse>> ClearInvoice(ClearanceRequest request, Credentials creds, bool activeClearance = true, CancellationToken cancellation = default)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (creds is null)
-            {
-                throw new ArgumentNullException(nameof(creds));
-            }
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(creds);
 
             string url = _baseUrl + "/invoices/clearance/single";
 
@@ -139,8 +138,7 @@ namespace Tellma.Integration.Zatca
         public async Task<Response<CsidResponse>> CreateComplianceCsid(CsrRequest request, string otp, CancellationToken cancellation = default)
         {
             // Validate arguments
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
+            ArgumentNullException.ThrowIfNull(request);
 
             if (string.IsNullOrWhiteSpace(otp))
                 throw new ArgumentException($"'{nameof(otp)}' cannot be null or whitespace.", nameof(otp));
@@ -173,11 +171,8 @@ namespace Tellma.Integration.Zatca
         public async Task<Response<ComplianceCheckResponse>> CheckInvoiceCompliance(ComplianceCheckRequest request, Credentials creds, CancellationToken cancellation = default)
         {
             // Validate arguments
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
-
-            if (creds is null)
-                throw new ArgumentNullException(nameof(creds));
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(creds);
 
             // Base URL
             string url = _baseUrl + "/compliance/invoices";
@@ -205,11 +200,8 @@ namespace Tellma.Integration.Zatca
         public async Task<Response<CsidResponse>> CreateProductionCsid(CreateProductionCsidRequest request, Credentials creds, CancellationToken cancellation = default)
         {
             // Validate arguments
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
-
-            if (creds is null)
-                throw new ArgumentNullException(nameof(creds));
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(creds);
 
             // Base URL
             string url = _baseUrl + "/production/csids";
@@ -237,11 +229,9 @@ namespace Tellma.Integration.Zatca
         public async Task<Response<CsidResponse>> RenewComplianceCsid(CsrRequest request, Credentials creds, string otp, CancellationToken cancellation = default)
         {
             // Validate arguments
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
-
-            if (creds is null)
-                throw new ArgumentNullException(nameof(creds));
+            ArgumentNullException.ThrowIfNull(request);
+            ArgumentNullException.ThrowIfNull(creds);
+            ArgumentNullException.ThrowIfNull(otp);
 
             string url = _baseUrl + "/production/csids";
 

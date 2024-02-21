@@ -16,7 +16,7 @@ UPDATE [dbo].[Settings] SET
 	[ZatcaEncryptedSecret] = NULL,
 	[ZatcaEncryptedSecurityToken] = NULL,
 	[ZatcaEncryptionKeyIndex] = 0,
-	[ZatcaUseSandbox] = 1;
+	[ZatcaEnvironment] = N'Sandbox';
 
 -- Change all Users to New, and update versions
 UPDATE [dbo].[Users] SET 
@@ -44,7 +44,7 @@ DELETE FROM [dbo].[MessageCommands]
 -- De-link all ZATCA invoices from their attachments
 UPDATE [dbo].[Documents] SET
 	[ZatcaState] = NULL,
-	[ZatcaError] = NULL,
+	[ZatcaResult] = NULL,
 	[ZatcaSerialNumber] = NULL,
 	[ZatcaHash] = NULL,
 	[ZatcaUuid] = NULL;

@@ -11,13 +11,15 @@ namespace Tellma.Integration.Zatca
     public class ZatcaService(IHttpClientFactory httpClientFactory, ILogger<ZatcaService> logger, IOptions<ZatcaOptions> options)
     {
         private readonly ZatcaOptions _options = options.Value;
-        private readonly ZatcaClient _zatcaClient = new(useSandbox: false, httpClientFactory);
+        
+        private readonly ZatcaClient _zatcaProductionClient = new(env: Env.Production, httpClientFactory);
+        private readonly ZatcaClient _zatcaSimulationClient = new(env: Env.Simulation, httpClientFactory);
+        private readonly ZatcaClient _zatcaSandboxClient = new(env: Env.Sandbox, httpClientFactory);
+
         private readonly ILogger<ZatcaService> _logger = logger;
-        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+        private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
         #region Sandbox Stuff
-
-        private readonly ZatcaClient _zatcaSandboxClient = new(useSandbox: true, httpClientFactory);
 
         private static readonly HashSet<string> _sandboxOtps = ["111111", "222222", "123456"];
 
@@ -42,16 +44,16 @@ namespace Tellma.Integration.Zatca
             string orgName,
             string orgIndustry,
             string otp,
-            bool useSandbox,
+            Env env,
             CancellationToken cancellationToken = default)
         {
             // This is a safeguard to ensure that the "Use Sandbox" setting is intended
-            if (useSandbox && !_sandboxOtps.Contains(otp))
+            if (env == Env.Sandbox && !_sandboxOtps.Contains(otp))
             {
                 throw new ZatcaException($"The only OTPs allowed in Sandbox mode are: '{string.Join("', '", _sandboxOtps)}'.");
             }
 
-            var client = useSandbox ? _zatcaSandboxClient : _zatcaClient;
+            var zatcaClient = GetZatcaClient(env);
 
             // 1 - Create the Certificate Signing Request (CSR)
             // See section 2.2.2 in https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf
@@ -74,7 +76,7 @@ namespace Tellma.Integration.Zatca
 
             // 2 - Submit CSR to ZATCA to retrieve the compliance Cryptographic Stamp Identifier (CSID)
             var csrRequest = new CsrRequest { Csr = csrBase64 };
-            var csidResponse = await client.CreateComplianceCsid(csrRequest, otp, cancellationToken);
+            var csidResponse = await zatcaClient.CreateComplianceCsid(csrRequest, otp, cancellationToken);
             if (!csidResponse.IsSuccess)
             {
                 throw new ZatcaException($"Failed to create compliance CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
@@ -90,9 +92,9 @@ namespace Tellma.Integration.Zatca
             }
 
             // 4 - Retrieve production compliance CSID
-            var onboardingCredentials = useSandbox ? new(_sandboxOnboardingUsername, _sandboxOnboardingPassword) : new Credentials(tempCsid, tempSecret);
+            var onboardingCredentials = env == Env.Sandbox ? new(_sandboxOnboardingUsername, _sandboxOnboardingPassword) : new Credentials(tempCsid, tempSecret);
             var prodCsidRequest = new CreateProductionCsidRequest { ComplianceRequestId = csidResult.RequestId.ToString() };
-            var prodCsidResponse = await client.CreateProductionCsid(prodCsidRequest, onboardingCredentials, cancellationToken);
+            var prodCsidResponse = await zatcaClient.CreateProductionCsid(prodCsidRequest, onboardingCredentials, cancellationToken);
             if (!prodCsidResponse.IsSuccess)
             {
                 throw new ZatcaException($"Failed to create production CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
@@ -120,15 +122,15 @@ namespace Tellma.Integration.Zatca
             throw new NotImplementedException("");
         }
 
-        public async Task<ClearanceReport> Report(Invoice inv, ZatcaSecrets secrets, bool useSandbox)
+        public async Task<ClearanceReport> Report(Invoice inv, ZatcaSecrets secrets, Env env)
         {
-            var (securityToken, secret, privateKey) = useSandbox ?
+            var (securityToken, secret, privateKey) = env == Env.Sandbox ?
                 (_sandboxReportingUsername, _sandboxReportingPassword, _sandboxPrivateKey) :
                 DecryptSecrets(secrets);
 
-            if (useSandbox && inv.Seller != null)
+            if (env == Env.Sandbox && inv.Seller != null)
             {
-                inv.Seller.VatNumber = "300075588700003"; // To match the certificate
+                inv.Seller.VatNumber = "300075588700003"; // To match the hardcoded certificate
             }
 
             // Create Invoice XML
@@ -146,7 +148,7 @@ namespace Tellma.Integration.Zatca
                 Invoice = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml))
             };
 
-            var response = await _zatcaClient.ReportInvoice(request, credentials);
+            var response = await GetZatcaClient(env).ReportInvoice(request, credentials);
 
             // Return report
             return new(
@@ -157,13 +159,13 @@ namespace Tellma.Integration.Zatca
                 validationResults: response.Result?.ValidationResults);
         }
 
-        public async Task<ClearanceReport> Clear(Invoice inv, ZatcaSecrets secrets, bool useSandbox)
+        public async Task<ClearanceReport> Clear(Invoice inv, ZatcaSecrets secrets, Env env)
         {
-            var (securityToken, secret, privateKey) = useSandbox ?
+            var (securityToken, secret, privateKey) = env == Env.Sandbox ?
                 (_sandboxClearingUsername, _sandboxClearingPassword, _sandboxPrivateKey) :
                 DecryptSecrets(secrets);
 
-            if (useSandbox && inv.Seller != null)
+            if (env == Env.Sandbox && inv.Seller != null)
             {
                 inv.Seller.VatNumber = "300075588700003"; // To match the certificate
             }
@@ -183,7 +185,7 @@ namespace Tellma.Integration.Zatca
                 Invoice = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml))
             };
 
-            var response = await _zatcaClient.ClearInvoice(request, credentials);
+            var response = await GetZatcaClient(env).ClearInvoice(request, credentials);
 
             string invoiceXml = xml;
             string invoiceHash = signatureInfo.InvoiceHash;
@@ -218,7 +220,7 @@ namespace Tellma.Integration.Zatca
             else if (response.Status == ResponseStatus.ClearanceDeactivated)
             {
                 // TODO add it to the simplified invoice queue
-                return await Report(inv, secrets, useSandbox);
+                return await Report(inv, secrets, env);
             }
 
             // Return report
@@ -248,6 +250,16 @@ namespace Tellma.Integration.Zatca
             return (securityToken, secret, privateKey);
         }
 
+        private ZatcaClient GetZatcaClient(Env env)
+        {
+            return env switch
+            {
+                Env.Sandbox => _zatcaSandboxClient,
+                Env.Simulation => _zatcaSimulationClient,
+                Env.Production => _zatcaProductionClient,
+                _ => throw new InvalidOperationException($"Unrecognized Env {env}"),
+            };
+        }
     }
 
     public class ZatcaOptions
@@ -294,7 +306,7 @@ namespace Tellma.Integration.Zatca
         public string EncryptedPrivateKey { get; } = encryptedPrivateKey;
 
         /// <summary>
-        /// The index of the key used to encrypt the other properties
+        /// The index of the key used to encrypt the other properties.
         /// </summary>
         public int EncryptionKeyIndex { get; set; } = encryptionKeyIndex;
     }
@@ -328,6 +340,17 @@ namespace Tellma.Integration.Zatca
         // InvoiceReported(invoice, warnings)
         // InvoiceFailedReporting(invoice, errors)
         // AddToQueue(invoice)
+    }
+
+    public interface ISecretsStore
+    {
+        // GetSecrets()
+        // StoreSecrets()
+    }
+
+    public interface IInvoiceStore
+    {
+        // Store(invoiceXml) -> void
     }
 
     /// <summary>
@@ -389,6 +412,4 @@ namespace Tellma.Integration.Zatca
             return streamReader.ReadToEnd();
         }
     }
-
-
 }

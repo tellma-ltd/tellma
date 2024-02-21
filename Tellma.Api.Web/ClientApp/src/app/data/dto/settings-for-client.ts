@@ -34,4 +34,6 @@ export interface SettingsForClient {
     SmsEnabled: boolean;
 
     FeatureFlags: { [key: string]: boolean };
+
+    ZatcaEnvironment: 'Sandbox' | 'Simulation' | 'Production';
 }

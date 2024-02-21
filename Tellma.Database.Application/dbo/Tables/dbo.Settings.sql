@@ -63,7 +63,7 @@
 	[ZatcaEncryptedSecret]					NVARCHAR(MAX),
 	[ZatcaEncryptedSecurityToken]			NVARCHAR(MAX),
 	[ZatcaEncryptionKeyIndex]				INT					NOT NULL DEFAULT 0,
-	[ZatcaUseSandbox]						BIT					NOT NULL DEFAULT 1,
+	[ZatcaEnvironment]						NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox', -- Sandbox, Simulation, Production
 
 );
 --	IFRS [810000]

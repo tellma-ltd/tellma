@@ -434,7 +434,7 @@ namespace Tellma.Repository.Application
                         zSettings.ZatcaEncryptedSecret = reader.String(reader.GetOrdinal(nameof(zSettings.ZatcaEncryptedSecret)));
                         zSettings.ZatcaEncryptedPrivateKey = reader.String(reader.GetOrdinal(nameof(zSettings.ZatcaEncryptedPrivateKey)));
                         zSettings.ZatcaEncryptionKeyIndex = reader.GetInt32(nameof(zSettings.ZatcaEncryptionKeyIndex));
-                        zSettings.ZatcaUseSandbox = reader.GetBoolean(nameof(zSettings.ZatcaUseSandbox));
+                        zSettings.ZatcaEnvironment = reader.GetString(nameof(zSettings.ZatcaEnvironment));
                     }
                 }
                 else
@@ -8648,7 +8648,7 @@ namespace Tellma.Repository.Application
             return result;
         }
 
-        public async Task Zatca__UpdateDocumentInfo(int id, ZatcaState zatcaState, string zatcaError, int zatcaSerialNumber, string zatcaHash, Guid zatcaUuid)
+        public async Task Zatca__UpdateDocumentInfo(int id, ZatcaState zatcaState, string zatcaResult, int zatcaSerialNumber, string zatcaHash, Guid zatcaUuid)
         {
             var connString = await GetConnectionString();
             await TransactionalDatabaseOperation(async () =>
@@ -8664,7 +8664,7 @@ namespace Tellma.Repository.Application
 
                 // Parameters
                 cmd.Parameters.Add("@Id", id);
-                cmd.Parameters.Add("@ZatcaError", zatcaError);
+                cmd.Parameters.Add("@ZatcaResult", zatcaResult);
                 cmd.Parameters.Add("@ZatcaSerialNumber", zatcaSerialNumber);
                 cmd.Parameters.Add("@ZatcaHash", zatcaHash);
                 cmd.Parameters.Add("@ZatcaState", zatcaState);

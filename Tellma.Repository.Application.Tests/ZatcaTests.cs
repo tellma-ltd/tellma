@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -15,8 +13,6 @@ namespace Tellma.Repository.Application.Tests
 {
     public class ZatcaTests : TestsBase, IClassFixture<ApplicationRepositoryFixture>
     {
-        private const string ZATCA_SANDBOX_BASE_URL = "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal";
-
         #region Lifecycle
 
         private readonly ITestOutputHelper _output;
@@ -73,7 +69,7 @@ namespace Tellma.Repository.Application.Tests
             var xml = xmlBuilder.GetXml();
 
             // Prepare the call the ZATCA sandbox
-            var client = new ZatcaClient(useSandbox: true, _httpClient);
+            var client = new ZatcaClient(Env.Sandbox, _httpClient);
             var credentials = new Credentials(username: securityToken, password: secret);
             Response response;
             string responseBody;
@@ -121,59 +117,5 @@ namespace Tellma.Repository.Application.Tests
             Assert.Equal(ResponseStatus.Success, response.Status);
             Assert.True(response.IsSuccess);
         }
-
-        #region Helpers
-
-        private static InvoiceTransaction ToInvoiceTransaction(ZatcaInvoice inv)
-        {
-            InvoiceTransaction result = 0;
-
-            result |= inv.IsSimplified ? InvoiceTransaction.Simplified : InvoiceTransaction.Standard;
-            if (inv.IsThirdParty)
-                result |= InvoiceTransaction.ThirdParty;
-            if (inv.IsNominal)
-                result |= InvoiceTransaction.Nominal;
-            if (inv.IsExports)
-                result |= InvoiceTransaction.Exports;
-            if (inv.IsSummary)
-                result |= InvoiceTransaction.Summary;
-            if (inv.IsSelfBilled)
-                result |= InvoiceTransaction.SelfBilled;
-
-            return result;
-        }
-
-        private static PartyIdScheme ToPartyIdSchema(string scheme)
-        {
-            return scheme switch
-            {
-                "TIN" => PartyIdScheme.TaxIdentificationNumber,
-                "CRN" => PartyIdScheme.CommercialRegistration,
-                "MOM" => PartyIdScheme.Momrah,
-                "MLS" => PartyIdScheme.Mhrsd,
-                "700" => PartyIdScheme.Number700,
-                "SAG" => PartyIdScheme.Misa,
-                "NAT" => PartyIdScheme.NationalId,
-                "GCC" => PartyIdScheme.GccId,
-                "IQA" => PartyIdScheme.IqamaNumber,
-                "PAS" => PartyIdScheme.PassportId,
-                "OTH" => PartyIdScheme.OtherId,
-                _ => throw new InvalidOperationException($"Unrecognized Party ID scheme {scheme}"),
-            };
-        }
-
-        private static VatCategory ToVatCategory(string category)
-        {
-            return category switch
-            {
-                "E" => VatCategory.ExemptFromTax,
-                "S" => VatCategory.StandardRate,
-                "Z" => VatCategory.ZeroRatedGoods,
-                "O" => VatCategory.NotSubjectToTax,
-                _ => throw new InvalidOperationException($"Unrecognized VAT Category {category}"),
-            };
-        }
-
-        #endregion
     }
 }

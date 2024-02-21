@@ -57,7 +57,7 @@
 	[Lookup2Id]						INT	CONSTRAINT [FK_Documents__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
 
 	[ZatcaState]					INT,				-- 1=Pending, 10=Reported, -10=Error
-	[ZatcaError]					NVARCHAR (MAX),		-- When reporting fails
+	[ZatcaResult]					NVARCHAR (MAX),		-- Validation Result from Zatca
 	[ZatcaSerialNumber]				INT,				-- The invoice serial #, to be included in the next invoice
 	[ZatcaHash]						NVARCHAR (MAX),		-- The invoice hash, to be included in the next invoice
 	[ZatcaUuid]						UNIQUEIDENTIFIER,	-- The invoice UUID to link to the XML invoice file

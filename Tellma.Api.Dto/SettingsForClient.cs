@@ -107,6 +107,6 @@ namespace Tellma.Api.Dto
         [JsonIgnore]
         public int ZatcaEncryptionKeyIndex { get; set; }
 
-        public bool ZatcaUseSandbox { get; set; }
+        public string ZatcaEnvironment { get; set; }
     }
 }

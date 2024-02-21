@@ -783,10 +783,9 @@ namespace Tellma.Api
             };
         }
 
-        private static string InvoiceBlobName(string guid, bool isSandbox)
+        private static string InvoiceBlobName(string guid, Env env)
         {
-            string stage = isSandbox ? "Sandbox" : "Production";
-            return $"Zatca/{stage}/{guid[0..2]}/{guid[2..4]}/{guid}";
+            return $"Zatca/{env}/{guid[0..2]}/{guid[2..4]}/{guid}";
         }
 
         #endregion
@@ -852,9 +851,18 @@ namespace Tellma.Api
                 }
 
                 var settings = await _behavior.Settings();
-                var useSandbox = settings.ZatcaUseSandbox;
+                var useSandbox = settings.ZatcaEnvironment;
 
-                if (!useSandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
+                var env = settings.ZatcaEnvironment switch
+                {
+                    "Sandbox" => Env.Sandbox,
+                    "Simulation" => Env.Simulation,
+                    "Production" => Env.Production,
+                    _ => throw new InvalidOperationException($"Unrecognized ZatcaEnvironment {settings.ZatcaEnvironment}"),
+                };
+
+                // Everything other than Sandbox requires onboarding first
+                if (env != Env.Sandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
                 {
                     throw new ServiceException(_localizer["Error_NotOnboardedWithZatca"]);
                 }
@@ -872,11 +880,11 @@ namespace Tellma.Api
                 ClearanceReport report;
                 if (inv.IsSimplified)
                 {
-                    report = await _zatcaService.Report(invoice, secrets, useSandbox);
+                    report = await _zatcaService.Report(invoice, secrets, env);
                 }
                 else
                 {
-                    report = await _zatcaService.Clear(invoice, secrets, useSandbox);
+                    report = await _zatcaService.Clear(invoice, secrets, env);
                 }
 
                 // If there are errors or warnings, notify tenant admins
@@ -903,7 +911,7 @@ namespace Tellma.Api
                         invoice.UniqueInvoiceIdentifier);
 
                     // 2 - Save the invoice XML in Blob storage
-                    var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), useSandbox);
+                    var blobName = InvoiceBlobName(inv.UniqueInvoiceIdentifier.ToString(), env);
                     var blobBytes = Encoding.UTF8.GetBytes(report.InvoiceXml);
                     var blobs = new List<(string name, byte[] content)>() { (blobName, blobBytes) };
                     await _blobService.SaveBlobsAsync(TenantId, blobs);

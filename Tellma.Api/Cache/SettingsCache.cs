@@ -97,7 +97,7 @@ namespace Tellma.Api
             forClient.ZatcaEncryptedSecret = zatcaSettings.ZatcaEncryptedSecret;
             forClient.ZatcaEncryptedSecurityToken = zatcaSettings.ZatcaEncryptedSecurityToken;
             forClient.ZatcaEncryptionKeyIndex = zatcaSettings.ZatcaEncryptionKeyIndex;
-            forClient.ZatcaUseSandbox = zatcaSettings.ZatcaUseSandbox;
+            forClient.ZatcaEnvironment = zatcaSettings.ZatcaEnvironment;
 
             return (forClient, version);
         }

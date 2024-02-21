@@ -208,7 +208,13 @@ namespace Tellma.Api
             var settings = (await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion)).Data;
             var vatNumber = settings.TaxIdentificationNumber;
             var orgName = settings.CompanyName;
-            var useSandbox = settings.ZatcaUseSandbox;
+            var env = settings.ZatcaEnvironment switch
+            {
+                "Sandbox" => Env.Sandbox,
+                "Simulation" => Env.Simulation,
+                "Production" => Env.Production,
+                _ => throw new InvalidOperationException($"Unrecognized ZatcaEnvironment {settings.ZatcaEnvironment}"),
+            };
 
             if (string.IsNullOrWhiteSpace(vatNumber))
             {
@@ -217,7 +223,7 @@ namespace Tellma.Api
 
             if (string.IsNullOrWhiteSpace(orgName))
             {
-                throw new ServiceException("Please initialize the Companyu Name in the general settings");
+                throw new ServiceException("Please initialize the Company Name in the general settings");
             }
 
             // Onboard with ZATCA
@@ -228,7 +234,7 @@ namespace Tellma.Api
                 orgName: orgName,
                 orgIndustry: industry,
                 otp: otp,
-                useSandbox: useSandbox);
+                env: env);
 
             await Repository.Zatca__SaveSecrets(
                 encryptedSecurityToken: secrets.EncryptedSecurityToken, 
