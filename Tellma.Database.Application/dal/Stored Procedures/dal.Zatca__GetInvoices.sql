@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices]
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 17038); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -19,6 +19,16 @@ BEGIN
 	SET @PreviousInvoiceSerialNumber = 0;
     SET @PreviousInvoiceHash = N'NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==';
     
+	--=-=-= 0 - Exit clause =-=-=--
+	IF NOT EXISTS (
+		SELECT * FROM [map].[Lines]() L
+		INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+		INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		INNER JOIN @Ids AS I ON I.[Id] = L.[DocumentId]
+		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	) RETURN
+
     --=-=-= 1 - Invoices =-=-=--
 	SELECT
 		I.[Index] AS [Index],
