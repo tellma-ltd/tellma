@@ -45,7 +45,7 @@ namespace Tellma.Repository.Application.Tests
             stopwatch.Start();
             var ids = new List<int> { docId };
             var output = await Repo.Zatca__GetInvoices(ids);
-            var dbElapsed = stopwatch.Elapsed.Seconds;
+            var dbElapsed = stopwatch.Elapsed.TotalSeconds;
 
             if (assert_empty)
             {
@@ -122,12 +122,13 @@ namespace Tellma.Repository.Application.Tests
                 responseBody = JsonSerializer.Serialize(res.Result, new JsonSerializerOptions { WriteIndented = true });
             }
 
-            var zatcaElapsed = stopwatch.Elapsed.Seconds;
+            var zatcaElapsed = stopwatch.Elapsed.TotalSeconds;
 
             // Print the response for debugging
-            _output.WriteLine("----- Stats -----");
-            _output.WriteLine($"Time to call [dal].[Zatca__GetInvoices]: {dbElapsed:0.##} sec");
-            _output.WriteLine($"Time to call ZATCA Sandbox API: {zatcaElapsed:0.##} sec");
+            _output.WriteLine("----- Performance Stats -----");
+            _output.WriteLine($"Calling [dal].[Zatca__GetInvoices]: {dbElapsed:0.##} sec");
+            _output.WriteLine($"Calling ZATCA Sandbox API: {zatcaElapsed:0.##} sec");
+            _output.WriteLine("");
 
 
             _output.WriteLine("----- Response from Sandbox -----");
