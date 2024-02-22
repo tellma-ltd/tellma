@@ -24,13 +24,16 @@ namespace Tellma.Repository.Application.Tests
         }
 
         #endregion
-
+        // Each one is a document Id
         [Theory(DisplayName = "[dal].[Zatca__GetInvoices] works ")]
-        [InlineData(16910)] // Each one is a document Id
-        [InlineData(16903)]
-        [InlineData(17038)]
-        [InlineData(17039)] // Standard Tax invoice
-        [InlineData(17031)] // Simplified tax invoice
+        [InlineData(16903)] // Simplified tax invoice a/t delivery
+        [InlineData(16910)] // Standard tax invoice a/t delivery with Discounts/Sales retention
+        [InlineData(17031)] // Simplified tax invoice. Services => Sales + Invoice
+        [InlineData(17039)] // Standard Tax invoice,  Services => Sales + Invoice
+        [InlineData(16961)] // Standard Tax invoice,  Only Prepayment adjustment
+        [InlineData(17038)] // Standard Tax invoice, unrelated adjustment
+
+
         public async Task Zatca__GetInvoices(int docId)
         {
             // These were obtained from the FATOORA portal and CLI tool
