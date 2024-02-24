@@ -981,6 +981,7 @@
     <Build Include="dal\Stored Procedures\dal.Zatca__UpdateDocumentInfo.sql" />
     <Build Include="dal\Functions\dal.fn_Invoice__IssueDateTime.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__SaveSecrets.sql" />
+    <Build Include="dal\Functions\dal.fn_Item_Date__PriceListDiscount.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
