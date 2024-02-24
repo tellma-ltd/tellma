@@ -31,8 +31,8 @@ namespace Tellma.Repository.Application.Tests
         [InlineData(16910, false)] // Standard tax invoice a/t delivery with Discounts/Sales retention
         [InlineData(17031, false)] // Simplified tax invoice. Services => Sales + Invoice
         [InlineData(17039, false)] // Standard Tax invoice,  Services => Sales + Invoice
-        [InlineData(16961, false)] // Standard Tax invoice,  Only Prepayment adjustment
-        [InlineData(17038, false)] // Standard Tax invoice, unrelated adjustment
+        [InlineData(16961, true)] // Standard Tax invoice,  Only Prepayment adjustment
+        [InlineData(17038, true)] // Standard Tax invoice, unrelated adjustment
         public async Task Zatca__GetInvoices(int docId, bool assert_empty)
         {
             // These were obtained from the FATOORA portal and CLI tool
