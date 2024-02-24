@@ -133,6 +133,7 @@ BEGIN
 				ELSE NULL
 			END) AS BIT) AS [AllowanceChargeIsCharge], -- 1 for charge, 0 for allowance
         CAST(ABS(L.[Decimal2]) AS DECIMAL(19, 6)) AS [AllowanceChargeAmount], -- BT-136 for allowances, BT-141 for charges
+		-- In case of line level allowance/charge, we need to store the Allowance/Charge Code & Reason
         NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
         NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
         -E.[Direction] * E.[MonetaryValue] AS [VatAmount], -- KSA-11
