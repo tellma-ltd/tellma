@@ -15,7 +15,7 @@ namespace Tellma.Integration.Zatca.Tests
         public void ValidInvoice()
         {
             // Arrange
-            var invoice = InvoicesSamples.ValidStandardInvoice();
+            var invoice = TestSamples.ValidStandardInvoice();
             var validator = new InvoiceValidator(invoice);
 
             // Act
@@ -32,7 +32,7 @@ namespace Tellma.Integration.Zatca.Tests
         public void InvalidInvoice()
         {
             // Arrange
-            var invoice = InvoicesSamples.ValidStandardInvoice();
+            var invoice = TestSamples.ValidStandardInvoice();
 
             invoice.Seller = null;
             var validator = new InvoiceValidator(invoice);

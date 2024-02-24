@@ -1,6 +1,6 @@
 ﻿namespace Tellma.Integration.Zatca.Tests
 {
-    internal static class InvoicesSamples
+    internal static class TestSamples
     {
         /// <summary>
         /// Create a valid Standard <see cref="Invoice"/>.

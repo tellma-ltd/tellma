@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using Tellma.Utilities.Common;
 
@@ -11,7 +12,7 @@ namespace Tellma.Integration.Zatca
     public class ZatcaService(IHttpClientFactory httpClientFactory, ILogger<ZatcaService> logger, IOptions<ZatcaOptions> options)
     {
         private readonly ZatcaOptions _options = options.Value;
-        
+
         private readonly ZatcaClient _zatcaProductionClient = new(env: Env.Production, httpClientFactory);
         private readonly ZatcaClient _zatcaSimulationClient = new(env: Env.Simulation, httpClientFactory);
         private readonly ZatcaClient _zatcaSandboxClient = new(env: Env.Sandbox, httpClientFactory);
@@ -39,15 +40,15 @@ namespace Tellma.Integration.Zatca
 
         public async Task<ZatcaSecrets> Onboard(
             int tenantId,
-            string vatNumber,
+            Party seller,
             string orgUnitName,
-            string orgName,
             string orgIndustry,
             string otp,
             Env env,
             CancellationToken cancellationToken = default)
         {
             // This is a safeguard to ensure that the "Use Sandbox" setting is intended
+            // Haven't figured a way to apply a similar safeguard in Simulation
             if (env == Env.Sandbox && !_sandboxOtps.Contains(otp))
             {
                 throw new ZatcaException($"The only OTPs allowed in Sandbox mode are: '{string.Join("', '", _sandboxOtps)}'.");
@@ -57,8 +58,10 @@ namespace Tellma.Integration.Zatca
 
             // 1 - Create the Certificate Signing Request (CSR)
             // See section 2.2.2 in https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf
-            // var csrCommonName = _options.CsrCommonName ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrCommonName)}' should be provided in a configuration provider");
-            var csrHostingDomain = _options.CsrHostingDomain ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrHostingDomain)}' should be provided in a configuration provider");
+            string csrHostingDomain = _options.CsrHostingDomain ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrHostingDomain)}' should be provided in a configuration provider");
+            string vatNumber = seller.VatNumber ?? throw new ZatcaException("Please specify supplier VAT number.");
+            string orgName = seller.Name ?? throw new ZatcaException("Please specify supplier Name.");
+
             var csrInput = new CsrInput(
                 commonName: csrHostingDomain,
                 serialNumber: $"1-Tellma|2-{csrHostingDomain}|3-{tenantId}",
@@ -73,28 +76,57 @@ namespace Tellma.Integration.Zatca
 
             var csrResult = new CsrBuilder(csrInput).GenerateCsr();
             var csrBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrResult.CsrContent));
+            var privateKey = csrResult.PrivateKey;
 
             // 2 - Submit CSR to ZATCA to retrieve the compliance Cryptographic Stamp Identifier (CSID)
             var csrRequest = new CsrRequest { Csr = csrBase64 };
             var csidResponse = await zatcaClient.CreateComplianceCsid(csrRequest, otp, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (!csidResponse.IsSuccess)
             {
                 throw new ZatcaException($"Failed to create compliance CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
             }
 
             var csidResult = csidResponse.ResultOrThrow();
-            string tempCsid = csidResult.BinarySecurityToken ?? throw new ZatcaException("ZATCA Compliance CSID API returned null binarySecurityToken.");
+            string tempSecurityToken = csidResult.BinarySecurityToken ?? throw new ZatcaException("ZATCA Compliance CSID API returned null binarySecurityToken.");
             string tempSecret = csidResult.Secret ?? throw new ZatcaException("ZATCA Compliance CSID API returned null secret.");
 
             // 3 - Prove compliance by submitting 6 documents to ZATCA compliance API (Invoice, Debit Note, Credit Note) x (Standard, Simplified)
+            foreach (var inv in InvoiceSamples.CreateComplianceInvoices(seller))
             {
-                // TODO Prepare and send 6 documents ..
+                var complianceCredentials = env == Env.Sandbox ? new(_sandboxComplianceUsername, _sandboxCompliancePassword) : new Credentials(tempSecurityToken, tempSecret);
+
+                // Create Invoice XML
+                string certificateContent = Encoding.UTF8.GetString(Convert.FromBase64String(tempSecurityToken));
+                var builder = new InvoiceXml(inv);
+                var signatureInfo = builder.Build().Sign(certificateContent, privateKey);
+                var xml = builder.GetXml();
+
+                // Call the ZATCA API
+                var complianceRequest = new ComplianceCheckRequest
+                {
+                    InvoiceHash = signatureInfo.InvoiceHash,
+                    Uuid = inv.UniqueInvoiceIdentifier,
+                    Invoice = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml))
+                };
+
+                var response = await zatcaClient.CheckInvoiceCompliance(complianceRequest, complianceCredentials, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!response.IsSuccess)
+                {
+                    throw new ZatcaException($@"Failed compliance check for invoice Id='{inv.InvoiceNumber}'.
+
+----- Response -----
+{response.ToJson()}
+");
+                }
             }
 
             // 4 - Retrieve production compliance CSID
-            var onboardingCredentials = env == Env.Sandbox ? new(_sandboxOnboardingUsername, _sandboxOnboardingPassword) : new Credentials(tempCsid, tempSecret);
+            var onboardingCredentials = env == Env.Sandbox ? new(_sandboxOnboardingUsername, _sandboxOnboardingPassword) : new Credentials(tempSecurityToken, tempSecret);
             var prodCsidRequest = new CreateProductionCsidRequest { ComplianceRequestId = csidResult.RequestId.ToString() };
             var prodCsidResponse = await zatcaClient.CreateProductionCsid(prodCsidRequest, onboardingCredentials, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (!prodCsidResponse.IsSuccess)
             {
                 throw new ZatcaException($"Failed to create production CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
@@ -108,7 +140,6 @@ namespace Tellma.Integration.Zatca
 
             string securityToken = prodCsidResult.BinarySecurityToken ?? throw new ZatcaException("ZATCA Production CSID API returned null binarySecurityToken.");
             string secret = prodCsidResult.Secret ?? throw new ZatcaException("ZATCA Production CSID API returned null secret.");
-            string privateKey = csrResult.PrivateKey;
 
             string encryptedSecurityToken = CryptoUtil.Encrypt(securityToken, encryptionKey);
             string encryptedSecret = CryptoUtil.Encrypt(secret, encryptionKey);
@@ -312,22 +343,21 @@ namespace Tellma.Integration.Zatca
     }
 
     public class ClearanceReport(
-        bool isSuccess, 
-        bool hasWarnings, 
-        string? invoiceXml, 
-        string? invoiceHash, 
+        bool isSuccess,
+        bool hasWarnings,
+        string? invoiceXml,
+        string? invoiceHash,
         ResponseValidationResults? validationResults)
     {
-
-        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
-
         public bool IsSuccess { get; } = isSuccess;
         public bool HasWarnings { get; } = hasWarnings;
         public string? InvoiceXml { get; } = invoiceXml;
         public string? InvoiceHash { get; } = invoiceHash;
         public ResponseValidationResults? ValidationResults { get; } = validationResults;
 
-        public string ValidationResultsJson() => ValidationResults == null ? "" : JsonSerializer.Serialize(ValidationResults, _jsonOptions);
+        [JsonIgnore]
+        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+        public string ValidationResultsJson() => ValidationResults == null ? "" : JsonSerializer.Serialize(this, _jsonOptions);
     }
 
     /// <summary>
