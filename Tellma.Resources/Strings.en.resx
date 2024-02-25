@@ -739,6 +739,30 @@
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>States History</value>
   </data>
+  <data name="Document_ZatcaHash" xml:space="preserve">
+    <value>E-Invoice Hash</value>
+  </data>
+  <data name="Document_ZatcaResult" xml:space="preserve">
+    <value>E-Invoice Result</value>
+  </data>
+  <data name="Document_ZatcaSerialNumber" xml:space="preserve">
+    <value>E-Invoice Serial</value>
+  </data>
+  <data name="Document_ZatcaState" xml:space="preserve">
+    <value>E-Invoice State</value>
+  </data>
+  <data name="Document_ZatcaState_1" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Document_ZatcaState_10" xml:space="preserve">
+    <value>Reported</value>
+  </data>
+  <data name="Document_ZatcaState_minus_10" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Document_ZatcaUuid" xml:space="preserve">
+    <value>E-Invoice UUID</value>
+  </data>
   <data name="Document0From1" xml:space="preserve">
     <value>{0} from {1}</value>
   </data>

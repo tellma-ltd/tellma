@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Tellma.Utilities.Calendars;
 using Tellma.Utilities.Common;
 
@@ -103,6 +104,7 @@ namespace Tellma.Api.Templating
                 [nameof(Barcode)] = Barcode(),
                 [nameof(QrCode)] = QrCode(),
                 [nameof(SA_InvoiceQrCode)] = SA_InvoiceQrCode(),
+                [nameof(SA_InvoiceQrCode2)] = SA_InvoiceQrCode2(env),
                 [nameof(Fact)] = Fact(env),
                 [nameof(Aggregate)] = Aggregate(env),
                 [nameof(Image)] = Image(env),
@@ -683,7 +685,7 @@ namespace Tellma.Api.Templating
 
             var (collection, definitionId) = DeconstructSource(sourceObj, nameof(Fact));
 
-            if(idObj is not int id)
+            if (idObj is not int id)
             {
                 throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter select of type string.");
             }
@@ -2281,11 +2283,70 @@ namespace Tellma.Api.Templating
             qrContentList.AddRange(vatBytes);
 
             var qrContent = Convert.ToBase64String(qrContentList.ToArray());
+            return QrFromBytes(qrContent);
+        }
 
+        #endregion
+
+        #region SA_InvoiceQrCode2 (TODO: Remove)
+
+        private EvaluationFunction SA_InvoiceQrCode2(TemplateEnvironment env)
+        {
+            return new EvaluationFunction(
+                functionAsync: (args, ctx) => SA_InvoiceQrCode2Impl(args, ctx, env));
+        }
+
+        private async Task<object> SA_InvoiceQrCode2Impl(object[] args, EvaluationContext ctx, TemplateEnvironment env)
+        {
+            if (args.Length != 2)
+            {
+                throw new TemplateException($"Function '{nameof(SA_InvoiceQrCode2)}' expects arguments: (definitionId, docId).");
+            }
+
+            int i = 0;
+            var defIdObj = args.Length > i ? args[i++] : null;
+            var idObj = args.Length > i ? args[i++] : null;
+
+            if (defIdObj is not int defId)
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter of a numeric type.");
+            }
+
+            if (idObj is not int id)
+            {
+                throw new TemplateException($"Function '{nameof(Fact)}' expects a 2nd parameter of a numeric type.");
+            }
+
+            string qrContent;
+            try
+            {
+                // Get the XML file, and extract the QR code from it
+                var fileResult = await env.Client.GetXmlInvoice(defId, id, env.Cancellation);
+                var xml = Encoding.UTF8.GetString(fileResult.FileBytes);
+                var xdoc = XDocument.Parse(xml);
+
+                XNamespace cbc = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
+                XNamespace cac = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2";
+                qrContent = xdoc.Descendants(cac + "AdditionalDocumentReference")
+                                    .FirstOrDefault(e => e.Element(cbc + "ID")?.Value == "QR")?
+                                    .Element(cac + "Attachment")?
+                                    .Element(cbc + "EmbeddedDocumentBinaryObject")?
+                                    .Value;
+            }
+            catch (NotFoundException)
+            {
+                return null;
+            }
+
+            return QrFromBytes(qrContent);
+        }
+
+        private static string QrFromBytes(string data)
+        {
             try
             {
                 using QRCodeGenerator qrGenerator = new();
-                using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+                using QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
                 using PngByteQRCode qrCode = new(qrCodeData);
                 byte[] img = qrCode.GetGraphic(pixelsPerModule: 8);
 

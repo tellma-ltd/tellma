@@ -48,6 +48,12 @@ RETURN (
 		D.[InternalReferenceIsCommon],
 		D.[Lookup1Id],
 		D.[Lookup2Id],
+		
+		D.[ZatcaState],
+		D.[ZatcaResult],
+		D.[ZatcaSerialNumber],
+		D.[ZatcaHash],
+		D.[ZatcaUuid],
 
 		D.[CreatedAt],
 		D.[CreatedById],

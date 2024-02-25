@@ -282,6 +282,32 @@ namespace Tellma.Model.Application
         [ForeignKey(nameof(Lookup2Id))]
         public Lookup Lookup2 { get; set; }
 
+        [Display(Name = "Document_ZatcaState")]
+        [Required]
+        [ChoiceList(new object[] {
+            1,
+            10,
+            -10,
+        },
+        new string[] {
+            "Document_ZatcaState_1",
+            "Document_ZatcaState_10",
+            "Document_ZatcaState_minus_10",
+        })]
+        public int? ZatcaState { get; set; }
+
+        [Display(Name = "Document_ZatcaResult")]
+        public string ZatcaResult { get; set; }
+
+        [Display(Name = "Document_ZatcaSerialNumber")]
+        public int? ZatcaSerialNumber { get; set; }
+
+        [Display(Name = "Document_ZatcaHash")]
+        public string ZatcaHash { get; set; }
+
+        [Display(Name = "Document_ZatcaUuid")]
+        public Guid? ZatcaUuid { get; set; }
+
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]
         public DocumentDefinition Definition { get; set; }

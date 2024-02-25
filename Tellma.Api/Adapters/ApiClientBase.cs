@@ -1,9 +1,6 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -173,7 +170,16 @@ namespace Tellma.Api
 
                 _ => throw new UnknownCollectionException($"Bug: Entity type {collection} does not have a known {nameof(IImageGetter)} implementation.")
             };
+        }
 
+        /// <summary>
+        /// Retrieves the <see cref="DocumentsService"/> associated with a given <paramref name="definitionId"/>.
+        /// </summary>
+        protected virtual DocumentsService DocumentService(IServiceProvider services, int definitionId)
+        {
+            var result = services.GetRequiredService<DocumentsService>();
+            result.SetDefinitionId(definitionId);
+            return result;
         }
 
         #endregion
@@ -325,6 +331,16 @@ namespace Tellma.Api
 
             return result;
         }
+
+        public async Task<FileResult> GetXmlInvoice(int docDefId, int docId, CancellationToken cancellation)
+        {
+            using var scope = _services.CreateScope();
+
+            var service = DocumentService(scope.ServiceProvider, docDefId);
+            var result = await service.GetInvoiceXml(docId, cancellation);
+
+            return result;
+        }
     }
 
     /// <summary>
@@ -354,6 +370,18 @@ namespace Tellma.Api
         protected override IFactWithIdService FactWithIdServiceByCollectionName(IServiceProvider services, string collection, int? definitionId = null)
         {
             var service = base.FactWithIdServiceByCollectionName(services, collection, definitionId);
+            return ToUserlessService(service);
+        }
+
+        protected override IImageGetter ImageGetterByCollectionName(IServiceProvider services, string collection, int? definitionId = null)
+        {
+            var service = base.ImageGetterByCollectionName(services, collection, definitionId);
+            return ToUserlessService(service);
+        }
+
+        protected override DocumentsService DocumentService(IServiceProvider services, int definitionId)
+        {
+            var service = base.DocumentService(services, definitionId);
             return ToUserlessService(service);
         }
 
