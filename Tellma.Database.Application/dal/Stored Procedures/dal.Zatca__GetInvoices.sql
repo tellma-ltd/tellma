@@ -39,7 +39,10 @@ BEGIN
 		INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 		INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 		INNER JOIN @Ids AS I ON I.[Id] = L.[DocumentId]
+		INNER JOIN dbo.Documents D ON D.[Id] = I.[Id]
+		INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DocumentId]
 		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+		AND DD.[ZatcaDocumentType] IS NOT NULL
 	) RETURN
 
     --=-=-= 1 - Invoices =-=-=--
