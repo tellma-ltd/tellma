@@ -112,80 +112,80 @@ namespace Tellma.Integration.Zatca
                             _inv.PreviousInvoiceHash
                         )
                     )
+                ),
+                new XElement(cac + "AccountingSupplierParty",
+                    MakeParty(_inv.Seller)
+                ),
+                new XElement(cac + "AccountingCustomerParty",
+                    MakeParty(_inv.Buyer)
                 )
             );
 
             // Seller and Buyer
-            AddParty(_inv.Seller, "AccountingSupplierParty");
-            AddParty(_inv.Buyer, "AccountingCustomerParty");
-
-            void AddParty(Party? party, string parentElementName)
+            XElement MakeParty(Party? party)
             {
-                if (party != null)
+                var partyElem = new XElement(cac + "Party");
+
+                // Party Id
+                if (party?.Id != null)
                 {
-                    invoiceElem.Add(new XElement(cac + parentElementName,
-                        new XElement(cac + "Party").Grab(out XElement partyElem)
+                    PartyId id = party.Id.Value;
+                    partyElem.Add(new XElement(cac + "PartyIdentification",
+                        new XElement(cbc + "ID", id.Value,
+                            new XAttribute("schemeID", id.Scheme.ToXml())
+                        )
                     ));
-
-                    // Party Id
-                    if (party.Id != null)
-                    {
-                        PartyId id = party.Id.Value;
-                        partyElem.Add(new XElement(cac + "PartyIdentification",
-                            new XElement(cbc + "ID", id.Value,
-                                new XAttribute("schemeID", id.Scheme.ToXml())
-                            )
-                        ));
-                    }
-
-                    // Address
-                    if (party.Address != null)
-                    {
-                        var address = party.Address;
-                        partyElem.Add(new XElement(cac + "PostalAddress").Grab(out XElement addressElem));
-
-                        if (!string.IsNullOrWhiteSpace(address.Street))
-                            addressElem.Add(new XElement(cbc + "StreetName", address.Street));
-                        if (!string.IsNullOrWhiteSpace(address.AdditionalStreet))
-                            addressElem.Add(new XElement(cbc + "AdditionalStreetName", address.AdditionalStreet));
-                        if (!string.IsNullOrWhiteSpace(address.BuildingNumber))
-                            addressElem.Add(new XElement(cbc + "BuildingNumber", address.BuildingNumber));
-                        if (!string.IsNullOrWhiteSpace(address.AdditionalNumber))
-                            addressElem.Add(new XElement(cbc + "PlotIdentification", address.AdditionalNumber));
-                        if (!string.IsNullOrWhiteSpace(address.District))
-                            addressElem.Add(new XElement(cbc + "CitySubdivisionName", address.District));
-                        if (!string.IsNullOrWhiteSpace(address.City))
-                            addressElem.Add(new XElement(cbc + "CityName", address.City));
-                        if (!string.IsNullOrWhiteSpace(address.PostalCode))
-                            addressElem.Add(new XElement(cbc + "PostalZone", address.PostalCode));
-                        if (!string.IsNullOrWhiteSpace(address.Province))
-                            addressElem.Add(new XElement(cbc + "CountrySubentity", address.Province));
-                        if (!string.IsNullOrWhiteSpace(address.CountryCode))
-                            addressElem.Add(
-                                new XElement(cac + "Country",
-                                    new XElement(cbc + "IdentificationCode", address.CountryCode)
-                                )
-                            );
-                    }
-
-                    // VAT number
-                    partyElem.Add(new XElement(cac + "PartyTaxScheme").Grab(out XElement taxSchemeElem));
-
-                    if (!string.IsNullOrWhiteSpace(party.VatNumber))
-                        taxSchemeElem.Add(new XElement(cbc + "CompanyID", party.VatNumber));
-
-                    taxSchemeElem.Add(new XElement(cac + "TaxScheme",
-                        new XElement(cbc + "ID", "VAT")
-                    ));
-
-                    // Party name
-                    if (!string.IsNullOrWhiteSpace(party.Name))
-                    {
-                        partyElem.Add(new XElement(cac + "PartyLegalEntity",
-                            new XElement(cbc + "RegistrationName", party.Name)
-                        ));
-                    }
                 }
+
+                // Address
+                if (party?.Address != null)
+                {
+                    var address = party.Address;
+                    partyElem.Add(new XElement(cac + "PostalAddress").Grab(out XElement addressElem));
+
+                    if (!string.IsNullOrWhiteSpace(address.Street))
+                        addressElem.Add(new XElement(cbc + "StreetName", address.Street));
+                    if (!string.IsNullOrWhiteSpace(address.AdditionalStreet))
+                        addressElem.Add(new XElement(cbc + "AdditionalStreetName", address.AdditionalStreet));
+                    if (!string.IsNullOrWhiteSpace(address.BuildingNumber))
+                        addressElem.Add(new XElement(cbc + "BuildingNumber", address.BuildingNumber));
+                    if (!string.IsNullOrWhiteSpace(address.AdditionalNumber))
+                        addressElem.Add(new XElement(cbc + "PlotIdentification", address.AdditionalNumber));
+                    if (!string.IsNullOrWhiteSpace(address.District))
+                        addressElem.Add(new XElement(cbc + "CitySubdivisionName", address.District));
+                    if (!string.IsNullOrWhiteSpace(address.City))
+                        addressElem.Add(new XElement(cbc + "CityName", address.City));
+                    if (!string.IsNullOrWhiteSpace(address.PostalCode))
+                        addressElem.Add(new XElement(cbc + "PostalZone", address.PostalCode));
+                    if (!string.IsNullOrWhiteSpace(address.Province))
+                        addressElem.Add(new XElement(cbc + "CountrySubentity", address.Province));
+                    if (!string.IsNullOrWhiteSpace(address.CountryCode))
+                        addressElem.Add(
+                            new XElement(cac + "Country",
+                                new XElement(cbc + "IdentificationCode", address.CountryCode)
+                            )
+                        );
+                }
+
+                // VAT number
+                partyElem.Add(new XElement(cac + "PartyTaxScheme").Grab(out XElement taxSchemeElem));
+
+                if (!string.IsNullOrWhiteSpace(party?.VatNumber))
+                    taxSchemeElem.Add(new XElement(cbc + "CompanyID", party.VatNumber));
+
+                taxSchemeElem.Add(new XElement(cac + "TaxScheme",
+                    new XElement(cbc + "ID", "VAT")
+                ));
+
+                // Party name
+                if (!string.IsNullOrWhiteSpace(party?.Name))
+                {
+                    partyElem.Add(new XElement(cac + "PartyLegalEntity",
+                        new XElement(cbc + "RegistrationName", party.Name)
+                    ));
+                }
+
+                return partyElem;
             }
 
             // Supply dates
@@ -205,16 +205,14 @@ namespace Tellma.Integration.Zatca
                 !string.IsNullOrWhiteSpace(_inv.PaymentAccountId) ||
                 !string.IsNullOrWhiteSpace(_inv.PaymentTerms))
             {
-                invoiceElem.Add(new XElement(cac + "PaymentMeans").Grab(out XElement paymentMeansElem));
-
-                if (_inv.PaymentMeans != default)
-                    paymentMeansElem.Add(new XElement(cbc + "PaymentMeansCode", ((int)_inv.PaymentMeans).ToString()));
+                invoiceElem.Add(new XElement(cac + "PaymentMeans", // Required sub-element
+                    new XElement(cbc + "PaymentMeansCode", _inv.PaymentMeans == default ? "" : ((int)_inv.PaymentMeans).ToString())).Grab(out XElement paymentMeansElem)
+                );
 
                 foreach (var reason in _inv.ReasonsForIssuanceOfCreditDebitNote.Where(e => !string.IsNullOrWhiteSpace(e)))
                     paymentMeansElem.Add(new XElement(cbc + "InstructionNote", reason));
 
-                if (!string.IsNullOrWhiteSpace(_inv.PaymentAccountId) ||
-                !string.IsNullOrWhiteSpace(_inv.PaymentTerms))
+                if (!string.IsNullOrWhiteSpace(_inv.PaymentAccountId) || !string.IsNullOrWhiteSpace(_inv.PaymentTerms))
                 {
                     paymentMeansElem.Add(new XElement(cac + "PayeeFinancialAccount").Grab(out XElement payeeFinancialAccountElem));
 
@@ -233,8 +231,7 @@ namespace Tellma.Integration.Zatca
                 {
                     invoiceElem.Add(
                         new XElement(cac + "AllowanceCharge",
-                            // ??? There is an "ID" here according to the sample?
-                            new XElement(cbc + "ChargeIndicator", ac.Indicator.ToXml())
+                            new XElement(cbc + "ChargeIndicator", ac.Indicator.ToXml()) // Required sub-element
                         ).Grab(out XElement allowanceChargeElem)
                     );
 
@@ -247,7 +244,7 @@ namespace Tellma.Integration.Zatca
                     if (ac.Percentage != default)
                         allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (ac.Percentage * 100).ToString(DECIMAL_FORMAT)));
 
-                    allowanceChargeElem.Add(Amount("Amount", ac.Amount));
+                    allowanceChargeElem.Add(Amount("Amount", ac.Amount)); // Required sub-element
 
                     if (ac.BaseAmount != default)
                         allowanceChargeElem.Add(Amount("BaseAmount", ac.BaseAmount));
@@ -671,7 +668,7 @@ namespace Tellma.Integration.Zatca
                 qrCode = QrCode(
                     sellerName: _inv.Seller?.Name ?? string.Empty,
                     vatNumber: _inv.Seller?.VatNumber ?? string.Empty,
-                    issueDateTime: _inv.InvoiceIssueDateTime.ToString(DATETIME_FORMAT, CultureInfo.InvariantCulture),
+                    issueDateTime: _inv.InvoiceIssueDateTime.UtcDateTime.ToString(DATETIME_FORMAT, CultureInfo.InvariantCulture),
                     total: _inv.InvoiceTotalAmountWithVat,
                     vat: _inv.InvoiceTotalVatAmount,
                     invoiceHash: invoiceHash,

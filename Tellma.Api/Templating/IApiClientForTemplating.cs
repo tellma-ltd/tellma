@@ -88,5 +88,13 @@ namespace Tellma.Api.Templating
         /// <param name="id">The id of the entity whose image to retrieve.</param>
         /// <returns>The <see cref="ImageResult"/> of the entity with the given collection, definitionId and Id.</returns>
         Task<ImageResult> GetImage(string collection, int? definitionId, int id, CancellationToken cancellation);
+
+        /// <summary>
+        /// Invokes the API to retrieve the ZATCA XML invoice generated for this document
+        /// </summary>
+        /// <param name="documentId">The ID of the document</param>
+        /// <param name="cancellation">The cancellation instruction.</param>
+        /// <returns>The <see cref="FileResult"/> of the XML invoice.</returns>
+        Task<FileResult> GetXmlInvoice(int docDefId, int docId, CancellationToken cancellation);
     }
 }

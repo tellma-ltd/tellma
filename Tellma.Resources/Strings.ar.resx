@@ -673,6 +673,30 @@
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
   </data>
+  <data name="Document_ZatcaHash" xml:space="preserve">
+    <value>هاش الفاتورة</value>
+  </data>
+  <data name="Document_ZatcaResult" xml:space="preserve">
+    <value>تصحيح نظام الفاتورة</value>
+  </data>
+  <data name="Document_ZatcaSerialNumber" xml:space="preserve">
+    <value>رقم الفاتورة التسلسلي</value>
+  </data>
+  <data name="Document_ZatcaState" xml:space="preserve">
+    <value>حالة الفاتورة</value>
+  </data>
+  <data name="Document_ZatcaState_1" xml:space="preserve">
+    <value>قيد الإرسال</value>
+  </data>
+  <data name="Document_ZatcaState_10" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Document_ZatcaState_minus_10" xml:space="preserve">
+    <value>حدث خطأ</value>
+  </data>
+  <data name="Document_ZatcaUuid" xml:space="preserve">
+    <value>مميز الفاتورة</value>
+  </data>
   <data name="Document0From1" xml:space="preserve">
     <value>{0} من {1}</value>
   </data>

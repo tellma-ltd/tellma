@@ -555,6 +555,38 @@ namespace Tellma.Api
             return await UpdateDocumentState(ids, args, nameof(Uncancel));
         }
 
+        public async Task<FileResult> GetInvoiceXml(int docId, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+            var settings = await _behavior.Settings(cancellation);
+
+            // This enforces read permissions
+            var result = await GetById(docId, new GetByIdArguments
+            {
+                Select = nameof(Document.ZatcaUuid)
+            },
+            cancellation);
+
+            var uuid = result.Entity?.ZatcaUuid;
+            if (uuid != null)
+            {
+                try
+                {
+                    var blobName = InvoiceBlobName(uuid.ToString(), EnvUtils.Parse(settings.ZatcaEnvironment));
+                    var blobBytes = await _blobService.LoadBlobAsync(TenantId, blobName, cancellation);
+                    return new FileResult(blobBytes, $"{uuid}.xml");
+                }
+                catch (BlobNotFoundException)
+                {
+                    throw new NotFoundException<string>(uuid.ToString());
+                }
+            }
+            else
+            {
+                throw new NotFoundException<string>("");
+            }
+        }
+
         #region ZATCA Mapping
 
         public static Invoice MapInvoice(ZatcaInvoice inv, SettingsForClient settings, int previousCounterValue, string previousInvoiceHash)
@@ -853,15 +885,8 @@ namespace Tellma.Api
                 var settings = await _behavior.Settings();
                 var useSandbox = settings.ZatcaEnvironment;
 
-                var env = settings.ZatcaEnvironment switch
-                {
-                    "Sandbox" => Env.Sandbox,
-                    "Simulation" => Env.Simulation,
-                    "Production" => Env.Production,
-                    _ => throw new InvalidOperationException($"Unrecognized ZatcaEnvironment {settings.ZatcaEnvironment}"),
-                };
-
                 // Everything other than Sandbox requires onboarding first
+                var env = EnvUtils.Parse(settings.ZatcaEnvironment);
                 if (env != Env.Sandbox && string.IsNullOrWhiteSpace(settings.ZatcaEncryptedSecurityToken))
                 {
                     throw new ServiceException(_localizer["Error_NotOnboardedWithZatca"]);
@@ -918,7 +943,7 @@ namespace Tellma.Api
                 }
                 else
                 {
-                    IEnumerable<string> errors = []; 
+                    IEnumerable<string> errors = [];
                     if (report.ValidationResults?.ErrorMessages != null)
                     {
                         errors = report.ValidationResults?.ErrorMessages?.Select(e => " - " + e.Message);

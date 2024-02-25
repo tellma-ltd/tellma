@@ -1,4 +1,4 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Text.Json;
 
 namespace Tellma.Integration.Zatca
 {
@@ -8,6 +8,8 @@ namespace Tellma.Integration.Zatca
     /// <typeparam name="T">The type of the Dto that the response body is mapped to.</typeparam>
     public class Response<T> : Response where T : class
     {
+        private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+
         /// <summary>
         /// Create a new instance of <see cref="Response{T}"/>.
         /// </summary>
@@ -38,19 +40,21 @@ namespace Tellma.Integration.Zatca
         /// Returns <see cref="Result"/> or throws an error if it is NULL.
         /// </summary>
         public T ResultOrThrow() => Result ?? throw new InvalidOperationException("Result is null.");
+
+        /// <summary>
+        /// Converts <see cref="Result"/> to a JSON string.
+        /// </summary>
+        /// <returns></returns>
+        public string ToJson() => Result == null ? "" : JsonSerializer.Serialize(Result, _jsonOptions);
     }
 
-    public abstract class Response
+    public abstract class Response(ResponseStatus status)
     {
-        public Response(ResponseStatus status)
-        {
-            Status = status;
-        }
 
         /// <summary>
         /// The response status from the ZATCA API.
         /// </summary>
-        public ResponseStatus Status { get; }
+        public ResponseStatus Status { get; } = status;
 
         /// <summary>
         /// Returns true if the <see cref="Status"/> is <see cref="ResponseStatus.Success"/> or <see cref="ResponseStatus.SuccessWithWarnings"/>.

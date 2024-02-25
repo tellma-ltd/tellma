@@ -128,7 +128,7 @@ namespace Tellma.Api
         // Simple properties to include on the level of each entity type
         // -------------------------------------------------------------
 
-        public static IEnumerable<string> DocumentProps => TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name);
+        public static IEnumerable<string> DocumentProps => TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name).Where(name => !name.StartsWith("Zatca"));
         public static IEnumerable<string> LineDefinitionEntryProps => TypeDescriptor.Get<DocumentLineDefinitionEntry>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> LineProps => TypeDescriptor.Get<Line>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> EntryProps => TypeDescriptor.Get<Entry>().SimpleProperties.Select(p => p.Name);

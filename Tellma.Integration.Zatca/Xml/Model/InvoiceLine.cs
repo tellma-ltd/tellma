@@ -64,7 +64,7 @@ namespace Tellma.Integration.Zatca
         /// <summary>
         /// <b>KSA-11</b>
         /// <br/> 
-        /// VAT amount  as per Article 53.
+        /// VAT amount as per Article 53.
         /// </summary>
         public decimal VatAmount { get; set; }
 

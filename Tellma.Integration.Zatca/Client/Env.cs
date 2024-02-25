@@ -9,4 +9,15 @@
         Simulation,
         Production
     }
+
+    public static class EnvUtils
+    {
+        public static Env Parse(string envName) => envName switch
+        {
+            "Sandbox" => Env.Sandbox,
+            "Simulation" => Env.Simulation,
+            "Production" => Env.Production,
+            _ => throw new InvalidOperationException($"Unrecognized ZatcaEnvironment {envName}."),
+        };
+    }
 }

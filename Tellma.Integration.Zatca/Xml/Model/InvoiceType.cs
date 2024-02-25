@@ -17,13 +17,18 @@
         DebitNote = 383,
 
         /// <summary>
+        /// An invoice the invoicee is producing instead of the seller.
+        /// </summary>
+        PrepaymentInvoice = 386,
+
+        /// <summary>
         /// An invoice for tax purposes.
         /// </summary>
         TaxInvoice = 388,
 
         /// <summary>
-        /// An invoice the invoicee is producing instead of the seller.
+        /// A self-billed invoice.
         /// </summary>
-        PrepaymentInvoice = 386
+        SelfBilled = 389,
     }
 }

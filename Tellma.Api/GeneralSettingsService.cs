@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -182,7 +181,7 @@ namespace Tellma.Api
         {
             await Initialize();
 
-            // Check permissions
+            // Authorization
             var updatePermissions = await UserPermissions(PermissionActions.Update, cancellation: default);
             if (!updatePermissions.Any())
             {
@@ -205,9 +204,8 @@ namespace Tellma.Api
                 throw new ServiceException("Please supply the industry parameter.");
             }
 
+            // Determine the environment
             var settings = (await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion)).Data;
-            var vatNumber = settings.TaxIdentificationNumber;
-            var orgName = settings.CompanyName;
             var env = settings.ZatcaEnvironment switch
             {
                 "Sandbox" => Env.Sandbox,
@@ -216,29 +214,37 @@ namespace Tellma.Api
                 _ => throw new InvalidOperationException($"Unrecognized ZatcaEnvironment {settings.ZatcaEnvironment}"),
             };
 
-            if (string.IsNullOrWhiteSpace(vatNumber))
+            // Create the seller
+            var seller = new Party
             {
-                throw new ServiceException("Please initialize the Tax Identification Number in the financial settings");
-            }
-
-            if (string.IsNullOrWhiteSpace(orgName))
-            {
-                throw new ServiceException("Please initialize the Company Name in the general settings");
-            }
+                Id = new(PartyIdScheme.CommercialRegistration, settings.CommercialRegistrationNumber),
+                Address = new Address
+                {
+                    Street = settings.Street ?? throw new ServiceException("Please specify the address street in the general settings."),
+                    BuildingNumber = settings.BuildingNumber ?? throw new ServiceException("Please specify the building number in the general settings."),
+                    AdditionalNumber = settings.SecondaryNumber, // Optional
+                    District = settings.District ?? throw new ServiceException("Please specify the distrct in the general settings."),
+                    City = settings.City ?? throw new ServiceException("Please specify the address city in the general settings."),
+                    PostalCode = settings.PostalCode ?? throw new ServiceException("Please specify the postal code in the general settings."),
+                    CountryCode = "SA"
+                },
+                VatNumber = settings.TaxIdentificationNumber ?? throw new ServiceException("Please initialize the Tax Identification Number in the financial settings."),
+                Name = settings.CompanyName ?? throw new ServiceException("Please initialize the Company Name in the general settings.")
+            };
 
             // Onboard with ZATCA
             var secrets = await _zatcaService.Onboard(
                 tenantId: TenantId,
-                vatNumber: vatNumber,
+                seller: seller,
                 orgUnitName: orgUnitName,
-                orgName: orgName,
                 orgIndustry: industry,
                 otp: otp,
                 env: env);
 
+            // Store the encrypted secrets in the DB
             await Repository.Zatca__SaveSecrets(
-                encryptedSecurityToken: secrets.EncryptedSecurityToken, 
-                encryptedSecret: secrets.EncryptedSecret, 
+                encryptedSecurityToken: secrets.EncryptedSecurityToken,
+                encryptedSecret: secrets.EncryptedSecret,
                 encryptedPrivateKey: secrets.EncryptedPrivateKey,
                 encryptionKeyIndex: secrets.EncryptionKeyIndex);
         }

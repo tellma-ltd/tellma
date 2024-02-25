@@ -4,19 +4,50 @@ using Xunit.Abstractions;
 
 namespace Tellma.Integration.Zatca.Tests
 {
-    public class InvoiceXmlTests
+    public class InvoiceXmlTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output = output;
 
-        public InvoiceXmlTests(ITestOutputHelper output)
+        [Theory(DisplayName = "Generated XML is valid against UBL 2.1 ")]
+        [InlineData("FullyPopulated")]
+        [InlineData("StandardInvoice")]
+        [InlineData("StandardCreditNote")]
+        [InlineData("StandardDebitNote")]
+        [InlineData("SimplifiedInvoice")]
+        [InlineData("SimplifiedCreditNote")]
+        [InlineData("SimplifiedDebitNote")]
+        public void ValidSchema(string w)
         {
-            _output = output;
-        }
+            // Arrange
+            var seller = new Party
+            {
+                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Address = new Address
+                {
+                    Street = "Tahlia St",
+                    BuildingNumber = "1820",
+                    AdditionalNumber = "123",
+                    District = "Riyadh District",
+                    City = "Riyadh",
+                    PostalCode = "12345",
+                    CountryCode = "SA"
+                },
+                VatNumber = "300951165100003",
+                Name = "Spectra International"
+            };
 
-        [Fact(DisplayName = "Generated XML is valid against UBL 2.1")]
-        public void ValidSchema()
-        {
-            var invoice = InvoicesSamples.FullyPopulatedInvoice();
+            var invoice = w switch
+            {
+                "FullyPopulated" => TestSamples.FullyPopulatedInvoice(),
+                "StandardInvoice" => InvoiceSamples.StandardInvoice(seller),
+                "StandardCreditNote" => InvoiceSamples.StandardCreditNote(seller),
+                "StandardDebitNote" => InvoiceSamples.StandardDebitNote(seller),
+                "SimplifiedInvoice" => InvoiceSamples.SimplifiedInvoice(seller),
+                "SimplifiedCreditNote" => InvoiceSamples.SimplifiedCreditNote(seller),
+                "SimplifiedDebitNote" => InvoiceSamples.SimplifiedDebitNote(seller),
+                _ => throw new Exception(),
+            };
+
             var xml = new InvoiceXml(invoice).Build().GetXml();
 
             // Act
@@ -42,7 +73,7 @@ namespace Tellma.Integration.Zatca.Tests
         [Fact(DisplayName = "Generate XML with a valid model")]
         public void ValidModel()
         {
-            var invoice = InvoicesSamples.ValidStandardInvoice();
+            var invoice = TestSamples.ValidStandardInvoice();
 
             var xml = new InvoiceXml(invoice).Build().GetXml();
             _output.WriteLine("===== Document =====");
@@ -83,7 +114,7 @@ namespace Tellma.Integration.Zatca.Tests
         public void SignInvoice()
         {
             // Arrange
-            var invoice = InvoicesSamples.ValidStandardInvoice();
+            var invoice = TestSamples.ValidStandardInvoice();
 
             // These were obtained from the FATOORA tool installation.
             const string certificateContent = "MIID6jCCA5CgAwIBAgITbwAAgbuRbo5tpQ+QjgABAACBuzAKBggqhkjOPQQDAjBjMRUwEwYKCZImiZPyLGQBGRYFbG9jYWwxEzARBgoJkiaJk/IsZAEZFgNnb3YxFzAVBgoJkiaJk/IsZAEZFgdleHRnYXp0MRwwGgYDVQQDExNUU1pFSU5WT0lDRS1TdWJDQS0xMB4XDTIyMTEwOTA4MDcyMloXDTI0MTEwODA4MDcyMlowTjELMAkGA1UEBhMCU0ExEzARBgNVBAoTCjM5OTk5OTk5OTkxDDAKBgNVBAsTA1RTVDEcMBoGA1UEAxMTVFNULTM5OTk5OTk5OTkwMDAwMzBWMBAGByqGSM49AgEGBSuBBAAKA0IABGGDDKDmhWAITDv7LXqLX2cmr6+qddUkpcLCvWs5rC2O29W/hS4ajAK4Qdnahym6MaijX75Cg3j4aao7ouYXJ9GjggI5MIICNTCBmgYDVR0RBIGSMIGPpIGMMIGJMTswOQYDVQQEDDIxLVRTVHwyLVRTVHwzLTlmMDkyMjM4LTFkOTctNDcxOC1iNDQxLWNiYzMwMTMyMWIwYTEfMB0GCgmSJomT8ixkAQEMDzM5OTk5OTk5OTkwMDAwMzENMAsGA1UEDAwEMTEwMDEMMAoGA1UEGgwDVFNUMQwwCgYDVQQPDANUU1QwHQYDVR0OBBYEFDuWYlOzWpFN3no1WtyNktQdrA8JMB8GA1UdIwQYMBaAFHZgjPsGoKxnVzWdz5qspyuZNbUvME4GA1UdHwRHMEUwQ6BBoD+GPWh0dHA6Ly90c3RjcmwuemF0Y2EuZ292LnNhL0NlcnRFbnJvbGwvVFNaRUlOVk9JQ0UtU3ViQ0EtMS5jcmwwga0GCCsGAQUFBwEBBIGgMIGdMG4GCCsGAQUFBzABhmJodHRwOi8vdHN0Y3JsLnphdGNhLmdvdi5zYS9DZXJ0RW5yb2xsL1RTWkVpbnZvaWNlU0NBMS5leHRnYXp0Lmdvdi5sb2NhbF9UU1pFSU5WT0lDRS1TdWJDQS0xKDEpLmNydDArBggrBgEFBQcwAYYfaHR0cDovL3RzdGNybC56YXRjYS5nb3Yuc2Evb2NzcDAOBgNVHQ8BAf8EBAMCB4AwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMDMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwIwCgYIKwYBBQUHAwMwCgYIKoZIzj0EAwIDSAAwRQIgeWUEjxXaW4s8XilH/abzbDJhHHjO3uLaD87YqioA89YCIQDNltfAU98b8FnTD7M8NYIk8cqi7OnPu7h85v5V1Bt3Hg==";
