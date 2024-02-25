@@ -1,4 +1,4 @@
-﻿CREATE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 17038); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 17038); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
