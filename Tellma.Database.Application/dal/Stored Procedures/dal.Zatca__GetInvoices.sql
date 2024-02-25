@@ -16,8 +16,21 @@ BEGIN
      */
 	 
     --=-=-= 0 - Serial and Hash =-=-=--
-	SET @PreviousInvoiceSerialNumber = 0;
-    SET @PreviousInvoiceHash = N'NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==';
+	SET @PreviousInvoiceSerialNumber = (
+		SELECT MAX([ZatcaSerialNumber])
+		FROM dbo.Documents
+		WHERE [ZatcaState] = 10
+	);
+	SET @PreviousInvoiceSerialNumber = ISNULL(@PreviousInvoiceSerialNumber, 0);
+
+	IF @PreviousInvoiceSerialNumber = 0
+		SET @PreviousInvoiceHash = N'NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ=='
+	ELSE
+		SET @PreviousInvoiceHash = (
+			SELECT TOP 1 [ZatcaHash] -- there should only be one
+			FROM dbo.Documents
+			WHERE [ZatcaSerialNumber] = @PreviousInvoiceSerialNumber
+		);
     
 	--=-=-= 0 - Exit clause =-=-=--
 	IF NOT EXISTS (

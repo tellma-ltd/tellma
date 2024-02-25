@@ -987,7 +987,6 @@
     <None Include="dbo\User Defined Types\Readme.txt" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
-    <None Include="_Azure\Azure.Staging101.publish.xml" />
     <None Include="_Azure\1.SD\Azure.100.BananSD.publish.xml" />
     <None Include="_Azure\1.SD\Azure.101.Sunagas.publish.xml" />
     <None Include="_Azure\1.SD\Azure.199.BananSDDemos.publish.xml" />
@@ -1007,7 +1006,10 @@
     <None Include="PreDeploymentScripts\SalesInvoice.htm" />
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
-    <None Include="Tellma.TellmaStaging.101.publish.publish.xml" />
+    <None Include="Tellma.Tellma.1305.publish.xml" />
+    <None Include="Tellma.Tellma.2304.publish.xml" />
+    <None Include="Tellma.104.publish.xml" />
+    <None Include="TellmaStaging.101.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

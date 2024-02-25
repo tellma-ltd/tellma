@@ -19,8 +19,8 @@ Change Log:
 */
 CREATE PROCEDURE [AzureSQLMaintenance]
 	(
-		@operation nvarchar(10) = null,
-		@mode nvarchar(10) = 'smart',
+		@operation nvarchar(10) = 'all',
+		@mode nvarchar(10) = 'dummy', -- 'smart'
 		@ResumableIndexRebuild bit = 0,
 		@RebuildHeaps bit = 0,
 		@LogToTable bit = 0,
