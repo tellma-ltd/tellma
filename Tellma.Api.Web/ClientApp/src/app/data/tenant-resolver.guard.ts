@@ -20,7 +20,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '2.1';
-export const DEFINITIONS_METAVERSION = '6.24';
+export const DEFINITIONS_METAVERSION = '6.25';
 export const PERMISSIONS_METAVERSION = '1.3';
 export const USER_SETTINGS_METAVERSION = '1.4';
 
