@@ -33,6 +33,16 @@ BEGIN
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> 1;	
 
+	-- Cannot unpost it if it is a Zatca document
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentIsPostedAndZatca',
+		D.[Code]
+	FROM @Ids FE
+	JOIN map.Documents() D ON FE.[Id] = D.[Id]
+	WHERE D.[ZatcaState] = 10	
+
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)

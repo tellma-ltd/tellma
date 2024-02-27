@@ -15,6 +15,19 @@ BEGIN
      * NOTE: the column ordering is important, don't change it.
      */
 	 
+	--=-=-= 0 - Exit clause =-=-=--
+	IF NOT EXISTS (
+		SELECT * FROM [map].[Lines]() L
+		INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+		INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		INNER JOIN @Ids AS I ON I.[Id] = L.[DocumentId]
+		INNER JOIN dbo.Documents D ON D.[Id] = I.[Id]
+		INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
+		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+		AND DD.[ZatcaDocumentType] IS NOT NULL
+	) RETURN
+
     --=-=-= 0 - Serial and Hash =-=-=--
 	SET @PreviousInvoiceSerialNumber = (
 		SELECT MAX([ZatcaSerialNumber])
@@ -31,17 +44,7 @@ BEGIN
 			FROM dbo.Documents
 			WHERE [ZatcaSerialNumber] = @PreviousInvoiceSerialNumber
 		);
-    
-	--=-=-= 0 - Exit clause =-=-=--
-	IF NOT EXISTS (
-		SELECT * FROM [map].[Lines]() L
-		INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
-		INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-		INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
-		INNER JOIN @Ids AS I ON I.[Id] = L.[DocumentId]
-		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	) RETURN
-
+  
     --=-=-= 1 - Invoices =-=-=--
 	SELECT
 		I.[Index] AS [Index],
