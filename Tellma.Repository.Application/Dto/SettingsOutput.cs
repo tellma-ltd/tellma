@@ -22,7 +22,6 @@ namespace Tellma.Repository.Application
 
     public class ZatcaSettings
     {
-        public string ZatcaEncryptedPrivateKey { get; set; }
         public string ZatcaEncryptedSecret { get; set; }
         public string ZatcaEncryptedSecurityToken { get; set; }
         public int ZatcaEncryptionKeyIndex { get; set; }

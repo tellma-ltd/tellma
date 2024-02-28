@@ -2,14 +2,10 @@
 
 namespace Tellma.Integration.Zatca.Tests
 {
-    public class CsrBuilderTests
+    public class CsrBuilderTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
-
-        public CsrBuilderTests(ITestOutputHelper output)
-        {
-            _output = output;
-        }
+        private readonly ITestOutputHelper _output = output;
+        private const string privateKey = "MHQCAQEEIA4n00MZGH7W9id05A2qcJvG31tR7wmqeHnrPwv49t8coAcGBSuBBAAKoUQDQgAE4+IY3+PItL/4WVzAZxpBLxcx0TaOWuVmjXFeXd7wsC9VteKsgAmWPb25KXqVG6f+wJdZHRkTTCR0GC4i1PhcKA==";
 
         [Fact(DisplayName = "Generate CSR with valid input")]
         public void ValidInvoice()
@@ -28,16 +24,13 @@ namespace Tellma.Integration.Zatca.Tests
             );
 
             // Act
-            var result = new CsrBuilder(input).GenerateCsr();
+            var result = new CsrBuilder(input).GenerateCsr(privateKey);
 
             // Assert
             // ...
 
             _output.WriteLine("===== CSR Content =====");
-            _output.WriteLine(result.CsrContent);
-
-            _output.WriteLine("===== Private Key =====");
-            _output.WriteLine(result.PrivateKey);
+            _output.WriteLine(result);
         }
 
         [Fact(DisplayName = "Generate CSR with invalid input")]
@@ -59,7 +52,7 @@ namespace Tellma.Integration.Zatca.Tests
             // Act & Assert
             Assert.Throws<ZatcaException>(() =>
             {
-                var result = new CsrBuilder(input).GenerateCsr();
+                var result = new CsrBuilder(input).GenerateCsr(privateKey);
             });
         }
     }

@@ -898,7 +898,6 @@ namespace Tellma.Api
                 var secrets = new ZatcaSecrets(
                     encryptedSecurityToken: settings.ZatcaEncryptedSecurityToken,
                     encryptedSecret: settings.ZatcaEncryptedSecret,
-                    encryptedPrivateKey: settings.ZatcaEncryptedPrivateKey,
                     encryptionKeyIndex: settings.ZatcaEncryptionKeyIndex);
 
                 // Call the ZATCA API

@@ -245,7 +245,6 @@ namespace Tellma.Api
             await Repository.Zatca__SaveSecrets(
                 encryptedSecurityToken: secrets.EncryptedSecurityToken,
                 encryptedSecret: secrets.EncryptedSecret,
-                encryptedPrivateKey: secrets.EncryptedPrivateKey,
                 encryptionKeyIndex: secrets.EncryptionKeyIndex);
         }
     }

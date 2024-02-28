@@ -90,6 +90,11 @@ namespace Tellma.Api.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public Task<FileResult> GetXmlInvoice(int docDefId, int docId, CancellationToken cancellation)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         #endregion

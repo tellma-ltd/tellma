@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 
 namespace Tellma.Integration.Zatca
 {
@@ -95,9 +96,9 @@ namespace Tellma.Integration.Zatca
 
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<ReportingResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<ReportingResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         /// <summary>
@@ -127,9 +128,9 @@ namespace Tellma.Integration.Zatca
 
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<ClearanceResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<ClearanceResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         /// <summary>
@@ -160,9 +161,9 @@ namespace Tellma.Integration.Zatca
 
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<CsidResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         /// <summary>
@@ -189,9 +190,9 @@ namespace Tellma.Integration.Zatca
             
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<ComplianceCheckResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<ComplianceCheckResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         /// <summary>
@@ -218,9 +219,9 @@ namespace Tellma.Integration.Zatca
 
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<CsidResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         /// <summary>
@@ -250,29 +251,30 @@ namespace Tellma.Integration.Zatca
 
             // Return the Response
             var status = (ResponseStatus)httpResponse.StatusCode;
-            var result = await TryParseResult<CsidResponse>(httpResponse, cancellation);
+            var (resultString, result) = await TryParseResult<CsidResponse>(httpResponse, cancellation);
 
-            return new(status, result);
+            return new(status, resultString, result);
         }
 
         #endregion
 
         #region Helpers
 
-        private static async Task<T?> TryParseResult<T>(HttpResponseMessage msg, CancellationToken cancellation) where T : class
+        private static async Task<(string, T?)> TryParseResult<T>(HttpResponseMessage msg, CancellationToken cancellation) where T : ResponseBase, new()
         {
+            var contentString = await msg.Content.ReadAsStringAsync(cancellation);
             if (msg.IsSuccessStatusCode || msg.StatusCode == HttpStatusCode.BadRequest)
             {
                 try
                 {
-                    return await msg.Content
+                    return (contentString, await msg.Content
                         .ReadFromJsonAsync<T>(cancellationToken: cancellation)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(false));
                 }
                 catch (JsonException) { }
             }
 
-            return null;
+            return (contentString, null);
         }
 
         private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Credentials? creds, CancellationToken cancellation = default)

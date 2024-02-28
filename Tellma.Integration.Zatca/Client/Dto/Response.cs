@@ -16,9 +16,10 @@ namespace Tellma.Integration.Zatca
         /// <param name="status"></param>
         /// <param name="result"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public Response(ResponseStatus status, T? result) : base(status)
+        public Response(ResponseStatus status, string resultString, T? result) : base(status)
         {
             Result = result;
+            ResultString = resultString;
 
             if (IsSuccess && Result == null)
             {
@@ -36,6 +37,12 @@ namespace Tellma.Integration.Zatca
         /// </summary>
         public T? Result { get; }
 
+
+        /// <summary>
+        /// The response body from the ZATCA API.
+        /// </summary>
+        public string ResultString { get; }
+
         /// <summary>
         /// Returns <see cref="Result"/> or throws an error if it is NULL.
         /// </summary>
@@ -45,7 +52,7 @@ namespace Tellma.Integration.Zatca
         /// Converts <see cref="Result"/> to a JSON string.
         /// </summary>
         /// <returns></returns>
-        public string ToJson() => Result == null ? "" : JsonSerializer.Serialize(Result, _jsonOptions);
+        public string ToJson() => ResultString; // == null ? "" : JsonSerializer.Serialize(Result, _jsonOptions);
     }
 
     public abstract class Response(ResponseStatus status)
