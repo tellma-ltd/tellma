@@ -30,7 +30,7 @@ namespace Tellma.Api
         /// <summary>
         /// The error/warning response from ZATCA.
         /// </summary>
-        public string ValidationResultsJson { get; set; }
+        public string ZatcaResponseBody { get; set; }
 
         /// <summary>
         /// The email of the user who triggered the error.

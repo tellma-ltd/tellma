@@ -916,7 +916,7 @@ namespace Tellma.Api
                 if (!report.IsSuccess || report.HasWarnings)
                 {
                     var level = !report.IsSuccess ? TenantLogLevel.Error : TenantLogLevel.Warning;
-                    await _behavior.LogZatcaErrorOrWarning(DefinitionId, def.TitleSingular, inv.Id, report.InvoiceXml, report.ValidationResultsJson(), level);
+                    await _behavior.LogZatcaErrorOrWarning(DefinitionId, def.TitleSingular, inv.Id, report.InvoiceXml, report.ResponseBody, level);
                 }
 
                 // TODO: What if a failure happens here before we commit the transaction.

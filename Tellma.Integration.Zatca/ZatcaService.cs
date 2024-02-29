@@ -192,6 +192,7 @@ namespace Tellma.Integration.Zatca
                 hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
                 invoiceXml: xml,
                 invoiceHash: signatureInfo.InvoiceHash,
+                responseBody: response.ToJson(),
                 validationResults: response.Result?.ValidationResults);
         }
 
@@ -266,6 +267,7 @@ namespace Tellma.Integration.Zatca
                 hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
                 invoiceXml: invoiceXml,
                 invoiceHash: invoiceHash,
+                responseBody: response.ToJson(),
                 validationResults: response.Result?.ValidationResults);
         }
 
@@ -352,12 +354,14 @@ namespace Tellma.Integration.Zatca
         bool hasWarnings,
         string? invoiceXml,
         string? invoiceHash,
+        string? responseBody,
         ResponseValidationResults? validationResults)
     {
         public bool IsSuccess { get; } = isSuccess;
         public bool HasWarnings { get; } = hasWarnings;
         public string? InvoiceXml { get; } = invoiceXml;
         public string? InvoiceHash { get; } = invoiceHash;
+        public string? ResponseBody { get; } = responseBody;
         public ResponseValidationResults? ValidationResults { get; } = validationResults;
 
         [JsonIgnore]
