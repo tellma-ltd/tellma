@@ -11,7 +11,8 @@ DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmploy
 DECLARE @ContractAmendmentLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesAmended.M');
 DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesTerminated.M');
 
-DECLARE @DurationUnitId INT = dal.fn_UnitCode__Id(N'mo');
+DECLARE @DurationUnitId INT = IIF (dal.fn_Settings__Calendar() = 'GC', dal.fn_UnitCode__Id(N'mo'), dal.fn_UnitCode__Id(N'emo'));
+DECLARE @Monthly INT = dal.fn_UnitCode__Id(N'mo');
 DECLARE @PostingDate DATE = (SELECT TOP 1 [PostingDate] FROM @Documents);
 DECLARE @PeriodEnd DATE = [dbo].[fn_PeriodEnd](@DurationUnitId, @PostingDate);
 DECLARE @PeriodStart DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @PostingDate);
@@ -25,7 +26,7 @@ SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
 	@ContractAmendmentLineDefinitionId,
 	@ContractTerminationLineDefinitionId,
 	@PeriodStart, @PeriodEnd,
-	@DurationUnitId,
+	@Monthly,
 	1,			-- @EntryIndex
 	@TaxDepartmentId,	-- @AgentId
 	NULL,			-- @ResourceId
@@ -69,7 +70,6 @@ GROUP BY [NotedAgentId], [ResourceCode];
 --declare @count int = (select count(*) from @PeriodBenefits);
 --declare @msg nvarchar(255) = N'count = ' + cast(@count as nvarchar(255))
 --raiserror(@msg, 16, 1);
-
 UPDATE WL
 SET 	[CurrencyId1] 	= SS.[CurrencyId],
 	[MonetaryValue1] = SS.[MonetaryValue]
@@ -78,6 +78,7 @@ CROSS APPLY bll.ft_Employees__Deductions(@Country, @PeriodBenefits, @PeriodStart
 WHERE WL.[NotedAgentId1] = SS.[EmployeeId] AND WL.[AgentId1] = SS.[DeductionAgentId];
 DELETE @Widelines WHERE [MonetaryValue1] = 0;
 --select * from @@Widelines
+DECLARE @EmployeeIncomeTaxAG INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'EmployeeIncomeTax');
 WITH WideLinesSorted AS (
 	SELECT [Index], ROW_NUMBER() OVER (ORDER BY dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]), [Index]) - 1 AS [DefragmentedIndex]
 	FROM @Widelines WL
@@ -88,6 +89,8 @@ SET
 	[Index] = WLS.[DefragmentedIndex],
 	[MonetaryValue1] = ROUND([MonetaryValue1] * (DATEDIFF(DAY, [Time10], [Time20]) + 1.0) / @PeriodLength, 2)
 FROM @Widelines WL
-JOIN WideLinesSorted  WLS ON WLS.[Index] = WL.[Index];
+JOIN WideLinesSorted  WLS ON WLS.[Index] = WL.[Index]
+WHERE WL.[AgentId1] <>  @EmployeeIncomeTaxAG;
 
 SELECT * FROM @Widelines;
+GO

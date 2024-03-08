@@ -53,6 +53,16 @@ BEGIN
 	SET ToDate = NULL
 	WHERE ToDate >= '9999-12-30'; -- to handle a bug. Can be removed later
 	
+	-- UPDATE expected termination date
+	UPDATE dbo.Agents
+	SET Date4 = CASE
+		WHEN [Date4] IS NULL THEN DATEADD(DAY, -1, DATEADD(MONTH, ISNULL([Decimal1], 12), [FromDate]))
+		-- if expected termination date is bypassed, the contract is not terminated, extend by contract period
+		WHEN [Date4] < GETDATE() AND [ToDate] IS NULL THEN DATEADD(MONTH, ISNULL([Decimal1], 12), [Date4])
+		ELSE [Date4]
+	END
+	WHERE DefinitionId = @EmployeeAD
+
 	-- Update Centers
 	DECLARE @EmployeeCenters TABLE (
 		EmployeeId INT PRIMARY KEY,

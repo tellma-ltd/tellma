@@ -982,6 +982,10 @@
     <Build Include="dal\Functions\dal.fn_Invoice__IssueDateTime.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__SaveSecrets.sql" />
     <Build Include="dal\Functions\dal.fn_Item_Date__PriceListDiscount.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS.sql" />
+    <Build Include="dbo\User Defined Types\dbo.CodeWithMonetaryList.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS_SA.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS_AE.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
