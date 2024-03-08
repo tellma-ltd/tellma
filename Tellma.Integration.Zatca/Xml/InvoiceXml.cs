@@ -242,18 +242,18 @@ namespace Tellma.Integration.Zatca
                         allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReason", ac.Reason));
 
                     if (ac.Percentage != default)
-                        allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (ac.Percentage * 100).ToString(DECIMAL_FORMAT)));
+                        allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (ac.Percentage * 100m).ToString(DECIMAL_FORMAT)));
 
-                    allowanceChargeElem.Add(Amount("Amount", ac.Amount)); // Required sub-element
+                    allowanceChargeElem.Add(RoundedAmount("Amount", ac.Amount)); // Required sub-element
 
                     if (ac.BaseAmount != default)
-                        allowanceChargeElem.Add(Amount("BaseAmount", ac.BaseAmount));
+                        allowanceChargeElem.Add(RoundedAmount("BaseAmount", ac.BaseAmount));
 
                     // Add the Tax category
                     allowanceChargeElem.Add(
                         new XElement(cac + "TaxCategory",
                             new XElement(cbc + "ID", ac.VatCategory.ToXml()),
-                            new XElement(cbc + "Percent", (ac.VatRate * 100).ToString(DECIMAL_FORMAT)),
+                            new XElement(cbc + "Percent", (ac.VatRate * 100m).ToString(DECIMAL_FORMAT)),
                             new XElement(cac + "TaxScheme",
                                 new XElement(cbc + "ID", "VAT")
                             )
@@ -267,18 +267,18 @@ namespace Tellma.Integration.Zatca
                 // Rule BR-KSAEN16931-08
                 invoiceElem.Add(
                     new XElement(cac + "TaxTotal",
-                        Amount("TaxAmount", _inv.InvoiceTotalVatAmount)
+                        RoundedAmount("TaxAmount", _inv.InvoiceTotalVatAmount)
                     ).Grab(out XElement taxAmountElem)
                 );
 
                 foreach (var vatEntry in _inv.VatBreakdown)
                 {
                     taxAmountElem.Add(new XElement(cac + "TaxSubtotal",
-                           Amount("TaxableAmount", vatEntry.VatCategoryTaxableAmount),
-                           Amount("TaxAmount", vatEntry.VatCategoryTaxAmount),
+                           RoundedAmount("TaxableAmount", vatEntry.VatCategoryTaxableAmount),
+                           RoundedAmount("TaxAmount", vatEntry.VatCategoryTaxAmount),
                            new XElement(cac + "TaxCategory",
                                new XElement(cbc + "ID", vatEntry.VatCategory.ToXml()),
-                               new XElement(cbc + "Percent", (vatEntry.VatRate * 100).ToString(DECIMAL_FORMAT)),
+                               new XElement(cbc + "Percent", (vatEntry.VatRate * 100m).ToString(DECIMAL_FORMAT)),
                                // ... Optional elements go here ...
                                new XElement(cac + "TaxScheme",
                                    new XElement(cbc + "ID", "VAT")
@@ -307,26 +307,26 @@ namespace Tellma.Integration.Zatca
             {
                 invoiceElem.Add(
                     new XElement(cac + "LegalMonetaryTotal",
-                        Amount("LineExtensionAmount", _inv.SumOfInvoiceLineNetAmount),
-                        Amount("TaxExclusiveAmount", _inv.InvoiceTotalAmountWithoutVat),
-                        Amount("TaxInclusiveAmount", _inv.InvoiceTotalAmountWithVat)
+                        RoundedAmount("LineExtensionAmount", _inv.SumOfInvoiceLineNetAmount),
+                        RoundedAmount("TaxExclusiveAmount", _inv.InvoiceTotalAmountWithoutVat),
+                        RoundedAmount("TaxInclusiveAmount", _inv.InvoiceTotalAmountWithVat)
                     ).Grab(out XElement legalMonetaryTotalElem)
                 );
 
                 // Conditional
                 if (_inv.SumOfAllowancesOnDocumentLevel != default)
-                    legalMonetaryTotalElem.Add(Amount("AllowanceTotalAmount", _inv.SumOfAllowancesOnDocumentLevel));
+                    legalMonetaryTotalElem.Add(RoundedAmount("AllowanceTotalAmount", _inv.SumOfAllowancesOnDocumentLevel));
                 if (_inv.SumOfChargesDocumentLevel != default)
-                    legalMonetaryTotalElem.Add(Amount("ChargeTotalAmount", _inv.SumOfChargesDocumentLevel));
+                    legalMonetaryTotalElem.Add(RoundedAmount("ChargeTotalAmount", _inv.SumOfChargesDocumentLevel));
 
                 // Optional
                 if (_inv.PrepaidAmount != default)
-                    legalMonetaryTotalElem.Add(Amount("PrepaidAmount", _inv.PrepaidAmount));
+                    legalMonetaryTotalElem.Add(RoundedAmount("PrepaidAmount", _inv.PrepaidAmount));
                 if (_inv.RoundingAmount != default)
-                    legalMonetaryTotalElem.Add(Amount("PayableRoundingAmount", _inv.RoundingAmount));
+                    legalMonetaryTotalElem.Add(RoundedAmount("PayableRoundingAmount", _inv.RoundingAmount));
 
                 // Required
-                legalMonetaryTotalElem.Add(Amount("PayableAmount", _inv.AmountDueForPayment));
+                legalMonetaryTotalElem.Add(RoundedAmount("PayableAmount", _inv.AmountDueForPayment));
             }
 
             // Invoice Lines
@@ -336,7 +336,7 @@ namespace Tellma.Integration.Zatca
                     new XElement(cac + "InvoiceLine",
                         new XElement(cbc + "ID", line.Identifier.ToString()),
                         new XElement(cbc + "InvoicedQuantity", line.Quantity.ToString()).Grab(out XElement quantityElem),
-                        Amount("LineExtensionAmount", line.NetAmount)
+                        RoundedAmount("LineExtensionAmount", line.NetAmount)
                     ).Grab(out XElement lineElem)
                 );
 
@@ -378,20 +378,20 @@ namespace Tellma.Integration.Zatca
                         allowanceChargeElem.Add(new XElement(cbc + "AllowanceChargeReason", lac.Reason));
 
                     if (lac.Percentage != default)
-                        allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (lac.Percentage * 100).ToString(DECIMAL_FORMAT)));
+                        allowanceChargeElem.Add(new XElement(cbc + "MultiplierFactorNumeric", (lac.Percentage * 100m).ToString(DECIMAL_FORMAT)));
 
-                    allowanceChargeElem.Add(Amount("Amount", lac.Amount));
+                    allowanceChargeElem.Add(RoundedAmount("Amount", lac.Amount));
 
                     if (lac.BaseAmount != default)
-                        allowanceChargeElem.Add(Amount("BaseAmount", lac.BaseAmount));
+                        allowanceChargeElem.Add(RoundedAmount("BaseAmount", lac.BaseAmount));
                 }
 
                 // Vat info
                 {
                     lineElem.Add(
                         new XElement(cac + "TaxTotal",
-                            Amount("TaxAmount", line.VatAmount),
-                            Amount("RoundingAmount", line.AmountIncludingVat)
+                            RoundedAmount("TaxAmount", line.VatAmount),
+                            RoundedAmount("RoundingAmount", line.AmountIncludingVat)
                         ).Grab(out XElement taxTotalElem)
                     );
 
@@ -400,11 +400,11 @@ namespace Tellma.Integration.Zatca
                     {
                         taxTotalElem.Add(
                             new XElement(cac + "TaxSubtotal",
-                                Amount("TaxableAmount", line.PrepaymentVatCategoryTaxableAmount),
-                                Amount("TaxAmount", line.PrepaymentVatCategoryTaxAmount),
+                                RoundedAmount("TaxableAmount", line.PrepaymentVatCategoryTaxableAmount),
+                                RoundedAmount("TaxAmount", line.PrepaymentVatCategoryTaxAmount),
                                 new XElement(cac + "TaxCategory",
                                     new XElement(cbc + "ID", line.PrepaymentVatCategory.ToXml()),
-                                    new XElement(cbc + "Percent", (line.PrepaymentVatRate * 100).ToString(DECIMAL_FORMAT)),
+                                    new XElement(cbc + "Percent", (line.PrepaymentVatRate * 100m).ToString(DECIMAL_FORMAT)),
                                     new XElement(cac + "TaxScheme",
                                         new XElement(cbc + "ID", "VAT")
                                     )
@@ -447,7 +447,7 @@ namespace Tellma.Integration.Zatca
                     itemElem.Add(
                         new XElement(cac + "ClassifiedTaxCategory",
                             new XElement(cbc + "ID", line.ItemVatCategory.ToXml()),
-                            new XElement(cbc + "Percent", (line.ItemVatRate * 100).ToString(DECIMAL_FORMAT)),
+                            new XElement(cbc + "Percent", (line.ItemVatRate * 100m).ToString(DECIMAL_FORMAT)),
                             new XElement(cac + "TaxScheme",
                                 new XElement(cbc + "ID", "VAT")
                             )
@@ -459,7 +459,7 @@ namespace Tellma.Integration.Zatca
                 {
                     lineElem.Add(
                         new XElement(cac + "Price",
-                            Amount("PriceAmount", line.ItemNetPrice)
+                            UnroundedAmount("PriceAmount", line.ItemNetPrice)
                         ).Grab(out XElement priceElem)
                     );
 
@@ -479,8 +479,8 @@ namespace Tellma.Integration.Zatca
                         priceElem.Add(
                             new XElement(cac + "AllowanceCharge",
                                 new XElement(cbc + "ChargeIndicator", AllowanceChargeType.Allowance.ToXml()),
-                                Amount("Amount", line.ItemPriceDiscount),
-                                Amount("BaseAmount", line.ItemGrossPrice)
+                                UnroundedAmount("Amount", line.ItemPriceDiscount),
+                                UnroundedAmount("BaseAmount", line.ItemGrossPrice)
                             )
                         );
                     }
@@ -729,9 +729,21 @@ namespace Tellma.Integration.Zatca
         /// containing the given <paramref name="amount"/>, with the invoice currency 
         /// in the 'currencyID' attribute.
         /// </summary>
-        private XElement Amount(string elementName, decimal amount)
+        private XElement RoundedAmount(string elementName, decimal amount)
         {
             return new XElement(cbc + elementName, amount.ToString(DECIMAL_FORMAT),
+                new XAttribute("currencyID", _inv.InvoiceCurrency ?? "")
+            );
+        }
+
+        /// <summary>
+        /// Syntactic sugar: Creates a cbc element with the given <paramref name="elementName"/>, 
+        /// containing the given <paramref name="amount"/>, with the invoice currency 
+        /// in the 'currencyID' attribute.
+        /// </summary>
+        private XElement UnroundedAmount(string elementName, decimal amount)
+        {
+            return new XElement(cbc + elementName, amount.ToString(),
                 new XAttribute("currencyID", _inv.InvoiceCurrency ?? "")
             );
         }

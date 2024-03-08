@@ -476,7 +476,7 @@ namespace Tellma.Model.Application
 
         [Required]
         [Display(Name = "Definition_HasAddress")]
-        public bool HasAddress { get; set; }
+        public bool? HasAddress { get; set; }
 
         [Display(Name = "Definition_PreprocessScript")]
         public string PreprocessScript { get; set; }

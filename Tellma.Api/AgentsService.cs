@@ -239,7 +239,7 @@ namespace Tellma.Api
                     entity.Attachments = null;
                 }
 
-                if (!def.HasAddress)
+                if (!def.HasAddress ?? false)
                 {
                     entity.AddressStreet = null;
                     entity.AddressAdditionalStreet = null;

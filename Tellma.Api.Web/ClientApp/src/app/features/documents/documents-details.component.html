@@ -887,7 +887,7 @@
                                 </div>
                                 <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4'
-                                        }}</span>
+                                        }}&zwnj;</span>
                                 </div>
                                 <span *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit',
                                     getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;</span>
@@ -899,7 +899,7 @@
                                     dateFormat }}&zwnj;</span>
                                 <div *ngSwitchCase="'Duration'" class="t-right-aligned">
                                     <span>{{ getFieldValue(lineDefId, columnIndex, line, model) | accounting:'1.0-4'
-                                        }}</span>
+                                        }}&zwnj;</span>
                                 </div>
                                 <span *ngSwitchCase="'DurationUnitId'">{{ ws.getMultilingualValue('Unit',
                                     getFieldValue(lineDefId, columnIndex, line, model), 'Name') }}&zwnj;</span>

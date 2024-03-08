@@ -59,7 +59,6 @@
 	[ReferenceSourceAgentDefinitionCodes]NVARCHAR (255) NOT NULL DEFAULT N'CashMachine,CashSaleVoucher,CreditSaleVoucher',
 
 	-- Zatca
-	[ZatcaEncryptedPrivateKey]				NVARCHAR(MAX),
 	[ZatcaEncryptedSecret]					NVARCHAR(MAX),
 	[ZatcaEncryptedSecurityToken]			NVARCHAR(MAX),
 	[ZatcaEncryptionKeyIndex]				INT					NOT NULL DEFAULT 0,

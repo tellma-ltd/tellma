@@ -896,7 +896,7 @@ namespace Tellma.Api.Dto
         public string Text4Visibility { get; set; }
 
         // Address
-        public bool HasAddress { get; set; }
+        public bool? HasAddress { get; set; }
 
         // ExternalReference
         public string ExternalReferenceLabel { get; set; }

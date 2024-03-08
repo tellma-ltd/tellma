@@ -899,7 +899,7 @@ namespace Tellma.Api.Behaviors
             string docDefName,
             int docId,
             string invoiceXml,
-            string validationResultsJson,
+            string zatcaResponseBody,
             TenantLogLevel level)
         {
             try
@@ -923,7 +923,7 @@ namespace Tellma.Api.Behaviors
                     DefinitionName = docDefName,
                     DocumentId = docId,
                     InvoiceXml = invoiceXml,
-                    ValidationResultsJson = validationResultsJson,
+                    ZatcaResponseBody = zatcaResponseBody,
                     UserEmail = user.Email,
                     UserName = user.Name,
                 });

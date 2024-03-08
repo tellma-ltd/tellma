@@ -37,7 +37,7 @@ BEGIN
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_DocumentIsPostedAndZatca',
+		N'Error_CannotOpenAZatcaDocument',
 		D.[Code]
 	FROM @Ids FE
 	JOIN map.Documents() D ON FE.[Id] = D.[Id]

@@ -12,7 +12,6 @@ UPDATE [dbo].[Settings] SET
 	
 -- Reset ZATCA Settings
 UPDATE [dbo].[Settings] SET 
-	[ZatcaEncryptedPrivateKey] = NULL,
 	[ZatcaEncryptedSecret] = NULL,
 	[ZatcaEncryptedSecurityToken] = NULL,
 	[ZatcaEncryptionKeyIndex] = 0,

@@ -223,7 +223,7 @@ namespace Tellma.Services.ClientProxy
             }
             else if (le is ZatcaErrorLogEntry zle)
             {
-                result.Subject = $@"{zle.TenantName}: ZATCA API {zle.Level}";
+                result.Subject = $@"{zle.TenantName}: ZATCA API {zle.Level} ({zle.DocumentId})";
 
                 StringBuilder bldr = new($@"<span>Encountered a ZATCA API {zle.Level.ToString().ToLower()} in Tenant {HtmlEncode(zle.TenantName)}.</span><br/><br/>
 <span style=""font-weight: bold"">Log Entry Id:</span><span> {zle.Id}</span><br/>
@@ -236,9 +236,9 @@ namespace Tellma.Services.ClientProxy
 <span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(zle.UserName)}</span><br/>");
 
                 bldr.AppendLine(@"<br/>");
-                bldr.AppendLine(@"<span style=""font-weight: bold"">ZATCA Validation Results:</span><br/>");
+                bldr.AppendLine(@"<span style=""font-weight: bold"">ZATCA Response:</span><br/>");
                 bldr.AppendLine(@$"<span style=""font-family: 'Courrier New', monospace; "">");
-                foreach (var line in (zle.ValidationResultsJson ?? "").Split(Environment.NewLine))
+                foreach (var line in (zle.ZatcaResponseBody ?? "").Split(Environment.NewLine))
                 {
                     int i = 0;
                     while (i < line.Length && char.IsWhiteSpace(line[i]))
@@ -252,7 +252,7 @@ namespace Tellma.Services.ClientProxy
                 bldr.AppendLine(@$"</span><br/>");
 
                 bldr.AppendLine(@"<br/>");
-                bldr.AppendLine(@"<span style=""font-weight: bold"">Invoice XML:</span><br/>");
+                bldr.AppendLine(@"<span style=""font-weight: bold"">XML Sent to ZATCA API:</span><br/>");
                 foreach (var line in (zle.InvoiceXml ?? "").Split(Environment.NewLine))
                 {
                     bldr.AppendLine(@$"<span style=""font-family: 'Courrier New', monospace; "">{HtmlEncode(line)}</span><br/>");

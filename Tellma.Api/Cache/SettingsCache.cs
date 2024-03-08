@@ -93,7 +93,6 @@ namespace Tellma.Api
             forClient.CommercialRegistrationNumber = fields.CommercialRegistrationNumber;
 
             // ZATCA fields
-            forClient.ZatcaEncryptedPrivateKey = zatcaSettings.ZatcaEncryptedPrivateKey;
             forClient.ZatcaEncryptedSecret = zatcaSettings.ZatcaEncryptedSecret;
             forClient.ZatcaEncryptedSecurityToken = zatcaSettings.ZatcaEncryptedSecurityToken;
             forClient.ZatcaEncryptionKeyIndex = zatcaSettings.ZatcaEncryptionKeyIndex;

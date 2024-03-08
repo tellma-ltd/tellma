@@ -3,11 +3,8 @@ using Org.BouncyCastle.Asn1.Microsoft;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
 using System.Collections;
 using System.Text.RegularExpressions;
 
@@ -16,11 +13,12 @@ namespace Tellma.Integration.Zatca
     public partial class CsrBuilder
     {
         private readonly CsrInput _info;
+        private readonly Env _env;
 
-        public CsrBuilder(CsrInput info)
+        public CsrBuilder(CsrInput info, Env env = Env.Production)
         {
             _info = info;
-
+            _env = env;
             string error = ValidateInput();
             if (!string.IsNullOrWhiteSpace(error))
             {
@@ -28,13 +26,15 @@ namespace Tellma.Integration.Zatca
             }
         }
 
+        private bool IsSimulation => _env == Env.Simulation;
+
         /// <summary>
         /// Generates a Certificate Stamping Request (CSR) based from the given private key.
         /// </summary>
         /// <param name="privateKeyContent">The content of the private key PEM file without the <c>-----BEGIN ...-----</c> header and <c>-----END ...-----</c> footer.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">If the provided PEM is invalid</exception>
-        public CsrResult GenerateCsr(string privateKeyContent)
+        public string GenerateCsr(string privateKeyContent)
         {
             string privateKeyPem = @$"-----BEGIN EC PRIVATE KEY-----
 {privateKeyContent}
@@ -42,36 +42,11 @@ namespace Tellma.Integration.Zatca
 
             // Create key pair from PEM content
             using TextReader reader = new StringReader(privateKeyPem);
-            PemReader pemReader = new(reader);
-
-            if (pemReader.ReadObject() is ECPrivateKeyParameters privateKey)
+            if (new PemReader(reader).ReadObject() is not AsymmetricCipherKeyPair keyPair)
             {
-                ECDomainParameters domainParameters = privateKey.Parameters;
-                ECPublicKeyParameters publicKey = new(privateKey.AlgorithmName, domainParameters.G.Multiply(privateKey.D), domainParameters);
-                AsymmetricCipherKeyPair keyPair = new(publicKey, privateKey);
-
-                return GenerateCsrImpl(keyPair);
-            }
-            else
-            {
-                // Handle other cases or throw an exception
                 throw new InvalidOperationException($"Unsupported PEM format: {privateKeyContent}");
             }
-        }
 
-        public CsrResult GenerateCsr()
-        {
-            // Generate key pair from scratch
-            ECKeyPairGenerator keyPairGenerator = new("ECDSA");
-            KeyGenerationParameters parameters = new(new SecureRandom(), 256);
-            keyPairGenerator.Init(parameters);
-            AsymmetricCipherKeyPair keyPair = keyPairGenerator.GenerateKeyPair();
-
-            return GenerateCsrImpl(keyPair);
-        }
-
-        private CsrResult GenerateCsrImpl(AsymmetricCipherKeyPair keyPair)
-        {
             var input = _info;
 
             var distinguishedNameKeys = new ArrayList
@@ -87,15 +62,16 @@ namespace Tellma.Integration.Zatca
                 input.CountryCode,
                 input.OrganizationUnitName,
                 input.OrganizationName,
-                input.CommonName
+                IsSimulation ? "PREZATCA-Code-Signing" : input.CommonName
             };
 
+            var registeredAddress = new DerObjectIdentifier("2.5.4.26");
             var extensionKeys = new ArrayList
             {
                 X509Name.Surname,
                 X509Name.UID,
                 X509Name.T,
-                X509Name.L,
+                registeredAddress,
                 X509Name.BusinessCategory
             };
 
@@ -113,7 +89,7 @@ namespace Tellma.Integration.Zatca
 
             // Add req_extensions
             X509ExtensionsGenerator extGenerator = new();
-            extGenerator.AddExtension(MicrosoftObjectIdentifiers.MicrosoftCertTemplateV1, critical: false, new DerOctetString(new DisplayText(2, "ZATCA-Code-Signing")));
+            extGenerator.AddExtension(MicrosoftObjectIdentifiers.MicrosoftCertTemplateV1, critical: false, new DerPrintableString(IsSimulation ? "PREZATCA-Code-Signing" : "ZATCA-Code-Signing"));
             extGenerator.AddExtension(X509Extensions.SubjectAlternativeName, critical: false, extValue);
             X509Extensions req_ext = extGenerator.Generate();
             AttributePkcs req_extensions = new(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(req_ext));
@@ -126,13 +102,7 @@ namespace Tellma.Integration.Zatca
             );
 
             string csrContent = ToPemString(certificationRequest);
-            string privateKey = ToPemString(keyPair.Private)
-                .Replace("-----BEGIN EC PRIVATE KEY-----", "")
-                .Replace("\n", "")
-                .Replace("\r", "")
-                .Replace("-----END EC PRIVATE KEY-----", "");
-
-            return new(csrContent, privateKey);
+            return csrContent;
         }
 
         private static string ToPemString(object obj)

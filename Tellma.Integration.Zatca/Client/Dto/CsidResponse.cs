@@ -2,7 +2,7 @@
 
 namespace Tellma.Integration.Zatca
 {
-    public class CsidResponse
+    public class CsidResponse : ResponseBase
     {
         [JsonPropertyName("requestID")]
         public long RequestId { get; set; }

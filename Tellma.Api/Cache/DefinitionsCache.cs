@@ -1490,14 +1490,14 @@ namespace Tellma.Api
                 result.MemoLabel3 = null;
 
                 // Lookup1
-                result.Lookup1Visibility = Visibility.None;
+                result.Lookup1Visibility = null;
                 result.Lookup1DefinitionId = null;
                 result.Lookup1Label = null;
                 result.Lookup1Label2 = null;
                 result.Lookup1Label3 = null;
 
                 // Lookup2
-                result.Lookup2Visibility = Visibility.None;
+                result.Lookup2Visibility = null;
                 result.Lookup2DefinitionId = null;
                 result.Lookup2Label = null;
                 result.Lookup2Label2 = null;

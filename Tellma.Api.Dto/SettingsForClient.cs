@@ -96,9 +96,6 @@ namespace Tellma.Api.Dto
         public string SupportEmails { get; set; }
 
         [JsonIgnore]
-        public string ZatcaEncryptedPrivateKey { get; set; }
-
-        [JsonIgnore]
         public string ZatcaEncryptedSecret { get; set; }
 
         [JsonIgnore]

@@ -38,6 +38,8 @@ namespace Tellma.Integration.Zatca
 
         #endregion
 
+        private string PrivateKey() => _options.PrivateKey ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.PrivateKey)}' should be provided in a configuration provider");
+
         public async Task<ZatcaSecrets> Onboard(
             int tenantId,
             Party seller,
@@ -58,25 +60,26 @@ namespace Tellma.Integration.Zatca
 
             // 1 - Create the Certificate Signing Request (CSR)
             // See section 2.2.2 in https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20230519_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vF.pdf
+            string privateKeyContent = PrivateKey();
+            string csrProviderName = _options.ProviderName ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.ProviderName)}' should be provided in a configuration provider");
             string csrHostingDomain = _options.CsrHostingDomain ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.CsrHostingDomain)}' should be provided in a configuration provider");
             string vatNumber = seller.VatNumber ?? throw new ZatcaException("Please specify supplier VAT number.");
             string orgName = seller.Name ?? throw new ZatcaException("Please specify supplier Name.");
 
             var csrInput = new CsrInput(
-                commonName: csrHostingDomain,
-                serialNumber: $"1-Tellma|2-{csrHostingDomain}|3-{tenantId}",
+                commonName: $"{csrProviderName}-{tenantId}-{vatNumber}", // Unique value per tenant
+                serialNumber: $"1-{csrProviderName}|2-{csrHostingDomain}|3-{tenantId}",
                 organizationIdentifier: vatNumber,
                 organizationUnitName: orgUnitName,
                 organizationName: orgName,
                 countryCode: "SA",
-                invoiceType: "1100",
+                invoiceType: "1100", // Support both standard and simplified
                 location: csrHostingDomain,
                 industry: orgIndustry
             );
 
-            var csrResult = new CsrBuilder(csrInput).GenerateCsr();
-            var csrBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrResult.CsrContent));
-            var privateKey = csrResult.PrivateKey;
+            var csrContent = new CsrBuilder(csrInput).GenerateCsr(privateKeyContent);
+            var csrBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrContent));
 
             // 2 - Submit CSR to ZATCA to retrieve the compliance Cryptographic Stamp Identifier (CSID)
             var csrRequest = new CsrRequest { Csr = csrBase64 };
@@ -84,7 +87,8 @@ namespace Tellma.Integration.Zatca
             cancellationToken.ThrowIfCancellationRequested();
             if (!csidResponse.IsSuccess)
             {
-                throw new ZatcaException($"Failed to create compliance CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
+                var csrRequestJson = JsonSerializer.Serialize(csrRequest);
+                throw new ZatcaException($"Failed to create compliance CSID. Status: {csidResponse.Status}.\n\n --- Response ---\n {csidResponse.ToJson()}.\n\n --- Request --- \n{csrRequestJson}.");
             }
 
             var csidResult = csidResponse.ResultOrThrow();
@@ -99,7 +103,7 @@ namespace Tellma.Integration.Zatca
                 // Create Invoice XML
                 string certificateContent = Encoding.UTF8.GetString(Convert.FromBase64String(tempSecurityToken));
                 var builder = new InvoiceXml(inv);
-                var signatureInfo = builder.Build().Sign(certificateContent, privateKey);
+                var signatureInfo = builder.Build().Sign(certificateContent, privateKeyContent);
                 var xml = builder.GetXml();
 
                 // Call the ZATCA API
@@ -129,7 +133,8 @@ namespace Tellma.Integration.Zatca
             cancellationToken.ThrowIfCancellationRequested();
             if (!prodCsidResponse.IsSuccess)
             {
-                throw new ZatcaException($"Failed to create production CSID. Status: {csidResponse.Status}. Response: {csidResponse.Result}.");
+                var prodCsidRequestJson = JsonSerializer.Serialize(prodCsidRequest);
+                throw new ZatcaException($"Failed to create production CSID. Status: {prodCsidResponse.Status}.\n\n --- Response ---\n {prodCsidResponse.ToJson()}.\n\n --- Request --- \n{prodCsidRequestJson}.");
             }
             var prodCsidResult = prodCsidResponse.ResultOrThrow();
 
@@ -143,9 +148,8 @@ namespace Tellma.Integration.Zatca
 
             string encryptedSecurityToken = CryptoUtil.Encrypt(securityToken, encryptionKey);
             string encryptedSecret = CryptoUtil.Encrypt(secret, encryptionKey);
-            string encryptedPrivateKey = CryptoUtil.Encrypt(privateKey, encryptionKey);
 
-            return new ZatcaSecrets(encryptedSecurityToken, encryptedSecret, encryptedPrivateKey, encryptionKeyIndex);
+            return new ZatcaSecrets(encryptedSecurityToken, encryptedSecret, encryptionKeyIndex);
         }
 
         public Task Renew(string otp)
@@ -155,8 +159,9 @@ namespace Tellma.Integration.Zatca
 
         public async Task<ClearanceReport> Report(Invoice inv, ZatcaSecrets secrets, Env env)
         {
-            var (securityToken, secret, privateKey) = env == Env.Sandbox ?
-                (_sandboxReportingUsername, _sandboxReportingPassword, _sandboxPrivateKey) :
+            var privateKey = env == Env.Sandbox ? _sandboxPrivateKey : PrivateKey();
+            var (securityToken, secret) = env == Env.Sandbox ?
+                (_sandboxReportingUsername, _sandboxReportingPassword) :
                 DecryptSecrets(secrets);
 
             if (env == Env.Sandbox && inv.Seller != null)
@@ -187,13 +192,15 @@ namespace Tellma.Integration.Zatca
                 hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
                 invoiceXml: xml,
                 invoiceHash: signatureInfo.InvoiceHash,
+                responseBody: response.ToJson(),
                 validationResults: response.Result?.ValidationResults);
         }
 
         public async Task<ClearanceReport> Clear(Invoice inv, ZatcaSecrets secrets, Env env)
         {
-            var (securityToken, secret, privateKey) = env == Env.Sandbox ?
-                (_sandboxClearingUsername, _sandboxClearingPassword, _sandboxPrivateKey) :
+            var privateKey = env == Env.Sandbox ? _sandboxPrivateKey : PrivateKey();
+            var (securityToken, secret) = env == Env.Sandbox ?
+                (_sandboxClearingUsername, _sandboxClearingPassword) :
                 DecryptSecrets(secrets);
 
             if (env == Env.Sandbox && inv.Seller != null)
@@ -260,10 +267,11 @@ namespace Tellma.Integration.Zatca
                 hasWarnings: response.Status == ResponseStatus.SuccessWithWarnings,
                 invoiceXml: invoiceXml,
                 invoiceHash: invoiceHash,
+                responseBody: response.ToJson(),
                 validationResults: response.Result?.ValidationResults);
         }
 
-        private (string securityToken, string secret, string privateKey) DecryptSecrets(ZatcaSecrets secrets)
+        private (string securityToken, string secret) DecryptSecrets(ZatcaSecrets secrets)
         {
             var encryptionKeysString = _options.EncryptionKeys ?? throw new ZatcaException($"The setting 'Zatca:{nameof(_options.EncryptionKeys)}' should be provided in a configuration provider.");
             var encryptionKeys = encryptionKeysString.Split(",");
@@ -276,9 +284,8 @@ namespace Tellma.Integration.Zatca
 
             string securityToken = CryptoUtil.Decrypt(secrets.EncryptedSecurityToken, encryptionKey);
             string secret = CryptoUtil.Decrypt(secrets.EncryptedSecret, encryptionKey);
-            string privateKey = CryptoUtil.Decrypt(secrets.EncryptedPrivateKey, encryptionKey);
 
-            return (securityToken, secret, privateKey);
+            return (securityToken, secret);
         }
 
         private ZatcaClient GetZatcaClient(Env env)
@@ -296,9 +303,9 @@ namespace Tellma.Integration.Zatca
     public class ZatcaOptions
     {
         /// <summary>
-        /// Provided by the Taxpayer for each Solution unit: Unique Name or Asset Tracking Number of the Solution Unit.
+        /// The provider of the current solution.
         /// </summary>
-        public string? CsrCommonName { get; set; }
+        public string? ProviderName { get; set; }
 
         /// <summary>
         /// The domain where the current instance of Tellma is hosted.
@@ -309,6 +316,12 @@ namespace Tellma.Integration.Zatca
         /// Used to encrypt and decrypt ZATCA secrets before storing in the DB.
         /// </summary>
         public string? EncryptionKeys { get; set; }
+
+        /// <summary>
+        /// The private key used to create the CSR and sign the invoice XML.
+        /// This is the PEM content without the header and footer.
+        /// </summary>
+        public string? PrivateKey { get; set; }
     }
 
     public class ZatcaException(string msg) : ReportableException(msg)
@@ -318,7 +331,6 @@ namespace Tellma.Integration.Zatca
     public class ZatcaSecrets(
         string encryptedSecurityToken,
         string encryptedSecret,
-        string encryptedPrivateKey,
         int encryptionKeyIndex)
     {
         /// <summary>
@@ -332,11 +344,6 @@ namespace Tellma.Integration.Zatca
         public string EncryptedSecret { get; } = encryptedSecret;
 
         /// <summary>
-        /// Generated by <see cref="CsrBuilder"/>.
-        /// </summary>
-        public string EncryptedPrivateKey { get; } = encryptedPrivateKey;
-
-        /// <summary>
         /// The index of the key used to encrypt the other properties.
         /// </summary>
         public int EncryptionKeyIndex { get; set; } = encryptionKeyIndex;
@@ -347,12 +354,14 @@ namespace Tellma.Integration.Zatca
         bool hasWarnings,
         string? invoiceXml,
         string? invoiceHash,
+        string? responseBody,
         ResponseValidationResults? validationResults)
     {
         public bool IsSuccess { get; } = isSuccess;
         public bool HasWarnings { get; } = hasWarnings;
         public string? InvoiceXml { get; } = invoiceXml;
         public string? InvoiceHash { get; } = invoiceHash;
+        public string? ResponseBody { get; } = responseBody;
         public ResponseValidationResults? ValidationResults { get; } = validationResults;
 
         [JsonIgnore]

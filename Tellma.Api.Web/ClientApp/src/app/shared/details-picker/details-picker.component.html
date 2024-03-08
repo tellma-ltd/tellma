@@ -41,7 +41,7 @@
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
         <button class="dropdown-item t-slightly-bold" [class.text-primary]="canCreateNew && !isDark"
           [class.t-text-whitish]="canCreateNew && isDark" [class.text-muted]="!canCreateNew"
-          [class.active]="highlightCreateNew" (click)="onCreateFromFocus()" [disabled]="!canCreateNew">
+          [class.active]="highlightCreateNew" (focus)="onCreateFromFocus()" (click)="$event.target.focus()" [disabled]="!canCreateNew">
           {{ 'Create' | translate }}...
         </button>
       </div>
