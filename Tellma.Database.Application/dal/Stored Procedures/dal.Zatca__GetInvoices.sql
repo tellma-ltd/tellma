@@ -67,9 +67,11 @@ BEGIN
 		IIF(DD.ZatcaDocumentType IN (N'381', N'383'), -- Applies only to credit (381) and debot (383) notes
         [dal].[fn_Document__BillingReferenceId](D.[Id]), NULL) AS [BillingReferenceId], -- BT-25, max 5000 chars, required for Debit/Credit Notes, NULL otherwise
         CA.[Code] AS [ContractId], -- BT-12, max 127 chars
-        CA.TaxIdentificationNumber AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
+		-- Text1 = Commercial Registration Number (necessary when TIN is null).
+        ISNULL(CA.TaxIdentificationNumber, CA.Text1) AS [BuyerId], -- BT-29 (or BT-48 if VAT number)
 		-- Customer Accounts Lookup 5: Buyer Scheme
-        ISNULL(CA_LK5.[Code], N'VAT') AS [BuyerIdScheme], -- CA.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
+        --ISNULL(CA_LK5.[Code], N'VAT') AS [BuyerIdScheme], -- CA.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
+		IIF(CA.TaxIdentificationNumber IS NOT NULL, N'VAT', N'CRN') AS [BuyerIdScheme], -- CA.Lookup5,  Bt-29-1: [VAT, TIN, CRN, MOM, MLS, 700, SAG, NAT, GCC, IQA, PAS, OTH]
 		-- Agents: AddressStreet, ..., AddressCountryCode
         CA.[AddressStreet] AS [BuyerAddressStreet], -- BT-50, max 1000 chars
         CA.[AddressAdditionalStreet] AS [BuyerAddressAdditionalStreet], -- BT-51, max 127 chars
@@ -102,7 +104,7 @@ BEGIN
 	INNER JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId] -- Sales Invoice
 	INNER JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id] -- Customer Account/Contract
 	LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id] -- Customer
-	LEFT JOIN dbo.Lookups CA_LK5 ON CA_LK5.[Id] = CA.[Lookup5Id]
+	--LEFT JOIN dbo.Lookups CA_LK5 ON CA_LK5.[Id] = CA.[Lookup5Id]
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	WHERE DD.[ZatcaDocumentType] IS NOT NULL
 

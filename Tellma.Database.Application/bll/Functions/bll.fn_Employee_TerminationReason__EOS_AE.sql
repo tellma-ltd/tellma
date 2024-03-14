@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [bll].[fn_Employee_TerminationReason__EOS_AE]
 (
 	@EmployeeId INT,
-	@TerminationReasonId INT
+	@TerminationBenefitCode NVARCHAR (10)
 )
 RETURNS DECIMAL (19, 6)
 AS
@@ -11,10 +11,6 @@ BEGIN
 	@FromDate DATE,
 	@ToDate DATE,
 	@Result DECIMAL (19, 6);
-
-	DECLARE @TerminationBenefitCode NVARCHAR (10) =  dal.fn_Lookup__Code(@TerminationReasonId);	
-	-- Refresh Joining/Termination dates, and center
-	DECLARE @EmployeeIds IdList; INSERT INTO @EmployeeIds VALUES(@EmployeeId);EXEC [dal].[Employees_ToDate__Update] @EmployeeIds
 	
 	SELECT @FromDate = FromDate, @ToDate = ToDate
 	FROM dbo.Agents

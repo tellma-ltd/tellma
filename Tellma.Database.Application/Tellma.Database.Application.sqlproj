@@ -986,6 +986,10 @@
     <Build Include="dbo\User Defined Types\dbo.CodeWithMonetaryList.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS_SA.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS_AE.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees_Period_EventFromModel_Salaries__Generate.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision_AE.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision_SA.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

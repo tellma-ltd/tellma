@@ -14,6 +14,7 @@ DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id
 DECLARE @DurationUnitId INT = IIF (dal.fn_Settings__Calendar() = 'GC', dal.fn_UnitCode__Id(N'mo'), dal.fn_UnitCode__Id(N'emo'));
 DECLARE @Monthly INT = dal.fn_UnitCode__Id(N'mo');
 DECLARE @PostingDate DATE = (SELECT TOP 1 [PostingDate] FROM @Documents);
+
 DECLARE @PeriodEnd DATE = [dbo].[fn_PeriodEnd](@DurationUnitId, @PostingDate);
 DECLARE @PeriodStart DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @PostingDate);
 DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
@@ -38,8 +39,7 @@ WHERE [Value1] IS NOT NULL; -- TODO: Investigate, why do we need this condition?
 DECLARE @PeriodBenefits  [dbo].[PeriodBenefitsList];
 
 WITH PeriodBenefitEntries AS (
-	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, --E.[CurrencyId], E.[Direction] * E.[MonetaryValue] AS [MonetaryValue], 
-	E.[Direction] * E.[Value] AS [Value]
+	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, E.[Direction] * E.[Value] AS [Value]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Resources] R ON R.[Id] = E.[ResourceId]
@@ -49,8 +49,8 @@ WITH PeriodBenefitEntries AS (
 	AND AC.[Node].IsDescendantOf(@WagesAndSalariesNode) = 1
 	AND L.[PostingDate] BETWEEN @PeriodStart AND @PeriodEnd
 	AND (@EmployeeId IS NULL OR E.[NotedAgentId] = @EmployeeId)
-	UNION
-	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, --E.[CurrencyId], E.[Direction] * E.[MonetaryValue] AS [MonetaryValue],
+	UNION ALL
+	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode,
 		bll.fn_ConvertToFunctional(@PeriodEnd, E.[CurrencyId], E.[Direction] * E.[MonetaryValue]) AS [Value]
 	FROM @Entries E
 	JOIN dbo.[Resources] R ON R.[Id] = E.[ResourceId]
@@ -67,12 +67,11 @@ SELECT ROW_NUMBER() OVER(ORDER BY [NotedAgentId], [ResourceCode]) - 1 AS [Id], [
 FROM PeriodBenefitEntries
 GROUP BY [NotedAgentId], [ResourceCode];
 --select * from bll.ft_Employees__Deductions(@Country, @PeriodBenefits, @PeriodStart, @PeriodEnd)
---declare @count int = (select count(*) from @PeriodBenefits);
---declare @msg nvarchar(255) = N'count = ' + cast(@count as nvarchar(255))
---raiserror(@msg, 16, 1);
 UPDATE WL
-SET 	[CurrencyId1] 	= SS.[CurrencyId],
-	[MonetaryValue1] = SS.[MonetaryValue]
+SET 
+	[CurrencyId1] 	= SS.[CurrencyId],
+	[MonetaryValue1] = SS.[MonetaryValue],
+	[NotedAmount1] = SS.[NotedAmount]
 FROM @Widelines WL
 CROSS APPLY bll.ft_Employees__Deductions(@Country, @PeriodBenefits, @PeriodStart, @PeriodEnd) SS
 WHERE WL.[NotedAgentId1] = SS.[EmployeeId] AND WL.[AgentId1] = SS.[DeductionAgentId];

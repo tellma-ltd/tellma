@@ -1,6 +1,4 @@
 ﻿CREATE FUNCTION [bll].[ft_Employees__Deductions_ET](
-	--@EmployeeIds dbo.IdList READONLY,
-	--@LineIds dbo.IdList READONLY,
 	@PeriodBenefitsEntries dbo.PeriodBenefitsList READONLY,
 	@PeriodStart DATE,
 	@PeriodEnd DATE
@@ -8,7 +6,9 @@
 RETURNS @MyResult TABLE (
 	[EmployeeId] INT,
 	[SocialSecurityDeduction] DECIMAL (19, 6),
-	[EmployeeIncomeTax] DECIMAL (19, 6)
+	[EmployeeIncomeTax] DECIMAL (19, 6),
+	[AmountSubjectToSocialSecurityDeduction] DECIMAL (19, 6),
+	[AmountSubjectToEmployeeIncomeTax] DECIMAL (19, 6)
 )
 AS BEGIN
 	DECLARE @T TABLE (
@@ -50,12 +50,14 @@ AS BEGIN
 	WHERE T.[ResourceCode] IN (N'BusinessVisitAllowance');
 	
 	INSERT INTO @MyResult
-	SELECT DISTINCT [EmployeeId], 0, 0
+	SELECT DISTINCT [EmployeeId], 0, 0, 0, 0
 	FROM @T
 
 	-- SS Deduction, assuming we recorded a contribution of 17%
 	Update R
-	SET [SocialSecurityDeduction] = 0.18 * SS.[TotalValueSubjectToSocialSecurity]
+	SET
+		[SocialSecurityDeduction] = 0.18 * SS.[TotalValueSubjectToSocialSecurity],
+		[AmountSubjectToSocialSecurityDeduction] = SS.[TotalValueSubjectToSocialSecurity]
 	FROM @MyResult R
 	CROSS APPLY (
 		SELECT SUM([ValueSubjectToSocialSecurity]) AS [TotalValueSubjectToSocialSecurity]
@@ -65,10 +67,12 @@ AS BEGIN
 
 	-- Income Tax Deduction
 	Update R
-	SET [EmployeeIncomeTax] = bll.fn_EmployeeIncomeTax_ET([TotalValueSubjectToEmployeeIncomeTax])
+	SET
+		[EmployeeIncomeTax] = bll.fn_EmployeeIncomeTax_ET(SS.[TotalValueSubjectToEmployeeIncomeTax]),
+		[AmountSubjectToEmployeeIncomeTax] = SS.[TotalValueSubjectToEmployeeIncomeTax]
 	FROM @MyResult R
 	CROSS APPLY (
-		SELECT SUM([ValueSubjectToEmployeeIncomeTax]) -- - SUM([ValueSubjectToSocialSecurity]) * 0.08	
+		SELECT SUM([ValueSubjectToEmployeeIncomeTax])	
 		AS [TotalValueSubjectToEmployeeIncomeTax]
 		FROM @T
 		WHERE [EmployeeId] = R.[EmployeeId]
