@@ -346,8 +346,17 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public set status(val: SearchStatus) {
+    if (!!val) {
+      if (!this.resultsDropdown.isOpen()) {
+        this.resultsDropdown.open();
+      }
+    } else if (this.resultsDropdown.isOpen()) {
+      this.resultsDropdown.close();
+    }
+
     this._status = val;
   }
+
 
   onDocumentClick(event: any) {
     if (event.target !== this.input.nativeElement) {
@@ -542,10 +551,11 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       (!!this._searchResults && this._searchResults.length > 0);
   }
 
+  private static rtlPos: PlacementArray = ['bottom-right', 'bottom-left', 'bottom'];
+  private static regularPos: PlacementArray = ['bottom-left', 'bottom-right', 'bottom'];
+
   get placement(): PlacementArray {
-    return this.workspace.ws.isRtl ?
-      ['bottom-right', 'bottom-left', 'bottom'] :
-      ['bottom-left', 'bottom-right', 'bottom'];
+    return this.workspace.ws.isRtl ? DetailsPickerComponent.rtlPos : DetailsPickerComponent.regularPos;
   }
 
   public formatterInner: (id: number | string) => string = (id: number | string) => {
