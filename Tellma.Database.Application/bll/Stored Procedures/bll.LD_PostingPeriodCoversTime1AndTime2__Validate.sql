@@ -17,7 +17,8 @@ AS
 
 	DECLARE @CurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'CurrentAccruedIncome');
 	DECLARE @NoncurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'NoncurrentAccruedIncome');
-	DECLARE @PeriodUnitId INT = dal.fn_UnitCode__Id(N'mo');
+	DECLARE @PeriodUnitId INT =
+		IIF (dal.fn_Settings__Calendar() = 'GC', dal.fn_UnitCode__Id(N'mo'), dal.fn_UnitCode__Id(N'emo'));
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)

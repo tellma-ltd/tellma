@@ -1,7 +1,5 @@
 ﻿CREATE FUNCTION [bll].[ft_Employees__Deductions](
 	@Country NCHAR (2),
-	--@EmployeeIds dbo.IdList READONLY,
-	--@LineIds dbo.IdList READONLY,
 	@PeriodBenefitsEntries dbo.PeriodBenefitsList READONLY,
 	@PeriodStart DATE,
 	@PeriodEnd DATE
@@ -10,9 +8,8 @@ RETURNS @MyResult TABLE (
 	[EmployeeId] INT,
 	[DeductionAgentId] INT,
 	[MonetaryValue] DECIMAL (19, 6),
-	[CurrencyId] NCHAR (3)
-	-- To be Added, the taxable income, or the amount based on which the deduction was calculated
-	-- [NotedAmount] DECIMAL (19, 6)
+	[CurrencyId] NCHAR (3),
+	[NotedAmount] DECIMAL (19, 6)
 )
 AS
 BEGIN
@@ -48,14 +45,16 @@ BEGIN
 		DECLARE @T_ET TABLE (
 			[EmployeeId] INT,
 			[SocialSecurityDeduction] DECIMAL (19, 6),
-			[EmployeeIncomeTax] DECIMAL (19, 6)
+			[EmployeeIncomeTax] DECIMAL (19, 6),
+			[AmountSubjectToSocialSecurityDeduction] DECIMAL (19, 6),
+			[AmountSubjectToEmployeeIncomeTax] DECIMAL (19, 6)
 		)
 		INSERT INTO @T_ET SELECT * FROM [bll].[ft_Employees__Deductions_ET](@PeriodBenefitsEntries, @PeriodStart, @PeriodEnd);
-		INSERT INTO @MyResult([EmployeeId], [DeductionAgentId], [MonetaryValue], [CurrencyId])
-		SELECT [EmployeeId], @SocialSecurityTax, [SocialSecurityDeduction], N'ETB'
+		INSERT INTO @MyResult([EmployeeId], [DeductionAgentId], [MonetaryValue], [CurrencyId], [NotedAmount])
+		SELECT [EmployeeId], @SocialSecurityTax, [SocialSecurityDeduction], N'ETB', [AmountSubjectToSocialSecurityDeduction]
 		FROM @T_ET
 		UNION ALL
-		SELECT [EmployeeId], @EmployeeIncomeTax, [EmployeeIncomeTax], N'ETB'
+		SELECT [EmployeeId], @EmployeeIncomeTax, [EmployeeIncomeTax], N'ETB', [AmountSubjectToEmployeeIncomeTax]
 		FROM @T_ET
 
 		RETURN
