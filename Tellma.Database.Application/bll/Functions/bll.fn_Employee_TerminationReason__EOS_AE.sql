@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [bll].[fn_Employee_TerminationReason__EOS_AE]
 (
 	@EmployeeId INT,
-	@TerminationBenefitCode NVARCHAR (10)
+	@TerminationReasonId INT
 )
 RETURNS DECIMAL (19, 6)
 AS
@@ -54,6 +54,8 @@ BEGIN
 		SELECT SUM([BasicSalary])
 		FROM dal.ft_EmployeesDates__EmployeesProfiles (@EmployeesDates)
 	);
+	DECLARE @TerminationBenefitId INT = (SELECT [Lookup2Id] FROM dbo.[Resources] WHERE [Id] = @TerminationReasonId);
+	DECLARE @TerminationBenefitCode NVARCHAR (10) =  dal.fn_Lookup__Code(@TerminationBenefitId);
 	-- Get if Expat
 	DECLARE @CitizenshipId INT = (SELECT Lookup2Id FROM dbo.Agents WHERE [Id] = @EmployeeId);
 	DECLARE @CitizenshipCode NCHAR (3) = dal.fn_Lookup__Code(@CitizenshipId);

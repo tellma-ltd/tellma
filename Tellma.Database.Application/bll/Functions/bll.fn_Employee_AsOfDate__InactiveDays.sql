@@ -5,7 +5,12 @@
 )
 RETURNS INT
 BEGIN
-
+DECLARE @MinInactiveDays INT;
+DECLARE @Country NCHAR (2) = dal.fn_Settings__Country();
+SELECT @MinInactiveDays = CASE
+	WHEN @Country = N'SA' THEN 20
+	ELSE 30
+END;
 RETURN ISNULL((
 	SELECT SUM(E.[Direction] * (DATEDIFF(DAY,
 		E.[Time1],
@@ -21,6 +26,8 @@ RETURN ISNULL((
 	AND R.[Code] IN (N'UnpaidLeave', N'UnauthorizedLeave')
 	AND E.[AgentId] = @EmployeeId
 	AND E.[Time1] <= @AsOfDate
+	AND DATEDIFF(DAY, E.[Time1], E.[Time2]) > @MinInactiveDays
 	), 0)
+	
 END
 GO

@@ -874,7 +874,6 @@
     <Build Include="wiz\Stored Procedures\wiz.ToCashFromTradeReceivable.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToTradePayableFromCash.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions.sql" />
-    <Build Include="bll\Functions\bll.ft_Employees__MonthlyBenefits.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Deductions_SD.sql" />
     <Build Include="dbo\User Defined Types\dbo.PeriodBenefitsList.sql" />
     <Build Include="dbo\Functions\dbo.fn_FromDate_ToDate__WorkdaysText.sql" />
@@ -960,7 +959,6 @@
     <Build Include="dal\Functions\dal.ft_EmployeesDates__EmployeesProfiles.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdDateList.sql" />
     <Build Include="wiz\Stored Procedures\wiz.LongScript_History__Recover.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_V2_SA.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_AsOfDate__InactiveDays.sql" />
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate_Line__Balance.sql" />
     <Build Include="wiz\Stored Procedures\wiz.ToCashFromSalesInvoice.sql" />
@@ -990,6 +988,12 @@
     <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision_AE.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision_SA.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_EOS__Provision.sql" />
+    <Build Include="dbo\Functions\dbo.fn_MonthStart.sql" />
+    <Build Include="dbo\Functions\dbo.fn_MonthEnd.sql" />
+    <Build Include="dbo\User Defined Types\AgentIdResourceIdDateList.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Overtimes_SA.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Overtimes_ET.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees__Overtimes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

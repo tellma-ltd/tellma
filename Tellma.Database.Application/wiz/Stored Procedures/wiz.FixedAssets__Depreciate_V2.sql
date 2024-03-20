@@ -6,9 +6,11 @@
 AS
 BEGIN
 SET NOCOUNT ON;
+-- The first two lines are in preparation for depreciation in ET calendar. However, we still need to update the 
+-- rest of the script
+DECLARE @PeriodStart DATE = dbo.fn_MonthStart(@PostingDate); -- seed value changes in the loop
+DECLARE @PeriodEnd DATE = dbo.fn_MonthEnd(@PostingDate); -- fixed
 
-DECLARE @PeriodStart DATE = DATEFROMPARTS(YEAR(@PostingDate), MONTH(@PostingDate), 1); -- seed value changes in the loop
-DECLARE @PeriodEnd DATE = EOMONTH(@PostingDate); -- fixed
 DECLARE @MonthUnit INT = dal.fn_UnitCode__Id(N'mo');
 
 DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Concept] = N'PropertyPlantAndEquipment');

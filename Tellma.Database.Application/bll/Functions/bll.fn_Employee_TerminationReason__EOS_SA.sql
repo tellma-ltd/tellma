@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [bll].[fn_Employee_TerminationReason__EOS_SA]
 (
 	@EmployeeId INT,
-	@TerminationBenefitCode NVARCHAR (10)
+	@TerminationReasonId INT
 )
 RETURNS DECIMAL (19, 6)
 AS
@@ -11,6 +11,16 @@ BEGIN
 	@FromDate DATE,
 	@ToDate DATE,
 	@Result DECIMAL (19, 6);
+
+	DECLARE @ContractTypeId INT = (SELECT [Lookup1Id] FROM dbo.Resources WHERE [Id] = @TerminationReasonId);
+	DECLARE @ContractTypeCode NVARCHAR (50) = dal.fn_Lookup__Code(@ContractTypeId);
+
+	DECLARE @CitizenshipId INT = (SELECT Lookup2Id FROM dbo.Agents WHERE [Id] = @EmployeeId);
+	DECLARE @CitizenshipCode NCHAR (3) = dal.fn_Lookup__Code(@CitizenshipId);
+	DECLARE @IsDomestic BIT = IIF(@CitizenshipCode = N'SAU', 1, 0);
+
+	IF @IsDomestic = 0 AND @ContractTypeCode = N'Unlimited'
+		RETURN -2; -- Expact cannot have unlimited contract
 
 	SELECT @FromDate = FromDate, @ToDate = ToDate
 	FROM dbo.Agents
@@ -60,8 +70,9 @@ BEGIN
 		AND (E.[Time2] IS NULL OR E.[Time2] >= @ToDate)
 		AND L.[State] = 2
 		AND LD.[LineType] = 80
-		AND AC.[Concept] = N'WagesAndSalarie'
+		AND AC.[Concept] = N'WagesAndSalaries'
 		AND E.[DurationUnitId] = @Monthly AND R.[UnitId] = @Monthly
+		AND E.[NotedAgentId] = @EmployeeId
 		GROUP BY E.[CurrencyId]
 		HAVING  SUM(E.[Direction] * E.[MonetaryValue]) <> 0
 	)
@@ -73,6 +84,8 @@ BEGIN
 	ELSE
 		SET @Result = 0.5 * @GrossSalary * (@Years + @Months / 12.0 + @Days / 360.0); --print @result
 
+	DECLARE @TerminationBenefitId INT = (SELECT [Lookup2Id] FROM dbo.[Resources] WHERE [Id] = @TerminationReasonId);
+	DECLARE @TerminationBenefitCode NVARCHAR (10) =  dal.fn_Lookup__Code(@TerminationBenefitId);
 	SET @Result = CASE 
 		WHEN @TerminationBenefitCode = N'TB0' THEN 0
 		WHEN @TerminationBenefitCode = N'TB2' THEN @Result

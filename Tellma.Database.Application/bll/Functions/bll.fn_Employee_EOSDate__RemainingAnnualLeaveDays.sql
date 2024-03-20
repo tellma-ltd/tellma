@@ -1,12 +1,14 @@
 ﻿CREATE FUNCTION [bll].[fn_Employee_EOSDate__RemainingAnnualLeaveDays]
 (
 	@EmployeeId INT,
-	@EndOfServiceDate DATE
+	@EndOfServiceDate DATE,
+	@YearlyAccrual INT = 21,
+	@InactiveDays INT = 0
 )
 RETURNS DECIMAL (19, 6)
 BEGIN
-	DECLARE @CountryId NCHAR(2) = dal.[fn_Settings__Country]();
-	DECLARE @Calendar NCHAR (2) = 'GC';
+	DECLARE @CountryId NCHAR(2) = dal.fn_Settings__Country();
+	DECLARE @Calendar NCHAR (2) = dal.fn_Settings__Calendar();
 
 	DECLARE @JoiningDate DATE = dal.fn_Agent__FromDate(@EmployeeId);
 
@@ -21,11 +23,12 @@ BEGIN
 	WHERE L.[State] = 4
 	AND AC.[Concept] = N'CurrentProvisionsForEmployeeBenefits'
 	AND E.[AgentId] = @EmployeeId
-	AND E.[ResourceId] = @AnnualLeaveRS
-	AND L.[PostingDate] <= @EndOfServiceDate;
+	AND E.[ResourceId] = @AnnualLeaveRS;
+--	AND L.[PostingDate] <= @EndOfServiceDate; MA 2024-03-09. May include adjustments from a later date.
 
-	SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays(@CountryId, @Calendar, @JoiningDate, @EndOfServiceDate);
+	SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays(@JoiningDate, @EndOfServiceDate, @YearlyAccrual, @InactiveDays);
 	SELECT @AdditionalDays = ISNULL(@TotalAccruedLeaveDays, 0) - ISNULL(@TotalProvisioned, 0)
 
 	RETURN @AdditionalDays
 END
+GO
