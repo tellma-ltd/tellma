@@ -42,7 +42,7 @@ JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
-AND SIGN(BE.[Direction] * BE.[MonetaryValue]) > 0 AND SIGN(FE.[Direction]*FE.[MonetaryValue]) > 0
+AND SIGN(BE.[Direction] * BE.[MonetaryValue]) = SIGN(FE.[Direction]*FE.[MonetaryValue])
 AND BL.[State] >= 0;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)

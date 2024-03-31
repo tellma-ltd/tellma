@@ -82,6 +82,5 @@ WHERE FE.[Index] = @AccountEntryIndex
 AND FE.AgentId = @NullAgent
 AND ET.[Concept] = N'CapitalizationExpenseByNatureExtension';
 
-
 IF EXISTS(SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;

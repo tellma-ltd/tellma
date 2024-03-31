@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_Employee_EOS__Provision_SA]
+﻿CREATE FUNCTION [bll].[fn_Employee_AnnualLeave__Provision_ET]
 (
 	@EmployeeIds IdList READONLY,
 	@AsOfDate DATE
@@ -10,6 +10,7 @@ RETURNS @Result TABLE (
 	[ToDate] DATE,
 	[ServiceDaysLost] INT,
 	[Provision] DECIMAL (19, 6),
+	[Quantity] DECIMAL (19, 6),
 	[Years] INT,
 	[Months] INT,
 	[Days] INT,
@@ -22,9 +23,11 @@ RETURNS @Result TABLE (
 AS
 BEGIN
 	DECLARE
+	@MonthUnitId INT = dal.fn_UnitCode__Id(N'mo'),
 	@EmployeeAD INT = dal.fn_AgentDefinitionCode__Id(N'Employee'),
 	@BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary'),
-	@NotedAbsenceDays INT = 20; -- Number of absence days which disrupt service continuity
+	@NotedAbsenceDays INT = 30, -- Number of absence days which disrupt service continuity. This KSA value. Maybe it is the same for UAE
+	@YearlyAccrual INT = 16; -- number of days deserved 
 	
 	INSERT INTO @Result([EmployeeId], [FromDate], [ToDate], [ServiceDaysLost], [Provision])
 	SELECT [Id], [FromDate], @AsOfDate, 0, 0
@@ -34,7 +37,7 @@ BEGIN
 	AND (NOT EXISTS (SELECT * FROM @EmployeeIds) OR [Id] IN (SELECT [Id] FROM @EmployeeIds));
 
 	UPDATE R
-	SET 
+	SET
 		R.[BasicCurrencyId] = S.[CurrencyId0],
 		R.[CenterId] = S.[CenterId0],
 		R.[AgentId] = S.[AgentId0],
@@ -43,6 +46,39 @@ BEGIN
 	FROM @Result R
 	CROSS APPLY [bll].[ft_Employees_Period_EventFromModel_Salaries__Generate](@AsOfDate, @AsOfDate, @BasicSalaryRS, @EmployeeIds) S
 	WHERE R.[EmployeeId] = S.[NotedAgentId0];
+
+	DECLARE @GrossSalariesBenefits TABLE (
+		EmployeeId	INT ,
+		ResourceId INT,
+		CurrencyId NCHAR (3),
+		Benefit DECIMAL (19, 6)
+		PRIMARY KEY(EmployeeId, ResourceId)
+	);
+	INSERT INTO @GrossSalariesBenefits
+	SELECT [NotedAgentId0], [ResourceId0], [CurrencyId1], SUM([MonetaryValue1]) AS [Benefit]
+	FROM [bll].[ft_Employees_Period_EventFromModel_Salaries__Generate](@AsOfDate, @AsOfDate, NULL, @EmployeeIds) SS
+	JOIN dbo.Resources R ON R.[Id] = SS.[ResourceId0]
+	WHERE R.[UnitId] = @MonthUnitId
+	-- Ideally, an employee benefit need to have a lookup to select if included in Annual Leave provision
+	-- AND R.[Lookup8Id] = @Yes
+	GROUP BY [NotedAgentId0],  [ResourceId0], [CurrencyId1];
+
+	DECLARE @GrossSalaries TABLE (
+		EmployeeId	INT PRIMARY KEY,
+		AmountInBasicCurrency DECIMAL (19, 6)
+	);
+	INSERT INTO @GrossSalaries(EmployeeId, AmountInBasicCurrency)
+	SELECT R.[EmployeeId], SUM(bll.fn_ConvertCurrencies(@AsOfDate, T.[CurrencyId], R.[BasicCurrencyId], T.[Benefit]))
+	FROM @GrossSalariesBenefits T
+	JOIN @Result R ON R.[EmployeeId] = T.[EmployeeId]
+	GROUP BY R.[EmployeeId];
+
+	UPDATE R
+	SET
+		R.[Salary] = G.AmountInBasicCurrency
+	FROM @Result R
+	JOIN @GrossSalaries G ON G.[EmployeeId] = R.[EmployeeId];
+
 	-- Service discontinuity is noted if unpaid or breach for 20 days or more (got it from SA law)
 	WITH ServiceDaysLost AS (
 		SELECT E.[AgentId], 
@@ -72,48 +108,18 @@ BEGIN
 	
 	UPDATE @Result
 	SET
-		Years = dbo.fn_FromDate_ToDate__FullYears(@Calendar, FromDate, ToDate), 
-		Months = dbo.fn_FromDate_ToDate__ExtraFullMonths(@Calendar, FromDate, ToDate), 
+		[Years] = dbo.fn_FromDate_ToDate__FullYears(@Calendar, FromDate, ToDate), 
+		[Months] = dbo.fn_FromDate_ToDate__ExtraFullMonths(@Calendar, FromDate, ToDate), 
 		[Days] = dbo.fn_FromDate_ToDate__ExtraFullDays(@Calendar, FromDate, ToDate);
 	
-	-- Get the gross salary		
-	DECLARE	@Monthly INT = dal.fn_UnitCode__Id(N'mo');
-
-	WITH GrossSalaries AS (
-		SELECT E.[NotedAgentId], SUM(
-			bll.fn_ConvertCurrencies(@AsOfDate, 
-				E.[CurrencyId], T.[BasicCurrencyId], E.[Direction] * E.[MonetaryValue])) AS [Amount]
-		FROM dbo.Entries E
-		JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
-		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-		JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
-		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
-		JOIN @Result T ON T.[EmployeeId] = E.[NotedAgentId]
-		WHERE E.[Time1] <= @AsOfDate
-		AND (E.[Time2] IS NULL OR E.[Time2] >= @AsOfDate)
-		AND L.[State] = 2
-		AND LD.[LineType] = 80
-		AND AC.[Concept] = N'WagesAndSalaries'
-		AND E.[DurationUnitId] = @Monthly AND R.[UnitId] = @Monthly
-		GROUP BY E.[NotedAgentId]
-		HAVING  SUM(E.[Direction] * E.[MonetaryValue]) <> 0
-	)
-	UPDATE R
+	UPDATE @Result
 	SET
-		R.[Salary] = GS.[Amount]
-	FROM @Result R
-	JOIN GrossSalaries GS ON GS.[NotedAgentId] = R.[EmployeeId];
+		[Quantity] = (@YearlyAccrual + [Years] / 2) * ([Years] + [Months] / 12.0 + [Days] / 360.0)
 
 	UPDATE @Result
-	SET	[Provision] = CASE
-			WHEN Years >= 5 THEN
-				0.5 * Salary * 5 + Salary * (Years - 5 + Months / 12.0 + [Days] / 360.0)
-			ELSE
-				0.5 * Salary * (Years + Months / 12.0 + [Days] / 360.0)
-			END;
-
-	UPDATE @Result SET [Provision] = ROUND([Provision], 2);
+		SET
+			[Quantity] = ROUND([Quantity], 4),
+			[Provision] = ROUND([Salary] * [Quantity] / 30.0, 2);
 
 	RETURN
 END
