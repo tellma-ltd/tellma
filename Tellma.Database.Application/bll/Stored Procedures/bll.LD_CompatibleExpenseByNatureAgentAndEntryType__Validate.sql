@@ -15,7 +15,8 @@ SET NOCOUNT ON;
 INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'When the expense is related to a sale, the purpose should be cost of sales'), (0, N'ar',  N'عندما يكون المصروف مرتبطا ببيع، فإن الهدف ينبغي أن يكون تكلفة مبيعات '),
 (1, N'en',  N'When the expense is unrelated to anything, the purpose should be Admin/Distribution/Other'), (1, N'ar',  N'عندما يكون المصروف غير مرتبط بشيئ، فإن الهدف لا بد أن يكون إداريا أو تسويقيا'),
-(2, N'en',  N'When the expense is related to {0}, the purpose must be capitalization'), (2, N'ar',  N'عندما يكون المصروف مرتبطا ب{0}، فإن الهدف لا بد أن يكون الرسملة');
+(2, N'en',  N'When the expense is related to {0}, the purpose must be capitalization'), (2, N'ar',  N'عندما يكون المصروف مرتبطا ب{0}، فإن الهدف لا بد أن يكون الرسملة'),
+(3, N'en',  N'When the expense is related to {0}, the purpose cannot be capitalization'), (3, N'ar',  N'عندما يكون المصروف مرتبطا ب{0}، فإن الهدف لا يمكن أن يكون الرسملة');
 
 DECLARE @NullAgent INT = dal.fn_AgentDefinition_Code__Id(N'Null', N'Null');
 
@@ -63,6 +64,23 @@ WHERE FE.[Index] = @AccountEntryIndex
 AND FE.AgentId <> @NullAgent
 AND AD.[Code] NOT IN (N'Donor', N'TradeReceivableAccount')
 AND ET.[Concept] <> N'CapitalizationExpenseByNatureExtension';
+
+INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+SELECT DISTINCT TOP (@Top)
+	'[' + CAST(FD.[Index] AS NVARCHAR (255)) + '].Lines[' + CAST(FL.[Index]  AS NVARCHAR(255)) + '].Entries[' + CAST(@ErrorEntryIndex AS NVARCHAR(255)) + '].' + @ErrorFieldName,
+dal.fn_ErrorNames_Index___Localize(@ErrorNames, 3) AS ErrorMessage,
+dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition
+FROM @Documents FD
+JOIN @Lines FL ON FL.[DocumentIndex] = FD.[Index]
+JOIN @Entries FE ON FE.[LineIndex] = FL.[Index] AND FE.[DocumentIndex] = FL.[DocumentIndex]
+JOIN dbo.Accounts A ON FE.[AccountId] =  A.[Id]
+JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+JOIN dbo.Agents AG ON AG.[Id] = FE.[AgentId]
+JOIN dbo.AgentDefinitions AD ON AD.[Id] = AG.[DefinitionId]
+JOIN dbo.EntryTypes ET ON ET.[Id] = FE.[EntryTypeId]
+WHERE FE.[Index] = @AccountEntryIndex
+AND FE.AgentId = @NullAgent
+AND ET.[Concept] = N'CapitalizationExpenseByNatureExtension';
 
 IF EXISTS(SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;

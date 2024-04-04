@@ -994,6 +994,11 @@
     <Build Include="bll\Functions\bll.ft_Employees__Overtimes_SA.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Overtimes_ET.sql" />
     <Build Include="bll\Functions\bll.ft_Employees__Overtimes.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_SA.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_AE.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_ET.sql" />
+    <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_LB.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
