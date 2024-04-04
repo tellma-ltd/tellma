@@ -30,7 +30,7 @@ namespace Tellma.Client
 
         //    // Prepare the message
         //    var method = HttpMethod.Get;
-        //    var msg = new HttpRequestMessage(method, urlBldr.Uri);
+        //    using var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
         //    // Send the message
         //    using var httpResponse = await SendAsync(msg, request, cancellation).ConfigureAwait(false);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -289,7 +290,7 @@ namespace Tellma.Client
 
             // Prepare the message
             var method = HttpMethod.Get;
-            var msg = new HttpRequestMessage(method, url);
+            using var msg = new HttpRequestMessage(method, url);
 
             // Send the message
             using var httpResponse = await SendAsync(msg).ConfigureAwait(false);
