@@ -19,7 +19,7 @@ namespace Tellma.Client
             // Prepare the request
             var urlBldr = GetActionUrlBuilder("ping");
             var method = HttpMethod.Get;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
             // Send the request
             using var httpResponse = await SendAsync(msg, req, cancellation).ConfigureAwait(false);
@@ -31,7 +31,7 @@ namespace Tellma.Client
             // Prepare the request
             var urlBldr = GetActionUrlBuilder("client");
             var method = HttpMethod.Get;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
             // Send the request
             using var httpResponse = await SendAsync(msg, req, cancellation).ConfigureAwait(false);

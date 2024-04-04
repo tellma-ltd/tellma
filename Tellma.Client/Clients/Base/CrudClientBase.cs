@@ -51,7 +51,7 @@ namespace Tellma.Client
 
             // Prepare the message
             var method = HttpMethod.Post;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri)
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri)
             {
                 Content = ToJsonContent(entitiesForSave)
             };
@@ -101,7 +101,7 @@ namespace Tellma.Client
 
             // Prepare the message
             var method = HttpMethod.Delete;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace Tellma.Client
 
             // Prepare the message
             var method = HttpMethod.Delete;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri);
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri);
 
             // Send the message
             using var httpResponse = await SendAsync(msg, request).ConfigureAwait(false);
@@ -201,7 +201,7 @@ namespace Tellma.Client
 
             // Prepare the message
             var method = HttpMethod.Put;
-            var msg = new HttpRequestMessage(method, urlBldr.Uri)
+            using var msg = new HttpRequestMessage(method, urlBldr.Uri)
             {
                 Content = ToJsonContent(ids)
             };
