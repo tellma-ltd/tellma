@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tellma.Utilities.Email;
 using Tellma.Utilities.Common;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Tellma.Utilities.Logging
 {
@@ -77,7 +78,7 @@ namespace Tellma.Utilities.Logging
                     bldr.Append("&nbsp;");
                     i++;
                 }
-                
+
                 bldr.Append($"{HtmlEncoder.Default.Encode(line.Trim())}<br/>");
             }
             bldr.Append(@"</span>");
@@ -87,13 +88,69 @@ namespace Tellma.Utilities.Logging
 
         private async Task TrySendEmail(EmailToSend email)
         {
+            // For the purpose of not sending duplicate emails too frequently,
+            // we remember the last X emails that are less than Y minutes old
+            const int MAX_EMAILS = 20; // X
+            const int MAX_MINUTES = 60; // Y
+
             try
             {
-                await _provider.EmailSender().SendAsync(email);
+                bool send;
+                lock (_lastEmailsSentLock)
+                {
+                    // We allow repeating emails after 1 hour
+                    var nMinutesAgo = DateTimeOffset.UtcNow.AddMinutes(-MAX_MINUTES);
+                    _lastEmailsSent.RemoveWhere(e => e.SentAt < nMinutesAgo);
+
+                    // If we already sent the same email within the last hour, don't send again
+                    var oldEmail = _lastEmailsSent.FirstOrDefault(e => SimilarEmails(e.Email, email));
+                    if (oldEmail != null)
+                    {
+                        send = false;
+                    }
+                    else
+                    {
+                        send = true;
+                        _lastEmailsSent.Add(new PreviousEmail
+                        {
+                            Email = email,
+                            SentAt = DateTimeOffset.UtcNow
+                        });
+                    }
+
+                    _lastEmailsSent = _lastEmailsSent
+                        .OrderByDescending(e => e.SentAt)
+                        .Take(MAX_EMAILS)
+                        .ToHashSet();
+                }
+
+                if (send)
+                {
+                    await _provider.EmailSender().SendAsync(email);
+                }
             }
             // If we attempt to email an exception and the email sender itself throws
             // an exception then we just throw our hands up and forget about it.
             catch { }
+        }
+
+        private static bool SimilarEmails(EmailToSend email1, EmailToSend email2)
+        {
+            // Compare titles and recipients
+            return email1 != null && email2 != null &&
+                email1.Subject == email2.Subject &&
+                !email1.To.Except(email2.To).Any() &&
+                !email2.To.Except(email1.To).Any();
+        }
+
+        private readonly object _lastEmailsSentLock = new();
+
+        private HashSet<PreviousEmail> _lastEmailsSent = [];
+
+        private class PreviousEmail
+        {
+            public EmailToSend Email { get; set; }
+            public DateTimeOffset SentAt { get; set; }
         }
     }
 }
