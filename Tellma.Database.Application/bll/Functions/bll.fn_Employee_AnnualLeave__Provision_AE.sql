@@ -116,10 +116,31 @@ BEGIN
 	SET
 		[Quantity] = @YearlyAccrual * ([Years] + [Months] / 12.0 + [Days] / 360.0);
 
-	UPDATE @Result
-		SET
-			[Quantity] = ROUND([Quantity], 4),
-			[Provision] = ROUND([Salary] * [Quantity] / 30.0, 2);
+	DECLARE @AnnualLeaveBenefitRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'AnnualLeave');
+	DECLARE @Usage TABLE (
+		[EmployeeId]	INT PRIMARY KEY,
+		[Quantity]		DECIMAL (19, 6)
+	)
+	INSERT INTO @Usage
+	SELECT E.[AgentId], SUM(E.[Direction] * E.[Quantity])
+	FROM dbo.Entries E
+	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	WHERE L.[State] = 4
+	AND E.[Direction] = 1 -- for usage
+	AND L.[PostingDate] <= @AsOfDate
+	AND AC.[Concept] = N'CurrentProvisionsForEmployeeBenefits'
+	AND E.[ResourceId] = @AnnualLeaveBenefitRS
+	AND E.[AgentId] IN (SELECT [EmployeeId] FROM @Result)
+	GROUP BY E.[AgentId];
+
+	UPDATE R
+	SET  [Quantity] = ROUND(R.[Quantity] - ISNULL(U.[Quantity], 0), 4)
+	FROM @Result R
+	LEFT JOIN @Usage U ON U.[EmployeeId] = R.[EmployeeId];
+
+	UPDATE @Result SET [Provision] = ROUND([Salary] * [Quantity] / 30.0, 2);
 
 	RETURN
 END

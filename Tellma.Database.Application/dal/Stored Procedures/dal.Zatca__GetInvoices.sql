@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 17038); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 20891); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -128,7 +128,7 @@ BEGIN
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
 	AND (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
-
+	AND (E.MonetaryValue <> 0 OR E.[NotedAmount] <> 0)
     --=-=-= 3 -Regular Invoice Lines =-=-=--
     SELECT TOP 1
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
