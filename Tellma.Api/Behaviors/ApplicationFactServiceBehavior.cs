@@ -1324,7 +1324,7 @@ namespace Tellma.Api.Behaviors
             globalVars.Add("$BuildingNumber", new EvaluationVariable(settings.BuildingNumber));
             globalVars.Add("$Street", new EvaluationVariable(settings.Street));
             globalVars.Add("$Street2", new EvaluationVariable(settings.Street2));
-            globalVars.Add("$Street2", new EvaluationVariable(settings.Street2));
+            globalVars.Add("$Street3", new EvaluationVariable(settings.Street3));
             globalVars.Add("$SecondaryNumber", new EvaluationVariable(settings.SecondaryNumber));
             globalVars.Add("$District", new EvaluationVariable(settings.District));
             globalVars.Add("$District2", new EvaluationVariable(settings.District2));
