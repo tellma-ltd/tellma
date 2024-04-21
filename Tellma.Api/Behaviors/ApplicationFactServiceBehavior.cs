@@ -1313,10 +1313,31 @@ namespace Tellma.Api.Behaviors
         {
             // var settings = await Settings(cancellation);
             var settings = (await _settingsCache.GetSettings(tenantId, settingsVersion, cancellation)).Data;
+ 
             globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
             globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
             globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
+            globalVars.Add("$CompanyName", new EvaluationVariable(settings.CompanyName));
+            globalVars.Add("$CompanyName2", new EvaluationVariable(settings.CompanyName2));
+            globalVars.Add("$CompanyName3", new EvaluationVariable(settings.CompanyName3));
+
+            globalVars.Add("$BuildingNumber", new EvaluationVariable(settings.BuildingNumber));
+            globalVars.Add("$Street", new EvaluationVariable(settings.Street));
+            globalVars.Add("$Street2", new EvaluationVariable(settings.Street2));
+            globalVars.Add("$Street3", new EvaluationVariable(settings.Street3));
+            globalVars.Add("$SecondaryNumber", new EvaluationVariable(settings.SecondaryNumber));
+            globalVars.Add("$District", new EvaluationVariable(settings.District));
+            globalVars.Add("$District2", new EvaluationVariable(settings.District2));
+            globalVars.Add("$District3", new EvaluationVariable(settings.District3));
+            globalVars.Add("$PostalCode", new EvaluationVariable(settings.PostalCode));
+            globalVars.Add("$City", new EvaluationVariable(settings.City));
+            globalVars.Add("$City2", new EvaluationVariable(settings.City2));
+            globalVars.Add("$City3", new EvaluationVariable(settings.City3));
+
+            globalVars.Add("ZatcaEnvironment", new EvaluationVariable(settings.ZatcaEnvironment));
+
             globalVars.Add("$TaxIdentificationNumber", new EvaluationVariable(settings.TaxIdentificationNumber));
+            globalVars.Add("$CommercialRegistrationNumber", new EvaluationVariable(settings.CommercialRegistrationNumber));
         }
 
         public async Task SetPrintingFunctions(int tenantId, string settingsVersion, Dictionary<string, EvaluationFunction> localFuncs, Dictionary<string, EvaluationFunction> globalFuncs, CancellationToken cancellation)
