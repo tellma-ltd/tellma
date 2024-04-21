@@ -4,7 +4,7 @@
 	@AsOfDate DATE
 )
 RETURNS @Result TABLE (
-	[EmployeeId] INT,
+	[EmployeeId] INT PRIMARY KEY,
 	[BasicCurrencyId] NCHAR (3),
 	[FromDate]	DATE,
 	[ToDate] DATE,
@@ -27,13 +27,13 @@ BEGIN
 	@EmployeeAD INT = dal.fn_AgentDefinitionCode__Id(N'Employee'),
 	@BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary'),
 	@NotedAbsenceDays INT = 30, -- Number of absence days which disrupt service continuity. This KSA value. Maybe it is the same for UAE
-	@YearlyAccrual INT = 24; -- number of days deserved 
+	@YearlyAccrual INT = 24; -- number of days deserved int2. Default should be 30
 	
 	INSERT INTO @Result([EmployeeId], [FromDate], [ToDate], [ServiceDaysLost], [Provision])
 	SELECT [Id], [FromDate], @AsOfDate, 0, 0
 	FROM dbo.Agents
 	WHERE [DefinitionId] = @EmployeeAD
-	AND [IsActive] = 1
+--	AND [IsActive] = 1
 	AND (NOT EXISTS (SELECT * FROM @EmployeeIds) OR [Id] IN (SELECT [Id] FROM @EmployeeIds));
 
 	UPDATE R
@@ -112,9 +112,12 @@ BEGIN
 		[Months] = dbo.fn_FromDate_ToDate__ExtraFullMonths(@Calendar, FromDate, ToDate), 
 		[Days] = dbo.fn_FromDate_ToDate__ExtraFullDays(@Calendar, FromDate, ToDate);
 	
-	UPDATE @Result
+	UPDATE R
 	SET
-		[Quantity] = @YearlyAccrual * ([Years] + [Months] / 12.0 + [Days] / 360.0);
+		[Quantity] = ISNULL(AG.Int2, @YearlyAccrual) * ([Years] + [Months] / 12.0 + [Days] / 360.0)
+	FROM @Result R
+	JOIN dbo.Agents AG ON AG.[Id] = R.[EmployeeId]
+
 
 	DECLARE @AnnualLeaveBenefitRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'AnnualLeave');
 	DECLARE @Usage TABLE (

@@ -130,7 +130,7 @@ BEGIN
 	AND (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
 	AND (E.MonetaryValue <> 0 OR E.[NotedAmount] <> 0)
     --=-=-= 3 -Regular Invoice Lines =-=-=--
-    SELECT TOP 1
+    SELECT -- TOP 1. MA: 2024-04-21 Commented on this date.
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
         CASE
@@ -197,7 +197,7 @@ BEGIN
 	Dr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
 	  Cr. Account Receivable: SI
    */
-    SELECT TOP 1
+    SELECT --TOP 1 MA: 2024-04-21 Commented on this date.
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
 		-- remove any field which is pure computation

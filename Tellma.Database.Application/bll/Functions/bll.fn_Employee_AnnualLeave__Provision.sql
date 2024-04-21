@@ -4,7 +4,7 @@
 	@AsOfDate DATE
 )
 RETURNS @Result TABLE (
-	[EmployeeId] INT,
+	[EmployeeId] INT PRIMARY KEY,
 	[BasicCurrencyId] NCHAR (3),
 	[FromDate]	DATE,
 	[ToDate] DATE,

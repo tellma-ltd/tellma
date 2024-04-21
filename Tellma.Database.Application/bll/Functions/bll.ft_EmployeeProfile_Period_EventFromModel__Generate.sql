@@ -1,11 +1,11 @@
 ﻿CREATE FUNCTION [bll].[ft_EmployeeProfile_Period_EventFromModel__Generate]
-(
+( -- Not optimal. Use dal.ft_EmployeesDates__EmployeesProfiles instead
 	@EmployeeId INT,
 	@AsOfDate DATE
 )
 	RETURNS @EmployeeProfiles TABLE
 	(
-		[EmployeeId]		INT,
+		[EmployeeId]		INT PRIMARY KEY,
 		[CenterId]			INT,
 		[AgentId]			INT,
 		[NotedResourceId]	INT,

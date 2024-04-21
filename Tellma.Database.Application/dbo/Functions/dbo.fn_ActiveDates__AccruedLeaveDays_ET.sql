@@ -14,6 +14,6 @@ BEGIN
 	SET @FromDate = DATEADD(MONTH, @FullMonths, @FromDate);
 	DECLARE @FullDays INT =  dbo.fn_FromDate_ToDate__FullDays(@Calendar, @FromDate, @ToDate); 
 	RETURN
-		(@YearlyAccrual + @FullYears / 2) * (@FullYears + @FullMonths / 12.0 + @FullDays / 360.0)
+		(ISNULL(@YearlyAccrual, 16) + @FullYears / 2) * (@FullYears + @FullMonths / 12.0 + @FullDays / 360.0)
 END
 GO

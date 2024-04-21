@@ -25,7 +25,7 @@
 		[Direction0]				SMALLINT,
 		[AccountId0]				INT,
 		[AgentId0]					INT,
-		[NotedAgentId0]				INT,
+		[NotedAgentId0]				INT INDEX IX_NotedAgentId0 ([NotedAgentId0]),
 		[ResourceId0]				INT,
 		[CenterId0]					INT,
 		[CurrencyId0]				NCHAR (3),
@@ -425,6 +425,7 @@
 	BEGIN
 	DECLARE
 	@EntryIndex	INT = 0,
+	@WagesAndSalariesEntryTypeId INT = dal.fn_EntryTypeConcept__Id(N'WagesAndSalaries'),
 	@Monthly INT = dal.fn_UnitCode__Id(N'mo'),
 	@ContractLineDefinitionId INT =  dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccruals.M'),
 	@ContractAmendmentLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitsExpenseFromAccrualsAmended.M'),
@@ -437,27 +438,23 @@
 	IF @ContractAmendmentLineDefinitionId <> 0
 	BEGIN
 		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
-		--IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
 		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
 	END
 
-	DECLARE @Hour INT = dal.fn_UnitCode__Id(N'hr'), @Day INT = dal.fn_UnitCode__Id(N'd');
 	DECLARE @LdEntryCount INT = (SELECT COUNT(*) FROM LineDefinitionEntries WHERE [LineDefinitionId] = @ContractLineDefinitionId);
 
 	-- @T splits any time limited line into two lines
 	DECLARE @T TABLE (
 		[Id]	INT IDENTITY PRIMARY KEY,
 		[LineKey] INT, [EntryIndex] INT, 
-		[DurationUnitId] INT, --[Decimal1] DECIMAL (19, 6), 
+		[DurationUnitId] INT,
 		[Time1] DATE, [Time2] DATE,
 		[Direction] SMALLINT, [AccountId] INT, [CenterId] INT, [AgentId] INT, [ResourceId] INT, [UnitId] INT, [CurrencyId] NCHAR (3),
 		[NotedAgentId] INT, [NotedResourceId] INT, [EntryTypeId] INT,
 		[Quantity] DECIMAL (19,4), [MonetaryValue] DECIMAL (19,4), [Value] DECIMAL (19,4), [NotedAmount] DECIMAL (19,4)
-	--	INDEX ([LineKey], [Time1])
-		--UNIQUE ([LineKey], [EntryIndex], [Time1], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]) -- MA: added 2023-03-24 because they were changing after contract termination
 	);
 	WITH FilteredLines AS (
-		SELECT DISTINCT L.[LineKey]--, L.[Decimal1]
+		SELECT DISTINCT L.[LineKey]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
@@ -465,19 +462,14 @@
 		AND (L.[State] = 2)
 		AND (E.[DurationUnitId] = @Monthly) -- Should be moved to the line level, and renamed to @FrequencyId
 		-- next line is needed when terminating contracts but not when ag salaries
-		--AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day))
 		AND (E.[Index] = @EntryIndex) -- Primary entry whose data needs to be filtered
 		AND (E.[Time1] <= @ToDate)
 		AND (ISNULL(E.[Time2], '9999-12-31') >= @FromDate)
-		--AND (@AgentId IS NULL OR AgentId = @AgentId)
 		AND (@ResourceId IS NULL OR ResourceId = @ResourceId)
---		AND (@NotedAgentId IS NULL OR NotedAgentId = @NotedAgentId)
 		AND (NOT EXISTS (SELECT * FROM @EmployeeIds) OR (NotedAgentId IN (SELECT [Id] FROM @EmployeeIds)))
-		--AND (@NotedResourceId IS NULL OR NotedResourceId = @NotedResourceId)
-		--AND (@CenterId IS NULL OR CenterId = @CenterId)
 	),--select * from FilteredLines
 	FilteredEntries AS  (
-		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index] , E.[DurationUnitId], --FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index] , E.[DurationUnitId],
 			IIF(E.[Time1]<= @FromDate, @FromDate, E.[Time1]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			[Quantity], [MonetaryValue], [Value], [NotedAmount]
@@ -488,7 +480,7 @@
 															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		UNION ALL
-		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index], E.[DurationUnitId], --FL.[Decimal1],
+		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index], E.[DurationUnitId],
 			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
 			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			- [Quantity] AS [Quantity], - [MonetaryValue] AS [MonetaryValue], - [Value] AS [Value], - [NotedAmount] AS [NotedAmount]
@@ -497,14 +489,12 @@
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
 															@OldContractAmendmentLineDefinitionId)
---		MA: 2023-10-16. The following line was commented out because it was causing an overflow. Rewrote the logic
---		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		AND L.[State] = 2 AND ISNULL(E.[Time2], '9999-12-31') < @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 	) --  select * from FilteredEntries 
-	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], --[Decimal1], 
+	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId],
 		[Time1],[Direction],[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Time2], [Quantity], [MonetaryValue], [Value], [NotedAmount])
-	SELECT [LineKey], [Index], [DurationUnitId], --MAX([Decimal1]) AS [Decimal1], 
+	SELECT [LineKey], [Index], [DurationUnitId],
 		[Time1], [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		DATEADD(DAY, -1, LEAD([Time1]) OVER (PARTITION BY [LineKey], [Index], [DurationUnitId], [Direction], [AccountId], [CenterId], [AgentId],
 											[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId] 
@@ -530,8 +520,6 @@
 		GROUP BY --[LineId], 
 			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], Direction, AccountId, CenterId, AgentId, ResourceId, UnitId, [CurrencyId], NotedAgentId, NotedResourceId, EntryTypeId
 	) AFE -- Aggregated filtered entries. To act on the total resulting entries
-	-- MA: next line is helpful to know which employees are causing anmalies
-	-- select ISNULL(NotedAgentId, AgentId), sum(Direction*[Value]) from @T  group by ISNULL(NotedAgentId, AgentId) Having Sum([Direction]*[Value]) <> 0
 	DELETE FROM @T
 	WHERE [Time2] < [Time1]
 	OR [Id] IN ( -- If a workflow (LineKey) adds up to zero, for a period [Time1, *], remove ALL entries
@@ -544,8 +532,6 @@
 			HAVING SUM([MonetaryValue]) = 0
 		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
 	)
-	-- MA: 2023-07-20, commented because it caused errors in July SS Contribution for Tenant (303)
-	-- MA: 2023-09-01, uncommented because it is needed to remove 0 results for amendments starting beginning of month
 	OR [Id] IN (
 		SELECT [Id]
 		FROM @T T1
@@ -554,7 +540,7 @@
 			FROM @T
 			WHERE [MonetaryValue] <> 0
 		) T2 ON T2.[LineKey] = T1.[LineKey] AND T2.[Time1] = T1.[Time1] AND ISNULL(T2.[Time2], '99991231') = ISNULL(T1.[Time2], '99991231')
-			AND T2.[EntryIndex] = T1.[EntryIndex] --  MA: 2023-09-01 Added to mitigate the SS Contribution 
+			AND T2.[EntryIndex] = T1.[EntryIndex]
 		WHERE [MonetaryValue] = 0
 	);
 --	select * from @T   order by LineKey, time1, entryIndex; 
@@ -595,8 +581,8 @@
 
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [Decimal1])
 	SELECT DISTINCT
-		ROW_NUMBER () OVER(--PARTITION BY T2.[EntryIndex]
-			ORDER BY T.[Time1], T.[LineKey] --, T2.[EntryIndex]
+		ROW_NUMBER () OVER(
+			ORDER BY T.[Time1], T.[LineKey]
 		) - 1 AS [LineIndex], 0 AS [DocumentIndex],  0 AS [Id], LDLK.[Decimal1]
 	FROM @T T
 	JOIN dbo.[LineDefinitionLineKeys] LDLK ON LDLK.[Id] = T.[LineKey]

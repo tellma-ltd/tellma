@@ -17,8 +17,7 @@ AS
 
 	DECLARE @CurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'CurrentAccruedIncome');
 	DECLARE @NoncurrentAccruedIncome HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'NoncurrentAccruedIncome');
-	DECLARE @PeriodUnitId INT =
-		IIF (dal.fn_Settings__Calendar() = 'GC', dal.fn_UnitCode__Id(N'mo'), dal.fn_UnitCode__Id(N'emo'));
+	--DECLARE @PeriodUnitId INT =	IIF (dal.fn_Settings__Calendar() = 'GC', dal.fn_UnitCode__Id(N'mo'), dal.fn_UnitCode__Id(N'emo'));
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT DISTINCT TOP (@Top)
@@ -40,8 +39,10 @@ AS
 		ON DLDE.[DocumentIndex] = FL.[DocumentIndex] AND DLDE.[LineDefinitionId] = FL.[DefinitionId] AND DLDE.[EntryIndex] = FE.[Index]
 	WHERE FE.[Index] = @AccountEntryIndex
 	AND (
-		FE.[Time1] < dbo.fn_PeriodStart(@PeriodUnitId, FL.[PostingDate]) OR
-		FE.[Time2] > dbo.fn_PeriodEnd(@PeriodUnitId, FL.[PostingDate])
+		--FE.[Time1] < dbo.fn_PeriodStart(@PeriodUnitId, FL.[PostingDate]) OR
+		--FE.[Time2] > dbo.fn_PeriodEnd(@PeriodUnitId, FL.[PostingDate])
+		FE.[Time1] < dbo.fn_MonthStart(FL.[PostingDate]) OR
+		FE.[Time2] > dbo.fn_MonthEnd(FL.[PostingDate])
 	);
 
 	IF EXISTS(SELECT * FROM @ValidationErrors)

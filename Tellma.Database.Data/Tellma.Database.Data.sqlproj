@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Provisioning\000\a_Declarations.sql" />
+    <None Include="XMLFile1.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Provisioning\000\b_AdminUser.sql" />

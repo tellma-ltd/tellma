@@ -24,11 +24,11 @@ BEGIN
 	AND AC.[Concept] = N'CurrentProvisionsForEmployeeBenefits'
 	AND E.[AgentId] = @EmployeeId
 	AND E.[ResourceId] = @AnnualLeaveRS;
---	AND L.[PostingDate] <= @EndOfServiceDate; MA 2024-03-09. May include adjustments from a later date.
 
+	SELECT @YearlyAccrual = [Int2] FROM dbo.Agents WHERE [Id] = @EmployeeId;
 	SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays(@JoiningDate, @EndOfServiceDate, @YearlyAccrual, @InactiveDays);
 	SELECT @AdditionalDays = ISNULL(@TotalAccruedLeaveDays, 0) - ISNULL(@TotalProvisioned, 0)
 
-	RETURN @AdditionalDays
+	RETURN @AdditionalDays;
 END
 GO

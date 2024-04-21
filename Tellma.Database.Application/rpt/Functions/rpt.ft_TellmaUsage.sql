@@ -2,7 +2,7 @@
 )
 RETURNS @returntable TABLE
 (
-	[ComponentType] NVARCHAR (8),
+	[ComponentType] NVARCHAR (10),
 	[Id]	INT,
 	[Component] NVARCHAR (255),
 	[Source] NVARCHAR (255),
@@ -268,9 +268,85 @@ JOIN (
 		WHEN [Name] = N'Master Screen' THEN N'Master'
 	END [ComponentType], [Decimal1]
 	FROM dbo.Resources
-	WHERE [DefinitionId] = dal.fn_ResourceDefinitionCode__Id(N'TellmaComponents')
+	WHERE [DefinitionId] = dal.fn_ResourceDefinitionCode__Id(N'TellmaComponents.Free')
 	AND [Name] IN (N'Document', N'Report', N'Tab', N'Template',  N'User - Regular',  N'User - Self Service', N'Master Screen')
-) TC ON TC.[ComponentType] = R.[ComponentType] OR (TC.[ComponentType] = N'Master' AND R.[ComponentType] IN (N'Resource', N'Agent'))
+) TC ON TC.[ComponentType] = R.[ComponentType] OR (TC.[ComponentType] = N'Master' AND R.[ComponentType] IN (N'Resource', N'Agent'));
+
+-- Free reports
+WITH FreeReportDefinitions AS (
+	SELECT [Id]
+	FROM 
+	dbo.ReportDefinitions
+	WHERE [Code] LIKE '%.Free'
+)
+UPDATE R
+SET [ComponentType] =  N'FreeReport',
+	[Price] = 0
+FROM @returntable R
+JOIN FreeReportDefinitions RD ON RD.[Id] = R.[Id]
+WHERE R.[ComponentType] = N'Report';
+
+-- Free tabs
+WITH FreeLineDefinitions AS (
+	SELECT [Id]
+	FROM 
+	dbo.LineDefinitions
+	WHERE [Code] LIKE '%.Free'
+)
+UPDATE R
+SET [ComponentType] =  N'Free Tab',
+	[Price] = 0
+FROM @returntable R
+JOIN FreeLineDefinitions LD ON LD.[Id] = R.[Id]
+WHERE R.[ComponentType] = N'Tab';
+
+-- Free templates
+WITH FreeTemplates AS (
+	SELECT [Id], [Name]
+	FROM 
+	dbo.EmailTemplates
+	WHERE [Code] LIKE '%.Free'
+	UNION ALL
+	SELECT [Id], [Name]
+	FROM 
+	dbo.PrintingTemplates
+	WHERE [Code] LIKE '%.Free'
+)
+UPDATE R
+SET [ComponentType] =  N'Free Temp',
+	[Price] = 0
+FROM @returntable R
+JOIN FreeTemplates TD ON TD.[Id] = R.[Id] AND TD.[Name] = R.[Component]
+WHERE R.[ComponentType] = N'Template';
+
+-- Free agents
+WITH FreeAgentDefinitions AS (
+	SELECT [Id]
+	FROM 
+	dbo.AgentDefinitions
+	WHERE [Code] LIKE '%.Free'
+)
+UPDATE R
+SET [ComponentType] = N'Free Agent',
+	[Price] = 0
+FROM @returntable R
+JOIN FreeAgentDefinitions AD ON AD.[Id] = R.[Id]
+WHERE R.[ComponentType] = N'Agent';
+
+-- Free resources
+WITH FreeResourceDefinitions AS (
+	SELECT [Id]
+	FROM 
+	dbo.ResourceDefinitions
+	WHERE [Code] LIKE '%.Free'
+)
+UPDATE R
+SET [ComponentType] =  N'Free Rsrce',
+	[Price] = 0
+FROM @returntable R
+JOIN FreeResourceDefinitions RD ON RD.[Id] = R.[Id]
+WHERE R.[ComponentType] = N'Resource';
 
 RETURN
 END
+GO

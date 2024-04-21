@@ -30,7 +30,7 @@ BEGIN
 	SELECT [Id], [FromDate], @AsOfDate, 0, 0
 	FROM dbo.Agents
 	WHERE [DefinitionId] = @EmployeeAD
-	AND [IsActive] = 1
+--	AND [IsActive] = 1
 	AND (NOT EXISTS (SELECT * FROM @EmployeeIds) OR [Id] IN (SELECT [Id] FROM @EmployeeIds));
 
 	UPDATE R
