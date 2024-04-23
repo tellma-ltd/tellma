@@ -14,8 +14,8 @@ DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id
 DECLARE @Monthly INT = dal.fn_UnitCode__Id(N'mo');
 DECLARE @PostingDate DATE = (SELECT TOP 1 [PostingDate] FROM @Documents);
 
-DECLARE @PeriodEnd DATE = dbo.fn_MonthStart(@PostingDate);
-DECLARE @PeriodStart DATE = dbo.fn_MonthEnd(@PostingDate);
+DECLARE @PeriodStart DATE = dbo.fn_MonthStart(@PostingDate);
+DECLARE @PeriodEnd DATE = dbo.fn_MonthEnd(@PostingDate);
 DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
 
 DECLARE @WagesAndSalariesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'WagesAndSalaries');
@@ -91,8 +91,3 @@ JOIN WideLinesSorted  WLS ON WLS.[Index] = WL.[Index];
 
 SELECT * FROM @Widelines;
 GO
-
-
-
-
-

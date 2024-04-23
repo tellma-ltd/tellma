@@ -5,7 +5,7 @@ RETURNS NVARCHAR
 AS
 BEGIN -- assumes ZatcaDocumentType IN ('381', '383')
 	RETURN (
-		SELECT CAST(D.[Id] AS NVARCHAR)
+		SELECT TOP 1 CAST(D.[Id] AS NVARCHAR) -- Even though we know it should be unique
 		FROM dbo.Documents D
 		JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 		WHERE D.[State] = 1

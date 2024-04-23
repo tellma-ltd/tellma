@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 20891); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 11898); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -53,7 +53,7 @@ BEGIN
 		NEWID() AS [UniqueInvoiceIdentifier], -- KSA-1
         D.[StateAt] AS [InvoiceIssueDateTime], -- BT-2 and KSA-25
 		-- ZatcaDocumentType NVARCHAR (3) in DD but INT in C#
-        CAST(DD.ZatcaDocumentType AS INT) AS [InvoiceType], -- BT-3: [381, 383, 386, 388] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
+        CAST(DD.ZatcaDocumentType AS INT) AS [InvoiceType], -- BT-3: [Credit:381, Debit:383, Prepayment:386, TaxInvoice:388] subset of https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred1001.htm
 		-- In Documents Lookup1: InvoiceTypeTransactions ITT000000, ... Read from left to right.
         CAST(SUBSTRING(D_LK1.[Code], 4, 1) AS BIT) AS [IsSimplified], -- KSA-2: 0 for Standard, 1 for Simplified
         CAST(SUBSTRING(D_LK1.[Code], 5, 1) AS BIT) AS [IsThirdParty], -- KSA-2: Not used. Always 0.
@@ -64,7 +64,7 @@ BEGIN
         D.[Memo] AS [InvoiceNote], -- BT-22: max 1000 chars
         SI.[CurrencyId] AS [InvoiceCurrency], -- BT-5
         D.[ExternalReference] AS [PurchaseOrderId], -- BT-13, max 127 chars
-		IIF(DD.ZatcaDocumentType IN (N'381', N'383'), -- Applies only to credit (381) and debot (383) notes
+		IIF(DD.ZatcaDocumentType IN (N'381', N'383'), -- Applies only to credit (381) and debit (383) notes
         [dal].[fn_Document__BillingReferenceId](D.[Id]), NULL) AS [BillingReferenceId], -- BT-25, max 5000 chars, required for Debit/Credit Notes, NULL otherwise
         CA.[Code] AS [ContractId], -- BT-12, max 127 chars
 		-- Text1 = Commercial Registration Number (necessary when TIN is null).
@@ -93,7 +93,8 @@ BEGIN
 		-- Sales invoice Lookup 6: Payment terms
         IIF(DD.ZatcaDocumentType = '388', dal.fn_Lookup__Name(SI.Lookup6Id), NULL) AS [PaymentTerms], -- KSA-22, max 1000 chars
         SI.[BankAccountNumber] AS [PaymentAccountId], -- BT-84, max 127 chars
-        dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
+		-- For credit note, we reverse the total VAT. Does it apply to prepayment also?
+		IIF(DD.ZatcaDocumentType = N'381', -1, +1) * dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency (D.[Id]) AS [InvoiceTotalVatAmountInAccountingCurrency], -- BT-111
         -- dal.fn_Document__PrepaidAmount(D.[Id]) AS [PrepaidAmount], -- BT-113
 		-- Rounding is associated with a 0-VAT resource called rounding
         dal.fn_Document__RoundingAmount(D.[Id]) AS [RoundingAmount] -- BT-114
@@ -154,7 +155,10 @@ BEGIN
 		-- In case of line level allowance/charge, we need to store the Allowance/Charge Code & Reason
         NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
         NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
-        -E.[Direction] * E.[MonetaryValue] AS [VatAmount], -- KSA-11
+		CASE -- '386' prepayment is added here even though these lines are not for prepayments. However, not sure if 386 is to go with first line
+			WHEN DD.ZatcaDocumentType IN (N'388', N'383') THEN -E.[Direction] * E.[MonetaryValue]
+			WHEN DD.ZatcaDocumentType IN (N'381', N'386') THEN +E.[Direction] * E.[MonetaryValue]
+		END AS [VatAmount], -- KSA-11
         NR.[Name2] AS [ItemName], -- BT-153, max 1000 chars
         NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
         NR.[Code] AS [ItemSellerIdentifier], -- BT-155, max 127 chars
@@ -164,8 +168,10 @@ BEGIN
         ISNULL(LK3.[Code], 'S') AS [ItemVatCategory], -- BT-151: [E, S, Z, O]
         ISNULL(NR.[VatRate], 0.15) AS [ItemVatRate], -- BT-152: between 0.00 and 1.00 (NOT 100.00)
 		-- Resource Lookup 4: VAT Exemption Reason Code
-		LK4.[Code] AS [ItemVatExemptionReasonCode], -- N'VATEX-SA-EDU'
-		LK4.[Name] AS [ItemVatExemptionReasonText], -- N'Private Education to citizen'
+--		LK4.[Code] AS [ItemVatExemptionReasonCode], -- N'VATEX-SA-EDU'
+--		LK4.[Name] AS [ItemVatExemptionReasonText], -- N'Private Education to citizen'
+		NULL AS [ItemVatExemptionReasonCode], -- N'VATEX-SA-EDU'
+		NULL AS [ItemVatExemptionReasonText], -- N'Private Education to citizen	
         1.00 AS [ItemPriceBaseQuantity], -- BT-149
         U.[Code] AS [ItemPriceBaseQuantityUnit], -- Bt-150, max 127 chars
 		dal.fn_Item_Date__PriceListDiscount(NR.[Id], L.[PostingDate]) AS [ItemPriceDiscount], -- BT-147, defined at the price list level. Already in Decimal1
