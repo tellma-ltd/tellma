@@ -41,7 +41,7 @@ namespace Tellma.Api.Web.Controllers
             else if (ex is ForbiddenException exf)
             {
                 // The user is 
-                if (exf.NotMember)
+                if (exf.ForbiddenType == ForbiddenReason.NotCompanyMember)
                 {
                     var headers = context.HttpContext.Response.Headers;
 
@@ -56,8 +56,11 @@ namespace Tellma.Api.Web.Controllers
                     headers.Set("x-permissions-version", Constants.Unauthorized);
                     headers.Set("x-user-settings-version", Constants.Unauthorized);
                 }
-
-                result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
+                var errorMessage = exf.ErrorMessage ?? _localizer["Error_AccountDoesNotHaveSufficientPermissions"];
+                result = new JsonResult(new { Message = errorMessage })
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden
+                };
             }
             else if (ex is NotFoundException exnf)
             {

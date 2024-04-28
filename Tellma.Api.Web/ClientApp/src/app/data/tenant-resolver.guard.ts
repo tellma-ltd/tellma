@@ -19,7 +19,7 @@ export const PERMISSIONS_PREFIX = 'permissions';
 export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
-export const SETTINGS_METAVERSION = '2.1';
+export const SETTINGS_METAVERSION = '2.2';
 export const DEFINITIONS_METAVERSION = '6.25';
 export const PERMISSIONS_METAVERSION = '1.3';
 export const USER_SETTINGS_METAVERSION = '1.4';
@@ -286,10 +286,10 @@ export class TenantResolverGuard {
             catchError((err: { status: number, error: any }) => {
               this.progress.completeAsyncOperation(key);
 
+              this.workspace.ws.errorMessage = err.error;
               if (err.status === 403) {
                 this.router.navigate(['root', 'error', 'unauthorized'], { queryParams: { retryUrl: state.url } });
               } else {
-                this.workspace.ws.errorMessage = err.error;
                 this.router.navigate(['root', 'error', 'loading-company-settings'], { queryParams: { retryUrl: state.url } });
               }
 

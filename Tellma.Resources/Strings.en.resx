@@ -1174,6 +1174,9 @@
   <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
     <value>Account could not be found.</value>
   </data>
+  <data name="Error_AccountDoesNotHaveSufficientPermissions" xml:space="preserve">
+    <value>Your account does not have sufficient permissions</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>Account type '{0}' is used in account '{1}'.</value>
   </data>
@@ -1440,6 +1443,18 @@
   </data>
   <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
     <value>More than one {0} records found where {1} = '{2}'.</value>
+  </data>
+  <data name="Error_MustEnable2FA" xml:space="preserve">
+    <value>You have to enable 2-factor authentication on your Tellma account to access this company.</value>
+  </data>
+  <data name="Error_MustUnlinkExternalAccounts" xml:space="preserve">
+    <value>You have to delete all external accounts (like Google or Microsoft) from your Tellma account to access this company.</value>
+  </data>
+  <data name="Error_Need2FaToEnforce2faOnLocalAccounts" xml:space="preserve">
+    <value>You have to enable 2-factor authentication before enforcing this policy.</value>
+  </data>
+  <data name="Error_Need2FaToEnforceNoExternalAccounts" xml:space="preserve">
+    <value>You have to delete all external accounts (like Google or Microsoft) before enforcing this policy.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
     <value>New attachments must include file bytes.</value>
@@ -1827,6 +1842,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>An unknown error occurred while trying to sign you in using the external provider.</value>
+  </data>
+  <data name="Error_UnauthorizedForCompany" xml:space="preserve">
+    <value>Your account is no longer a member of this company.</value>
   </data>
   <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
     <value>The unit '{0}' is not compatible with {1} '{2}'.</value>
@@ -3288,6 +3306,12 @@
   </data>
   <data name="Settings_District" xml:space="preserve">
     <value>District</value>
+  </data>
+  <data name="Settings_Enforce2faOnLocalAccounts" xml:space="preserve">
+    <value>Enforce 2-factor authentication</value>
+  </data>
+  <data name="Settings_EnforceNoExternalAccounts" xml:space="preserve">
+    <value>Enforce no external accounts</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>Salary Period Starts</value>

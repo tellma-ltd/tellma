@@ -11,17 +11,38 @@ namespace Tellma.Api
         /// <summary>
         /// Initializes a new instance of the <see cref="ForbiddenException"/> class.
         /// </summary>
-        /// <param name="notMember">True if this is an error resulting from the user 
+        /// <param name="type">True if this is an error resulting from the user 
         /// trying to access a tenant that she is not a member of.</param>
-        public ForbiddenException(bool notMember = false)
+        public ForbiddenException(ForbiddenReason type = ForbiddenReason.MissingPermission, string message = null) : base(message)
         {
-            NotMember = notMember;
+            ForbiddenType = type;
+            ErrorMessage = message;
         }
 
         /// <summary>
         /// True if this is an error resulting from the user 
         /// trying to access a tenant that she is not a member of.
         /// </summary>
-        public bool NotMember { get; }
+        public ForbiddenReason ForbiddenType { get; }
+
+        public string ErrorMessage { get; }
+    }
+
+    public enum ForbiddenReason
+    {
+        /// <summary>
+        /// Does not have permission to perform action
+        /// </summary>
+        MissingPermission,
+
+        /// <summary>
+        /// Not a member of the company
+        /// </summary>
+        NotCompanyMember,
+
+        /// <summary>
+        /// User account violates company policy
+        /// </summary>
+        ViolatesCompanyPolicy,
     }
 }

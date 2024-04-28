@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,17 +15,26 @@ namespace Tellma.Api.Behaviors
         private readonly IApplicationRepositoryFactory _repositoryFactory;
         private readonly ApplicationVersions _versions;
         private readonly AdminRepository _adminRepo;
+        private readonly IIdentityProxy _identityProxy;
+        private readonly IStringLocalizer<Strings> _localizer;
+        private readonly IMemoryCache _cache;
         private readonly ILogger _logger;
 
         public ApplicationServiceBehavior(
             IApplicationRepositoryFactory repositoryFactory,
             ApplicationVersions versions,
             AdminRepository adminRepo,
+            IIdentityProxy identityProxy,
+            IStringLocalizer<Strings> localizer,
+            IMemoryCache cache,
             ILogger<ApplicationServiceBehavior> logger)
         {
             _repositoryFactory = repositoryFactory;
             _versions = versions;
             _adminRepo = adminRepo;
+            _identityProxy = identityProxy;
+            _localizer = localizer;
+            _cache = cache;
             _logger = logger;
         }
 
@@ -44,6 +55,8 @@ namespace Tellma.Api.Behaviors
         private bool _isAnonymous;
         private string _userEmail;
         private int _userId;
+        private string _externalId;
+        private bool _isServiceAccount;
 
         public bool IsAnonymous => IsInitialized ? _isAnonymous :
             throw new InvalidOperationException($"Accessing {nameof(IsAnonymous)} before initializing the service.");
@@ -90,7 +103,7 @@ namespace Tellma.Api.Behaviors
                 bool isServiceAccount = context.IsServiceAccount;
                 string externalId;
                 string externalEmail = null;
-                if (context.IsServiceAccount)
+                if (isServiceAccount)
                 {
                     externalId = context.ExternalClientId ??
                         throw new InvalidOperationException($"The external client ID was not supplied.");
@@ -123,7 +136,7 @@ namespace Tellma.Api.Behaviors
                 {
                     // Either 1) the user is not a member in the database, or 2) the database does not exist
                     // Either way we return the not-member exception so as not to convey information to an attacker
-                    throw new ForbiddenException(notMember: true);
+                    throw new ForbiddenException(ForbiddenReason.NotCompanyMember, _localizer["Error_UnauthorizedForCompany"]);
                 }
 
                 // Extract values from the result
@@ -173,10 +186,98 @@ namespace Tellma.Api.Behaviors
 
                 _userEmail = dbEmail;
                 _userId = userId;
+                _externalId = externalId;
+                _isServiceAccount = isServiceAccount;
 
-                // (8) Return the user Id 
+                // (8) Ensure that the user account is consistent with company policies
+                if (!isServiceAccount)
+                {
+                    // 2FA on local account policy
+                    if (result.Enforce2faOnLocalAccounts && !await CachedUserHas2faEnabled())
+                    {
+                        throw new ForbiddenException(ForbiddenReason.ViolatesCompanyPolicy, _localizer["Error_MustEnable2FA"]);
+                    }
+
+                    // No external accounts policy
+                    if (result.EnforceNoExternalAccounts && await CachedUserHasLinkedExternalAccounts())
+                    {
+                        throw new ForbiddenException(ForbiddenReason.ViolatesCompanyPolicy, _localizer["Error_MustUnlinkExternalAccounts"]);
+                    }
+                }
+
+                // (9) Return the user Id 
                 return userId;
             }
+        }
+
+        private async Task<bool> CachedUserHas2faEnabled()
+        {
+            const double CACHE_EXPIRY_IN_HOURS = 24;
+            static string CacheKey(string exId)
+            {
+                return $"{nameof(_identityProxy.UserHas2faEnabled)}/{exId}";
+            }
+
+            if (!_cache.TryGetValue(CacheKey(_externalId), out bool result) || !result) // If cached value is FALSE, don't trust it, otherwise the user is locked out until the cache expires
+            {
+                // Get from the source
+                result = await UserHas2faEnabled();
+                var expiry = DateTimeOffset.UtcNow.AddHours(CACHE_EXPIRY_IN_HOURS);
+                _cache.Set(CacheKey(_externalId), result, expiry);
+            }
+
+            return result;
+        }
+
+        private async Task<bool> CachedUserHasLinkedExternalAccounts()
+        {
+            const double CACHE_EXPIRY_IN_HOURS = 24;
+            static string CacheKey(string exId)
+            {
+                return $"{nameof(_identityProxy.UserHasLinkedExternalAccounts)}/{exId}";
+            }
+
+            if (!_cache.TryGetValue(CacheKey(_externalId), out bool result) || result) // If cached value is TRUE, don't trust it, otherwise the user is locked out until the cache expires
+            {
+                // Get from the source
+                result = await UserHasLinkedExternalAccounts();
+                var expiry = DateTimeOffset.UtcNow.AddHours(CACHE_EXPIRY_IN_HOURS);
+                _cache.Set(CacheKey(_externalId), result, expiry);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> UserHas2faEnabled()
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException($"Accessing {nameof(UserHasLinkedExternalAccounts)} before initializing the service.");
+            }
+
+            if (_isServiceAccount)
+            {
+                return true;
+            }
+
+            using var suppress = TransactionFactory.Suppress();
+            return await _identityProxy.UserHas2faEnabled(_externalId);
+        }
+
+        public async Task<bool> UserHasLinkedExternalAccounts()
+        {
+            if (!IsInitialized)
+            {
+                throw new InvalidOperationException($"Accessing {nameof(UserHasLinkedExternalAccounts)} before initializing the service.");
+            }
+
+            if (_isServiceAccount)
+            {
+                return false;
+            }
+
+            using var suppress = TransactionFactory.Suppress();
+            return await _identityProxy.UserHasLinkedExternalAccounts(_externalId);
         }
     }
 }

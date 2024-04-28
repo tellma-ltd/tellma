@@ -19,6 +19,8 @@
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
 	@SupportEmails NVARCHAR (255) = NULL,
+	@Enforce2faOnLocalAccounts BIT = NULL,
+	@EnforceNoExternalAccounts BIT = NULL,
 	@UserId INT
 AS
 BEGIN
@@ -47,6 +49,8 @@ BEGIN
 		[TimeFormat]			= @TimeFormat,
 		[BrandColor]			= @BrandColor,
 		[SupportEmails]			= @SupportEmails,
+		[Enforce2faOnLocalAccounts] = @Enforce2faOnLocalAccounts,
+		[EnforceNoExternalAccounts] = @EnforceNoExternalAccounts,
 		[SettingsVersion]		= NEWID(), -- To trigger cache refresh
 		[GeneralModifiedAt]		= @Now,
 		[GeneralModifiedById]	= @UserId

@@ -19,6 +19,8 @@
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
 	@SupportEmails NVARCHAR (255) = NULL,
+	@Enforce2faOnLocalAccounts BIT = NULL,
+	@EnforceNoExternalAccounts BIT = NULL,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS

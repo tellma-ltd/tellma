@@ -1099,6 +1099,9 @@
   <data name="Error_AccountCouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على الحساب.</value>
   </data>
+  <data name="Error_AccountDoesNotHaveSufficientPermissions" xml:space="preserve">
+    <value>حسابك على النظام لا يتمتع بالأذونات الكافية</value>
+  </data>
   <data name="Error_AccountType0IsUsedInAccount1" xml:space="preserve">
     <value>نوع الحساب ({0}) مستخدم في الحساب ({1}).</value>
   </data>
@@ -1338,6 +1341,18 @@
   </data>
   <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
     <value>تم العثور على أكثر من بيان {0} واحد مستوف لـ: {1} = ({2}).</value>
+  </data>
+  <data name="Error_MustEnable2FA" xml:space="preserve">
+    <value>ينبغي تفعيل التوثيق المتعدد العوامل في حسابك على تلما من أجل الدخول إلى هذه الشركة.</value>
+  </data>
+  <data name="Error_MustUnlinkExternalAccounts" xml:space="preserve">
+    <value>ينبغي حذف مسجلي الدخول الخارجيين من حسابك على تلما من أجل الدخول إلى هذه الشركة.</value>
+  </data>
+  <data name="Error_Need2FaToEnforce2faOnLocalAccounts" xml:space="preserve">
+    <value>ينبغي تفعيل التوثيق المتعدد العوامل في حسابك قبل تفعيل هذا الخيار.</value>
+  </data>
+  <data name="Error_Need2FaToEnforceNoExternalAccounts" xml:space="preserve">
+    <value>ينبغي حذف مسجلي الدخول الخارجيين من حسابك قبل تفعيل هذا الخيار.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
     <value>المرفقات الجديدة ينبغي أن تحتوي على ملف.</value>
@@ -1713,6 +1728,9 @@
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
+  </data>
+  <data name="Error_UnauthorizedForCompany" xml:space="preserve">
+    <value>حسابك على النظام لم يعد معرفا كعضو في هذه الشركة.</value>
   </data>
   <data name="Error_Unit0IsNotCompatibleWithResource12" xml:space="preserve">
     <value>الوحدة ({0}) لا تتناسب مع البيان ({2}) من نوع {1}.</value>
@@ -3156,6 +3174,12 @@
   </data>
   <data name="Settings_District" xml:space="preserve">
     <value>الحي</value>
+  </data>
+  <data name="Settings_Enforce2faOnLocalAccounts" xml:space="preserve">
+    <value>إلزام المستخدمين بالتوثيق المزدوج العوامل</value>
+  </data>
+  <data name="Settings_EnforceNoExternalAccounts" xml:space="preserve">
+    <value>إلزام المستخدمين بتجنب مسجلي الدخول الخارجيين</value>
   </data>
   <data name="Settings_FirstDayOfPeriod" xml:space="preserve">
     <value>بداية شهر المرتبات</value>

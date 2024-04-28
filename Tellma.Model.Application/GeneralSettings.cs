@@ -93,6 +93,14 @@ namespace Tellma.Model.Application
         [StringLength(255)]
         public string SupportEmails { get; set; } // e.g. #0284AB
 
+        // Company policies
+
+        [Display(Name = "Settings_Enforce2faOnLocalAccounts")]
+        public bool? Enforce2faOnLocalAccounts { get; set; }
+
+        [Display(Name = "Settings_EnforceNoExternalAccounts")]
+        public bool? EnforceNoExternalAccounts { get; set; }
+
         #region Custom Fields
 
         [JsonIgnore]

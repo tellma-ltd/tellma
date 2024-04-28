@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Office2010.Word;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -54,8 +55,10 @@ namespace Tellma.Api.Behaviors
             IUserSettingsCache userSettingsCache,
             NotificationsQueue notificationsQueue,
             ApplicationBehaviorHelper behaviorHelper,
+            IIdentityProxy identityProxy,
             IStringLocalizer<Strings> localizer,
-            ITenantLogger tenantLogger) : base(factory, versions, adminRepo, logger)
+            IMemoryCache cache,
+            ITenantLogger tenantLogger) : base(factory, versions, adminRepo, identityProxy, localizer, cache, logger)
         {
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
@@ -64,7 +67,7 @@ namespace Tellma.Api.Behaviors
             _notificationsQueue = notificationsQueue;
             _behaviorHelper = behaviorHelper;
             _localizer = localizer;
-            this._tenantLogger = tenantLogger;
+            _tenantLogger = tenantLogger;
         }
 
         public IQueryFactory QueryFactory<TEntity>() where TEntity : Entity

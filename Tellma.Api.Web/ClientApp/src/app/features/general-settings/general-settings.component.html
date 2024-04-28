@@ -144,6 +144,28 @@
           [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
       </t-form-group-settings>
 
+      <div class="w-100"></div>
+      
+      <!-- Enforce2faOnLocalAccounts -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_Enforce2faOnLocalAccounts' | translate"
+        [serverErrors]="model.serverErrors?.Enforce2faOnLocalAccounts">
+        <div *ngIf="!isEdit">{{ (model?.Enforce2faOnLocalAccounts ? 'Yes' : 'No') | translate }}</div>
+          <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.Enforce2faOnLocalAccounts" id="Enforce2faOnLocalAccounts">
+            <label class="custom-control-label t-pointer" for="Enforce2faOnLocalAccounts">&zwnj;</label>
+          </div>
+      </t-form-group-settings>
+      
+      <!-- EnforceNoExternalAccounts -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_EnforceNoExternalAccounts' | translate"
+        [serverErrors]="model.serverErrors?.EnforceNoExternalAccounts">
+        <div *ngIf="!isEdit">{{ (model?.EnforceNoExternalAccounts ? 'Yes' : 'No') | translate }}</div>
+          <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.EnforceNoExternalAccounts" id="EnforceNoExternalAccounts">
+            <label class="custom-control-label t-pointer" for="EnforceNoExternalAccounts">&zwnj;</label>
+          </div>
+      </t-form-group-settings>
+
     </div>
 
     <h5 class="col-12 bg-light t-settings-header">

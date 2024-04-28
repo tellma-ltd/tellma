@@ -287,7 +287,9 @@ namespace Tellma.Repository.Application
                         permissionsVersion: reader.Guid(i++),
                         userSettingsVersion: reader.Guid(i++),
                         settingsVersion: reader.Guid(i++) ?? throw new InvalidOperationException("[dbo].[Settings] table is empty."),
-                        definitionsVersion: reader.Guid(i++) ?? throw new InvalidOperationException("[dbo].[Settings] table is empty.")
+                        definitionsVersion: reader.Guid(i++) ?? throw new InvalidOperationException("[dbo].[Settings] table is empty."),
+                        enforce2faOnLocalAccounts: reader.Boolean(i++) ?? false,
+                        enforceNoExternalAccounts: reader.Boolean(i++) ?? false
                     );
                 }
                 else

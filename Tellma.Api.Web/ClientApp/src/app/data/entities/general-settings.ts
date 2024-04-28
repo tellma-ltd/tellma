@@ -19,6 +19,8 @@ export interface GeneralSettingsForSave extends SettingsBase {
     TernaryLanguageSymbol: string;
     BrandColor: string;
     SupportEmails: string;
+    Enforce2faOnLocalAccounts: boolean;
+    EnforceNoExternalAccounts: boolean;
 }
 
 export interface GeneralSettings extends GeneralSettingsForSave {
