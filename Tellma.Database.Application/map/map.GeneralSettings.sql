@@ -26,6 +26,8 @@ RETURN (
 		[DefinitionsVersion],
 		[SettingsVersion],
 		[SmsEnabled],
+		[Enforce2faOnLocalAccounts],
+		[EnforceNoExternalAccounts],
 		[CreatedAt],
 		[CreatedById],
 		[GeneralModifiedAt],

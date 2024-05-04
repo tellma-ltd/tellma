@@ -245,5 +245,28 @@ namespace Tellma.Services.EmbeddedIdentityServer
             }
             return idUser;
         }
+
+        public async Task<bool> UserHasLinkedExternalAccounts(string externalId)
+        {
+            var idUser = await _userManager.FindByIdAsync(externalId) 
+                ?? throw new InvalidOperationException($"Now identity user found with id {externalId}");
+
+            if (!_userManager.SupportsUserLogin)
+            {
+                // The identity server does not support external logins
+                return false;
+            }
+
+            var externalLogins = await _userManager.GetLoginsAsync(idUser);
+            return externalLogins != null && externalLogins.Any();
+        }
+
+        public async Task<bool> UserHas2faEnabled(string externalId)
+        {
+            var idUser = await _userManager.FindByIdAsync(externalId)
+                ?? throw new InvalidOperationException($"Now identity user found with id {externalId}");
+
+            return idUser.TwoFactorEnabled;
+        }
     }
 }

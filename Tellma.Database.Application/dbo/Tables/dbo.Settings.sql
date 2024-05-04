@@ -64,6 +64,9 @@
 	[ZatcaEncryptionKeyIndex]				INT					NOT NULL DEFAULT 0,
 	[ZatcaEnvironment]						NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox', -- Sandbox, Simulation, Production
 
+	-- Login Policies
+	[Enforce2faOnLocalAccounts]				BIT					NOT NULL DEFAULT 0,
+	[EnforceNoExternalAccounts]				BIT					NOT NULL DEFAULT 0,
 );
 --	IFRS [810000]
 	--[NameOfReportingEntityOrOtherMeansOfIdentification]	NVARCHAR (255),

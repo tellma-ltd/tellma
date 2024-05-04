@@ -76,6 +76,8 @@ namespace Tellma.Api
         {
             // Upon save, object takes precedent
             settingsForSave.CustomFieldsJson = JsonConvert.SerializeObject(settingsForSave.CustomFields ?? new());
+            settingsForSave.Enforce2faOnLocalAccounts = settingsForSave.Enforce2faOnLocalAccounts ?? false;
+            settingsForSave.EnforceNoExternalAccounts = settingsForSave.EnforceNoExternalAccounts ?? false;
             return base.SavePreprocess(settingsForSave);
         }
 
@@ -163,6 +165,18 @@ namespace Tellma.Api
                     ModelState.AddError(nameof(settings.SupportEmails),
                         _localizer[ErrorMessages.Error_Field0IsNotValidEmail, _localizer["Settings_SupportEmails"]]);
                 }
+            }
+
+            if (settings.Enforce2faOnLocalAccounts.Value && !await _behavior.UserHas2faEnabled())
+            {
+                ModelState.AddError(nameof(settings.Enforce2faOnLocalAccounts),
+                    _localizer["Error_Need2FaToEnforce2faOnLocalAccounts"]);
+            }
+
+            if (settings.EnforceNoExternalAccounts.Value && await _behavior.UserHasLinkedExternalAccounts())
+            {
+                ModelState.AddError(nameof(settings.EnforceNoExternalAccounts),
+                    _localizer["Error_Need2FaToEnforceNoExternalAccounts"]);
             }
 
             // Persist

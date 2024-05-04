@@ -12,6 +12,8 @@ namespace Tellma.Repository.Application
     {
         private static readonly OnConnectOutput _empty = new();
 
+        public static OnConnectOutput Empty => _empty;
+
         public OnConnectOutput(
             int? userId, 
             string email, 
@@ -19,7 +21,9 @@ namespace Tellma.Repository.Application
             Guid? permissionsVersion,
             Guid? userSettingsVersion,
             Guid settingsVersion,
-            Guid definitionsVersion)
+            Guid definitionsVersion,
+            bool enforce2faOnLocalAccounts,
+            bool enforceNoExternalAccounts)
         {
             UserId = userId;
             Email = email;
@@ -28,6 +32,8 @@ namespace Tellma.Repository.Application
             UserSettingsVersion = userSettingsVersion;
             SettingsVersion = settingsVersion;
             DefinitionsVersion = definitionsVersion;
+            Enforce2faOnLocalAccounts = enforce2faOnLocalAccounts;
+            EnforceNoExternalAccounts = enforceNoExternalAccounts;
         }
 
         private OnConnectOutput()
@@ -69,6 +75,14 @@ namespace Tellma.Repository.Application
         /// </summary>
         public Guid DefinitionsVersion { get; }
 
-        public static OnConnectOutput Empty => _empty;
+        /// <summary>
+        /// All users accessing this company should have 2FA enabled on their local account.
+        /// </summary>
+        public bool Enforce2faOnLocalAccounts { get; }
+
+        /// <summary>
+        /// All users accessing this company should not have any linked external accounts.
+        /// </summary>
+        public bool EnforceNoExternalAccounts { get; }
     }
 }

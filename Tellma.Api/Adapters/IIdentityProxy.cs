@@ -53,5 +53,19 @@ namespace Tellma.Api
         /// <param name="users">The invited admin users.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         public Task InviteUsersToAdmin(IEnumerable<AdminUserForInvitation> users);
+
+        /// <summary>
+        /// Determines if the user with <paramref name="externalId"/> has any linked external accounts like Google or Microsoft
+        /// </summary>
+        /// <param name="externalId">The id of the user in the identity server.</param>
+        /// <returns>True if the user has any linked external accounts, false otherwise.</returns>
+        public Task<bool> UserHasLinkedExternalAccounts(string externalId);
+
+        /// <summary>
+        /// Determines if the user with <paramref name="externalId"/> has 2FA enabled in the identity server.
+        /// </summary>
+        /// <param name="externalId">The id of the user in the identity server.</param>
+        /// <returns>True if the user has 2FA enabled in the identity server, false otherwise.</returns>
+        public Task<bool> UserHas2faEnabled(string externalId);
     }
 }

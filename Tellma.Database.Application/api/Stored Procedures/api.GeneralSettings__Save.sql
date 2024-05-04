@@ -19,6 +19,8 @@
 	@TimeFormat NVARCHAR (50) = NULL,
 	@BrandColor NCHAR (7) = NULL,
 	@SupportEmails NVARCHAR (255) = NULL,
+	@Enforce2faOnLocalAccounts BIT = NULL,
+	@EnforceNoExternalAccounts BIT = NULL,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
 	@UserId INT,
@@ -51,6 +53,8 @@ BEGIN
 		@TimeFormat = @TimeFormat,
 		@BrandColor = @BrandColor,
 		@SupportEmails = @SupportEmails,
+		@Enforce2faOnLocalAccounts = @Enforce2faOnLocalAccounts,
+		@EnforceNoExternalAccounts = @EnforceNoExternalAccounts,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -79,5 +83,7 @@ BEGIN
 		@TimeFormat = @TimeFormat,
 		@BrandColor = @BrandColor,
 		@SupportEmails = @SupportEmails,
+		@Enforce2faOnLocalAccounts = @Enforce2faOnLocalAccounts,
+		@EnforceNoExternalAccounts = @EnforceNoExternalAccounts,
 		@UserId = @UserId;
 END;

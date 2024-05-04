@@ -41,5 +41,15 @@ namespace Tellma.Api
             // Bug
             throw new InvalidOperationException("Attempt to invite users through an identity proxy that does not support user invitation.");
         }
+
+        public Task<bool> UserHas2faEnabled(string externalId)
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<bool> UserHasLinkedExternalAccounts(string externalId)
+        {
+            return Task.FromResult(false);
+        }
     }
 }

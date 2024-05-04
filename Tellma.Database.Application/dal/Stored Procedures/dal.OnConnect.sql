@@ -12,7 +12,9 @@ BEGIN
         @SettingsVersion UNIQUEIDENTIFIER, 
         @PermissionsVersion UNIQUEIDENTIFIER,
         @DefinitionsVersion UNIQUEIDENTIFIER,
-        @UserSettingsVersion UNIQUEIDENTIFIER;
+        @UserSettingsVersion UNIQUEIDENTIFIER,
+        @Enforce2faOnLocalAccounts BIT,
+        @EnforceNoExternalAccounts BIT;
         
     -- Get the User Info
     IF (@ExternalUserId IS NOT NULL OR @UserEmail IS NOT NULL)
@@ -31,7 +33,9 @@ BEGIN
     -- Get Tenant Info
     SELECT
 		@SettingsVersion    = [SettingsVersion],
-        @DefinitionsVersion = [DefinitionsVersion]
+        @DefinitionsVersion = [DefinitionsVersion],
+        @Enforce2faOnLocalAccounts = [Enforce2faOnLocalAccounts],   
+        @EnforceNoExternalAccounts = [EnforceNoExternalAccounts] 
     FROM [dbo].[Settings];    
 
     -- Set LastAccess
@@ -48,5 +52,7 @@ BEGIN
         @UserSettingsVersion AS [UserSettingsVersion],
 		-- Tenant Info
         @SettingsVersion AS [SettingsVersion],
-        @DefinitionsVersion AS [DefinitionsVersion];
+        @DefinitionsVersion AS [DefinitionsVersion],
+        @Enforce2faOnLocalAccounts AS [Enforce2faOnLocalAccounts],
+        @EnforceNoExternalAccounts AS [EnforceNoExternalAccounts];
 END;

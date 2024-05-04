@@ -31,7 +31,7 @@ export class ErrorComponent implements OnInit {
       switch (error) {
         case 'unauthorized':
           this._title = 'Unauthorized';
-          this._generalErrorMessage = 'Error_UnauthorizedForCompany';
+          // this._generalErrorMessage = 'Error_UnauthorizedForCompany';
           break;
 
         case 'loading-company-settings':

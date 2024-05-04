@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponseBase } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponseBase, HttpResponse } from '@angular/common/http';
 import { Observable, Subject, throwError, timer, of } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { tap, exhaustMap, retry, catchError, concatMap } from 'rxjs/operators';
@@ -252,7 +252,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       tap(e => {
         const responseTime = new Date();
-        if (e instanceof HttpResponseBase) {
+        if (e instanceof HttpResponse) {
           this.handleServerVersions(e, tenantId);
           this.logInstrumentation(e, req.urlWithParams, requestTime, responseTime);
 
@@ -264,7 +264,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
         }
       }),
       catchError(e => {
-        if (e instanceof HttpResponseBase) {
+        if (e instanceof HttpResponse) {
           this.handleServerVersions(e, tenantId);
 
           // If it's a 401 then quickly delete the app state and challenge user
@@ -310,7 +310,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     }
   }
 
-  private handleServerVersions = (e: HttpResponseBase, tenantId: number) => {
+  private handleServerVersions = (e: HttpResponse<any>, tenantId: number) => {
 
     if (!!e && !!e.headers) {
 
@@ -400,6 +400,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
             // (3) Take the user to unauthorized screen and then clean the workspace
             if (!!this.workspace.ws.tenants[tenantId]) {
               this.workspace.ws.tenants[tenantId].unauthorized = true;
+              this.workspace.ws.errorMessage = !!e.body ? e.body.Message : '';
               this.router.navigate(['root', 'error', 'unauthorized']).then(() => {
                 delete this.workspace.ws.tenants[tenantId];
               });

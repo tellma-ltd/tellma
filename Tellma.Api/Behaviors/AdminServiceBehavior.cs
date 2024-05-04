@@ -73,7 +73,7 @@ namespace Tellma.Api.Behaviors
             // (3) Make sure the user is a member of the admin database
             if (result.UserId == null)
             {
-                throw new ForbiddenException(notMember: true);
+                throw new ForbiddenException(ForbiddenReason.NotCompanyMember, "Your account is not an instance admin.");
             }
 
             var userId = result.UserId.Value;
