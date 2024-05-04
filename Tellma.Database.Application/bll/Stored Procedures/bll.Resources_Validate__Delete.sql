@@ -35,7 +35,7 @@ BEGIN
 	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_The01IsUsedInDocument23',
+		N'Error_The01IsUsedIn23',
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceDefinitionTitleSingular],
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS [DocumentDefinitionTitleSingular],
@@ -50,7 +50,7 @@ BEGIN
 	UNION
 	SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_The01IsUsedInDocument23',
+		N'Error_The01IsUsedIn23',
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS [ResourceDefinitionTitleSingular],
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS [DocumentDefinitionTitleSingular],
