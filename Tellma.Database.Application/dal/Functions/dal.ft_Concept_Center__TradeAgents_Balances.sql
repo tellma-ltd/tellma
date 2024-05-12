@@ -31,7 +31,7 @@ AS BEGIN
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
-	WHERE L.[State] = 4
+	WHERE L.[State] = 4 -- >= 0
 	AND AC.[Node].IsDescendantOf(@ParentNode) = 1
 	AND (@ParentCenterId IS NULL OR C.[Node].IsDescendantOf(@ParentCenterNode) = 1)
 	GROUP BY E.[CenterId], E.[AccountId], E.[CurrencyId], E.[AgentId], --E.[ResourceId], E.[NotedAgentId], E.[NotedResourceId], 

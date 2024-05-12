@@ -999,6 +999,9 @@
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_AE.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_ET.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_LB.sql" />
+    <Build Include="dal\Functions\dal.ft_FixedAssetsDates__FixedAssetsProfiles.sql" />
+    <Build Include="bll\Functions\bll.fn_Resource_ResourceQuantity_EntryUnit__EntryQuantity.sql" />
+    <Build Include="bll\Functions\bll.fn_Resource_EntryQuantity_EntryUnit__ResourceQuantity.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

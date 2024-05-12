@@ -17,7 +17,8 @@ AS BEGIN
 	DECLARE @ParentCenterNode HIERARCHYID = dal.fn_Center__Node(@ParentCenterId);
 
 	INSERT INTO @ResultTable([Quantity], [MonetaryValue], [Value])
-	SELECT SUM(E.[Direction] * E.[Quantity]), SUM(E.[Direction] * E.[MonetaryValue]) , SUM(E.[Direction] * E.[Value]) 
+	SELECT SUM(E.[Direction] * bll.fn_Resource_EntryQuantity_EntryUnit__ResourceQuantity(E.[ResourceId], E.[Quantity], E.[UnitId])),
+			SUM(E.[Direction] * E.[MonetaryValue]) , SUM(E.[Direction] * E.[Value]) 
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
@@ -33,3 +34,4 @@ AS BEGIN
 
 	RETURN
 END
+GO

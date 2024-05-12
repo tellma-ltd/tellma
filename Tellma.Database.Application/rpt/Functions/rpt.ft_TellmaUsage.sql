@@ -291,7 +291,7 @@ WITH FreeLineDefinitions AS (
 	SELECT [Id]
 	FROM 
 	dbo.LineDefinitions
-	WHERE ([Code] LIKE '%.Free' OR [Code] = N'ManualLine')
+	WHERE [Code] LIKE '%.Free'
 )
 UPDATE R
 SET [ComponentType] =  N'Free Tab',

@@ -18,7 +18,10 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 
 -- Summarize Quantity from this document
 With CurrentDocs AS (
-	SELECT L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId], SUM(E.[Direction] * E.[Quantity]) AS [CurrentUsage]
+	SELECT L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId], 
+		SUM(E.[Direction] * 
+			bll.fn_Resource_EntryQuantity_EntryUnit__ResourceQuantity(E.[ResourceId], E.[Quantity], E.[UnitId])	
+		) AS [CurrentUsage]
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
