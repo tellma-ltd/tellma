@@ -1,11 +1,13 @@
-﻿CREATE FUNCTION [dal].[ft_Concept_Center_Agent_Resource__Balances]
-(-- TODO: to be replaced with the version that excludes the current document
+﻿CREATE FUNCTION [dal].[ft_Concept_Center_Agent_Resource_ExcludeId__Balances]
+( -- TODO: Replace the version without ExcludeId everywhere
+-- Important to exclude the posted lines when they belong to the same document in question
 	@ParentConcept NVARCHAR (255),
 	@ParentCenterId INT,
 	@AgentId INT,
 	@ResourceId INT,
 	@CurrencyId NCHAR (3),
-	@AsOf DATE
+	@AsOf DATE,
+	@ExcludeDocumentId INT
 )
 RETURNS @ResultTable TABLE (
 	[Quantity] DECIMAL (19, 4),
@@ -31,6 +33,7 @@ AS BEGIN
 	AND (E.[ResourceId] = @ResourceId)
 	AND (E.[CurrencyId] = @CurrencyId)
 	AND (L.[PostingDate] <= @AsOf)
+	AND (L.[DocumentId] <> @ExcludeDocumentId)
 
 	RETURN
 END

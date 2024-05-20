@@ -70,10 +70,13 @@ BEGIN
 	JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
 	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 	WHERE L.[State] = 4 
+	AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
 	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	AND L.[PostingDate] < @ExcludePostedOnOrAfter
 	AND (E.[Time1] <= @PeriodStart AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
-		OR E.[Time2] < @PeriodStart AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes))
+		OR E.[Time2] < @PeriodStart AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes)
+		OR E.[Time1] >= @PeriodStart AND E.[Time2] <= @PeriodEnd -- MA:2024-05-16, to include minor assets
+	)
 	AND (@ResourceId IS NULL OR E.[ResourceId] = @ResourceId)
 	GROUP BY E.[ResourceId], E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
 	HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0;
@@ -86,6 +89,7 @@ BEGIN
 		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
 		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 		WHERE L.[State] = 4 
+		AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
 		AND E.[Time1] > @PeriodStart
 		AND E.[Time1] <= @PeriodEnd
 		AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
@@ -109,6 +113,7 @@ BEGIN
 		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
 		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 		WHERE L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
 		AND L.[PostingDate] < @ExcludePostedOnOrAfter
 		AND E.[Time2] >= @PeriodStart
 		AND E.[Time2] <= @PeriodEnd
@@ -146,6 +151,7 @@ BEGIN
 		JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
 		JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
 		WHERE L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
 		AND L.[PostingDate] < @ExcludePostedOnOrAfter
 		AND E.[Time1] > @PeriodStart
 		AND E.[Time1] <= @PeriodEnd

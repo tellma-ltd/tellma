@@ -6,7 +6,8 @@
 	@IsModification BIT = 1, -- 0 Editing the old amount
 	@AmendmentDate DATE,
 	@AmendmentTill DATE,
-	@DurationUnitId INT
+	@DurationUnitId INT,
+	@EmployeeId INT
 )
 RETURNS @Widelines TABLE
 (
@@ -468,6 +469,7 @@ BEGIN
 														@OldContractAmendmentLineDefinitionId)
 	AND L.[State] = 2
 	AND L.[Decimal1] IS NOT NULL -- Decimal1 can be null when migrating from old design
+	AND (@EmployeeId IS NULL OR L.[EmployeeId] = @EmployeeId)
 	AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId)
 	AND E.[Time1] <= @AmendmentDate
 	AND (E.[Time2] IS NULL OR E.[Time2] >= @AmendmentDate)

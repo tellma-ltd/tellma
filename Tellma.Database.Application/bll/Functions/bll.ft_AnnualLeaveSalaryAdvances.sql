@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ft_AnnualLeaveSalaryAdvances](
+﻿CREATE FUNCTION bll.ft_AnnualLeaveSalaryAdvances(
 	@LastIndex INT,
 	@EmployeeId INT,
 	@Time1 DATE,
@@ -16,7 +16,7 @@ RETURNS
 	[AgentId0]		INT,
 	[Memo]			NVARCHAR (255),
 	[Time10]		DATE,
-	[Time20]		DATE
+	[TIme20]		DATE
 )
 AS
 BEGIN
@@ -36,11 +36,11 @@ BEGIN
 	DECLARE
 	@DurationUnitId INT = dal.fn_UnitCode__Id(N'mo');
 	DECLARE
-	@StartOfMonth DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @Time1),
-	@EndOfMonth DATE = [dbo].[fn_PeriodEnd](@DurationUnitId, @Time1),
+	@StartOfMonth DATE = [dbo].[fn_MonthStart](@Time1),
+	@EndOfMonth DATE = [dbo].[fn_MonthEnd](@Time1),
 	@WorkDays INT = DATEDIFF(DAY, @Time1, @Time2) + 1;
 	DECLARE
-	@MonthDays INT = DAY(@EndOfMonth),
+	@MonthDays INT = DATEDIFF(DAY, @StartOfMonth, @EndOfMonth) + 1,
 	@WagesAndSalariesMemo NVARCHAR(255) = N'مرتبات ', 
 	@AnnualLeavesMemo NVARCHAR(255) = N'مرتب الإجازة - ',
 	@DeductionsMemo NVARCHAR (255) = N'خصومات ', 
@@ -51,7 +51,7 @@ BEGIN
 	@MonthName NVARCHAR (50) = FORMAT(@Time1, 'MMMM', 'ar-AE') + N' ' + CAST(YEAR(@Time1) AS NVARCHAR(50)) + N': ',
 	@WagesAndSalariesEntryTypeId INT = dal.fn_EntryTypeConcept__Id(N'WagesAndSalaries');
 
-	WITH GrossSalary AS (
+	WITH EffectiveWorkSalary AS (
 		SELECT S.[NotedAgentId0], S.[CurrencyId1],  S.[Time10], S.[Time20],-- S.[NotedResourceId0], S.[AgentId0], S.[CenterId0],
 			SUM(S.[MonetaryValue1]) AS [MonetaryValue1]
 		FROM bll.ft_Widelines_Period_EventFromModel__Generate( -- Important. We use PIT version, because we don't want prorating
@@ -77,7 +77,7 @@ BEGIN
 	SELECT ROW_NUMBER() OVER (ORDER BY [NotedAgentId0], [CurrencyId1], [Time10]) + @LastIndex,
 		[CurrencyId1], [MonetaryValue1] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [NotedAgentId0], [Time10], [Time20],
 		@WagesAndSalariesMemo + @MonthName + CAST(DAY(Time10) AS NVARCHAR (5)) + N' - ' + CAST(DAY(Time20) AS NVARCHAR(5))
-	FROM GrossSalary GS
+	FROM EffectiveWorkSalary;
 	SELECT @LastIndex = ISNULL(MAX([Index]), -1) FROM @Shortlines;
 
 	WITH EffectiveDeductions AS (
@@ -99,8 +99,7 @@ BEGIN
 		GROUP BY [AgentId0], [CurrencyId0], [Time10], [Time20]
 	)
 	INSERT INTO @Shortlines([Index],	[CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
-		SELECT  ROW_NUMBER() OVER (ORDER BY [AgentId0], [CurrencyId0], [Time10]) + @LastIndex, 
-		[CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [AgentId0], [Time10], [Time20],
+		SELECT 1 + @LastIndex, [CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [AgentId0], [Time10], [Time20],
 		@DeductionsMemo + @MonthName + CAST(DAY(Time10) AS NVARCHAR (5)) + N' - ' + CAST(DAY(Time20) AS NVARCHAR(5))
 	FROM EffectiveDeductions;
 	SELECT @LastIndex = MAX([Index]) FROM @Shortlines;
@@ -125,7 +124,7 @@ BEGIN
 	)
 	INSERT INTO @Shortlines([Index], [CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
 	-- I think we don't need to prorate here, as the event from model does it automatically
-	SELECT ROW_NUMBER() OVER(ORDER BY [NotedAgentId0], [AgentId2], [CurrencyId0], [TIme10]) + @LastIndex, [CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [NotedAgentId0],[Time10], [Time20],
+	SELECT 1 + @LastIndex, [CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [NotedAgentId0],[Time10], [Time20],
 			@SSDeductionsMemo + N' ' + dal.fn_Agent__Name2([AgentId2]) + N' ' + @MonthName + CAST(DAY(Time10) AS NVARCHAR (5)) + N' - ' + CAST(DAY(Time20) AS NVARCHAR(5))
 	FROM EffectiveSSDeductions;
 	SELECT @LastIndex = MAX([Index]) FROM @Shortlines;
@@ -146,7 +145,7 @@ BEGIN
 	)
 	INSERT INTO @Shortlines([Index],	[CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
 		--I believe we need to do it here
-		SELECT ROW_NUMBER() OVER(ORDER BY [AgentId0], [CurrencyId0]) + @LastIndex, [CurrencyId0], - [MonetaryValue0] * @WorkDays/@MonthDays, @EndOfMonth, [AgentId0], @Time1, @Time2, 
+		SELECT 1 + @LastIndex, [CurrencyId0], - [MonetaryValue0] * @WorkDays/@MonthDays, @EndOfMonth, [AgentId0], @Time1, @Time2, 
 		@LoanDeductionsMemo + @MonthName+ CAST(DAY(@Time1) AS NVARCHAR (5)) + N' - ' + CAST(DAY(@Time2) AS NVARCHAR(5))
 	FROM LoanDeductions;
 	SELECT @LastIndex = MAX([Index]) FROM @Shortlines;
@@ -172,8 +171,7 @@ WITH UnpaidAbsenceLogs AS (
 	AND R.[Code] IN (N'UnpaidLeave') -- excluded annual leave
 ) --select * from UnpaidAbsenceLogs
 INSERT INTO @Shortlines([Index],	[CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
-SELECT ROW_NUMBER() OVER(ORDER BY AL.[FromDate], AL.[ToDate], [CurrencyId1], [NotedAgentId0], AL.[ResourceId], SS.[Time10], SS.[Time20]) + @LastIndex AS [Index],
-	[CurrencyId1],
+SELECT ROW_NUMBER() OVER(ORDER BY AL.[FromDate]) + @LastIndex AS [Index], [CurrencyId1],
 	-SUM([MonetaryValue1] * (DATEDIFF(DAY, SS.[Time10], SS.[Time20]) + 1)) / @MonthDays AS [MonetaryValue0],
 	@EndOfMonth, [NotedAgentId0], AL.[FromDate], AL.[ToDate],
 	@AbdenceDeductionsMemo + dal.fn_Resource__Name2(AL.[ResourceId]) + @MonthName + CAST(DAY(Time10) AS NVARCHAR (5)) + N' - ' + CAST(DAY(Time20) AS NVARCHAR(5))
