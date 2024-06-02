@@ -47,4 +47,14 @@ export interface Custom {
     City2?: string;
     City3?: string;
     CommercialRegistrationNumber?: string;
+
+    // Banner
+    
+    BannerKey?: string;
+    BannerIsDismissable?: boolean;
+    BannerType?: 'Info' | 'Warning' | 'Error';
+    BannerHeight?: number;
+    BannerText?: string;
+    BannerText2?: string;
+    BannerText3?: string;
 }

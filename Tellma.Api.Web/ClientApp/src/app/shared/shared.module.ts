@@ -106,6 +106,7 @@ import { DatePickerParserFormatter } from './date-picker/date-picker-parse-forma
 import { DateFormatPipe } from './date-format/date-format.pipe';
 import { DateTimeFormatPipe } from './date-format/date-time-format.pipe';
 import { TimeFormatPipe } from './date-format/time-format.pipe';
+import { InfoMessageComponent } from './info-message/info-message.component';
 
 @NgModule({
   declarations: [
@@ -124,6 +125,7 @@ import { TimeFormatPipe } from './date-format/time-format.pipe';
     TextEditorComponent,
     MultilineEditorComponent,
     WarningMessageComponent,
+    InfoMessageComponent,
     DatePickerComponent,
     TableComponent,
     DetailsPickerComponent,
@@ -190,6 +192,7 @@ import { TimeFormatPipe } from './date-format/time-format.pipe';
     ErrorMessageComponent,
     SuccessMessageComponent,
     WarningMessageComponent,
+    InfoMessageComponent,
     TextEditorComponent,
     MultilineEditorComponent,
     FormGroupComponent,
