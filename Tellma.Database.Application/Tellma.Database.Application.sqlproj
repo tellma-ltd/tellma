@@ -999,6 +999,12 @@
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_AE.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_ET.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_AnnualLeave__Provision_LB.sql" />
+    <Build Include="dal\Functions\dal.ft_FixedAssetsDates__FixedAssetsProfiles.sql" />
+    <Build Include="bll\Functions\bll.fn_Resource_ResourceQuantity_EntryUnit__EntryQuantity.sql" />
+    <Build Include="bll\Functions\bll.fn_Resource_EntryQuantity_EntryUnit__ResourceQuantity.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource_ExcludeId__Balances.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_AccountEntryTypeHasEnoughBalance__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate_EntryType_Line__Balance.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -1027,6 +1033,7 @@
     <None Include="Tellma.Tellma.2304.publish.xml" />
     <None Include="Tellma.104.publish.xml" />
     <None Include="TellmaStaging.101.publish.xml" />
+    <None Include="XMLFile1.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

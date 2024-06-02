@@ -86,6 +86,39 @@ BEGIN
 		HAVING COUNT(*) > 1
 	);
 
+-- Identifier must be unique
+	DECLARE @IdentifierLabel NVARCHAR (255) =  (
+			SELECT [dbo].[fn_Localize]([IdentifierLabel], [IdentifierLabel2], [IdentifierLabel3])
+			FROM [dbo].[AgentDefinitions] WHERE [Id] = @DefinitionId
+		);
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Identifier',
+		N'Error_TheIdentifier0IsUsed',
+		@IdentifierLabel,
+		FE.[Identifier]
+	FROM @Entities FE 
+	JOIN [dbo].[Agents] BE ON FE.[Identifier] = BE.[Identifier] AND BE.[DefinitionId] = @DefinitionId
+	JOIN [dbo].[AgentDefinitions] RD ON BE.[DefinitionId] = RD.[Id]
+	WHERE (FE.[Id] <> BE.[Id]);
+
+	-- Identifier must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT DISTINCT TOP(@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Identifier',
+		N'Error_TheIdentifier0IsDuplicated',
+		@IdentifierLabel,
+		[Identifier]
+	FROM @Entities
+	WHERE [Identifier] IN (
+		SELECT [Identifier]
+		FROM @Entities
+		WHERE [Identifier] IS NOT NULL
+		GROUP BY [Identifier]
+		HAVING COUNT(*) > 1
+	);
+
+
 	IF @DefinitionId <> dal.fn_AgentDefinitionCode__Id(N'Employee')
 	BEGIN
 		-- Name must be unique
