@@ -352,6 +352,7 @@ export function friendlify(error: any, trx: TranslateService): FriendlyError {
         return friendlyStructure(res.status, trx.instant('Error_RecordNotFound'));
 
       case 500:  // Internal Server Error
+        console.log('Received 500 error!', res);
         if (res.error && res.error.TraceIdentifier) {
           return friendlyStructure(res.status, trx.instant('Error_UnhandledServerErrorIdentifier0', { 0: res.error.TraceIdentifier }));
         } else {

@@ -566,7 +566,7 @@
     <value>ተደብቋል</value>
   </data>
   <data name="Definition_State_Testing" xml:space="preserve">
-    <value>መሞከር</value>
+    <value>በመሞከር ላይ</value>
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>የሚታይ</value>
@@ -587,7 +587,7 @@
     <value>ዝርዝሮች የገባበት</value>
   </data>
   <data name="DetailsEntry_Accumulation" xml:space="preserve">
-    <value>አሲ.ሲ.</value>
+    <value>አሲሲ</value>
   </data>
   <data name="DetailsEntry_BaseQuantity" xml:space="preserve">
     <value>የመሠረት ብዛት</value>
@@ -1154,7 +1154,7 @@
     <value>ትርጉሙ '{0}' በ "{1}" መለያ ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
-    <value>«{0}» የሚለው ፍቺ በ«{1}» መለያ አይነት ውስጥ ጥቅም ላይ ይውላል።</value>
+    <value>'{0}' ትርጉሙ በ'መለያ አይነት'{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_Definition0IsUsedInLineDefinition1" xml:space="preserve">
     <value>{0}' የሚለው ፍቺ በመስመር ፍቺ '{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -1235,7 +1235,7 @@
     <value>ልክ ያልሆነ አብነት</value>
   </data>
   <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
-    <value>ልክ ያልሆነ የአብነት አገላለጽ ({0})።</value>
+    <value>ልክ ያልሆነ የአብነት መግለጫ ({0})።</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት።</value>
@@ -1381,9 +1381,6 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>{0} «{1}» በ«{2}» መለያ ውስጥ ጥቅም ላይ ይውላል</value>
   </data>
-  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
-    <value>{0} «{1}» በ{2} «{3}» ውስጥ ጥቅም ላይ ይውላል።</value>
-  </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
     <value>መለያ «{0}» የቦዘነ ወኪል «{1}» አለው።</value>
   </data>
@@ -1460,7 +1457,7 @@
     <value>የመለያው አይነት ከምድብ ጋር ተኳሃኝ አይደለም።</value>
   </data>
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
-    <value>{0} «{1}» ምንም ተጠቃሚዎች የሉትም።</value>
+    <value>{0} «{1}» ምንም ተጠቃሚ አልተገለጸም።</value>
   </data>
   <data name="Error_TheAgent01IsInactive" xml:space="preserve">
     <value>{0} «{1}» ቦዝኗል።</value>
@@ -1493,7 +1490,7 @@
     <value>የደንበኛ መታወቂያ '{0}' የተባዛ ነው።</value>
   </data>
   <data name="Error_TheClientId0IsUsed" xml:space="preserve">
-    <value>የደንበኛ መታወቂያ '{0}' አስቀድሞ ጥቅም ላይ ውሏል።</value>
+    <value>የደንበኛ መታወቂያ «{0}» አስቀድሞ ጥቅም ላይ ውሏል።</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
@@ -1579,9 +1576,6 @@
   <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
     <value>መለያ «{0}» አስቀድሞ ጥቅም ላይ ውሏል።</value>
   </data>
-  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
-    <value>የመስመሩ ትርጓሜዎች የጋራ መለያ አይነት የላቸውም።</value>
-  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>መስመሩ ምንም መግቢያዎች የሉትም።</value>
   </data>
@@ -1643,7 +1637,7 @@
     <value>የመለያ ቁጥሩ '{0}' አስቀድሞ ጥቅም ላይ ውሏል።</value>
   </data>
   <data name="Error_TheUnit0HasIncompatibleUnitTypeMustBeType1" xml:space="preserve">
-    <value>የ«{0}» አሃድ ተኳሃኝ ያልሆነ አይነት አለው፣ የ{1} አይነት መሆን አለበት</value>
+    <value>አሃዱ '{0}' ተኳሃኝ ያልሆነ አይነት አለው፣ የ{1} አይነት መሆን አለበት</value>
   </data>
   <data name="Error_TheUnit0IsUsedInDocument12" xml:space="preserve">
     <value>ክፍል «{0}» በ{1} «{2}» ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -2225,7 +2219,7 @@
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="LookupDefinitions" xml:space="preserve">
-    <value>ፍቺዎችን ይፈልጉ</value>
+    <value>የፍለጋ ፍቺዎች</value>
   </data>
   <data name="Lookups" xml:space="preserve">
     <value>የተፈለጉ</value>
@@ -3005,7 +2999,7 @@
     <value>የደመወዝ ጊዜ ይጀምራል</value>
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
-    <value>ደሞዝ የሚሰላበት የወሩ ቀን</value>
+    <value>ደሞዝ የሚሰላበት ወር በፊት ያለው ቀን</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>ተግባራዊ ምንዛሬ</value>
@@ -3563,7 +3557,7 @@
     <value>የመተንበይ ዓይነት</value>
   </data>
   <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
-    <value>የመግቢያ ዓይነት ጠቋሚ</value>
+    <value>የመግቢያ አይነት ጠቋሚ</value>
   </data>
   <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
     <value>የተኪ ሚና</value>

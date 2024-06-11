@@ -23,8 +23,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="162.2.111" />
-    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.23.0" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="162.3.563" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="171.30.0" />
   </ItemGroup>
 
   <ItemGroup>
