@@ -681,6 +681,28 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   public get menuOrientation(): DropListOrientation {
     return this.isMdScreen ? 'horizontal' : 'vertical';
   }
+
+  // Banner
+  
+  public get showBanner(): boolean {
+    return !!this.ws.settings.BannerText;
+  }
+
+  public get bannerContent(): string {
+    const settings = this.ws.settings;
+    return this.ws.localize(
+      settings.BannerText, 
+      settings.BannerText2, 
+      settings.BannerText3);
+  }
+
+  public get bannerType(): 'Info' | 'Warning' | 'Error' {
+    return this.ws.settings.BannerType;
+  }
+
+  public get bannerHeight(): number {
+    return this.ws.settings.BannerHeight;
+  }
 }
 
 export interface Favorite {

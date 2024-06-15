@@ -5,6 +5,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   templateUrl: './error-message.component.html',
 })
 export class ErrorMessageComponent {
+  
+  @Input()
+  height: number;
 
   @Input()
   dismissable: boolean;

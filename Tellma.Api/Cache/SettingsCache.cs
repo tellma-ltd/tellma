@@ -92,6 +92,15 @@ namespace Tellma.Api
             forClient.City3 = fields.City3;
             forClient.CommercialRegistrationNumber = fields.CommercialRegistrationNumber;
 
+            // Banner
+            forClient.BannerKey = fields.BannerKey;
+            forClient.BannerIsDismissable = fields.BannerIsDismissable;
+            forClient.BannerType = fields.BannerType;
+            forClient.BannerHeight = fields.BannerHeight;
+            forClient.BannerText = fields.BannerText;
+            forClient.BannerText2 = fields.BannerText2;
+            forClient.BannerText3 = fields.BannerText3;
+
             // ZATCA fields
             forClient.ZatcaEncryptedSecret = zatcaSettings.ZatcaEncryptedSecret;
             forClient.ZatcaEncryptedSecurityToken = zatcaSettings.ZatcaEncryptedSecurityToken;

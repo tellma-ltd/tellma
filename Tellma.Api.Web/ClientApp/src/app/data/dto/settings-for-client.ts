@@ -36,4 +36,14 @@ export interface SettingsForClient {
     FeatureFlags: { [key: string]: boolean };
 
     ZatcaEnvironment: 'Sandbox' | 'Simulation' | 'Production';
+
+    // Banner
+
+    BannerKey?: string;
+    BannerIsDismissable?: boolean;
+    BannerType?: 'Info' | 'Warning' | 'Error';
+    BannerHeight?: number;
+    BannerText?: string;
+    BannerText2?: string;
+    BannerText3?: string;
 }

@@ -1,4 +1,12 @@
 <div class="d-flex flex-column h-100">
+
+  <!-- Offline indicator -->
+  <ng-container *ngIf="showBanner">
+    <t-info-message *ngIf="bannerType === 'Info'" [height]="bannerHeight">{{bannerContent}}</t-info-message>
+    <t-warning-message *ngIf="bannerType === 'Warning'" [height]="bannerHeight">{{bannerContent}}</t-warning-message>
+    <t-error-message *ngIf="bannerType === 'Error'" height="15" [height]="bannerHeight">{{bannerContent}}</t-error-message>
+  </ng-container>
+
   <!-- <t-warning-message>The license has expired, the system will become read-only in <b>22 days.</b></t-warning-message> -->
   <!-- <t-error-message>The system is readonly, please renew your license</t-error-message> -->
   <nav class="navbar navbar-dark t-dark navbar-expand-md p-0 align-items-md-stretch"
@@ -34,50 +42,50 @@
     <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <!-- <div class="h-100 d-flex align-items-stretch flex-grow-1 overflow-auto" style="width: 0;"> -->
-        <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap flex-grow-1 t-md-zero-width overflow-auto" cdkDropList
-          [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
-  
-          <!-- Favorites -->
-          <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
-            cdkDrag>
-            <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
-              (click)="onClickFavorite(favorite.url)">
-              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-            </button>
-  
-            <!-- Drag preview -->
-            <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
-              style="height:50px">
-              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-            </div>
-            <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
-            </div>
-          </li>
-  
-          <!-- Context menu for results -->
-          <ng-template #favoriteMenu let-favorite let-close="close">
-            <div class="dropdown">
-              <ul class="dropdown-menu show shadow-sm">
-                <li class="dropdown-item px-0 py-1" (click)="onEditFavorite(favorite); close();">
-                  <div class="t-menu-icon">
-                    <fa-icon icon="pen"></fa-icon>
-                  </div>
-                  <div class="t-menu-text">
-                    {{ 'Edit' | translate }}
-                  </div>
-                </li>
-                <li class="dropdown-item px-0 py-1" (click)="onDeleteFavorite(favorite); close();">
-                  <div class="t-menu-icon">
-                    <fa-icon icon="trash"></fa-icon>
-                  </div>
-                  <div class="t-menu-text">
-                    {{ 'Delete' | translate }}
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </ng-template>
-        </ol>
+      <ol class="nav navbar-nav px-4 px-md-0 flex-nowrap flex-grow-1 t-md-zero-width overflow-auto" cdkDropList
+        [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
+
+        <!-- Favorites -->
+        <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
+          cdkDrag>
+          <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
+            (click)="onClickFavorite(favorite.url)">
+            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+          </button>
+
+          <!-- Drag preview -->
+          <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
+            style="height:50px">
+            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+          </div>
+          <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
+          </div>
+        </li>
+
+        <!-- Context menu for results -->
+        <ng-template #favoriteMenu let-favorite let-close="close">
+          <div class="dropdown">
+            <ul class="dropdown-menu show shadow-sm">
+              <li class="dropdown-item px-0 py-1" (click)="onEditFavorite(favorite); close();">
+                <div class="t-menu-icon">
+                  <fa-icon icon="pen"></fa-icon>
+                </div>
+                <div class="t-menu-text">
+                  {{ 'Edit' | translate }}
+                </div>
+              </li>
+              <li class="dropdown-item px-0 py-1" (click)="onDeleteFavorite(favorite); close();">
+                <div class="t-menu-icon">
+                  <fa-icon icon="trash"></fa-icon>
+                </div>
+                <div class="t-menu-text">
+                  {{ 'Delete' | translate }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+      </ol>
       <!-- </div> -->
 
       <ol class="nav navbar-nav flex-nowrap">

@@ -429,19 +429,20 @@ namespace Tellma.Repository.Common.Queryex
                             throw new QueryException($"Function '{Name}': The second argument {arg2} could not be interpreted as a {QxType.Date}, {QxType.DateTime} or {QxType.DateTimeOffset}.");
                         }
 
+                        // Use subunits to get a more 
                         string datePart = nameLower[4..^1]; // Remove "diff" and "s"
-                        decimal secondsPerUnit = datePart switch
+                        var (subunit, subunitsPerUnit) = datePart switch
                         {
-                            "day" => 60m * 60m * 24m,
-                            "hour" => 60m * 60m,
-                            "minute" => 60m,
-                            "second" => 1m,
+                            "day" => ("hour", 24m),
+                            "hour" => ("minute", 60m),
+                            "minute" => ("second", 60m),
+                            "second" => ("millisecond", 1000m),
                             _ => throw new InvalidOperationException($"Unkown datepart {datePart}.") // Future proofing
                         };
 
                         resultType = QxType.Numeric;
                         resultNullity = date1Nullity | date2Nullity;
-                        resultSql = $"(DATEDIFF(SECOND, {date1Sql.DeBracket()}, {date2Sql.DeBracket()}) / {secondsPerUnit:F1})";
+                        resultSql = $"(DATEDIFF({subunit}, {date1Sql.DeBracket()}, {date2Sql.DeBracket()}) / {subunitsPerUnit:F1})";
 
                         break;
                     }

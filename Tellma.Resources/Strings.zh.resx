@@ -881,7 +881,7 @@
     <value>整数属性2</value>
   </data>
   <data name="Entity_LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>地点</value>
@@ -1253,16 +1253,16 @@
     <value>标签“{0}”与类型 {1} 上的任何集合都不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”与类型 {1} 上的任何集合都不匹配，您的意思是“{2}”吗？</value>
+    <value>标签“{0}”与类型 {1} 上的任何集合都不匹配，您是指“{2}”吗？</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
     <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您的意思是“{2}”吗？</value>
+    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您指的是“{2}”吗？</value>
   </data>
   <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
-    <value>标签“{0}”匹配类型为 {1} 的多个集合，使用数字后缀来消除歧义，例如“{0}.1”。</value>
+    <value>标签“{0}”匹配类型为“{1}”的多个集合，使用数字后缀来消除歧义，例如“{0}.1”。</value>
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>标签“{0}”匹配类型 {1} 上的多个字段，使用数字后缀来消除歧义，例如“{0}.1”。</value>
@@ -1384,9 +1384,6 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>{0}“{1}”在帐户“{2}”中使用</value>
   </data>
-  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
-    <value>{0}“{1}”用在 {2}“{3}”中。</value>
-  </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
     <value>帐户“{0}”有不活动的代理“{1}”。</value>
   </data>
@@ -1412,7 +1409,7 @@
     <value>帐户“{0}”具有不可见的资源定义“{1}”。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
-    <value>帐户“{0}”的数量余额非零{1}。</value>
+    <value>帐户“{0}”的数量余额非零 {1}。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
     <value>帐户“{0}”的余额为非零值 {1}。</value>
@@ -1582,9 +1579,6 @@
   <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
     <value>标识符“{0}”已被使用。</value>
   </data>
-  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
-    <value>线路定义没有共享帐户类型。</value>
-  </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>该行没有条目。</value>
   </data>
@@ -1712,7 +1706,7 @@
     <value>值“{0}”对于 {1} 字段无效，支持的值为：{2}。</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
-    <value>增值税税率必须介于 0% 到 100% 之间。</value>
+    <value>增值税率必须介于 0% 和 100% 之间。</value>
   </data>
   <data name="Error_YouCanOnlyModifyYourOwnComments" xml:space="preserve">
     <value>您只能修改您自己的评论。</value>
@@ -2117,7 +2111,7 @@
     <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
     <value>代理定义</value>

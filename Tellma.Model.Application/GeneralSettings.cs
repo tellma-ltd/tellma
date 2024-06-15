@@ -125,6 +125,16 @@ namespace Tellma.Model.Application
             public string City2 { get; set; }
             public string City3 { get; set; }
             public string CommercialRegistrationNumber { get; set; }
+
+            // Banner
+
+            public string BannerKey { get; set; }
+            public bool BannerIsDismissable { get; set; }
+            public string BannerType { get; set; }
+            public string BannerText { get; set; }
+            public string BannerText2 { get; set; }
+            public string BannerText3 { get; set; }
+            public int BannerHeight { get; set; }
         }
 
         #endregion

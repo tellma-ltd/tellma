@@ -1549,9 +1549,6 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>The {0} '{1}' is used in account '{2}'</value>
   </data>
-  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
-    <value>The {0} '{1}' is used in {2} '{3}'.</value>
-  </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
     <value>The account '{0}' has inactive agent '{1}'.</value>
   </data>
@@ -1584,6 +1581,9 @@
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>The account '{0}' is inactive</value>
+  </data>
+  <data name="Error_TheAccount0IsMonetaryAndForexAndNotAutoSelected" xml:space="preserve">
+    <value>The account '{0}' is monetary and forex and not auto selected.</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12" xml:space="preserve">
     <value>Account '{0}' is used in {1} {2}.</value>
@@ -1705,6 +1705,12 @@
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>Some lines are missing required signatures.</value>
   </data>
+  <data name="Error_TheDocumentHasMissingInvoice" xml:space="preserve">
+    <value>The invoice is required.</value>
+  </data>
+  <data name="Error_TheDocumentHasMissingInvoiceTypeTransaction" xml:space="preserve">
+    <value>The invoice type transaction is required.</value>
+  </data>
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
     <value>The document is already assigned to '{0}'.</value>
   </data>
@@ -1747,14 +1753,20 @@
   <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
     <value>The identifier '{0}' is already used.</value>
   </data>
-  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
-    <value>The line definitions have no shared account type.</value>
+  <data name="Error_TheInvoiceHasMissingCurrency" xml:space="preserve">
+    <value>The invoice currency is required.</value>
   </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>The line has no entries.</value>
   </data>
   <data name="Error_TheLookup0IsUsedInResource12" xml:space="preserve">
     <value>{0}' is used in {1}: '{2}'</value>
+  </data>
+  <data name="Error_TheLookupDefinitionForInvoiceTypeTransactionsIsRequired" xml:space="preserve">
+    <value>The lookup definition for invoice type Transactions is required.</value>
+  </data>
+  <data name="Error_TheLookupDefinitionForReasonForIssuanceOfCreditDebitNoteIsRequired" xml:space="preserve">
+    <value>The lookup definition for reason for issuance of credit or debit note is required.</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
     <value>The name '{0}' is duplicated.</value>

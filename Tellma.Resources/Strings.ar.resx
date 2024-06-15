@@ -1435,9 +1435,6 @@
   <data name="Error_The01IsUsedInAccount2" xml:space="preserve">
     <value>البيان ({1}) من نوع {0} مستخدم حاليا في الحساب {2}</value>
   </data>
-  <data name="Error_The01IsUsedInDocument23" xml:space="preserve">
-    <value>البيان {1} من نوع {0} مستخدم في المستند ({3}) من نوع {2}.</value>
-  </data>
   <data name="Error_TheAccount0HasInActiveAgent1" xml:space="preserve">
     <value>الحساب ({0}) ذمته ({1}) غير منشطة.</value>
   </data>
@@ -1632,9 +1629,6 @@
   </data>
   <data name="Error_TheIdentifier0IsUsed" xml:space="preserve">
     <value>رقم التعريف ({0}) مستخدم حاليا.</value>
-  </data>
-  <data name="Error_TheLineDefinitionsHaveNoSharedAccountType" xml:space="preserve">
-    <value>تعريفات السطور لا يجمع بينها تصنيف حساب مشترك.</value>
   </data>
   <data name="Error_TheLineHasNoEntries" xml:space="preserve">
     <value>السطر خاو.</value>
