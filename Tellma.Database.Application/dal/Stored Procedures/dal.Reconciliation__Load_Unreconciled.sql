@@ -24,7 +24,7 @@ AS
 	AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
 	AND L.[PostingDate] <= @AsOfDate;
 
-	With ReconciledEntriesAsOfDate AS (
+	WITH ReconciledEntriesAsOfDate AS (
 		SELECT DISTINCT RE.[EntryId]
 		FROM dbo.ReconciliationEntries RE
 		JOIN dbo.Reconciliations R ON RE.ReconciliationId = R.Id
@@ -216,7 +216,6 @@ AS
 		CAST(IIF(EE.[Id] IN (SELECT [ExternalEntryId] FROM dbo.ReconciliationExternalEntries), 1, 0) AS BIT) AS IsReconciledLater
 	FROM dbo.ExternalEntries EE
 	WHERE EE.[AgentId] = @AgentId
-	AND EE.[AccountId] = @AccountId
 	AND EE.[AccountId] = @AccountId
 	AND	EE.[PostingDate] <= @AsOfDate
 	-- Exclude if it was reconciled with internal entry before as of date

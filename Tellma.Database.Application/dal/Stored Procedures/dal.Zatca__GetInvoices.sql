@@ -196,12 +196,19 @@ BEGIN
    /*
 	Upon issuing prepayment invoice
 	Dr. Cash
-	  Cr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15
+	  Cr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15, Noted Agent: PPSI
 	  Cr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
 
 	Upon applying the prepayment
 	Dr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
+	Dr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15, Noted Agent: PPSI
 	  Cr. Account Receivable: SI
+
+	We already have, elsewhere in the same sales invoice
+	Dr. Account Receivbable: SI 1,150
+		Cr. VAT Payable: Agent: VAT, Noted Resource: Item, Noted Agent: SI
+		Cr. Revenues, ...	
+
    */
     SELECT --TOP 1 MA: 2024-04-21 Commented on this date.
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement

@@ -414,13 +414,14 @@ BEGIN
 		RD.[UnitCardinality] IN (N'Single', N'None')
 	AND NOT (RD.ResourceDefinitionType IN (N'PropertyPlantAndEquipment', N'InvestmentProperty', N'IntangibleAssetsOtherThanGoodwill'));
 
+/* MA: 2024-06-08,commented as it was conflicting with expense and invoice AG
 	UPDATE E
 	SET E.[Quantity] = 1
 	FROM @PreprocessedEntries E
 	JOIN [dbo].[Units] U ON E.[UnitId] = U.[Id]
 	WHERE U.[UnitType] = N'Pure';
 --	AND E.[Quantity] <>0;
-
+*/
 	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
