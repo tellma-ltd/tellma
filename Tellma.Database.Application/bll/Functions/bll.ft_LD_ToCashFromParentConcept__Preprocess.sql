@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ft_LD_ToCashFromParentConcept__Preprocess]
+﻿CREATE OR ALTER FUNCTION [bll].[ft_LD_ToCashFromParentConcept__Preprocess]
 (
 	@WideLines [WidelineList] READONLY,
 	@ParentConcept NVARCHAR (255)
@@ -453,3 +453,4 @@ BEGIN
 
 	RETURN
 END
+GO
