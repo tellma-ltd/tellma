@@ -190,7 +190,7 @@ BEGIN
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer' OR NR.[Code] LIKE N'Prepayment%' AND E.[Direction] = 1)
+	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer' OR NRD.[Code] LIKE N'Prepayments%' AND E.[Direction] = 1)
 
    --=-=-= 4 - Prepayment Invoice Lines =-=-=--
    /*
@@ -217,7 +217,7 @@ BEGIN
         dal.[fn_PrepaymentInvoice__DocumentId](E_DI.[AgentId]) AS [PrepaymentId], -- KSA-26
         dal.[fn_PrepaymentInvoice__UuId](E_DI.[AgentId]) AS [PrepaymentUuid], -- KSA-27
         [dal].[fn_Invoice__IssueDateTime] (E_DI.[AgentId]) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
- --       0.00 AS [Quantity], -- BT-129
+        E_DI.[Direction] * E_DI.[Quantity] AS [Quantity], -- BT-129
  --       N'PCE' AS [QuantityUnit], -- BT-130
         E_DI.[Direction] * E_DI.[MonetaryValue] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
 --		ROUND(E_VAT.[Direction] * E_VAT.[MonetaryValue] * ISNULL(R_DI.[VatRate], 0.15), 2) AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
@@ -235,10 +235,12 @@ BEGIN
 	INNER JOIN dbo.AccountTypes AC_DI ON AC_DI.[Id] = A_DI.[AccountTypeId]
 
 	INNER JOIN dbo.Resources R_DI ON R_DI.[Id] = E_DI.[ResourceId]
+	INNER JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R_DI.[DefinitionId]
 	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = R_DI.[Lookup3Id]
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC_VAT.[Concept] = N'CurrentValueAddedTaxPayables'
 	AND AC_DI.[Concept] = N'DeferredIncomeClassifiedAsCurrent'
-	AND R_DI.[Code] LIKE N'Prepayment%' AND E_VAT.[Direction] = 1
+	AND RD.[Code] LIKE N'Prepayments%' AND E_VAT.[Direction] = 1
 END;
+GO
