@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [wiz].[AssetsDepreciation__Populate]
 -- This is deprecated. User wiz.PPE__Depreciate instead.
+-- It has many drawbacks. It is only for PPEs and uses straight line method only.
+-- PPE was an agent not a resource.
 -- [wiz].[AssetsDepreciation__Populate] @DepreciationPeriodEnds = N'2021.08.07'
 	@DocumentIndex	INT = 0,
 	@DepreciationPeriodEnds	DATE = '2021.09.10'

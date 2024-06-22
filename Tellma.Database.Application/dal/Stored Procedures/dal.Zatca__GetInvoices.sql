@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] -- declare @Ids indexedidlist, @PIS INT, @PIH nvarchar(max);insert into @Ids values (0, 11898); exec [dal].[Zatca__GetInvoices] @Ids, @PIS, @PIH
+﻿CREATE PROCEDURE [dal].[Zatca__GetInvoices] 
 	@Ids [dbo].[IndexedIdList] READONLY,
     @PreviousInvoiceSerialNumber INT OUTPUT,
     @PreviousInvoiceHash NVARCHAR(MAX) OUTPUT
@@ -132,7 +132,7 @@ BEGIN
 	AND (E.MonetaryValue <> 0 OR E.[NotedAmount] <> 0)
     --=-=-= 3 -Regular Invoice Lines =-=-=--
     SELECT -- TOP 1. MA: 2024-04-21 Commented on this date.
-		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
+		I.[Index] AS [InvoiceIndex], -- Index of the invoice this line belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
         CASE
 			WHEN DD.ZatcaDocumentType IN (N'388', N'383') THEN -E.[Direction] * E.[Quantity] 
@@ -142,8 +142,8 @@ BEGIN
         U.[Code] AS [QuantityUnit], -- BT-130. PCE for prepayment invoice lines
 		--Net: BT-131  = Quantity: BT-129 * Unit price: BT-146 / Base Qty: BT-149 + Charge: BT-141 - Discounts: BT-136),
         CASE -- '386' prepayment is added here even though these lines are not for prepayments
-			WHEN DD.ZatcaDocumentType IN (N'388', N'383') THEN -E.[Direction] * E.[NotedAmount]
-			WHEN DD.ZatcaDocumentType IN (N'381', N'386') THEN +E.[Direction] * E.[NotedAmount]
+			WHEN DD.ZatcaDocumentType IN (N'388', N'383', N'386') THEN -E.[Direction] * E.[NotedAmount]
+			WHEN DD.ZatcaDocumentType IN (N'381') THEN +E.[Direction] * E.[NotedAmount]
 		END AS [NetAmount], -- BT-131
 		CAST((
 			CASE
@@ -156,8 +156,8 @@ BEGIN
         NULL AS [AllowanceChargeReason], -- BT-139 for allowances BT-144 for charges, max 1000 chars
         NULL AS [AllowanceChargeReasonCode], -- BT-140 for allowances, BT-145 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
 		CASE -- '386' prepayment is added here even though these lines are not for prepayments. However, not sure if 386 is to go with first line
-			WHEN DD.ZatcaDocumentType IN (N'388', N'383') THEN -E.[Direction] * E.[MonetaryValue]
-			WHEN DD.ZatcaDocumentType IN (N'381', N'386') THEN +E.[Direction] * E.[MonetaryValue]
+			WHEN DD.ZatcaDocumentType IN (N'388', N'383', N'386') THEN -E.[Direction] * E.[MonetaryValue]
+			WHEN DD.ZatcaDocumentType IN (N'381') THEN +E.[Direction] * E.[MonetaryValue]
 		END AS [VatAmount], -- KSA-11
         NR.[Name2] AS [ItemName], -- BT-153, max 1000 chars
         NULL AS [ItemBuyerIdentifier], -- BT-156, max 127 chars
@@ -190,7 +190,7 @@ BEGIN
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
-	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
+	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer' OR NR.[Code] LIKE N'Prepayment%' AND E.[Direction] = 1)
 
    --=-=-= 4 - Prepayment Invoice Lines =-=-=--
    /*
@@ -201,7 +201,7 @@ BEGIN
 
 	Upon applying the prepayment
 	Dr. Deferred Income: Agent: PPSI, Resource: Prepayment.S.15
-	Dr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15, Noted Agent: PPSI
+	Dr. VAT Payable: Agent: VAT, Noted Resource: Prepayment.S.15, Noted Agent: SI
 	  Cr. Account Receivable: SI
 
 	We already have, elsewhere in the same sales invoice
@@ -211,28 +211,34 @@ BEGIN
 
    */
     SELECT --TOP 1 MA: 2024-04-21 Commented on this date.
-		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
+		I.[Index] AS [InvoiceIndex], -- Index of the invoice this prepayment belongs to. Must be one of the indices returned from the first SELECT statement
 		L.[Index] + 1 AS [Id], -- BT-126 A unique identifier for the individual line within the Invoice. This value should be only numeric value between 1 and 999,999
 		-- remove any field which is pure computation
-        E.[AgentId] AS [PrepaymentId], -- KSA-26
-        NEWID() AS [PrepaymentUuid], -- KSA-27
-        [dal].[fn_Invoice__IssueDateTime] (D.[NotedAgentId]) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
-        0 AS [Quantity], -- BT-129
-        N'PCE' AS [QuantityUnit], -- BT-130
-        E.[Direction] * E.[NotedAmount] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
-		E.[Direction] * E.[NotedAmount] * ISNULL(R.[VatRate], 0.15) AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
-		E.[Direction] * E.[MonetaryValue] AS [PrepaidAmountBreakdown], -- to accumulate in BT-113
+        dal.[fn_PrepaymentInvoice__DocumentId](E_DI.[AgentId]) AS [PrepaymentId], -- KSA-26
+        dal.[fn_PrepaymentInvoice__UuId](E_DI.[AgentId]) AS [PrepaymentUuid], -- KSA-27
+        [dal].[fn_Invoice__IssueDateTime] (E_DI.[AgentId]) AS [PrepaymentIssueDateTime], -- KSA-28 & 29
+ --       0.00 AS [Quantity], -- BT-129
+ --       N'PCE' AS [QuantityUnit], -- BT-130
+        E_DI.[Direction] * E_DI.[MonetaryValue] AS [PrepaymentVatCategoryTaxableAmount], -- KSA-31
+--		ROUND(E_VAT.[Direction] * E_VAT.[MonetaryValue] * ISNULL(R_DI.[VatRate], 0.15), 2) AS [PrepaymentVatCategoryTaxAmount], -- KSA-32
+--		E_DI.[Direction] * E_DI.[MonetaryValue] + E_VAT.[Direction] * ROUND(E_VAT.[MonetaryValue] * ISNULL(R_DI.[VatRate], 0.15), 2) AS [PrepaidAmountBreakdown], -- to accumulate in BT-113
 		-- Resource Lookup 3: VAT Category
 		ISNULL(LK3.[Code], 'S') AS [PrepaymentVatCategory], -- KSA-33: [E, S, Z, O]
-        ISNULL(R.[VatRate], 0.15) AS [PrepaymentVatRate] -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
+        ISNULL(R_DI.[VatRate], 0.15) AS [PrepaymentVatRate] -- KSA-34: between 0.00 and 1.00 (NOT 100.00)
     FROM [map].[Lines]() L
-	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
-	INNER JOIN dbo.Resources R ON R.[Id] = E.[NotedResourceId]
-	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = R.[Lookup3Id]
-	INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-	INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	INNER JOIN dbo.Entries E_VAT ON E_VAT.[LineId] = L.[Id]
+	INNER JOIN dbo.Accounts A_VAT ON A_VAT.[Id] = E_VAT.[AccountId]
+	INNER JOIN dbo.AccountTypes AC_VAT ON AC_VAT.[Id] = A_VAT.[AccountTypeId]
+
+	INNER JOIN dbo.Entries E_DI ON E_DI.[LineId] = L.[Id]
+	INNER JOIN dbo.Accounts A_DI ON A_DI.[Id] = E_DI.[AccountId]
+	INNER JOIN dbo.AccountTypes AC_DI ON AC_DI.[Id] = A_DI.[AccountTypeId]
+
+	INNER JOIN dbo.Resources R_DI ON R_DI.[Id] = E_DI.[ResourceId]
+	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = R_DI.[Lookup3Id]
     INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
-	WHERE AC.[Concept] = N'DeferredIncomeClassifiedAsCurrent'
-	AND R.[Code] LIKE N'Prepayment%'
+	WHERE AC_VAT.[Concept] = N'CurrentValueAddedTaxPayables'
+	AND AC_DI.[Concept] = N'DeferredIncomeClassifiedAsCurrent'
+	AND R_DI.[Code] LIKE N'Prepayment%' AND E_VAT.[Direction] = 1
 END;

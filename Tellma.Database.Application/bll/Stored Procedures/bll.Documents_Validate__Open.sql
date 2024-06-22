@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Open]
+-- Currently exemption for sandbox is applied to 2304 only.
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 200,
@@ -34,6 +35,7 @@ BEGIN
 	WHERE D.[State] <> 1;	
 
 	-- Cannot unpost it if it is a Zatca document
+	IF (SELECT [ZatcaEnvironment] FROM dbo.Settings) <> N'Sandbox'
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',

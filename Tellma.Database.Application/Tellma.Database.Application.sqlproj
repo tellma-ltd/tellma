@@ -1010,6 +1010,9 @@
     <Build Include="bll\Functions\dal.ft_Reconciliation__Load_Unreconciled_External.sql" />
     <Build Include="dal\Stored Procedures\dal.Employees_Decimal2__Update.sql" />
     <Build Include="dal\Functions\dal.fn_Employee_Month__IsSalaryPaid.sql" />
+    <Build Include="bll\Functions\bll.fn_VAT__Compute.sql" />
+    <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__DocumentId.sql" />
+    <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__UuId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -1035,7 +1038,7 @@
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
     <None Include="Tellma.Tellma.1305.publish.xml" />
-    <None Include="Tellma.Tellma.2304.publish.xml" />
+    <None Include="Tellma.Tellma.304.publish.xml" />
     <None Include="Tellma.104.publish.xml" />
     <None Include="TellmaStaging.101.publish.xml" />
     <None Include="XMLFile1.xml" />
