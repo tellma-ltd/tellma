@@ -42,8 +42,7 @@ JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
---AND SIGN(BE.[Direction] * BE.[MonetaryValue]) = SIGN(FE.[Direction]*FE.[MonetaryValue])
-AND SIGN(BE.[MonetaryValue]) = SIGN(FE.[Direction])
+AND SIGN(BE.[Direction]) = SIGN(FE.[Direction])
 AND BE.[MonetaryValue] >= 0
 AND FE.[MonetaryValue] >= 0
 AND BL.[State] >= 0;

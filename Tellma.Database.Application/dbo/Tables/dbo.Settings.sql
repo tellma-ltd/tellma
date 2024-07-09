@@ -56,7 +56,7 @@
 	[ArchiveDate]							DATE				NOT NULL DEFAULT ('1980.01.01'),
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
-	[ReferenceSourceAgentDefinitionCodes]NVARCHAR (255) NOT NULL DEFAULT N'CashMachine,CashSaleVoucher,CreditSaleVoucher',
+	[ReferenceSourceAgentDefinitionCodes]	NVARCHAR (255) NOT NULL DEFAULT N'DutyStation',
 
 	-- Zatca
 	[ZatcaEncryptedSecret]					NVARCHAR(MAX),

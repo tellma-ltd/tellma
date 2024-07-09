@@ -77,6 +77,7 @@ WHERE WL.[NotedAgentId1] = SS.[EmployeeId] AND WL.[AgentId1] = SS.[DeductionAgen
 DELETE @Widelines WHERE [MonetaryValue1] = 0;
 --select * from @@Widelines
 
+DECLARE @EmployeeIncomeTaxAG INT = dal.fn_AgentDefinition_Code__Id(N'TaxDepartment', N'EmployeeIncomeTax');
 WITH WideLinesSorted AS (
 	SELECT [Index], ROW_NUMBER() OVER (ORDER BY dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]), [Index]) - 1 AS [DefragmentedIndex]
 	FROM @Widelines WL
@@ -85,9 +86,38 @@ WITH WideLinesSorted AS (
 UPDATE WL
 SET
 	[Index] = WLS.[DefragmentedIndex],
-	[MonetaryValue1] = ROUND([MonetaryValue1] * (DATEDIFF(DAY, [Time10], [Time20]) + 1.0) / @PeriodLength, 2)
+--	MA: 2024-07-05. The following line was causing the income tax to be further reduced for employees joining or leaving during the month in ET
+--	[MonetaryValue1] = ROUND([MonetaryValue1] * (DATEDIFF(DAY, [Time10], [Time20]) + 1.0) / @PeriodLength, 2)
+	[MonetaryValue1] = CASE
+		WHEN [AgentId1] = @EmployeeIncomeTaxAG THEN ROUND([MonetaryValue1], 2) -- For EIT, leave it as is.
+		ELSE ROUND([MonetaryValue1] * (DATEDIFF(DAY, [Time10], [Time20]) + 1.0) / @PeriodLength, 2) -- For SS in old design, such as in 302, prorate.
+	END
 FROM @Widelines WL
 JOIN WideLinesSorted  WLS ON WLS.[Index] = WL.[Index];
 
+-- For income tax, we do not split the tax over multiple centers. We assign to the last center
+IF EXISTS(SELECT * FROM @Widelines WHERE [AgentId1] = @EmployeeIncomeTaxAG)
+BEGIN
+	DECLARE @BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary');
+	WITH RankedCenters AS (
+		SELECT
+			T.[NotedAgentId],
+			T.[CenterId],
+			T.[Time1],
+			LEAD(T.[Time1]) OVER (PARTITION BY T.[NotedAgentId] ORDER BY T.[Time1] DESC) AS NextJoiningDate
+		FROM @Entries T
+		WHERE ResourceId = @BasicSalaryRS
+	),
+	EmployeesCenters AS (
+		SELECT [NotedAgentId], [CenterId]
+		FROM RankedCenters
+		WHERE NextJoiningDate IS NULL
+	)
+	UPDATE WL
+	SET [CenterId0] = EC.[CenterId]
+	FROM @Widelines WL
+	JOIN EmployeesCenters EC ON EC.[NotedAgentId] = WL.[NotedAgentId1]
+	WHERE WL.[AgentId1] = @EmployeeIncomeTaxAG
+END
 SELECT * FROM @Widelines;
 GO
