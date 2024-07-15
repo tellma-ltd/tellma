@@ -33,7 +33,7 @@ AS
 		ON DLDE.[DocumentIndex] = FL.[DocumentIndex] AND DLDE.[LineDefinitionId] = FL.[DefinitionId] AND DLDE.[EntryIndex] = FE.[Index]
 	WHERE FE.[Index] = @AccountEntryIndex
 	--AND (FE.[Time1] < FL.[PostingDate]);
-	AND (EOMONTH(FE.[Time1]) < FL.[PostingDate]); -- will allow time1 to be up to beginning of the month for convenience.
+	AND (dbo.fn_MonthEnd(FE.[Time1]) < FL.[PostingDate]); -- will allow time1 to be up to beginning of the month for convenience.
 
 	IF EXISTS(SELECT * FROM @ValidationErrors)
 		SELECT * FROM @ValidationErrors;

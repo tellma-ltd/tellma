@@ -34,6 +34,8 @@ BEGIN
 			@L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	DECLARE @ManualLineLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ManualLine'),0);
+	DECLARE @PeriodClosingLD INT = ISNULL((SELECT [Id] FROM [dbo].[LineDefinitions] WHERE [Code] = N'ToIncomeStatementAbstractFromRetainedEarnings'),0);
+
 	DECLARE @CurrentAssetsNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'CurrentAssets');
 	DECLARE @CurrentLiabilitiesNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'CurrentLiabilities');
 	DECLARE @EquityNode HIERARCHYID = (SELECT [Node] FROM [dbo].[AccountTypes] WHERE [Concept] = N'Equity');
@@ -178,8 +180,8 @@ BEGIN
 				INSERT INTO @PreprocessedWideLines--** causes nested INSERT EXEC
 				EXECUTE	dbo.sp_executesql
 					@Script,
-					N'@UserId INT,@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY',
-					@UserId = @UserId, @WideLines = @WL, @AllWideLines = @ScriptWideLines;
+					N'@UserId INT,@WideLines WideLineList READONLY, @AllWideLines WideLineList READONLY, @Documents DocumentList READONLY',
+					@UserId = @UserId, @WideLines = @WL, @AllWideLines = @ScriptWideLines, @Documents = @Documents;
 			END TRY
 			BEGIN CATCH
 				DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();
@@ -585,7 +587,8 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @ConformantAccountsSummary CAS
 	ON E.[Index] = CAS.[Index] AND E.[LineIndex] = CAS.[LineIndex] AND E.[DocumentIndex] = CAS.[DocumentIndex]
-	WHERE L.[DefinitionId] <> @ManualLineLD
+	WHERE L.[DefinitionId] NOT IN (@ManualLineLD)
+	AND (L.DefinitionId <> @PeriodClosingLD OR E.[Index] = 1) -- MA: 2024-07-15
 	AND CAS.[AccountCount] = 1
 
 	UPDATE E -- Set the Account to Null when there is no solution, or when the value selected does not match any of the solutions
@@ -594,7 +597,8 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	LEFT JOIN @ConformantAccounts CA
 	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
-	WHERE L.[DefinitionId] <> @ManualLineLD
+	WHERE L.[DefinitionId] NOT IN (@ManualLineLD)
+	AND (L.DefinitionId <> @PeriodClosingLD OR E.[Index] = 1) -- MA: 2024-07-15
 	AND E.[AccountId] = CA.[AccountId]
 	AND E.[AccountId] IS NOT NULL AND CA.[AccountId] IS NULL;
 

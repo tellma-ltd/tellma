@@ -1013,6 +1013,9 @@
     <Build Include="bll\Functions\bll.fn_VAT__Compute.sql" />
     <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__DocumentId.sql" />
     <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__UuId.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DatePart.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateFromParts.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
