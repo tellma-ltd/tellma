@@ -13,8 +13,8 @@ RETURNS @ProcessedWidelines TABLE
 	[Boolean1]					BIT,
 	[Decimal1]					DECIMAL (19,6),
 	[Decimal2]					DECIMAL (19,6),
-	[Text1]						NVARCHAR(10),
-	[Text2]						NVARCHAR(10),
+	[Text1]						NVARCHAR(50),
+	[Text2]						NVARCHAR(50),
 	
 	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
@@ -481,3 +481,4 @@ BEGIN
 	--select * from @ProcessedWidelines;
 	RETURN
 END
+GO

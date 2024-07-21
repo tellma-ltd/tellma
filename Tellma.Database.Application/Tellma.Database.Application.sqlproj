@@ -1005,6 +1005,17 @@
     <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource_ExcludeId__Balances.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_AccountEntryTypeHasEnoughBalance__Validate.sql" />
     <Build Include="dal\Functions\dal.fn_Account_Center_Currency_Agent_Resource_NotedDate_EntryType_Line__Balance.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents_Balances__Decimal2_Update.sql" />
+    <Build Include="bll\Functions\dal.ft_Reconciliation__Load_Unreconciled_Internal.sql" />
+    <Build Include="bll\Functions\dal.ft_Reconciliation__Load_Unreconciled_External.sql" />
+    <Build Include="dal\Stored Procedures\dal.Employees_Decimal2__Update.sql" />
+    <Build Include="dal\Functions\dal.fn_Employee_Month__IsSalaryPaid.sql" />
+    <Build Include="bll\Functions\bll.fn_VAT__Compute.sql" />
+    <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__DocumentId.sql" />
+    <Build Include="dal\Functions\dal.fn_PrepaymentInvoice__UuId.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DatePart.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateFromParts.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -1030,7 +1041,7 @@
     <None Include="PreDeploymentScripts\TrialBalance.htm" />
     <None Include="PreDeploymentScripts\EmploymentContract.htm" />
     <None Include="Tellma.Tellma.1305.publish.xml" />
-    <None Include="Tellma.Tellma.2304.publish.xml" />
+    <None Include="Tellma.Tellma.304.publish.xml" />
     <None Include="Tellma.104.publish.xml" />
     <None Include="TellmaStaging.101.publish.xml" />
     <None Include="XMLFile1.xml" />

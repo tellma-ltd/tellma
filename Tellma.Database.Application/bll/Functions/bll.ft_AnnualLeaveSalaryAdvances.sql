@@ -124,7 +124,9 @@ BEGIN
 	)
 	INSERT INTO @Shortlines([Index], [CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
 	-- I think we don't need to prorate here, as the event from model does it automatically
-	SELECT 1 + @LastIndex, [CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [NotedAgentId0],[Time10], [Time20],
+	SELECT-- 1 + @LastIndex, 
+		ROW_NUMBER() OVER (ORDER BY [NotedAgentId0], [CurrencyId0], [Time10]) + @LastIndex,
+	[CurrencyId0], - [MonetaryValue0] * (DATEDIFF(DAY, Time10, Time20) + 1) / @MonthDays, @EndOfMonth, [NotedAgentId0],[Time10], [Time20],
 			@SSDeductionsMemo + N' ' + dal.fn_Agent__Name2([AgentId2]) + N' ' + @MonthName + CAST(DAY(Time10) AS NVARCHAR (5)) + N' - ' + CAST(DAY(Time20) AS NVARCHAR(5))
 	FROM EffectiveSSDeductions;
 	SELECT @LastIndex = MAX([Index]) FROM @Shortlines;

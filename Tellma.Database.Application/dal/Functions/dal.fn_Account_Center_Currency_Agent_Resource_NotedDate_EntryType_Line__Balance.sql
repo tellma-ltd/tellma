@@ -1,5 +1,4 @@
 ﻿CREATE FUNCTION [dal].[fn_Account_Center_Currency_Agent_Resource_NotedDate_EntryType_Line__Balance]
--- This is a more generalized version than the one without EntryType, since with Employee accruals, entry type is relevant
 (
 	@AccountId	INT,
 	@CenterId	INT,

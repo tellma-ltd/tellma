@@ -9,6 +9,6 @@
 	[Boolean1]					BIT,
 	[Decimal1]					DECIMAL (19,4),
 	[Decimal2]					DECIMAL (19,4),
-	[Text1]						NVARCHAR(10),
-	[Text2]						NVARCHAR(10)
+	[Text1]						NVARCHAR(50),
+	[Text2]						NVARCHAR(50)
 );

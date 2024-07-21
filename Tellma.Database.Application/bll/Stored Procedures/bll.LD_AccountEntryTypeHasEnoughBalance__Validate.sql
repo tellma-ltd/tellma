@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [bll].[LD_AccountEntryTypeHasEnoughBalance__Validate]
--- This is a more generalized version than the one without EntryType, since with Employee accruals, entry type is relevant
 	@DefinitionId INT,
 	@LineDefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,

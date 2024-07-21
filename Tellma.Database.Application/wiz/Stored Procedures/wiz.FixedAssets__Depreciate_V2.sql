@@ -38,12 +38,13 @@ AND (
 
 --select * from @FAAccountIds;
 
-DECLARE @Widelines WidelineList;
+DECLARE @Widelines WidelineList, @LastIndex INT;
 DECLARE @FixedAssetsDepreciations TABLE (
 	[ResourceId]				INT PRIMARY KEY,
 	[BookMinusResidual]			DECIMAL (19, 6), -- till period start
 	[RemainingLifeTime]			DECIMAL (19, 6), -- till period start
 	[PeriodUsage]				DECIMAL (19, 6), -- from period start till next activity which is NOT depreciation
+	[PeriodStart]				DATE,
 	[PeriodEnd]					DATE,
 	[CorrectPeriodDepreciation]	DECIMAL (19, 6),
 	[PostedPeriodDepreciation]	DECIMAL (19, 6), -- from period start to period end, inclusive
@@ -59,10 +60,10 @@ INSERT INTO @DepreciationEntryTypes VALUES (N'DepreciationPropertyPlantAndEquipm
 WHILE @PeriodStart IS NOT NULL
 BEGIN
 	DELETE FROM @FixedAssetsDepreciations; 
-	INSERT INTO @FixedAssetsDepreciations([ResourceId], [BookMinusResidual], [RemainingLifeTime], [PeriodUsage], [PeriodEnd], [PostedPeriodDepreciation],
+	INSERT INTO @FixedAssetsDepreciations([ResourceId], [BookMinusResidual], [RemainingLifeTime], [PeriodUsage], [PeriodStart], [PeriodEnd], [PostedPeriodDepreciation],
 											[Centerid], [AgentId], [NotedResourceId], [NotedAgentId], [EntryTypeId])
 	SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue] - E.[Direction] * ISNULL(E.[NotedAmount], 0)) AS [BookMinusResidual], 
-			SUM(E.[Direction] * E.[Quantity]) AS [RemainingLifeTime], dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, @PeriodEnd), @PeriodEnd, 0,
+			SUM(E.[Direction] * E.[Quantity]) AS [RemainingLifeTime], dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, @PeriodEnd), @PeriodStart, @PeriodEnd, 0,
 			E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
@@ -128,7 +129,7 @@ BEGIN
 
 	UPDATE @FixedAssetsDepreciations SET [VariancePeriodDepreciation] = [CorrectPeriodDepreciation] - [PostedPeriodDepreciation];
 --	select * from @FixedAssetsDepreciations;
-	DECLARE @LastIndex INT = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
+	SET @LastIndex = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
 	INSERT INTO @WideLines([Index],
 	[DocumentIndex], 
 	[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
@@ -137,9 +138,9 @@ BEGIN
 	SELECT ROW_NUMBER() OVER(ORDER BY T.[ResourceId]) + @LastIndex,
 			0,
 			T.[CenterId] AS [CenterId0], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS [AgentId0], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId0], T.[NotedResourceId] AS [NotedResourceId0],
-			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], @PeriodStart, T.PeriodEnd, bll.fn_Center__EntryType(T.[CenterId], NULL) AS [EntryTypeId0],
+			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], T.PeriodStart, T.PeriodEnd, bll.fn_Center__EntryType(T.[CenterId], NULL) AS [EntryTypeId0],
 			T.[CenterId] AS [CenterId1], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS  [AgentId], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId1], T.[NotedResourceId] AS [NotedResourceId1],
-			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], @PeriodStart, T.PeriodEnd, T.[EntryTypeId] AS [EntryTypeId1]
+			T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], T.PeriodStart, T.PeriodEnd, T.[EntryTypeId] AS [EntryTypeId1]
 	FROM @FixedAssetsDepreciations T
 	JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
 	WHERE R.[Code] <> '0';
@@ -159,6 +160,92 @@ BEGIN
 		AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
 	)
 END
+
+-- Add assets acquired during the period. MA: 2024-06-18
+SET @PeriodStart = dbo.fn_MonthStart(@PostingDate);
+DELETE FROM @FixedAssetsDepreciations; 
+INSERT INTO @FixedAssetsDepreciations([ResourceId], [BookMinusResidual], [RemainingLifeTime], [PeriodUsage], [PeriodEnd], [PostedPeriodDepreciation],
+										[Centerid], [AgentId], [NotedResourceId], [NotedAgentId], [EntryTypeId])
+SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue] - E.[Direction] * ISNULL(E.[NotedAmount], 0)) AS [BookMinusResidual], 
+		SUM(E.[Direction] * E.[Quantity]) AS [RemainingLifeTime], dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, @PeriodEnd), @PeriodEnd, 0,
+		E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
+FROM dbo.Entries E
+JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
+JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+WHERE L.[State] = 4 
+AND L.[PostingDate] <= @PostingDate
+AND R.[IsActive] = 1 AND R.[Code] <> N'0'
+AND L.[PostingDate] < @ExcludePostedOnOrAfter
+AND (E.[Time1] >= @PeriodStart AND E.[Time1] <= @PeriodEnd) -- acquired during the period
+AND (R.[Id] NOT IN (SELECT [ResourceId0] FROM @Widelines)) -- and not included above already
+AND (@ResourceId IS NULL OR E.[ResourceId] = @ResourceId)
+GROUP BY E.[ResourceId], E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
+HAVING SUM(E.[Direction] * E.[MonetaryValue]) <> 0;
+
+WITH UsageTill AS (
+	SELECT E.[ResourceId], E.[Time1], @PeriodEnd AS PeriodEnd
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+	WHERE L.[State] = 4 
+	AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
+	AND E.[Time1] > @PeriodStart
+	AND E.[Time1] <= @PeriodEnd
+	AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
+	AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
+	GROUP BY E.[ResourceId], E.[Time1]
+)
+UPDATE T
+SET -- 
+	[PeriodUsage] = 1.0 * DATEDIFF(DAY, UT.[Time1], @PeriodEnd) / DATEDIFF(DAY, @PeriodStart, @PeriodEnd),
+	[PeriodStart] = UT.[Time1],
+	[PeriodEnd]	= @PeriodEnd
+FROM @FixedAssetsDepreciations T
+JOIN UsageTill UT ON UT.ResourceId = T.[ResourceId];
+
+UPDATE @FixedAssetsDepreciations
+SET [CorrectPeriodDepreciation] = IIF([RemainingLifeTime] = 0, 0, [BookMinusResidual] / [RemainingLifeTime] * [PeriodUsage]);
+
+WITH PeriodDepreciations AS (
+	SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue]) AS Amount
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN @FAAccountIds A ON A.[Id] = E.[AccountId]
+	JOIN dbo.EntryTypes ET ON ET.[Id] = E.[EntryTypeId]
+	WHERE L.[State] = 4
+	AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
+	AND L.[PostingDate] < @ExcludePostedOnOrAfter
+	AND E.[Time2] >= @PeriodStart
+	AND E.[Time2] <= @PeriodEnd
+	AND E.[ResourceId] IN (SELECT [ResourceId] FROM @FixedAssetsDepreciations)
+	AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes)
+	GROUP BY E.[ResourceId]
+)
+UPDATE T
+	SET T.[PostedPeriodDepreciation] = PD.[Amount]
+FROM @FixedAssetsDepreciations T
+JOIN PeriodDepreciations PD ON PD.ResourceId = T.[ResourceId];
+
+UPDATE @FixedAssetsDepreciations SET [VariancePeriodDepreciation] = [CorrectPeriodDepreciation] - [PostedPeriodDepreciation];
+--	select * from @FixedAssetsDepreciations;
+SET @LastIndex = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
+INSERT INTO @WideLines([Index],
+[DocumentIndex], 
+[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
+[CenterId1], [CurrencyId1], [AgentId1], [ResourceId1], [NotedAgentId1], [NotedResourceId1], [Quantity1], [UnitId1], [MonetaryValue1], [Value1], [Time11], [Time21],[EntryTypeId1]
+)
+SELECT ROW_NUMBER() OVER(ORDER BY T.[ResourceId]) + @LastIndex,
+		0,
+		T.[CenterId] AS [CenterId0], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS [AgentId0], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId0], T.[NotedResourceId] AS [NotedResourceId0],
+		T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], T.PeriodStart, T.PeriodEnd, bll.fn_Center__EntryType(T.[CenterId], NULL) AS [EntryTypeId0],
+		T.[CenterId] AS [CenterId1], ISNULL(R.[CurrencyId], @FunctionalCurrencyId), T.[AgentId] AS  [AgentId], T.[ResourceId], T.[NotedAgentId] AS [NotedAgentId1], T.[NotedResourceId] AS [NotedResourceId1],
+		T.[PeriodUsage], R.[UnitId], T.[VariancePeriodDepreciation], NULL AS [NetValue], T.PeriodStart, T.PeriodEnd, T.[EntryTypeId] AS [EntryTypeId1]
+FROM @FixedAssetsDepreciations T
+JOIN dbo.Resources R ON R.[Id] = T.[ResourceId]
+WHERE R.[Code] <> '0';
 
 SELECT * FROM @Widelines;
 END
