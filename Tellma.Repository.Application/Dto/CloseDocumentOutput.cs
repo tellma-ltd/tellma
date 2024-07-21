@@ -128,6 +128,7 @@ namespace Tellma.Repository.Application
         public string PrepaymentId { get; set; }
         public Guid PrepaymentUuid { get; set; }
         public DateTimeOffset PrepaymentIssueDateTime { get; set; }
+        public decimal Quantity { get; set; }
         public decimal PrepaymentVatCategoryTaxableAmount { get; set; }
         public string PrepaymentVatCategory { get; set; } // E, S, Z, O
         public decimal PrepaymentVatRate { get; set; }

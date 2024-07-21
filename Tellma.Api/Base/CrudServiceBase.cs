@@ -309,7 +309,7 @@ namespace Tellma.Api.Base
             importErrors.ThrowIfInvalid(_localizer);
 
             // Handle Update and Merge modes
-            await HydrateIds(entitiesEnum, args, mapping, importErrors);
+            await HydrateProperties(entitiesEnum, args, mapping, importErrors);
             importErrors.ThrowIfInvalid(_localizer);
 
             // Save the entities
@@ -525,27 +525,31 @@ namespace Tellma.Api.Base
 
         #region Import & Export
 
-        private async Task HydrateIds(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
+        /// <summary>
+        /// For any property on the root entity that is not listed in the mapping, 
+        /// this method hydrates it in the <paramref name="entities"/> with the values from the DB.
+        /// </summary>
+        private async Task HydrateProperties(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
         {
             if (args.Mode == ImportModes.Insert)
             {
                 return;
             }
 
-            var propMapping = mapping.SimplePropertyByName(args.Key);
-            if (propMapping == null)
+            var keyPropMapping = mapping.SimplePropertyByName(args.Key);
+            if (keyPropMapping == null)
             {
                 throw new ServiceException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
             }
 
-            var propMetaForSave = propMapping.MetadataForSave;
-            var propDescForSave = propMetaForSave.Descriptor;
-            if (propDescForSave.Type != typeof(string) && propDescForSave.Type != typeof(int) && propDescForSave.Type != typeof(int?))
+            var keyPropMetaForSave = keyPropMapping.MetadataForSave;
+            var keyPropDescForSave = keyPropMetaForSave.Descriptor;
+            if (keyPropDescForSave.Type != typeof(string) && keyPropDescForSave.Type != typeof(int) && keyPropDescForSave.Type != typeof(int?))
             {
-                throw new ServiceException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMetaForSave.Display()]);
+                throw new ServiceException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", keyPropMetaForSave.Display()]);
             }
 
-            Func<Entity, object> forSaveKeyGet = propDescForSave.GetValue;
+            Func<Entity, object> forSaveKeyGet = keyPropDescForSave.GetValue;
 
             // For update mode, check that all keys are present
             if (args.Mode == ImportModes.Update)
@@ -553,8 +557,8 @@ namespace Tellma.Api.Base
                 foreach (var entity in entities.Where(e => forSaveKeyGet(e) == null || forSaveKeyGet(e).Equals(0)))
                 {
                     // In update mode, the 
-                    string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", propMetaForSave.Display()];
-                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
+                    string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", keyPropMetaForSave.Display()];
+                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, keyPropMapping.ColumnNumber, errorMsg))
                     {
                         return;
                     }
@@ -568,8 +572,8 @@ namespace Tellma.Api.Base
                 {
                     // In update mode, the 
                     var duplicateKeyValue = forSaveKeyGet(entity).ToString();
-                    string errorMsg = _localizer["Error_Value0IsDuplicatedEvenThoughItIsKey1", duplicateKeyValue, propMetaForSave.Display()];
-                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
+                    string errorMsg = _localizer["Error_Value0IsDuplicatedEvenThoughItIsKey1", duplicateKeyValue, keyPropMetaForSave.Display()];
+                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, keyPropMapping.ColumnNumber, errorMsg))
                     {
                         return;
                     }
@@ -582,16 +586,16 @@ namespace Tellma.Api.Base
                 return;
             }
 
-            // If key property is Id, there is nothing to hydrate
-            if (args.Key == "Id")
-            {
-                return;
-            }
+            //// If key property is Id, there is nothing to hydrate
+            //if (args.Key == "Id")
+            //{
+            //    return;
+            //}
 
             // Load entities from the DB
             var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
-            var getArgs = new SelectExpandArguments { Select = propDescForSave.Name };
-            var result = await GetByPropertyValues(propDescForSave.Name, userKeys, getArgs, cancellation: default);
+            var getArgs = new SelectExpandArguments { Expand = ModelUtil.ExpandForSave<TEntityForSave>() };
+            var result = await GetByPropertyValues(keyPropDescForSave.Name, userKeys, getArgs, cancellation: default);
             var dbEntities = result.Data;
             if (dbEntities.Any())
             {
@@ -609,6 +613,15 @@ namespace Tellma.Api.Base
                 var dbEntitiesDic = dbEntities.GroupBy(e => keyGet(e))
                     .ToDictionary(g => g.Key, g => (IEnumerable<TEntity>)g);
 
+                // Collect all the properties in the mapping to skip during hydration
+                var simplePropsToSkip = mapping.SimpleProperties
+                    .Select(e => e.Metadata.Descriptor.Name);
+                var collPropsToSkip = mapping.CollectionProperties
+                    .Select(p => p.ParentCollectionPropertyMetadata.Descriptor.Name);
+                var propsToSkip = simplePropsToSkip
+                    .Concat(collPropsToSkip)
+                    .ToHashSet();
+
                 foreach (var entity in entities)
                 {
                     var key = forSaveKeyGet(entity);
@@ -623,26 +636,26 @@ namespace Tellma.Api.Base
                             if (matches.Skip(1).Any())
                             {
                                 var typeDisplay = mapping.MetadataForSave.SingularDisplay();
-                                var keyPropDisplay = propMetaForSave.Display();
+                                var keyPropDisplay = keyPropMetaForSave.Display();
                                 var stringField = key.ToString();
-                                if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                                if (!errors.AddImportError(entity.EntityMetadata.RowNumber, keyPropMapping.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
                                 {
                                     return;
                                 }
                             }
                             else
                             {
-                                // Copy the Id from the entity to the entity for save
+                                // Copy all the properties that are not in the mapping
                                 var dbEntity = matches.Single();
-                                entity.SetId(dbEntity.GetId());
+                                ModelUtil.MapToEntityForSave(dbEntity, entity, propsToSkip);
                             }
                         }
                         else if (args.Mode == ImportModes.Update)
                         {
                             var typeDisplay = mapping.MetadataForSave.SingularDisplay();
-                            var keyPropDisplay = propMetaForSave.Display();
+                            var keyPropDisplay = keyPropMetaForSave.Display();
                             var stringField = key.ToString();
-                            if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                            if (!errors.AddImportError(entity.EntityMetadata.RowNumber, keyPropMapping.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
                             {
                                 return;
                             }

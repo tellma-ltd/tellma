@@ -345,7 +345,8 @@ namespace Tellma.Integration.Zatca
                     quantityElem.Add(new XAttribute("unitCode", line.QuantityUnit));
 
                 // Prepayment
-                if (_inv.PrepaidAmount != default) // Rule BR-KSA-73 
+                // if (_inv.PrepaidAmount != default) // Rule BR-KSA-73 
+                if (line.PrepaymentVatCategoryTaxableAmount + line.PrepaymentVatCategoryTaxAmount != default)
                 {
                     lineElem.Add(
                         new XElement(cac + "DocumentReference",
@@ -353,7 +354,7 @@ namespace Tellma.Integration.Zatca
                             // ... Optional UUID goes here ...
                             new XElement(cbc + "IssueDate", line.PrepaymentIssueDateTime.UtcDateTime.ToString(DATE_FORMAT, CultureInfo.InvariantCulture)),
                             new XElement(cbc + "IssueTime", line.PrepaymentIssueDateTime.UtcDateTime.ToString(TIME_FORMAT, CultureInfo.InvariantCulture)),
-                            new XElement(cbc + "DocumentTypeCode", ((int)InvoiceType.TaxInvoice).ToString()) // always '388'
+                            new XElement(cbc + "DocumentTypeCode", ((int)InvoiceType.PrepaymentInvoice).ToString()) // always '388'
                         )
                     );
 
@@ -396,7 +397,8 @@ namespace Tellma.Integration.Zatca
                     );
 
                     // Rule BR-KSA-75
-                    if (_inv.PrepaidAmount != default) // ??? is this the correct interpretation?
+                    // if (_inv.PrepaidAmount != default) // ??? is this the correct interpretation?
+                    if (line.PrepaymentVatCategoryTaxableAmount + line.PrepaymentVatCategoryTaxAmount != default)
                     {
                         taxTotalElem.Add(
                             new XElement(cac + "TaxSubtotal",

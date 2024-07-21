@@ -122,7 +122,10 @@ namespace Tellma.Api.ImportExport
         /// Initializes a new instance of the <see cref="MappingInfo"/> class cloning everything in 
         /// <paramref name="original"/> except <paramref name="simpleProps"/> and <paramref name="collectionProps"/>.
         /// </summary>
-        public MappingInfo(MappingInfo original, IEnumerable<PropertyMappingInfo> simpleProps, IEnumerable<MappingInfo> collectionProps)
+        public MappingInfo(
+            MappingInfo original, 
+            IEnumerable<PropertyMappingInfo> simpleProps, 
+            IEnumerable<MappingInfo> collectionProps)
         {
             if (original is null)
             {
@@ -132,6 +135,8 @@ namespace Tellma.Api.ImportExport
             MetadataForSave = original.MetadataForSave;
             SimpleProperties = simpleProps ?? throw new ArgumentNullException(nameof(simpleProps));
             CollectionProperties = collectionProps ?? throw new ArgumentNullException(nameof(collectionProps));
+            ParentCollectionPropertyMetadataForSave = original.ParentCollectionPropertyMetadataForSave;
+            ParentCollectionPropertyMetadata = original.ParentCollectionPropertyMetadata;
             CreateEntity = original.CreateEntity;
             GetEntitiesForRead = original.GetEntitiesForRead;
             GetOrCreateListForSave = original.GetOrCreateListForSave;
@@ -256,6 +261,11 @@ namespace Tellma.Api.ImportExport
         {
             return CollectionPropertiesByName(name)?.SingleOrDefault();
         }
+
+        /// <summary>
+        /// Determines if a simple property by the given <paramref name="name"/> exists.
+        /// </summary>
+        public bool HasSimplePropertyByName(string name) => SimplePropertyByName(name) != null;
 
         /// <summary>
         /// Retrieves the foreign keys in this mapping and all its children.

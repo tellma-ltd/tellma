@@ -712,7 +712,7 @@ namespace Tellma.Api
                 .Concat(inv.Prepayments.Select((line, index) => new InvoiceLine
                 {
                     Identifier = inv.Lines.Count + index + 1,
-                    Quantity = 0m,
+                    Quantity = line.Quantity,
                     QuantityUnit = "PCE",
                     NetAmount = 0m,
                     VatAmount = 0m,
