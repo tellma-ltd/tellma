@@ -274,6 +274,7 @@ namespace Tellma.Repository.Application
                     PrepaymentId = reader.String(i++),
                     PrepaymentUuid = reader.Guid(i++) ?? default,
                     PrepaymentIssueDateTime = reader.GetDateTimeOffset(i++),
+                    Quantity = reader.Decimal(i++) ?? 0m,
                     PrepaymentVatCategoryTaxableAmount = reader.Decimal(i++) ?? 0m,
                     PrepaymentVatCategory = reader.String(i++), // E, S, Z, O
                     PrepaymentVatRate = reader.Decimal(i++) ?? 0m,

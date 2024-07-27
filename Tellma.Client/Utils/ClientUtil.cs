@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -59,39 +58,7 @@ namespace Tellma.Client
         /// </remarks>
         public static string ExpandForSave<TEntityForSave>() where TEntityForSave : EntityWithKey
         {
-            static IEnumerable<string> CollectionAtoms(TypeDescriptor desc, HashSet<Type> processedAlready)
-            {
-                if (processedAlready.Add(desc.Type))
-                {
-                    foreach (var collProp in desc.CollectionProperties)
-                    {
-                        // For every collection navigation property
-                        // 1 - Either return its name if it has no collection properties of its own
-                        // 2 - Or return its name appended to the same of each one of its collection properties.
-                        var collDesc = collProp.CollectionTypeDescriptor;
-                        var collAtoms = CollectionAtoms(collDesc, processedAlready).ToList();
-                        if (collAtoms.Count > 0)
-                        {
-                            foreach (var expand in collAtoms)
-                            {
-                                yield return $"{collProp.Name}.{expand}";
-                            }
-                        }
-                        else
-                        {
-                            yield return collProp.Name;
-                        }
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException($"The type {typeof(TEntityForSave).Name} cannot be used with {nameof(ExpandForSave)} since it causes infinite recursion.");
-                }
-            }
-
-            var types = new HashSet<Type>();
-            var desc = TypeDescriptor.Get<TEntityForSave>();
-            return string.Join(',', CollectionAtoms(desc, types));
+            return ModelUtil.ExpandForSave<TEntityForSave>();
         }
 
         /// <summary>

@@ -544,6 +544,18 @@ namespace Tellma.Api.Behaviors
                     display = PropertyDisplay(def.DateOfBirthVisibility, display);
                     isRequired = def.DateOfBirthVisibility == Visibility.Required;
                     break;
+                case nameof(Agent.AddressStreet):
+                case nameof(Agent.AddressAdditionalStreet):
+                case nameof(Agent.AddressBuildingNumber):
+                case nameof(Agent.AddressAdditionalNumber):
+                case nameof(Agent.AddressCity):
+                case nameof(Agent.AddressPostalCode):
+                case nameof(Agent.AddressProvince):
+                case nameof(Agent.AddressDistrict):
+                case nameof(Agent.AddressCountryId):
+                case nameof(Agent.AddressCountry):
+                    display = PropertyDisplay(def.HasAddress ?? false, display);
+                    break;
                 case nameof(Agent.ContactEmail):
                     display = PropertyDisplay(def.ContactEmailVisibility, display);
                     isRequired = def.ContactEmailVisibility == Visibility.Required;

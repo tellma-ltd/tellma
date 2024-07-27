@@ -436,7 +436,7 @@ namespace Tellma.Repository.Common.Queryex
                             "day" => ("hour", 24m),
                             "hour" => ("minute", 60m),
                             "minute" => ("second", 60m),
-                            "second" => ("millisecond", 1000m),
+                            "second" => ("second", 1m),
                             _ => throw new InvalidOperationException($"Unkown datepart {datePart}.") // Future proofing
                         };
 
