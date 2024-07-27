@@ -1016,6 +1016,7 @@
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="dbo\Functions\dbo.fn_DatePart.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateFromParts.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_DutyStation_CustomerAccount_Compatible__Validate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
