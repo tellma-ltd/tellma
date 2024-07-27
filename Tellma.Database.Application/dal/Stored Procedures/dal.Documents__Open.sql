@@ -28,7 +28,7 @@ BEGIN
 			WHERE LineId IN (
 				SELECT Id
 				FROM dbo.Lines
-				WHERE documentId IN (SELECT Id FROM @Ids)
+				WHERE DocumentId IN (SELECT Id FROM @Ids)
 			)
 		)
 	)
