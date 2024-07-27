@@ -260,6 +260,7 @@ BEGIN
 		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 		JOIN [dbo].[AccountTypes] AC ON A.AccountTypeId = AC.Id
 		WHERE AC.[Node].IsDescendantOf(@ExpenseByNatureNode) = 1
+		-- TODO: exclude Period closing
 	
 	UPDATE E
 	SET E.[EntryTypeId] = NULL
@@ -303,6 +304,7 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN [dbo].[Accounts] A ON E.[AccountId] = A.Id
 --	WHERE L.[DefinitionId] = @ManualLineLD; -- MA 2022.09.03 I commented this condition
+--  TODO: Exclude Period closing from these updates
 
 	--	Get center from resource, if any. This works for JV only or for smart screens specifying the account
 	-- TODO make it depending on Account Type

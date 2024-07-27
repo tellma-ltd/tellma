@@ -43,8 +43,11 @@ WHERE BD.[Id] <> FD.[Id]
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
 AND SIGN(BE.[Direction]) = SIGN(FE.[Direction])
-AND BE.[MonetaryValue] >= 0
-AND FE.[MonetaryValue] >= 0
+--AND BE.[MonetaryValue] >= 0
+--AND FE.[MonetaryValue] >= 0
+AND BE.[NotedAmount] >= 0 -- when issuing a credit memo for a purchase with zero VAT, we will accept the duplication
+AND FE.[NotedAmount] >= 0
+
 AND BL.[State] >= 0;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)

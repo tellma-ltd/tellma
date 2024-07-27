@@ -1,5 +1,4 @@
-﻿CREATE FUNCTION [rpt].[ft_TellmaUsage] (
-)
+﻿CREATE FUNCTION [rpt].[ft_TellmaUsage] ()
 RETURNS @returntable TABLE
 (
 	[ComponentType] NVARCHAR (10),
@@ -11,6 +10,7 @@ RETURNS @returntable TABLE
 )
 AS 
 BEGIN
+DECLARE @TellmaComponentsRD INT = dal.fn_ResourceDefinitionCode__Id(N'TellmaComponents.Free');
 DECLARE @UsersEmails StringList;
 INSERT INTO @UsersEmails ([Id])
 SELECT Email
@@ -116,7 +116,7 @@ FROM (
 	SELECT 'Template' AS [Component Type], [Id], [Name] AS [Component],  N'Deployed/Role Access' AS [Source]
 	FROM dbo.PrintingTemplates
 	WHERE [Usage] IN (N'FromDetails', N'FromSearchAndDetails') AND [IsDeployed] = 1
-	OR [Usage] = N'Standalone' AND [ShowInMainMenu] = 1 AND [Id] IN (
+	OR [Usage] = N'Standalone' AND [ShowInMainMenu] = 1	AND [Id] IN (
 			SELECT DISTINCT [PrintingTemplateId]
 			FROM dbo.[PrintingTemplateRoles] PTR
 			JOIN dbo.RoleMemberships RM ON RM.[RoleId] = PTR.[RoleId]
@@ -163,7 +163,21 @@ FROM (
 		SELECT DISTINCT [ReportDefinitionId]
 		FROM [dbo].[DashboardDefinitionWidgets] DDW
 		JOIN dbo.[DashboardDefinitions] DD ON DD.[Id] = DDW.[DashboardDefinitionId]
-		WHERE DD.[ShowInMainMenu] = 1
+		WHERE DD.[ShowInMainMenu] = 1 AND DD.[Id] IN (
+			SELECT DISTINCT [DashboardDefinitionId]
+			FROM dbo.[DashboardDefinitionRoles] DDR
+			JOIN dbo.RoleMemberships RM ON RM.[RoleId] = DDR.[RoleId]
+			JOIN dbo.Users U ON U.[Id] = RM.[UserId]
+			JOIN dbo.Roles R ON R.[Id] = RM.[RoleId]
+			WHERE U.[Email] IN (SELECT [Id] FROM @UsersEmails)
+			AND R.[IsActive] = 1
+			UNION ALL
+			SELECT DISTINCT [DashboardDefinitionId]
+			FROM dbo.[DashboardDefinitionRoles] DDR
+			JOIN dbo.Roles R ON R.[Id] = DDR.[RoleId]
+			WHERE R.[IsActive] = 1
+			AND R.[IsPublic] = 1
+		)
 	)
 
 	UNION
@@ -268,7 +282,7 @@ JOIN (
 		WHEN [Name] = N'Master Screen' THEN N'Master'
 	END [ComponentType], [Decimal1]
 	FROM dbo.Resources
-	WHERE [DefinitionId] = dal.fn_ResourceDefinitionCode__Id(N'TellmaComponents.Free')
+	WHERE [DefinitionId] = @TellmaComponentsRD
 	AND [Name] IN (N'Document', N'Report', N'Tab', N'Template',  N'User - Regular',  N'User - Self Service', N'Master Screen')
 ) TC ON TC.[ComponentType] = R.[ComponentType] OR (TC.[ComponentType] = N'Master' AND R.[ComponentType] IN (N'Resource', N'Agent'));
 
@@ -346,6 +360,32 @@ SET [ComponentType] =  N'Free Rsrce',
 FROM @returntable R
 JOIN FreeResourceDefinitions RD ON RD.[Id] = R.[Id]
 WHERE R.[ComponentType] = N'Resource';
+
+-- Entries Count
+DECLARE @LD1 INT = dal.fn_LineDefinitionCode__Id('ChangeRequest.Free');
+DECLARE @LD2 INT = dal.fn_LineDefinitionCode__Id('ChargeableComponent');
+DECLARE @AsOfDate DATE = DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1);
+
+DECLARE @EntriesCount INT = (
+	SELECT COUNT(*)
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	WHERE L.[DefinitionId] NOT IN (@LD1, @LD2)
+	AND E.[CreatedAt] <= @AsOfDate
+);
+DECLARE @DE0 DECIMAL (19, 6) = (SELECT [Decimal1] FROM dbo.Resources WHERE [DefinitionId] = @TellmaComponentsRD AND [Code] = N'DE0');
+DECLARE @DE100K DECIMAL (19, 6) = (SELECT [Decimal1] FROM dbo.Resources WHERE [DefinitionId] = @TellmaComponentsRD AND [Code] = N'DE100K');
+DECLARE @DE1M DECIMAL (19, 6) = (SELECT [Decimal1] FROM dbo.Resources WHERE [DefinitionId] = @TellmaComponentsRD AND [Code] = N'DE1M');
+DECLARE @DE10M DECIMAL (19, 6) = (SELECT [Decimal1] FROM dbo.Resources WHERE [DefinitionId] = @TellmaComponentsRD AND [Code] = N'DE10M');
+
+DECLARE @EntriesCharge DECIMAL (19, 6) = CASE
+	WHEN @EntriesCount <= 100000 THEN @DE0
+	WHEN @EntriesCount <= 1000000 THEN @DE0 + @DE100K * CEILING((@EntriesCount - 100000) / 10000.0)
+	WHEN @EntriesCount <= 10000000 THEN @DE0 + 90 * @DE100K + @DE1M * CEILING((@EntriesCount - 1000000) / 10000.0)
+	ELSE @DE0 + 90 * @DE100K + 900 * @DE1M + @DE10M * CEILING((@EntriesCount - 10000000) / 10000.0)
+END
+INSERT INTO @returntable([ComponentType], [Id], [Component], [Source], [Price])
+VALUES(N'Entries', 0, N'Detail Entries', N'Database',  @EntriesCharge);
 
 RETURN
 END
