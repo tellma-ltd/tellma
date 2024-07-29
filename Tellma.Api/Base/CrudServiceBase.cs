@@ -594,7 +594,7 @@ namespace Tellma.Api.Base
 
             // Load entities from the DB
             var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
-            var getArgs = new SelectExpandArguments { Expand = ModelUtil.ExpandForSave<TEntityForSave>() };
+            var getArgs = new SelectExpandArguments { Expand = ExpandForSave() ?? ModelUtil.ExpandForSave<TEntityForSave>() };
             var result = await GetByPropertyValues(keyPropDescForSave.Name, userKeys, getArgs, cancellation: default);
             var dbEntities = result.Data;
             if (dbEntities.Any())
@@ -758,6 +758,8 @@ namespace Tellma.Api.Base
         {
             yield break;
         }
+
+        protected virtual string ExpandForSave() => null;
 
         private string SelectFromMapping(MappingInfo mapping)
         {
