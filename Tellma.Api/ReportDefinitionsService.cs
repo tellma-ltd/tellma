@@ -267,5 +267,10 @@ namespace Tellma.Api
 
             return ExpressionOrderBy.Parse(orderby);
         }
+
+        protected override string ExpandForSave()
+        {
+            return "Parameters,Select,Rows.Attributes,Columns.Attributes,Measures,Roles.Role";
+        }
     }
 }
