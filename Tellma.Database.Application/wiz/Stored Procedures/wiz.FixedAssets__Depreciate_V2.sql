@@ -130,7 +130,7 @@ BEGIN
 	UPDATE @FixedAssetsDepreciations SET [VariancePeriodDepreciation] = [CorrectPeriodDepreciation] - [PostedPeriodDepreciation];
 --	select * from @FixedAssetsDepreciations;
 	SET @LastIndex = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
-	INSERT INTO @WideLines([Index],
+	INSERT INTO @Widelines([Index],
 	[DocumentIndex], 
 	[CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
 	[CenterId1], [CurrencyId1], [AgentId1], [ResourceId1], [NotedAgentId1], [NotedResourceId1], [Quantity1], [UnitId1], [MonetaryValue1], [Value1], [Time11], [Time21],[EntryTypeId1]
@@ -232,7 +232,7 @@ JOIN PeriodDepreciations PD ON PD.ResourceId = T.[ResourceId];
 UPDATE @FixedAssetsDepreciations SET [VariancePeriodDepreciation] = [CorrectPeriodDepreciation] - [PostedPeriodDepreciation];
 --	select * from @FixedAssetsDepreciations;
 SET @LastIndex = ISNULL((SELECT MAX([Index]) FROM @Widelines), -1);
-INSERT INTO @WideLines([Index],
+INSERT INTO @Widelines([Index],
 [DocumentIndex], 
 [CenterId0], [CurrencyId0], [AgentId0], [ResourceId0], [NotedAgentId0], [NotedResourceId0], [Quantity0], [UnitId0], [MonetaryValue0], [Value0], [Time10], [Time20],[EntryTypeId0],
 [CenterId1], [CurrencyId1], [AgentId1], [ResourceId1], [NotedAgentId1], [NotedResourceId1], [Quantity1], [UnitId1], [MonetaryValue1], [Value1], [Time11], [Time21],[EntryTypeId1]

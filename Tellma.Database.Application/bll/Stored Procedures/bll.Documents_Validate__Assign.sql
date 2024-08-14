@@ -30,6 +30,14 @@ BEGIN
 	JOIN [dbo].[DocumentAssignments] DA ON FE.[Id] = DA.[DocumentId]
 	JOIN dbo.Users U ON DA.AssigneeId = U.[Id]
 	WHERE DA.AssigneeId = @AssigneeId
+
+-- Must not assign a document with no lines
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentHasNoLines'
+	FROM @Ids FE
+	WHERE NOT EXISTS (SELECT * FROM dbo.Lines WHERE [DocumentId] IN (SELECT [Id] FROM @Ids))
 			
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

@@ -16,7 +16,7 @@ RETURNS
 	[AgentId0]		INT,
 	[Memo]			NVARCHAR (255),
 	[Time10]		DATE,
-	[TIme20]		DATE
+	[Time20]		DATE
 )
 AS
 BEGIN

@@ -7,7 +7,8 @@
 	@Top INT,
 	@AccountEntryIndex INT,
 	@ErrorEntryIndex INT,
-	@ErrorFieldName NVARCHAR (255)
+	@ErrorFieldName NVARCHAR (255),
+	@LineType INT = 100
 AS
 DECLARE @ValidationErrors ValidationErrorList;
 DECLARE @ErrorNames dbo.ErrorNameList;
@@ -37,9 +38,11 @@ LEFT JOIN @DocumentLineDefinitionEntries FDLDE
 JOIN dbo.Entries BE ON BE.[AccountId] = FE.[AccountId] AND BE.[NotedAgentId] = FE.[NotedAgentId] --AND BE.[AgentId] = FE.[AgentId]
 AND BE.[Direction] = FE.[Direction]
 JOIN dbo.Lines BL ON BL.[Id] = BE.[LineId]
+JOIN dbo.LineDefinitions BLD ON BLD.[Id] = BL.[DefinitionId]
 JOIN map.Documents() BD ON BD.[Id] = BL.[DocumentId] 
 JOIN dbo.Agents NAG ON NAG.[Id] = BE.[NotedAgentId]
 WHERE BD.[Id] <> FD.[Id]
+AND BLD.[LineType] = @LineType
 AND FE.[Index] = @AccountEntryIndex
 AND NAG.[Code] <> N'Null'
 AND SIGN(BE.[Direction]) = SIGN(FE.[Direction])
@@ -47,7 +50,6 @@ AND SIGN(BE.[Direction]) = SIGN(FE.[Direction])
 --AND FE.[MonetaryValue] >= 0
 AND BE.[NotedAmount] >= 0 -- when issuing a credit memo for a purchase with zero VAT, we will accept the duplication
 AND FE.[NotedAmount] >= 0
-
 AND BL.[State] >= 0;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)

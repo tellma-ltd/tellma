@@ -81,7 +81,7 @@ BEGIN
 	PRINT @@ROWCOUNT;
 
 	-- The following logic works irrespective of the inpute list
-	DECLARE @TerminatedAndActive IdList, @EOSVoucherAndActive IdList, @NoAccrualAndActive IdList, @AccrualAndInActive Idlist;
+	DECLARE @TerminatedAndActive IdList, @EOSVoucherAndActive IdList, @NoAccrualAndActive IdList, @AccrualAndInActive IdList;
 	DECLARE @EOSVoucherDD INT = dal.fn_DocumentDefinitionCode__Id(N'EndOfServiceVoucher');
 	
 	INSERT INTO @TerminatedAndActive 
