@@ -3132,6 +3132,8 @@ namespace Tellma.Api
             };
         }
 
+        protected override bool SkipUnlistedPropertiesInImportSheet() { return false; }
+
         #region Helper Functions
 
         private static bool CopyFromDocument(LineDefinitionColumnForClient colDef, bool? docIsCommon)

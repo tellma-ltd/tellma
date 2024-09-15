@@ -1711,6 +1711,9 @@
   <data name="Error_TheDocumentHasMissingInvoiceTypeTransaction" xml:space="preserve">
     <value>The invoice type transaction is required.</value>
   </data>
+  <data name="Error_TheDocumentHasNoLines" xml:space="preserve">
+    <value>The document has no lines.</value>
+  </data>
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
     <value>The document is already assigned to '{0}'.</value>
   </data>

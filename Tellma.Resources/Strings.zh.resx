@@ -761,7 +761,7 @@
     <value>点击</value>
   </data>
   <data name="Email_State_minus_3" xml:space="preserve">
-    <value>运送失败</value>
+    <value>发送失败</value>
   </data>
   <data name="Email_State_minus_4" xml:space="preserve">
     <value>举报垃圾邮件</value>
@@ -836,7 +836,7 @@
     <value>联系地址</value>
   </data>
   <data name="Entity_ContactEmail" xml:space="preserve">
-    <value>联系电子邮件</value>
+    <value>联系邮箱</value>
   </data>
   <data name="Entity_ContactMobile" xml:space="preserve">
     <value>联系手机</value>
@@ -1253,16 +1253,16 @@
     <value>标签“{0}”与类型 {1} 上的任何集合都不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”与类型 {1} 上的任何集合都不匹配，您是指“{2}”吗？</value>
+    <value>标签“{0}”与类型 {1} 上的任何集合都不匹配，您的意思是“{2}”吗？</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
     <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您指的是“{2}”吗？</value>
+    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您的意思是“{2}”吗？</value>
   </data>
   <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
-    <value>标签“{0}”匹配类型为“{1}”的多个集合，使用数字后缀来消除歧义，例如“{0}.1”。</value>
+    <value>标签“{0}”匹配类型为 {1} 的多个集合，使用数字后缀来消除歧义，例如“{0}.1”。</value>
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>标签“{0}”匹配类型 {1} 上的多个字段，使用数字后缀来消除歧义，例如“{0}.1”。</value>
@@ -1427,7 +1427,7 @@
     <value>帐户“{0}”在 {1} {2} 中与代理“{3}”一起使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
-    <value>帐户“{0}”在 {1} {2} 中使用，中心为“{3}”。</value>
+    <value>帐户“{0}”在以“{3}”为中心的 {1} {2} 中使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户“{0}”在 {1} {2} 中使用，货币为“{3}”。</value>
@@ -2015,7 +2015,7 @@
     <value>条码字段</value>
   </data>
   <data name="LineDefinition_Columns" xml:space="preserve">
-    <value>列</value>
+    <value>专栏</value>
   </data>
   <data name="LineDefinition_Entries" xml:space="preserve">
     <value>参赛作品</value>
@@ -2033,7 +2033,7 @@
     <value>添加新行</value>
   </data>
   <data name="LineDefinition_Handling_DoNothing" xml:space="preserve">
-    <value>没做什么</value>
+    <value>什么也不做</value>
   </data>
   <data name="LineDefinition_Handling_IncrementQuantity" xml:space="preserve">
     <value>增量数量</value>
@@ -2288,7 +2288,7 @@
     <value>发送失败</value>
   </data>
   <data name="Message_State_minus_4" xml:space="preserve">
-    <value>运送失败</value>
+    <value>发送失败</value>
   </data>
   <data name="MessageCommand" xml:space="preserve">
     <value>消息命令</value>
@@ -2393,7 +2393,7 @@
     <value>电子邮件</value>
   </data>
   <data name="NotificationTemplate_EmailAddress" xml:space="preserve">
-    <value>电子邮件地址</value>
+    <value>电子邮件</value>
   </data>
   <data name="NotificationTemplate_ListExpression" xml:space="preserve">
     <value>列表</value>
@@ -2594,7 +2594,7 @@
     <value>其他金融负债</value>
   </data>
   <data name="RD_Type_PropertyPlantAndEquipment" xml:space="preserve">
-    <value>物业，厂房及设备</value>
+    <value>财产、厂房和设备</value>
   </data>
   <data name="RD_Type_Provisions" xml:space="preserve">
     <value>规定</value>
