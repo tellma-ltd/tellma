@@ -822,7 +822,6 @@
     <Build Include="bll\Stored Procedures\bll.ExpensesByNature__Capitalize.sql" />
     <Build Include="bll\Stored Procedures\bll.AD__Validate.sql" />
     <Build Include="bll\Stored Procedures\bll.RD__Validate.sql" />
-    <Build Include="dal\Functions\dal.fn_Center__ExpenseByFunction_AgentId.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomalies.sql" />
     <Build Include="dal\Functions\dal.fi_ParentAccountType__ChartAnomaliesCurrent.sql" />
     <Build Include="dal\Stored Procedures\dal.ChartOfAccount__Anomalies.sql" />
@@ -1017,6 +1016,8 @@
     <Build Include="dbo\Functions\dbo.fn_DatePart.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateFromParts.sql" />
     <Build Include="bll\Stored Procedures\bll.LD_DutyStation_CustomerAccount_Compatible__Validate.sql" />
+    <Build Include="bll\Stored Procedures\bll.VATSequencing__Validate.sql" />
+    <Build Include="dal\Stored Procedures\dal.PPE_Locations__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

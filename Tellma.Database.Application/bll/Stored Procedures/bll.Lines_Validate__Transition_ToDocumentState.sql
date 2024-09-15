@@ -14,7 +14,11 @@ BEGIN
 		@DocumentLineDefinitionEntries DocumentLineDefinitionEntryList, -- TODO: Add to signature everywhere
 		@Lines LineList,
 		@Entries EntryList,
-		@ToState TINYINT;
+		@ToState TINYINT = CASE
+			WHEN @ToDocumentState = 1 THEN 4
+			WHEN @ToDocumentState = 0 THEN 0
+			WHEN @ToDocumentState = -1 THEN -4
+		END;
 
 	DECLARE @PreScript NVARCHAR(MAX) = N'
 	SET NOCOUNT ON
