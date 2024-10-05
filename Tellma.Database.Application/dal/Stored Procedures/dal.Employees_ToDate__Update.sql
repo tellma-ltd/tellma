@@ -15,7 +15,7 @@ BEGIN
 	SELECT DISTINCT [NotedAgentId0] AS EmployeeId, MAX([Time20]) AS TerminationDate
 	FROM bll.ft_Employees_Period_EventFromModel_Salaries__Generate --[bll].[ft_Widelines_Period_EventFromModel__Generate]
 	(
-		@FromDate, '9999-12-31', -- assuming retoractive termination of 3 months back only
+		@FromDate, '9999-12-31', -- assuming retoractive termination of 1 year back only
 		@BasicSalaryRS, -- @ResourceId
 		@EmployeeIds --@NotedAgentId INT = NULL,
 	)

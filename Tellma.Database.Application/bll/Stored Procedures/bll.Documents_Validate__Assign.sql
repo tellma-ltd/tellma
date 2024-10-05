@@ -38,6 +38,7 @@ BEGIN
 		N'Error_TheDocumentHasNoLines'
 	FROM @Ids FE
 	WHERE NOT EXISTS (SELECT * FROM dbo.Lines WHERE [DocumentId] IN (SELECT [Id] FROM @Ids))
+	AND NOT EXISTS(SELECT * FROM dbo.Attachments WHERE [DocumentId] IN (SELECT [Id] FROM @Ids))
 			
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;

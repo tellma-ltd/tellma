@@ -1018,6 +1018,9 @@
     <Build Include="bll\Stored Procedures\bll.LD_DutyStation_CustomerAccount_Compatible__Validate.sql" />
     <Build Include="bll\Stored Procedures\bll.VATSequencing__Validate.sql" />
     <Build Include="dal\Stored Procedures\dal.PPE_Locations__Update.sql" />
+    <Build Include="bll\Stored Procedures\bll.LD_EmployeeExpensesOnActiveCustomerAccount__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_Unit__UnitType.sql" />
+    <Build Include="dal\Functions\dal.fn_DocumenttDefinition__State.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -30,7 +30,11 @@ BEGIN
 		IF @CountryId = N'AE'
 			INSERT INTO @Result SELECT * FROM bll.fn_Employee_AnnualLeave__Provision_AE(@EmployeeIds, @AsOfDate) WHERE [Provision] IS NOT NULL;
 		IF @CountryId = N'ET'
-			INSERT INTO @Result SELECT * FROM bll.fn_Employee_AnnualLeave__Provision_ET(@EmployeeIds, @AsOfDate) WHERE [Provision] IS NOT NULL;
+			INSERT INTO @Result
+			SELECT [EmployeeId], [BasicCurrencyId], [FromDate], [ToDate], [ServiceDaysLost], [Provision],
+					[Quantity],	[Years], [Months], [Days], [Salary], [CenterId], [AgentId],	[NotedResourceId],
+					[EntryTypeId]
+			FROM bll.fn_Employee_AnnualLeave__Provision_ET(@EmployeeIds, @AsOfDate) WHERE [Provision] IS NOT NULL;
 		IF @CountryId = N'LB'
 			INSERT INTO @Result SELECT * FROM bll.fn_Employee_AnnualLeave__Provision_LB(@EmployeeIds, @AsOfDate) WHERE [Provision] IS NOT NULL;
 		IF @CountryId = N'SA'
