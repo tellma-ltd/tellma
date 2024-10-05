@@ -268,7 +268,7 @@ namespace Tellma.Api
             return ExpressionOrderBy.Parse(orderby);
         }
 
-        protected override string ExpandForSave()
+        protected override string ExpandForImportUpdateMode()
         {
             return "Parameters,Select,Rows.Attributes,Columns.Attributes,Measures,Roles.Role";
         }

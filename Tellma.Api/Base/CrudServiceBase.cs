@@ -347,6 +347,12 @@ namespace Tellma.Api.Base
             }
         }
 
+        /// <summary>
+        /// If true, fields on the strong entity that are not listed in
+        /// the import sheet will have their values kept as is
+        /// </summary>
+        protected virtual bool SkipUnlistedPropertiesInImportSheet() { return true; }
+
         #endregion
 
         #region Helpers
@@ -594,7 +600,9 @@ namespace Tellma.Api.Base
 
             // Load entities from the DB
             var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
-            var getArgs = new SelectExpandArguments { Expand = ExpandForSave() ?? ModelUtil.ExpandForSave<TEntityForSave>() };
+            var getArgs = SkipUnlistedPropertiesInImportSheet() ? 
+                new SelectExpandArguments { Expand = ExpandForImportUpdateMode() ?? ModelUtil.ExpandForSave<TEntityForSave>() } :
+                new SelectExpandArguments { Select = keyPropDescForSave.Name };
             var result = await GetByPropertyValues(keyPropDescForSave.Name, userKeys, getArgs, cancellation: default);
             var dbEntities = result.Data;
             if (dbEntities.Any())
@@ -647,7 +655,10 @@ namespace Tellma.Api.Base
                             {
                                 // Copy all the properties that are not in the mapping
                                 var dbEntity = matches.Single();
-                                ModelUtil.MapToEntityForSave(dbEntity, entity, propsToSkip);
+                                if (SkipUnlistedPropertiesInImportSheet())
+                                    ModelUtil.MapToEntityForSave(dbEntity, entity, propsToSkip);
+                                else
+                                    entity.SetId(dbEntity.GetId());
                             }
                         }
                         else if (args.Mode == ImportModes.Update)
@@ -759,7 +770,7 @@ namespace Tellma.Api.Base
             yield break;
         }
 
-        protected virtual string ExpandForSave() => null;
+        protected virtual string ExpandForImportUpdateMode() => null;
 
         private string SelectFromMapping(MappingInfo mapping)
         {

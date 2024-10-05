@@ -1588,6 +1588,9 @@
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>بعض الأسطر تتطلب مزيدا من التوقيعات.</value>
   </data>
+  <data name="Error_TheDocumentHasNoLines" xml:space="preserve">
+    <value>المستند خال من الأسطر</value>
+  </data>
   <data name="Error_TheDocumentIsAlreadyAssignedToUser0" xml:space="preserve">
     <value>المستند حاليا في عهدة المستخدم ({0})</value>
   </data>
