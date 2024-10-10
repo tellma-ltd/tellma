@@ -965,8 +965,6 @@
     <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation.sql" />
     <Build Include="dal\Functions\dal.fn_Account_Currency_Agent_Resource_AsOfDate_ExcludeId__Balance.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__GetInvoices.sql" />
-    <Build Include="dbo\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
-    <Build Include="dbo\Functions\dal.fn_DocumentDefinition__IsZatcaDocumentType.sql" />
     <Build Include="dal\Functions\dal.fn_Document__ZatcaDocumentType.sql" />
     <Build Include="dal\Functions\dal.fn_Document__IsZatcaDocument.sql" />
     <Build Include="dal\Functions\dal.fn_Document__BillingReferenceId.sql" />
@@ -1021,6 +1019,13 @@
     <Build Include="bll\Stored Procedures\bll.LD_EmployeeExpensesOnActiveCustomerAccount__Validate.sql" />
     <Build Include="dal\Functions\dal.fn_Unit__UnitType.sql" />
     <Build Include="dal\Functions\dal.fn_DocumenttDefinition__State.sql" />
+    <Build Include="bll\Functions\bll.ft_IFRS16_V2.sql" />
+    <Build Include="dbo\Functions\dbo.fn_XPV.sql" />
+    <Build Include="dbo\Functions\dbo.fn_YearEnd.sql" />
+    <Build Include="dal\Functions\dal.fn_DocumentDefinition__IsZatcaDocumentType.sql" />
+    <Build Include="dal\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LeaseList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IFRS16ScheduleList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

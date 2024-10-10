@@ -77,6 +77,7 @@ BEGIN
 	AND (E.[Time1] <= @PeriodStart AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
 		OR E.[Time2] < @PeriodStart AND ET.[Concept] IN (SELECT [Id] FROM @DepreciationEntryTypes)
 		OR E.[Time1] >= @PeriodStart AND E.[Time2] <= @PeriodEnd -- MA:2024-05-16, to include minor assets
+			AND ET.[Concept] NOT IN (SELECT [Id] FROM @DepreciationEntryTypes)
 	)
 	AND (@ResourceId IS NULL OR E.[ResourceId] = @ResourceId)
 	GROUP BY E.[ResourceId], E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]
@@ -105,7 +106,10 @@ BEGIN
 	JOIN UsageTill UT ON UT.ResourceId = T.[ResourceId];
 
 	UPDATE @FixedAssetsDepreciations
-	SET [CorrectPeriodDepreciation] = IIF([RemainingLifeTime] = 0, 0, [BookMinusResidual] / [RemainingLifeTime] * [PeriodUsage]);
+	SET
+		-- We still need to update Period End, in case it is fully depreciated?
+		[CorrectPeriodDepreciation] = IIF([RemainingLifeTime] < [PeriodUsage], [BookMinusResidual], [BookMinusResidual] / [RemainingLifeTime] * [PeriodUsage]),
+		[PeriodUsage] = IIF([RemainingLifeTime] < [PeriodUsage], [RemainingLifeTime], [PeriodUsage]);
 
 	WITH PeriodDepreciations AS (
 		SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue]) AS Amount
@@ -200,7 +204,8 @@ WITH UsageTill AS (
 )
 UPDATE T
 SET -- 
-	[PeriodUsage] = 1.0 * DATEDIFF(DAY, UT.[Time1], @PeriodEnd) / DATEDIFF(DAY, @PeriodStart, @PeriodEnd),
+--	[PeriodUsage] = 1.0 * DATEDIFF(DAY, UT.[Time1], @PeriodEnd) / DATEDIFF(DAY, @PeriodStart, @PeriodEnd),
+	[PeriodUsage] = 1.0 * dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, UT.[Time1], @PeriodEnd),
 	[PeriodStart] = UT.[Time1],
 	[PeriodEnd]	= @PeriodEnd
 FROM @FixedAssetsDepreciations T
