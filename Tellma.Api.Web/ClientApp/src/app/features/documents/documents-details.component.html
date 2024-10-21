@@ -1787,6 +1787,35 @@
                 </t-form-group-dynamic>
             </ng-container>
 
+            <!-- Noted Resource -->
+            <ng-container *ngIf="showNotedResource_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedResource_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.NotedResourceId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedResourceId">
+                        <t-view-link
+                            [link]="'../../../resources/' + ws.get('Resource', entry.NotedResourceId)?.DefinitionId"
+                            [itemId]="entry.NotedResourceId">
+                            {{ ws.getMultilingualValue('Resource', entry.NotedResourceId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-resources-picker *ngIf="!readonlyNotedResource_Manual(entry)"
+                            [(ngModel)]="entry.NotedResourceId" (ngModelChange)="update.call(null, pair);"
+                            [additionalSelect]="additionalSelectNotedResource"
+                            [definitionIds]="definitionIdsNotedResource_Manual(entry)" required>
+                        </t-resources-picker>
+                        <t-restricted *ngIf="readonlyNotedResource_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.NotedResourceId">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueNotedResourceId_Manual(entry), 'Name')
+                            }}
+                        </t-restricted>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
             <!-- Resource -->
             <ng-container *ngIf="showResource_Manual(entry)">
                 <t-form-group-dynamic [label]="labelResource_Manual(entry)"
@@ -1841,36 +1870,6 @@
                         <t-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
                             (ngModelChange)="update.call(null, pair);" [filter]="filterUnitId(entry)">
                         </t-units-picker>
-                    </ng-container>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
-
-            <!-- Noted Resource -->
-            <ng-container *ngIf="showNotedResource_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedResource_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedResourceId">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedResourceId">
-                        <t-view-link
-                            [link]="'../../../resources/' + ws.get('Resource', entry.NotedResourceId)?.DefinitionId"
-                            [itemId]="entry.NotedResourceId">
-                            {{ ws.getMultilingualValue('Resource', entry.NotedResourceId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-resources-picker *ngIf="!readonlyNotedResource_Manual(entry)"
-                            [(ngModel)]="entry.NotedResourceId" (ngModelChange)="update.call(null, pair);"
-                            [additionalSelect]="additionalSelectNotedResource"
-                            [definitionIds]="definitionIdsNotedResource_Manual(entry)" required>
-                        </t-resources-picker>
-                        <t-restricted *ngIf="readonlyNotedResource_Manual(entry)"
-                            [metadata]="entry.EntityMetadata?.NotedResourceId">
-                            {{ ws.getMultilingualValue('Resource', readonlyValueNotedResourceId_Manual(entry), 'Name')
-                            }}
-                        </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>

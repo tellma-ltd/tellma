@@ -1759,6 +1759,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return resourceDefinition;
   }
 
+  private notedResourceDefinition(entry: Entry): ResourceDefinitionForClient {
+    const resource = this.notedResource(entry);
+    const defId = !!resource ? resource.DefinitionId : null;
+    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+    return resourceDefinition;
+  }
+
   public accountDisplay(accountId: number) {
     const account = this.ws.get('Account', accountId);
     if (!!account) {
@@ -2170,18 +2177,37 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Quantity + Unit
 
-  public showQuantity(entry: Entry): boolean {
-    return !!this.resource(entry);
+  private resourceForUnit(entry: Entry) {
+    if (this.showResource_Manual(entry)) {
+      return this.resource(entry);
+    }
+    if (this.showNotedResource_Manual(entry)) {
+      return this.notedResource(entry);
+    }
+    return null;
+  }
+  private resourceDefinitionForUnit(entry: Entry) {
+    if (this.showResource_Manual(entry)) {
+      return this.resourceDefinition(entry);
+    }
+    if (this.showNotedResource_Manual(entry)) {
+      return this.notedResourceDefinition(entry);
+    }
+    return null;
   }
 
-  public showUnit(entry: Entry): boolean {
-    const resource = this.resource(entry);
+  public showQuantity(entry: Entry): boolean {
+    return !!this.resourceForUnit(entry);
+  }
+
+  public showUnit(entry: Entry): boolean {    
+    const resource = this.resource(entry); // this.resourceForUnit(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
     return !!resourceDef && !!resourceDef.UnitCardinality;
   }
 
   public readonlyUnit(entry: Entry): boolean {
-    const def = this.resourceDefinition(entry);
+    const def = this.resourceDefinitionForUnit(entry);
     if (!!def && def.UnitCardinality === 'Single' &&
       def.ResourceDefinitionType !== 'PropertyPlantAndEquipment' &&
       def.ResourceDefinitionType !== 'InvestmentProperty' &&
@@ -2196,13 +2222,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public readonlyValueUnitId(entry: Entry): number {
-    const resource = this.resource(entry);
+    const resource = this.resourceForUnit(entry);
     return !!resource ? resource.UnitId : null;
   }
 
   public filterUnitId(entry: Entry): string {
     // This method is only required when Cardinality === Multi
-    const resource = this.resource(entry);
+    const resource = this.resourceForUnit(entry);
     let filter: string;
     if (!!resource) {
       if (!!resource.UnitId) {
