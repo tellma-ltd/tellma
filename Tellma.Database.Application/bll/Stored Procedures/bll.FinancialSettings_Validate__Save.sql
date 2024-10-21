@@ -3,6 +3,7 @@
 	@TaxIdentificationNumber NVARCHAR (50),
 	@FirstDayOfPeriod TINYINT,
 	@ArchiveDate DATE,
+	@FreezeDate DATE,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
 AS

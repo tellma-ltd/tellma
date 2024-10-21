@@ -177,7 +177,6 @@ BEGIN
 
 	IF @State >= 2
 	BEGIN
-		DECLARE @ArchiveDate DATE;
 		---- Posting Date not null, moved up
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)

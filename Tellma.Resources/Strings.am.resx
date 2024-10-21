@@ -1259,7 +1259,7 @@
     <value>መለያ '{0}' በ{1} አይነት ከየትኛውም መስክ ጋር አይዛመድም። '{2}' ማለትዎ ነውን?</value>
   </data>
   <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
-    <value>የ«{0}» መለያ በ{1} አይነት ከብዙ ስብስቦች ጋር ይዛመዳል፣እንደዚህ «{0}.1» ለማታለል የቁጥር ድህረ ቅጥያ ይጠቀሙ።</value>
+    <value>የ«{0}» መለያ በ{1} ከበርካታ ስብስቦች ጋር ይዛመዳል፣ እንደዚህ «{0}.1» ያለ አሃዛዊ ድህረ ቅጥያ ይጠቀሙ።</value>
   </data>
   <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
     <value>ሰይም '{0}' ከብዝሃ መስኮች በ{1} አይነት ጋር ይዛመዳል፣እንደዚህ '{0}.1' ለማታለል የቁጥር ፖስትፋክስን ተጠቀም።</value>
@@ -1430,7 +1430,7 @@
     <value>መለያ «{0}» በ{1} {2} ምንዛሬ «{3}» ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>መለያ '{0}' በ{1} {2} ውስጥ ከንብረት '{3}' ጋር ጥቅም ላይ ይውላል።</value>
+    <value>መለያ «{0}» በ{1} {2} ውስጥ ከንብረት «{3}» ጋር ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>የመለያ ምደባ '{0}' መለያ '{1}' ዜሮ ያልሆነ ቀሪ ሂሳብ አለው።</value>
@@ -3000,6 +3000,12 @@
   </data>
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
     <value>ደሞዝ የሚሰላበት ወር በፊት ያለው ቀን</value>
+  </data>
+  <data name="Settings_FreezeDate" xml:space="preserve">
+    <value>የቀዘቀዘበት ቀን</value>
+  </data>
+  <data name="Settings_FreezeDateDescription" xml:space="preserve">
+    <value>ከዚህ ቀን በፊት ግብይቶችን መፍጠር አይፈቀድም።</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>ተግባራዊ ምንዛሬ</value>

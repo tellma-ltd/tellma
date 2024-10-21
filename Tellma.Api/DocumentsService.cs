@@ -2308,25 +2308,6 @@ namespace Tellma.Api
                     }
                 }
 
-                if (docDef.PostingDateVisibility != null && doc.PostingDate != null)
-                {
-                    //// Date cannot be in the future unless document is of type Plan
-                    //if (docDef.DocumentType != DocumentTypes.Plan && doc.PostingDate > DateTime.Today.AddDays(1))
-                    //{
-                    //    ModelState.AddError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                    //        _localizer["Error_DateCannotBeInTheFuture"]);
-                    //}
-
-                    //// Date cannot be before archive date
-                    //if (doc.PostingDate <= settings.ArchiveDate && docDef.DocumentType >= 2)
-                    //{
-                    //    var calendar = Calendar ?? settings.PrimaryCalendar;
-                    //    var archiveDate = CalendarUtilities.FormatDate(settings.ArchiveDate, _localizer, settings.DateFormat, calendar);
-                    //    ModelState.AddError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                    //        _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
-                    //}
-                }
-
                 ////////// LineDefinitionEntries Validation
                 if (doc.LineDefinitionEntries != null)
                 {
@@ -2416,7 +2397,7 @@ namespace Tellma.Api
                                         _localizer["Error_DateCannotBeInTheFuture"]);
                                 }
 
-                                // Line date cannot be before archive when the document is plan or regulatory
+                                // Line date cannot be before archive when the document is event or regulatory
                                 if (line.PostingDate <= settings.ArchiveDate && lineDef.LineType >= LineTypes.Event)
                                 {
                                     var calendar = Calendar ?? settings.PrimaryCalendar;

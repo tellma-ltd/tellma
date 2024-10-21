@@ -36,6 +36,8 @@ namespace Tellma.Api.Dto
 
         public DateTime ArchiveDate { get; set; }
 
+        public DateTime FreezeDate { get; set; }
+
         public string TaxIdentificationNumber { get; set; }
 
         public string PrimaryLanguageId { get; set; }

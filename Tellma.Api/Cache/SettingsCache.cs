@@ -59,6 +59,7 @@ namespace Tellma.Api
             forClient.FunctionalCurrencyId = financialSettings.FunctionalCurrencyId;
             forClient.TaxIdentificationNumber = financialSettings.TaxIdentificationNumber;
             forClient.ArchiveDate = financialSettings.ArchiveDate ?? DateTime.MinValue;
+            forClient.FreezeDate = financialSettings.FreezeDate ?? DateTime.MinValue;
             forClient.FunctionalCurrencyDecimals = financialSettings.FunctionalCurrency.E ?? 0;
             forClient.FunctionalCurrencyName = financialSettings.FunctionalCurrency.Name;
             forClient.FunctionalCurrencyName2 = financialSettings.FunctionalCurrency.Name2;

@@ -3334,6 +3334,12 @@
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
     <value>The day of month before which salaries are calculated</value>
   </data>
+  <data name="Settings_FreezeDate" xml:space="preserve">
+    <value>Freeze Date</value>
+  </data>
+  <data name="Settings_FreezeDateDescription" xml:space="preserve">
+    <value>Creating transactions before this date is not allowed</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>
   </data>

@@ -3,6 +3,7 @@
 	@TaxIdentificationNumber NVARCHAR (50),
 	@FirstDayOfPeriod TINYINT,
 	@ArchiveDate DATE,
+	@FreezeDate DATE,
 	@ValidateOnly BIT = 0,
 	@Top INT = 200,
 	@UserId INT,
@@ -19,6 +20,7 @@ BEGIN
 		@TaxIdentificationNumber = @TaxIdentificationNumber,
 		@FirstDayOfPeriod = @FirstDayOfPeriod,
 		@ArchiveDate = @ArchiveDate,
+		@FreezeDate = @FreezeDate,
 		@Top = @Top,
 		@IsError = @IsError OUTPUT;
 
@@ -31,5 +33,6 @@ BEGIN
 		@TaxIdentificationNumber = @TaxIdentificationNumber,
 		@FirstDayOfPeriod = @FirstDayOfPeriod,
 		@ArchiveDate = @ArchiveDate,
+		@FreezeDate = @FreezeDate,
 		@UserId = @UserId;
 END;

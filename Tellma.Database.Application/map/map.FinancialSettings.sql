@@ -7,6 +7,7 @@ RETURN (
 		[TaxIdentificationNumber],
 		[FirstDayOfPeriod],
 		[ArchiveDate],
+		[FreezeDate],
 		[FinancialModifiedAt],
 		[FinancialModifiedById]	
 	FROM [dbo].[Settings]

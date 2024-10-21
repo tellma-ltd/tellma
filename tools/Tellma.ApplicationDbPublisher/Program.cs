@@ -180,6 +180,7 @@ namespace Tellma.ApplicationDbPublisher
                         Password = connInfo.Password,
                         IntegratedSecurity = connInfo.IsWindowsAuth,
                         PersistSecurityInfo = false,
+                        TrustServerCertificate = true,
                         ConnectTimeout = 120
                     };
 

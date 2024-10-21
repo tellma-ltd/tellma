@@ -3184,6 +3184,12 @@
   <data name="Settings_FirstDayOfPeriodDescription" xml:space="preserve">
     <value>اليوم من كل الشهر الذي يبدأ قبله حساب مرتبات الموظفين</value>
   </data>
+  <data name="Settings_FreezeDate" xml:space="preserve">
+    <value>تاريخ التجميد</value>
+  </data>
+  <data name="Settings_FreezeDateDescription" xml:space="preserve">
+    <value>يمنع النظام إنشاء أي معاملات قبل هذا التاريخ</value>
+  </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>العملة الوظيفية</value>
   </data>

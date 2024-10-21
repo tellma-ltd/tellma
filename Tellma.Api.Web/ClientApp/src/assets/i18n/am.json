@@ -966,6 +966,8 @@
   "Settings_EnforceNoExternalAccounts": "ምንም የውጭ መለያዎችን ማስፈጸም",
   "Settings_FirstDayOfPeriod": "የደመወዝ ጊዜ ይጀምራል",
   "Settings_FirstDayOfPeriodDescription": "ደሞዝ የሚሰላበት ወር በፊት ያለው ቀን",
+  "Settings_FreezeDate": "የቀዘቀዘበት ቀን",
+  "Settings_FreezeDateDescription": "ከዚህ ቀን በፊት ግብይቶችን መፍጠር አይፈቀድም።",
   "Settings_FunctionalCurrency": "ተግባራዊ ምንዛሬ",
   "Settings_FunctionalCurrencyDescription": "በማመንጨት እና ገንዘብ በማሳለፍ ጊዜ ተቀዳሚ ምንዛሪ ተጠቅሟል",
   "Settings_LanguageSymbolDescription": "ይህ ምልክት ቋንቋ ተናጋሪ መስኮች ቋንቋ ይለያል",

@@ -3,6 +3,7 @@
 	@TaxIdentificationNumber NVARCHAR (50),
 	@FirstDayOfPeriod TINYINT,
 	@ArchiveDate DATE,
+	@FreezeDate DATE,
 	@UserId INT
 AS
 BEGIN
@@ -15,6 +16,7 @@ BEGIN
 		[TaxIdentificationNumber] = @TaxIdentificationNumber,
 		[FirstDayOfPeriod]		= @FirstDayOfPeriod,
 		[ArchiveDate]			= @ArchiveDate,
+		[FreezeDate]			= @ArchiveDate,
 		[SettingsVersion]		= NEWID(), -- To trigger cache refresh
 		[FinancialModifiedAt]	= @Now,
 		[FinancialModifiedById]	= @UserId

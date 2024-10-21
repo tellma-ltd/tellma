@@ -22,6 +22,9 @@ namespace Tellma.Model.Application
 
         [Display(Name = "Settings_ArchiveDate")]
         public DateTime? ArchiveDate { get; set; }
+
+        [Display(Name = "Settings_FreezeDate")]
+        public DateTime? FreezeDate { get; set; }
     }
 
     public class FinancialSettings : FinancialSettingsForSave

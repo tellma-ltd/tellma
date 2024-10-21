@@ -1056,6 +1056,8 @@
   "Settings_EnforceNoExternalAccounts": "Enforce no external accounts",
   "Settings_FirstDayOfPeriod": "Salary Period Starts",
   "Settings_FirstDayOfPeriodDescription": "The day of month before which salaries are calculated",
+  "Settings_FreezeDate": "Freeze Date",
+  "Settings_FreezeDateDescription": "Creating transactions before this date is not allowed",
   "Settings_FunctionalCurrency": "Functional Currency",
   "Settings_FunctionalCurrencyDescription": "The primary currency used when generating and spending cash",
   "Settings_LanguageSymbolDescription": "This symbol distinguishes the language of bilingual fields",

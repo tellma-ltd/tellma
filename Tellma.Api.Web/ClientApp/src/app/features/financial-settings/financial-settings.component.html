@@ -21,6 +21,15 @@
                     required></t-date-picker>
             </t-form-group-settings>
 
+            <!-- FreezeDate -->
+            <t-form-group-settings class="t-form-group" [label]="'Settings_FreezeDate' | translate"
+                [description]="'Settings_FreezeDateDescription' | translate"
+                [serverErrors]="model.serverErrors?.FreezeDate">
+                <div *ngIf="!isEdit">{{ model?.FreezeDate | dateFormat }}</div>
+                <t-date-picker *ngIf="isEdit" [(ngModel)]="model.FreezeDate" [ngModelOptions]="{ updateOn: 'blur' }"
+                    required></t-date-picker>
+            </t-form-group-settings>
+
             <!-- FirstDayOfPeriod -->
             <t-form-group-settings class="t-form-group" [label]="'Settings_FirstDayOfPeriod' | translate"
                 [description]="'Settings_FirstDayOfPeriodDescription' | translate"

@@ -43,6 +43,7 @@ namespace Tellma.Api
         {
             // Defaults
             settingsForSave.ArchiveDate ??= new DateTime(1900, 1, 1);
+            settingsForSave.FreezeDate ??= new DateTime(1900, 1, 1);
             settingsForSave.FirstDayOfPeriod ??= 25;
 
             return base.SavePreprocess(settingsForSave);
@@ -54,6 +55,13 @@ namespace Tellma.Api
             if (settingsForSave.ArchiveDate != null && settingsForSave.ArchiveDate.Value > DateTime.Today.AddDays(1))
             {
                 ModelState.AddError(nameof(settingsForSave.ArchiveDate),
+                    _localizer["Error_DateCannotBeInTheFuture"]);
+            }
+
+            // Make sure the archive date is not in the future
+            if (settingsForSave.FreezeDate != null && settingsForSave.FreezeDate.Value > DateTime.Today.AddDays(1))
+            {
+                ModelState.AddError(nameof(settingsForSave.FreezeDate),
                     _localizer["Error_DateCannotBeInTheFuture"]);
             }
 

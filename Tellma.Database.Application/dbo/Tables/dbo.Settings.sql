@@ -54,6 +54,7 @@
 	[TaxIdentificationNumber]				NVARCHAR (50)		NULL,
 	[FirstDayOfPeriod]						TINYINT				NOT NULL DEFAULT 1,
 	[ArchiveDate]							DATE				NOT NULL DEFAULT ('1980.01.01'),
+	[FreezeDate]							DATE				NOT NULL DEFAULT ('1980.01.01'),
 	[FinancialModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[FinancialModifiedById]					INT					NULL CONSTRAINT [FK_Settings__FinancialModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	[ReferenceSourceAgentDefinitionCodes]	NVARCHAR (255) NOT NULL DEFAULT N'DutyStation',

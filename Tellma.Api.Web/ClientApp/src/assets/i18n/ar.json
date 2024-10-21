@@ -1023,6 +1023,8 @@
   "Settings_EnforceNoExternalAccounts": "إلزام المستخدمين بتجنب مسجلي الدخول الخارجيين",
   "Settings_FirstDayOfPeriod": "بداية شهر المرتبات",
   "Settings_FirstDayOfPeriodDescription": "اليوم من كل الشهر الذي يبدأ قبله حساب مرتبات الموظفين",
+  "Settings_FreezeDate": "تاريخ التجميد",
+  "Settings_FreezeDateDescription": "يمنع النظام إنشاء أي معاملات قبل هذا التاريخ",
   "Settings_FunctionalCurrency": "العملة الوظيفية",
   "Settings_FunctionalCurrencyDescription": "العملة الرئيسية المستخدمة في المعاملات النقدية",
   "Settings_LanguageSymbolDescription": "الرمز الذي يميز لغة الحقول المزدوجة اللغة",
