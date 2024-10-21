@@ -35,6 +35,7 @@ BEGIN
 	AND E.[ResourceId] = @BasicSalaryRS
 	GROUP BY E.[NotedAgentId], ED.[Date], E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[EntryTypeId], E.[CurrencyId]
 	HAVING  SUM(E.[Direction] * E.[MonetaryValue]) <> 0
+
 	RETURN
 END
 GO

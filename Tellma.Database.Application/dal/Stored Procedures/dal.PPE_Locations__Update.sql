@@ -8,7 +8,7 @@ BEGIN
 	join resourcedefinitions rd on rd.id = r.definitionId
 	join dbo.Agents AG on AG.Id =r.Agent2Id
 	where rd.code like N'%Member'
-	and rd.code <> N'RightofuseAssetsMember'
+--	and rd.code <> N'RightofuseAssetsMember'
 --	and R.Id = 1608
 	;
 

@@ -7,7 +7,7 @@
 	@PriorSchedule dbo.IFRS16Schedule READONLY -- The original copy of the total payment scedule
 )
 RETURNS @Result TABLE ( -- Model
-	PaymentDate DATE PRIMARY KEY, -- Noted Date 0 -- input
+	PaymentDate DATE PRIMARY KEY, -- Posting Date -- input
 	Payment DECIMAL (19, 6), -- Monetary Value 0 -- input
 	NetPresentValue DECIMAL (19, 6), -- Noted Amount 0
 	OpeningLiability DECIMAL (19, 6), -- Decimal 1

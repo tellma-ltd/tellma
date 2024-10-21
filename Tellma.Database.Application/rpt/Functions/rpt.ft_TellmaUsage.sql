@@ -59,7 +59,7 @@ FROM (
 		) R ON R.[RoleId] = P.[RoleId]
 	) T 
 	WHERE [Component] NOT IN (
-		SELECT [TitlePlural] FROM AgentDefinitions
+		SELECT [TitlePlural] FROM dbo.AgentDefinitions
 		WHERE [CurrencyVisibility] = N'None'
 		AND [CenterVisibility]	= N'None'
 		AND [ImageVisibility]		= N'None'
@@ -86,7 +86,7 @@ FROM (
 		OR [State] <> N'Visible'
 	)
 	AND [Component] NOT IN (
-		SELECT [TitlePlural] FROM ResourceDefinitions
+		SELECT [TitlePlural] FROM dbo.ResourceDefinitions
 		WHERE [CurrencyVisibility] = N'None'
 		AND [CenterVisibility]	= N'None'
 		AND [ImageVisibility]		= N'None'
@@ -110,6 +110,10 @@ FROM (
 		AND [Resource1Visibility] = N'None' AND [Resource2Visibility] = N'None'
 		AND [HasAttachments] = 0
 		OR [State] <> N'Visible'
+	)
+	AND [Component] NOT IN (
+		SELECT [TitlePlural] FROM dbo.DocumentDefinitions
+		WHERE [State] <> N'Visible'
 	)
 
 	UNION ALL
@@ -248,7 +252,7 @@ WHERE [Id] IN (
 	WHERE [DocumentDefinitionId] IN (
 		SELECT [Id] FROM @returntable
 		WHERE [ComponentType] = N'Document'
-	)
+	) AND dal.fn_DocumentDefinition__State([DocumentDefinitionId]) = N'Visible'
 )
 
 INSERT INTO @returntable([ComponentType], [Id], [Component], [Source])

@@ -216,7 +216,8 @@ BEGIN
 	EXEC [bll].[Lines_Validate__Transition_ToState]
 		@Documents = @Documents, 
 		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, @Entries = @Entries, @ToState = 2, 
+		--@Lines = @Lines, @Entries = @Entries, @ToState = 2, MA: 2024-10-01, not to be hardcoded.
+		@Lines = @Lines, @Entries = @Entries, @ToState = @ToState, 
 		@Top = @Top, 
 		@IsError = @IsError OUTPUT;
 	IF @IsError = 1 GOTO DONE;

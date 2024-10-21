@@ -8,7 +8,7 @@ BEGIN
 		WHEN @VAT = 0 OR @AmountBeforeVAT = 0 THEN 0
 		WHEN @VAT IS NULL THEN	ROUND(@AmountBeforeVAT * @VATRate, 2)
 		WHEN ABS(@VAT - @AmountBeforeVAT * @VATRate) > 0.99
-			OR ABS(@VAT - @AmountBeforeVAT * @VATRate) > 0.01 * @AmountBeforeVAT
+			OR ABS(@VAT - @AmountBeforeVAT * @VATRate) > 0.01 * ABS(@AmountBeforeVAT)
 			THEN ROUND(@AmountBeforeVAT * @VATRate, 2)
 		ELSE @VAT
 	END

@@ -175,6 +175,14 @@ BEGIN
 		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
 		JOIN dbo.Agents NAG ON NAG.[Id] = D.[NotedAgentId]
 		WHERE NAG.[CurrencyId] IS NULL
+		UNION
+		-- Wrong date
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentPostingDateMustBeToday'
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[PostingDate] <> CAST(GETDATE() AS DATE) 
 	END
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 	-- Verify that workflow-less lines in Documents can be in their final state
