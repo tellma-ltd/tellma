@@ -55,6 +55,16 @@ BEGIN
 	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
 	AND L.[State] > 0;
 
+	-- [C#] cannot open if the document posting date falls in a frozen period.
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].PostingDate',
+		N'Error_FallsinFrozenPeriod'
+	FROM @Ids FE
+	JOIN dbo.Lines L ON L.[DocumentId] = FE.[Id]
+	WHERE L.[PostingDate] <= (SELECT [FreezeDate] FROM dbo.Settings)
+	AND L.[State] > 0;
+
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [ResourceId], [ResourceIsCommon],
 		[NotedAgentId], [NotedAgentIsCommon],[NotedResourceId], [NotedResourceIsCommon],
