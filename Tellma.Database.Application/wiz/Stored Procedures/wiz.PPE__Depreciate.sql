@@ -2,7 +2,7 @@
 -- Shortcomings: 
 -- Limited to PPE and ROU, no other fixed assets
 -- Cannot handle minor assets
--- cannot handle assets transfers durng period
+-- cannot handle assets transfers during period
 	@DocumentIndex	INT = 0,
 	@DepreciationPeriodStarts DATE =  N'2022.06.01',
 	@DepreciationPeriodEnds DATE =  N'2022.06.30',

@@ -1026,6 +1026,8 @@
     <Build Include="dal\Functions\dal.fn_DocumentDefinition__ZatcaDocumentType.sql" />
     <Build Include="dbo\User Defined Types\dbo.LeaseList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IFRS16ScheduleList.sql" />
+    <Build Include="dbo\Functions\dbo.ft_GetMonthEndDates.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.FixedAssets__Depreciate_V3.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
