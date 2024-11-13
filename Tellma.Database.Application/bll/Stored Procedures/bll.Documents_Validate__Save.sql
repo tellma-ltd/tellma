@@ -141,16 +141,16 @@ BEGIN
 	WHERE (FE.[Id] = 0 OR FE.[Id] IS NULL)
 	AND FE.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings)
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
-	-- repeat logic at line level
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_FallsinFrozenPeriod'
-	FROM @Documents FE
-	JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
-	WHERE (L.[Id] = 0 OR L.[Id] IS NULL)
-	AND L.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings);
-	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+	-- No need to repeat logic at line level, since we may prepare the ESV, and AG later.
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+	--	N'Error_FallsinFrozenPeriod'
+	--FROM @Documents FE
+	--JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
+	--WHERE (L.[Id] = 0 OR L.[Id] IS NULL)
+	--AND L.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings);
+	--IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 
 	-- cannot move document from after Freeze date to before freeze date
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -162,17 +162,17 @@ BEGIN
 	AND BE.[PostingDate]  > (SELECT [FreezeDate] FROM dbo.Settings)
 	AND FE.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings)
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
-	-- repeat logic at line level
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_FallsinFrozenPeriod'
-	FROM @Documents FE
-	JOIN @Lines FL ON FL.[DocumentIndex] = FE.[Index]
-	JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
-	AND BL.[PostingDate]  > (SELECT [FreezeDate] FROM dbo.Settings)
-	AND FL.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings);
-	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+	-- No need to repeat logic at line level
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+	--	N'Error_FallsinFrozenPeriod'
+	--FROM @Documents FE
+	--JOIN @Lines FL ON FL.[DocumentIndex] = FE.[Index]
+	--JOIN dbo.Lines BL ON BL.[Id] = FL.[Id]
+	--AND BL.[PostingDate]  > (SELECT [FreezeDate] FROM dbo.Settings)
+	--AND FL.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings);
+	--IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 
 	-- Must not delete a line not in draft state
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

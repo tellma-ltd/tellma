@@ -25,7 +25,7 @@ With CurrentDocs AS (
 	FROM @Documents D
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	WHERE E.[Index] = @InventoryCreditEntryIndex -- this only works for sales!!
+	WHERE E.[Index] = @InventoryCreditEntryIndex
 	GROUP BY L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
 ),
 Excesses AS (

@@ -40,9 +40,9 @@ BEGIN
 	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE (L.[State] >= 0 AND LD.[HasWorkflow] = 1)
 
-
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;	
+GO

@@ -23,6 +23,16 @@ BEGIN
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
 	AND LD.[LineType] >= 100
+	--UNION
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+	--	N'Error_FallsinFrozenPeriod', NULL
+	--FROM @Ids FE
+	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	--JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
+	--JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
+	--WHERE L.[PostingDate] <= (SELECT [FreezeDate] FROM dbo.Settings)
+	--AND LD.[LineType] >= 100
 	UNION
 	-- Cannot close it if it is not draft
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

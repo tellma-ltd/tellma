@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Open]
--- Currently exemption for sandbox is applied to 2304 only.
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 200,
@@ -55,6 +54,7 @@ BEGIN
 	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
 	AND L.[State] > 0;
 
+	-- Actually, we might want to allow opening 
 	-- [C#] cannot open if the document posting date falls in a frozen period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -118,17 +118,7 @@ BEGIN
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
-/*
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__Transition_ToState]
-		@Documents = @Documents, 
-		@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries,
-		@Lines = @Lines, 
-		@Entries = @Entries, 
-		@ToState = 0, 
-		@Top = @Top, 
-		@IsError = @IsError OUTPUT;
-*/
+
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Documents = @Documents, 
