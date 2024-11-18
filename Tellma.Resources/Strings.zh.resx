@@ -881,7 +881,7 @@
     <value>整数属性2</value>
   </data>
   <data name="Entity_LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>地点</value>
@@ -1247,7 +1247,7 @@
     <value>属性 {0} 作为键属性无效，键属性必须为 int 或 string 类型</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>设置“{0}”字段需要一个关键属性，关键属性将添加到减号后的字段标签中，例如：“员工 - 姓名”。</value>
+    <value>设置“{0}”字段需要键属性，键属性将添加到减号后的字段标签中，例如：“员工 - 姓名”。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>标签“{0}”与类型 {1} 上的任何集合都不匹配。</value>
@@ -1259,7 +1259,7 @@
     <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
-    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您指的是“{2}”吗？</value>
+    <value>标签“{0}”与类型 {1} 上的任何字段都不匹配。您的意思是“{2}”吗？</value>
   </data>
   <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
     <value>标签“{0}”匹配类型为 {1} 的多个集合，使用数字后缀来消除歧义，例如“{0}.1”。</value>
@@ -1409,7 +1409,7 @@
     <value>帐户“{0}”具有不可见的资源定义“{1}”。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
-    <value>帐户“{0}”的数量余额非零{1}。</value>
+    <value>帐户“{0}”的数量余额非零 {1}。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
     <value>帐户“{0}”的余额为非零值 {1}。</value>
@@ -2111,7 +2111,7 @@
     <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
     <value>代理定义</value>

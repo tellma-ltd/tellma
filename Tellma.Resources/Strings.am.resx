@@ -566,7 +566,7 @@
     <value>ተደብቋል</value>
   </data>
   <data name="Definition_State_Testing" xml:space="preserve">
-    <value>መሞከር</value>
+    <value>በመሞከር ላይ</value>
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>የሚታይ</value>
@@ -1235,7 +1235,7 @@
     <value>ልክ ያልሆነ አብነት</value>
   </data>
   <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
-    <value>ልክ ያልሆነ የአብነት መግለጫ ({0})።</value>
+    <value>ልክ ያልሆነ የአብነት አገላለጽ ({0})።</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት።</value>
@@ -1397,7 +1397,7 @@
     <value>መለያ '{0}' የማይታይ ወኪል ፍቺ '{1}' አለው።</value>
   </data>
   <data name="Error_TheAccount0HasInvisibleNotedAgentDefinition1" xml:space="preserve">
-    <value>መለያ '{0}' የማይታይ የማይታወቅ ወኪል ፍቺ '{1}' አለው።</value>
+    <value>መለያ '{0}' የማይታይ የማይታይ የወኪል ፍቺ '{1}' አለው።</value>
   </data>
   <data name="Error_TheAccount0HasInvisibleNotedResourceDefinition1" xml:space="preserve">
     <value>መለያ '{0}' የማይታይ የግብዓት ፍቺ '{1}' አለው።</value>
@@ -1457,7 +1457,7 @@
     <value>የመለያው አይነት ከምድብ ጋር ተኳሃኝ አይደለም።</value>
   </data>
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
-    <value>{0} «{1}» ምንም ተጠቃሚ አልተገለጸም።</value>
+    <value>{0} «{1}» ምንም ተጠቃሚዎች የሉትም።</value>
   </data>
   <data name="Error_TheAgent01IsInactive" xml:space="preserve">
     <value>{0} «{1}» ቦዝኗል።</value>
@@ -1604,13 +1604,13 @@
     <value>ሀብቱ '{0}' መሃል '{1}' ሲኖረው መለያው '{2}' መሃል አለው።</value>
   </data>
   <data name="Error_TheResource0hasCurrency1whileAccountHasCurrency2" xml:space="preserve">
-    <value>የመለያ መርጃ '{0}' ምንዛሬ '{1}' ሲኖረው መለያው ምንዛሬ '{2}' አለው።</value>
+    <value>የመለያ ሃብት '{0}' ምንዛሬ '{1}' ሲኖረው መለያው ምንዛሬ '{2}' አለው።</value>
   </data>
   <data name="Error_TheResource0IsNotActive" xml:space="preserve">
     <value>የ«{0}» መርጃ ገቢር አይደለም።</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በ{1} መለያ {2} መሃል ጥቅም ላይ ይውላል።</value>
+    <value>ይህ {0} መዝገብ በ{1} መለያ {2} መሃል ላይ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
     <value>ይህ {0} መዝገብ በ {1} ምንዛሪ «{2}» ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -1676,7 +1676,7 @@
     <value>ክፍል «{0}» ከ{1} «{2}» ጋር ተኳሃኝ አይደለም።</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
-    <value>ያልታወቀ የማስመጣት ሁነታ '{0}'፣ የሚፈቀዱት እሴቶች የሚከተሉት ናቸው፡ {1}</value>
+    <value>ያልታወቀ የማስመጣት ሁነታ '{0}'፣ የሚፈቀዱት እሴቶች፡ {1}</value>
   </data>
   <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
     <value>የመስመር ፍቺ መታወቂያ {0} የለም።</value>
@@ -3563,7 +3563,7 @@
     <value>የመተንበይ ዓይነት</value>
   </data>
   <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
-    <value>የመግቢያ ዓይነት ጠቋሚ</value>
+    <value>የመግቢያ አይነት ጠቋሚ</value>
   </data>
   <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
     <value>የተኪ ሚና</value>

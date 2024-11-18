@@ -1249,6 +1249,9 @@
   <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
     <value>التاريخ يقع في فترة مالية مقفلة.</value>
   </data>
+  <data name="Error_FallsinFrozenPeriod" xml:space="preserve">
+    <value>يمنع انشاء/فتح/عدم الغاء مستندات تقع في فترة مالية مجمدة. يرجى التواصل مع الادارة المالية.</value>
+  </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم.</value>
   </data>

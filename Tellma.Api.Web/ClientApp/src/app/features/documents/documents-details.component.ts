@@ -2983,7 +2983,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const s = this.ws.settings;
     let prefix: string;
     if (s.FeatureFlags && s.FeatureFlags.RelyOnCanSignForUnsigning) {
-      return !!signature.SignedById && signature.CanSign;
+      return !!signature.SignedById && (signature.CanSign || signature.CanSignOnBehalf);
     } else {    
       return !!signature.SignedById && (signature.SignedById === this.ws.userSettings.UserId ||
         signature.OnBehalfOfUserId === this.ws.userSettings.UserId);

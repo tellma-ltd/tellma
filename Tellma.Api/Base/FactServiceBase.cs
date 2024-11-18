@@ -28,7 +28,7 @@ namespace Tellma.Api.Base
         /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
         /// it can be overridden by overriding <see cref="MaximumPageSize()"/>.
         /// </summary>
-        private const int DefaultMaxPageSize = 10000;
+        private const int DefaultMaxPageSize = 50000;
 
         /// <summary>
         /// The maximum number of rows (data points) that can be returned by <see cref="GetAggregate(GetAggregateArguments)"/>, 

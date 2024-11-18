@@ -2,7 +2,7 @@
 {
     public class ExportArguments
     {
-        private const int DEFAULT_PAGE_SIZE = 10000;
+        private const int DEFAULT_PAGE_SIZE = 50000;
 
         /// <summary>
         /// Specifies the number of entities to export.

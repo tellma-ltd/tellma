@@ -151,7 +151,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   mode: 'popup' | 'screen' = 'screen';
 
   @Input()
-  exportPageSize = 10000;
+  exportPageSize = 50000;
 
   @Input()
   exportFileName: string;
@@ -1465,8 +1465,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const from = this.fromExport;
-    const to = this.toExport;
+    // const from = this.fromExport;
+    // const to = this.toExport;
     const s = this.state;
     const filter = this.computeFilter(s);
 
@@ -1506,7 +1506,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     obs$.pipe(
       tap((blob: Blob) => {
         this.showExportSpinner = false;
-        const fileName = `${this.exportFileName || this.masterCrumb} ${from}-${to}.csv`;
+        const fileName = `${this.exportFileName || this.masterCrumb}.csv`;
         downloadBlob(blob, fileName);
       }),
       catchError(friendlyError => {
