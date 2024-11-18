@@ -15,7 +15,7 @@ BEGIN
 	IF [dal].[fn_FunctionalCurrencyId]() <> @FunctionalCurrencyId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT DISTINCT TOP (@Top)
-		'FunctionalCurrencyId',
+		N'FunctionalCurrencyId',
 		N'Error_Document01HasForeignCurrency',
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]),
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N]
@@ -27,7 +27,12 @@ BEGIN
 	AND E.[CurrencyId] <> [dal].[fn_FunctionalCurrencyId]()
 	AND E.[MonetaryValue] <> 0
 
-	-- Cannot change Archive date if there are uncolosed documents on or before that date
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+    SELECT N'ArchiveDate', N'Error_ArchiveDateMustPrecedeFreezeDate'
+	WHERE @ArchiveDate > @FreezeDate;
+
+	-- Cannot change Archive date if there are unclosed documents on or before that date
+	/*
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
     SELECT DISTINCT TOP (@Top)
 		'ArchiveDate',
@@ -42,9 +47,11 @@ BEGIN
 	WHERE D.[State] = 0 
 	AND L.[State] >= 0
 	AND L.[PostingDate] <= @ArchiveDate
+	*/
 
 	-- Set @IsError
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;
+GO

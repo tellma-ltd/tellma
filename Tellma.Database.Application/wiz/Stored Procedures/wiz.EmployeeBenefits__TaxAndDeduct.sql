@@ -119,5 +119,5 @@ BEGIN
 	JOIN EmployeesCenters EC ON EC.[NotedAgentId] = WL.[NotedAgentId1]
 	WHERE WL.[AgentId1] = @EmployeeIncomeTaxAG
 END
-SELECT * FROM @Widelines;
+SELECT * FROM @Widelines order by [Index];
 GO

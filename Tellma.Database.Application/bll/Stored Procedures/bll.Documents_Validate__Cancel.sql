@@ -19,6 +19,16 @@ BEGIN
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
 	WHERE D.[State] <> 0;
 
+	-- [C#] cannot cancel if the document posting date falls in an archived period.
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].PostingDate',
+		N'Error_FallsinArchivedPeriod'
+	FROM @Ids FE
+	JOIN dbo.Lines L ON L.[DocumentId] = FE.[Id]
+	WHERE L.[PostingDate] <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	AND L.[State] > 0;
+
 	-- All workflow lines must be in negative states.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
@@ -35,3 +45,4 @@ BEGIN
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 END;	
+GO
