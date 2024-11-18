@@ -346,6 +346,9 @@
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>تكاليف نقل</value>
   </data>
+  <data name="Center_CenterType_FinanceCost" xml:space="preserve">
+    <value>تكلفة تمويل</value>
+  </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>تكاليف مبان للتأجير قيد الإنشاء</value>
   </data>

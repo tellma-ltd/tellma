@@ -134,6 +134,7 @@
   "Center_CenterType_BusinessUnit": "Business Unit",
   "Center_CenterType_ConstructionInProgressExpendituresControl": "Construction Expense",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "Transit Expense",
+  "Center_CenterType_FinanceCost": "Finance Cost",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "Rentals Under Construction Expense",
   "Center_CenterType_Marketing": "Marketing",
   "Center_CenterType_Operation": "Operation",

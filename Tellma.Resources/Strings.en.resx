@@ -364,6 +364,9 @@
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>Transit Expense</value>
   </data>
+  <data name="Center_CenterType_FinanceCost" xml:space="preserve">
+    <value>Finance Cost</value>
+  </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
   </data>

@@ -29,7 +29,8 @@ namespace Tellma.Model.Application
                CenterTypes.Marketing,
                CenterTypes.Service,
                CenterTypes.Operation,
-               CenterTypes.Sale
+               CenterTypes.Sale,
+               CenterTypes.FinanceCost
             },
             new string[] {
                 "Center_CenterType_Abstract",
@@ -43,7 +44,8 @@ namespace Tellma.Model.Application
                 "Center_CenterType_Marketing",
                 "Center_CenterType_Service",
                 "Center_CenterType_Operation",
-                "Center_CenterType_Sale"
+                "Center_CenterType_Sale",
+                "Center_CenterType_FinanceCost"
             })]
         public string CenterType { get; set; }
 
@@ -133,5 +135,6 @@ namespace Tellma.Model.Application
         public const string Service = nameof(Service);
         public const string Operation = nameof(Operation);
         public const string Sale = nameof(Sale);
+        public const string FinanceCost = nameof(FinanceCost);
     }
 }
