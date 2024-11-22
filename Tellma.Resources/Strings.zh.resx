@@ -881,7 +881,7 @@
     <value>整数属性2</value>
   </data>
   <data name="Entity_LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="Entity_Location" xml:space="preserve">
     <value>地点</value>
@@ -1109,7 +1109,7 @@
     <value>已取消的文件无法修改。</value>
   </data>
   <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
-    <value>关闭的文档无法修改。</value>
+    <value>已关闭的文档无法修改。</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>无法修改非活动项目。</value>
@@ -1409,7 +1409,7 @@
     <value>帐户“{0}”具有不可见的资源定义“{1}”。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroQuantityBalance1" xml:space="preserve">
-    <value>帐户“{0}”的数量余额非零{1}。</value>
+    <value>帐户“{0}”的数量余额非零 {1}。</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
     <value>帐户“{0}”的余额为非零值 {1}。</value>
@@ -1427,7 +1427,7 @@
     <value>帐户“{0}”在 {1} {2} 中与代理“{3}”一起使用。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCenter3" xml:space="preserve">
-    <value>帐户“{0}”在以“{3}”为中心的 {1} {2} 中使用。</value>
+    <value>帐户“{0}”在 {1} {2} 中使用，中心为“{3}”。</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithCurrency3" xml:space="preserve">
     <value>帐户“{0}”在 {1} {2} 中使用，货币为“{3}”。</value>
@@ -2111,7 +2111,7 @@
     <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry" xml:space="preserve">
-    <value>线定义条目</value>
+    <value>线路定义条目</value>
   </data>
   <data name="LineDefinitionEntry_AgentDefinitions" xml:space="preserve">
     <value>代理定义</value>

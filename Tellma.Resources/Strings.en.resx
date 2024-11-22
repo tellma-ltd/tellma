@@ -364,6 +364,9 @@
   <data name="Center_CenterType_CurrentInventoriesInTransitExpendituresControl" xml:space="preserve">
     <value>Transit Expense</value>
   </data>
+  <data name="Center_CenterType_FinanceCost" xml:space="preserve">
+    <value>Finance Cost</value>
+  </data>
   <data name="Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl" xml:space="preserve">
     <value>Rentals Under Construction Expense</value>
   </data>
@@ -1350,6 +1353,9 @@
   </data>
   <data name="Error_FallsinArchivedPeriod" xml:space="preserve">
     <value>The date falls within an archived financial period,</value>
+  </data>
+  <data name="Error_FallsinFrozenPeriod" xml:space="preserve">
+    <value>Cannot Create/Open/Uncancel documents that fall in a frozen period. Please contact the Finance department.</value>
   </data>
   <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
     <value>The {0} field is not a valid e-mail address.</value>

@@ -128,6 +128,7 @@
   "Center_CenterType_BusinessUnit": "وحدة أعمال",
   "Center_CenterType_ConstructionInProgressExpendituresControl": "تكاليف إنشاء",
   "Center_CenterType_CurrentInventoriesInTransitExpendituresControl": "تكاليف نقل",
+  "Center_CenterType_FinanceCost": "تكلفة تمويل",
   "Center_CenterType_InvestmentPropertyUnderConstructionOrDevelopmentExpendituresControl": "تكاليف مبان للتأجير قيد الإنشاء",
   "Center_CenterType_Marketing": "تسويق",
   "Center_CenterType_Operation": "تشغيل",
