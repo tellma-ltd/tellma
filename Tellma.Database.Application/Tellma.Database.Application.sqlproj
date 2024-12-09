@@ -1058,6 +1058,7 @@
     <None Include="Tellma.104.publish.xml" />
     <None Include="TellmaStaging.101.publish.xml" />
     <None Include="XMLFile1.xml" />
+    <None Include="XMLFile2.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

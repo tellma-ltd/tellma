@@ -14,7 +14,12 @@ BEGIN
      * 
      * NOTE: the column ordering is important, don't change it.
      */
-	 
+	 DECLARE @DbName NVARCHAR(50) = DB_NAME();
+	 DECLARE @DbNameLength INT = LEN(@DbName);
+	 DECLARE @DotPos INT = charindex('.', db_name());
+	 DECLARE @TenantId INT = CAST(SUBSTRING(@DbName, @DotPos + 1, @DbNameLength - @DotPos) AS INT);
+	 IF (@TenantId >= 1000) AND (SELECT TOP 1 [ZatcaEnvironment] FROM dbo.Settings) = N'Production'
+		THROW 50000, N'Zatca Environment cannot be production. Change to Sandbox.', 1;
 	--=-=-= 0 - Exit clause =-=-=--
 	IF NOT EXISTS (
 		SELECT * FROM [map].[Lines]() L
@@ -112,11 +117,11 @@ BEGIN
     --=-=-= 2 - Invoice Allowances/Charges - Document level =-=-=--
     SELECT
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
-        CAST(0 AS BIT) AS [IsCharge], -- 1 for charge, 0 for allowance
-        E.[Direction] * E.[NotedAmount] AS [Amount], -- BT-92 for allowances, BT-99 for charges,
-        NR.[Name] AS [Reason], -- BT-97 for allowances, BT-104 for charges, max 1000 chars
-        NR.[Code] AS [ReasonCode], -- BT-98 for allowances, BT-105 for charges, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm for allowances, and from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm for charges
-        ISNULL(LK3.[Code], 'S') AS [VatCategory], -- BT-95 for allowances, BT-102 for charges: [E, S, Z, O]
+        CAST(0 AS BIT) AS [IsCharge], -- 0 for allowance
+        E.[Direction] * E.[NotedAmount] AS [Amount], -- BT-92
+        NR.[Name] AS [Reason], -- BT-97 max 1000 chars
+        NR.[Code] AS [ReasonCode], -- BT-98, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5189.htm
+        ISNULL(LK3.[Code], 'S') AS [VatCategory], -- BT-95: [E, S, Z, O]
         ISNULL(NR.[VatRate], 0.15) AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
 	FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
@@ -129,7 +134,28 @@ BEGIN
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
 	AND (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
-	AND (E.MonetaryValue <> 0 OR E.[NotedAmount] <> 0)
+	AND (E.MonetaryValue > 0 OR E.[NotedAmount] > 0)
+	UNION ALL
+	SELECT
+		I.[Index] AS [InvoiceIndex], -- Index of the invoice this allowance/charge belongs to. Must be one of the indices returned from the first SELECT statement
+        CAST(1 AS BIT) AS [IsCharge], -- 1 for charge
+		-E.[Direction] * E.[NotedAmount] AS [Amount], -- BT-99
+        NR.[Name] AS [Reason], -- BT-104, max 1000 chars
+        NR.[Code] AS [ReasonCode], -- BT-10, choices from https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred7161.htm
+        ISNULL(LK3.[Code], 'S') AS [VatCategory], -- BT-102, [E, S, Z, O]
+        ISNULL(NR.[VatRate], 0.15) AS [VatRate] -- BT-96: between 0.00 and 1.00 (NOT 100.00)
+	FROM [map].[Lines]() L
+	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+	INNER JOIN dbo.ResourceDefinitions NRD ON NRD.[Id] = NR.[DefinitionId]
+	LEFT JOIN dbo.Lookups LK3 ON LK3.[Id] = NR.[Lookup3Id]
+	INNER JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+	INNER JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+    INNER JOIN [map].[Documents]() D ON D.[Id] = L.[DocumentId]
+	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
+	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+	AND (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer')
+	AND (E.MonetaryValue < 0 OR E.[NotedAmount] < 0)
     --=-=-= 3 -Regular Invoice Lines =-=-=--
     SELECT -- TOP 1. MA: 2024-04-21 Commented on this date.
 		I.[Index] AS [InvoiceIndex], -- Index of the invoice this line belongs to. Must be one of the indices returned from the first SELECT statement

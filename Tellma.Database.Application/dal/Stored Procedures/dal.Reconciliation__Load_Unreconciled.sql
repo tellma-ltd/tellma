@@ -169,6 +169,7 @@ AS
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND D.[State] = 1 -- MA: 2024-02-05 to avoid signatures issue
+	AND E.[MonetaryValue] <> 0 -- MA: 2024-12-09 to exclude exchange variance transactions
 	AND L.[PostingDate] <= @AsOfDate
 	-- Exclude if it was reconciled with an external entry before AsOfDate
 	AND E.[Id] NOT IN (SELECT EntryId FROM ReconciledEntriesAsOfDate)
@@ -227,3 +228,4 @@ AS
 	)
 	ORDER BY EE.[PostingDate], EE.[MonetaryValue], EE.[ExternalReference]
 	OFFSET (@SkipExternal) ROWS FETCH NEXT (@TopExternal) ROWS ONLY;
+	GO
