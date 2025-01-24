@@ -16,6 +16,8 @@ INSERT INTO @ErrorNames([ErrorIndex], [Language], [ErrorName]) VALUES
 (0, N'en',  N'Not Enough Quantity of {0} in {1} that belongs to {2}'),
 (0, N'ar',  N'لا يوجد ما يكفي من {0} في {1} ما يخص وحدة الأعمال {2}');
 
+DECLARE @DocumentsExcluded IdList;
+INSERT INTO @DocumentsExcluded([Id]) SELECT [Id] FROM @Documents;
 -- Summarize Quantity from this document
 With CurrentDocs AS (
 	SELECT L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId], 
@@ -34,13 +36,14 @@ Excesses AS (
 	-- we need to consider starting from State = 3
 	-- Also cannot repeat the same E.[CenterId], E.[AccountId], D.[AgentId], E.[ResourceId] in the same document as it may cause neg inventory
 	-- that is hard to detect
-	CROSS APPLY [dal].[ft_Concept_Center_Agent_Resource__Balances](
+	CROSS APPLY [dal].[ft_Concept_Center_Agent_Resource__Balances_V2](-- MA:2024-11-13, replaced with V2 to exclude current docs
 		@ParentConcept,
 		CD.[CenterId],
 		CD.[AgentId],
 		CD.[ResourceId],
 		CD.[CurrencyId],
-		CD.PostingDate
+		CD.[PostingDate],
+		@DocumentsExcluded
 	) OD
 	WHERE SIGN(CD.[CurrentUsage] + ISNULL(OD.[Quantity], 0)) = -1
 )--select * from CurrentDocs;select * from [dal].[ft_AccountType__Agent_Resource_Balance](N'Inventories', N'Warehouse', N'Merchandise', N'2022-05-08', 3)

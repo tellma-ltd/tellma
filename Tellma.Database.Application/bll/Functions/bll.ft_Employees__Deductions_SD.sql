@@ -10,7 +10,7 @@ RETURNS @MyResult TABLE (
 	[EmployeeIncomeTax] DECIMAL (19, 6)
 )
 AS BEGIN
-	IF @PeriodEnd < N'2022-04-01' RETURN;
+	IF @PeriodEnd < N'2022-04-01' OR DB_ID() = 15 RETURN; -- DB_ID = 15 is Tenant Id = 100
 	DECLARE @T TABLE (
 		[EmployeeId] INT,
 		[ResourceCode] NVARCHAR (50),

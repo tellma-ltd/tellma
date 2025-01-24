@@ -57,6 +57,7 @@ AS BEGIN
 	AND E.[AccountId] = @AccountId
 	AND L.[State] = 4
 	AND D.[State] = 1
+	AND E.[MonetaryValue] <> 0 -- MA: 2024-12-09 to exclude exchange variance transactions
 	AND L.[PostingDate] <= @AsOfDate
 	-- Exclude if it was reconciled with an external entry before AsOfDate
 	AND E.[Id] NOT IN (SELECT EntryId FROM ReconciledEntriesAsOfDate)

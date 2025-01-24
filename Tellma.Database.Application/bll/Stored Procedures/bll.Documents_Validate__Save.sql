@@ -162,6 +162,15 @@ BEGIN
 	AND BE.[PostingDate]  > (SELECT [FreezeDate] FROM dbo.Settings)
 	AND FE.[PostingDate]  <= (SELECT [FreezeDate] FROM dbo.Settings)
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_FallsinArchivedPeriod'
+	FROM @Documents FE
+	WHERE FE.[PostingDate]  <= (SELECT [ArchiveDate] FROM dbo.Settings)
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+
 	-- No need to repeat logic at line level
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	--SELECT DISTINCT TOP (@Top)

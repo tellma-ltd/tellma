@@ -1028,6 +1028,7 @@
     <Build Include="dbo\User Defined Types\dbo.IFRS16ScheduleList.sql" />
     <Build Include="dbo\Functions\dbo.ft_GetMonthEndDates.sql" />
     <Build Include="wiz\Stored Procedures\wiz.FixedAssets__Depreciate_V3.sql" />
+    <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource__Balances_V2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -1057,6 +1058,7 @@
     <None Include="Tellma.104.publish.xml" />
     <None Include="TellmaStaging.101.publish.xml" />
     <None Include="XMLFile1.xml" />
+    <None Include="XMLFile2.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

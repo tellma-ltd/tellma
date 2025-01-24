@@ -17,9 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="162.4.92" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="162.5.57" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="171.30.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
