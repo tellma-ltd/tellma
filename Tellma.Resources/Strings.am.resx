@@ -74,7 +74,7 @@
     <value>ወኪል</value>
   </data>
   <data name="Account_AgentDefinition" xml:space="preserve">
-    <value>ወኪል ፍቺ</value>
+    <value>የወኪል ፍቺ</value>
   </data>
   <data name="Account_Center" xml:space="preserve">
     <value>ኃላፊነት ማዕከል</value>
@@ -227,7 +227,7 @@
     <value>ተጠቃሚዎች</value>
   </data>
   <data name="AgentDefinition" xml:space="preserve">
-    <value>ወኪል ፍቺ</value>
+    <value>የወኪል ፍቺ</value>
   </data>
   <data name="AgentDefinition_UserCardinality" xml:space="preserve">
     <value>የተጠቃሚ ካርዲናሊቲ</value>
@@ -1148,13 +1148,13 @@
     <value>ቀን ወደፊት ላይ መሆን አይችልም</value>
   </data>
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
-    <value>ትርጉሙ '{0}' አስቀድሞ ውሂብ ይዟል።</value>
+    <value>'{0}' ትርጉሙ አስቀድሞ ውሂብ ይዟል።</value>
   </data>
   <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
-    <value>«{0}» የሚለው ፍቺ በ«{1}» መለያ ውስጥ ጥቅም ላይ ይውላል።</value>
+    <value>ትርጉሙ '{0}' በ "{1}" መለያ ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
-    <value>'{0}' ትርጉሙ በ'መለያ አይነት'{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
+    <value>«{0}» የሚለው ፍቺ በ«{1}» መለያ አይነት ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_Definition0IsUsedInLineDefinition1" xml:space="preserve">
     <value>{0}' የሚለው ፍቺ በመስመር ፍቺ '{1}' ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -1235,7 +1235,7 @@
     <value>ልክ ያልሆነ አብነት</value>
   </data>
   <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
-    <value>ልክ ያልሆነ የአብነት አገላለጽ ({0})።</value>
+    <value>ልክ ያልሆነ የአብነት መግለጫ ({0})።</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት።</value>
@@ -1409,7 +1409,7 @@
     <value>መለያ '{0}' ዜሮ ያልሆነ የብዛት ሒሳብ {1} አለው።</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
-    <value>መለያ '{0}' ዜሮ ያልሆነ እሴት ቀሪ {1} አለው።</value>
+    <value>መለያ «{0}» ዜሮ ያልሆነ እሴት ቀሪ ሒሳብ {1} አለው።</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>መለያ «{0}» ቦዝኗል</value>
@@ -1457,7 +1457,7 @@
     <value>የመለያው አይነት ከምድብ ጋር ተኳሃኝ አይደለም።</value>
   </data>
   <data name="Error_TheAgent01HasNoUsers" xml:space="preserve">
-    <value>{0} «{1}» ምንም ተጠቃሚዎች የሉትም።</value>
+    <value>{0} «{1}» ምንም ተጠቃሚ አልተገለጸም።</value>
   </data>
   <data name="Error_TheAgent01IsInactive" xml:space="preserve">
     <value>{0} «{1}» ቦዝኗል።</value>
@@ -1490,7 +1490,7 @@
     <value>የደንበኛ መታወቂያ '{0}' የተባዛ ነው።</value>
   </data>
   <data name="Error_TheClientId0IsUsed" xml:space="preserve">
-    <value>የደንበኛ መታወቂያ '{0}' አስቀድሞ ጥቅም ላይ ውሏል።</value>
+    <value>የደንበኛ መታወቂያ «{0}» አስቀድሞ ጥቅም ላይ ውሏል።</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
@@ -1619,7 +1619,7 @@
     <value>ይህ {0} መዝገብ በሰነድ {1} ከመሃል '{2}' ጋር ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>ይህ የ{0} መዝገብ በሰነድ {1} ምንዛሬ «{2}» ጥቅም ላይ ይውላል።</value>
+    <value>ይህ {0} መዝገብ በሰነድ {1} ምንዛሬ «{2}» ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResourceDefinition0IsNotVisible" xml:space="preserve">
     <value>የንብረት ፍቺ '{0}' አይታይም።</value>
@@ -1676,7 +1676,7 @@
     <value>ክፍል «{0}» ከ{1} «{2}» ጋር ተኳሃኝ አይደለም።</value>
   </data>
   <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
-    <value>ያልታወቀ የማስመጣት ሁነታ '{0}'፣ የሚፈቀዱት እሴቶች የሚከተሉት ናቸው፡ {1}</value>
+    <value>ያልታወቀ የማስመጣት ሁነታ '{0}'፣ የሚፈቀዱት እሴቶች፡ {1}</value>
   </data>
   <data name="Error_UnknownLineDefinitionId0" xml:space="preserve">
     <value>የመስመር ፍቺ መታወቂያ {0} የለም።</value>
@@ -1700,7 +1700,7 @@
     <value>ዋጋ '{0}' ለ{1} መስክ አይሰራም፣ '{2}' ማለትዎ ነውን?</value>
   </data>
   <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
-    <value>ዋጋ «{0}» ለ{1} መስክ የሚሰራ አይደለም፣ የሚደገፉ እሴቶች የሚከተሉት ናቸው፡ {2}።</value>
+    <value>ዋጋ '{0}' ለ{1} መስክ የሚሰራ አይደለም፣ የሚደገፉ እሴቶች የሚከተሉት ናቸው፡ {2}።</value>
   </data>
   <data name="Error_VatRateMustBeBetweenZeroAndOne" xml:space="preserve">
     <value>የተእታ መጠን በ0% እና 100% መካከል መሆን አለበት።</value>
@@ -2171,7 +2171,7 @@
     <value>የንብረት መግለጫዎች</value>
   </data>
   <data name="LineDefinitionEntryAgentDefinition_AgentDefinition" xml:space="preserve">
-    <value>ወኪል ፍቺ</value>
+    <value>የወኪል ፍቺ</value>
   </data>
   <data name="LineDefinitionEntryNotedAgentDefinition_NotedAgentDefinition" xml:space="preserve">
     <value>የታወጀ ወኪል ፍቺ</value>
@@ -2219,7 +2219,7 @@
     <value>የተባበሩት መንግስታት-የታረቀ</value>
   </data>
   <data name="LookupDefinitions" xml:space="preserve">
-    <value>ፍቺዎችን ይፈልጉ</value>
+    <value>የፍለጋ ፍቺዎች</value>
   </data>
   <data name="Lookups" xml:space="preserve">
     <value>የተፈለጉ</value>
@@ -2471,7 +2471,7 @@
     <value>የወጪ ሳጥን</value>
   </data>
   <data name="OutboxRecord" xml:space="preserve">
-    <value>የውጪ ሳጥን መዝገብ</value>
+    <value>የወጪ ሳጥን መዝገብ</value>
   </data>
   <data name="OutboxRecords" xml:space="preserve">
     <value>የወጪ ሳጥን መዝገቦች</value>
@@ -2570,7 +2570,7 @@
     <value>አባክዎ ያጽድቁ</value>
   </data>
   <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>እሴት ይበልጣል ወይም እኩል</value>
+    <value>እሴት ይበልጣል ወይም ለእኩል</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>የህትመት አብነት</value>
@@ -2600,7 +2600,7 @@
     <value>ርዕስ</value>
   </data>
   <data name="PushNotifications" xml:space="preserve">
-    <value>ማሳወቂያዎችን ግፋ</value>
+    <value>ማሳወቂያዎችን ይግፉ</value>
   </data>
   <data name="RD_Type_BiologicalAssets" xml:space="preserve">
     <value>ባዮሎጂካል ንብረቶች</value>
@@ -3563,7 +3563,7 @@
     <value>የመተንበይ ዓይነት</value>
   </data>
   <data name="WorkflowSignature_PredicateTypeEntryIndex" xml:space="preserve">
-    <value>የመግቢያ ዓይነት ጠቋሚ</value>
+    <value>የመግቢያ አይነት ጠቋሚ</value>
   </data>
   <data name="WorkflowSignature_ProxyRole" xml:space="preserve">
     <value>የተኪ ሚና</value>
