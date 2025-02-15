@@ -2858,7 +2858,7 @@
     <value>Please Confirm</value>
   </data>
   <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>Value Greather Than or Equal</value>
+    <value>Value Greater Than or Equal To</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>Printing Template</value>

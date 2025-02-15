@@ -1727,7 +1727,7 @@
     <value>الحالة {0} لا تتناسب مع نوع السطر {1}.</value>
   </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
-    <value>بين المدين والدائن فرق {{0}}.</value>
+    <value>بين المدين والدائن فرق {0}.</value>
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
@@ -2708,7 +2708,7 @@
     <value>يرجى التأكيد</value>
   </data>
   <data name="PredicateType_ValueGreaterOrEqual" xml:space="preserve">
-    <value>القيمة أكبر من أو يساوي</value>
+    <value>القيمة أكبر من أو تساوي</value>
   </data>
   <data name="PrintingTemplate" xml:space="preserve">
     <value>قالب طباعة</value>
