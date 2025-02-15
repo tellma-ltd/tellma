@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[LD_InvoiceNotDuplicate__Validate]
+﻿CREATE PROCEDURE [bll].[LD_InvoiceNotDuplicate__Validate] -- TODO: PUBLISH
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
@@ -54,4 +54,3 @@ AND BL.[State] >= 0;
 
 IF EXISTS (SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;
-GO
