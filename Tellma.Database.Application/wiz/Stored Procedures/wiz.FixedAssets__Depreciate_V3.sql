@@ -369,8 +369,10 @@ SELECT E.[ResourceId] AS [FixedAssetId], E.[Time1] AS [PeriodStart], E.[Time2] A
 	E.[CenterId], E.[AgentId], E.[NotedAgentId]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN @FixedAssetsAccountIds A ON A.[FixedAssetAccountId] = E.[AccountId]
 	WHERE L.[State] = 4
+	AND LD.[Code] <> N'ToIncomeStatementAbstractFromRetainedEarnings'
 	AND L.[PostingDate] <= @PostingDate -- MA:2024-05-05
 	AND E.[ResourceId] IN (SELECT [FixedAssetId] FROM @FixedAssetsDepreciations)
 	AND E.[EntryTypeId] IN (SELECT [Id] FROM @AccumulatedDepreciationEntryTypeIds)

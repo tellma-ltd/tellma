@@ -61,6 +61,7 @@ AS
 	JOIN @FAAccountIds A ON E.AccountId = A.[Id]
 	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
+	AND LD.[Code] <> N'ToIncomeStatementAbstractFromRetainedEarnings'
 	--AND E.Time1 < @DepreciationPeriodStarts - MA, Commented 2023.07.02. Replaced with logic below
 	AND E.[ResourceId] IN ( -- for FA which were acquired before period start, we include any additions till period end
 		SELECT ResourceId
@@ -85,6 +86,7 @@ AS
 	JOIN @DNAEAccountIds A ON E.AccountId = A.[Id]
 	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
+	AND LD.[Code] <> N'ToIncomeStatementAbstractFromRetainedEarnings'
 	AND L.PostingDate < @DepreciationPeriodStarts
 	AND R.[IsActive] = 1 AND R.[Code] <> N'0'
 	GROUP BY E.[ResourceId];
@@ -100,6 +102,7 @@ AS
 	JOIN @LastDepreciationDates LDD ON LDD.ResourceId = E.[ResourceId] AND LDD.[LastDepreciationDate] = L.[PostingDate]
 	JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
 	WHERE L.[State] = 4 AND LD.[LineType] BETWEEN 100 AND @LineType
+	AND LD.[Code] <> N'ToIncomeStatementAbstractFromRetainedEarnings'
 	AND R.[IsActive] = 1 AND R.[Code] <> N'0';
 	-- select * from @OpeningAgentNotedResourceNotedAgentEntryTypes; -- P/L accounts
 	

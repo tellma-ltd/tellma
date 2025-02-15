@@ -4,7 +4,8 @@
 @CenterId INT,
 @Documents DocumentList READONLY,
 @Lines LineList READONLY,
-@Entries EntryList READONLY
+@Entries EntryList READONLY,
+@EstablishmentId INT = NULL
 AS
 --DECLARE @Country NCHAR (2) = dal.fn_Settings__GetCountry();
 DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayables.M');
@@ -18,6 +19,7 @@ DECLARE @PeriodStart DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @PostingDate
 DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
 
 DECLARE @WagesAndSalariesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'WagesAndSalaries');
+DECLARE @EmployeeAD INT = dal.fn_AgentDefinitionCode__Id(N'Employee');
 DECLARE @Widelines WidelineList;
 INSERT INTO @Widelines
 SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
@@ -32,7 +34,10 @@ SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
 	@EmployeeId,		-- @NotedAgentId
 	NULL,			-- @NotedResourceId
 	@CenterId)
-WHERE [Value1] IS NOT NULL; -- TODO: Investigate, why do we need this condition?
+WHERE [Value1] IS NOT NULL -- TODO: Investigate, why do we need this condition?
+AND (@EstablishmentId IS NULL OR
+	[AgentId0] in (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = @EmployeeAD AND [Lookup8Id] = @EstablishmentId)
+)
 
 DECLARE @PeriodBenefits  [dbo].[PeriodBenefitsList];
 
@@ -44,10 +49,12 @@ WITH PeriodBenefitEntries AS (
 	JOIN dbo.[Resources] R ON R.[Id] = E.[ResourceId]
 	JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+	JOIN dbo.Agents AG ON E.[NotedAgentId] = AG.[Id]
 	WHERE L.[State] = 4 AND L.[DocumentId] NOT IN (SELECT [Id] FROM @Documents)
 	AND AC.[Node].IsDescendantOf(@WagesAndSalariesNode) = 1
 	AND L.[PostingDate] BETWEEN @PeriodStart AND @PeriodEnd
 	AND (@EmployeeId IS NULL OR E.[NotedAgentId] = @EmployeeId)
+	AND (@EstablishmentId IS NULL OR AG.[Lookup8Id] = @EstablishmentId)
 	UNION
 	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, --E.[CurrencyId], E.[Direction] * E.[MonetaryValue] AS [MonetaryValue],
 		bll.fn_ConvertToFunctional(@PeriodEnd, E.[CurrencyId], E.[Direction] * E.[MonetaryValue]) AS [Value]
@@ -56,8 +63,10 @@ WITH PeriodBenefitEntries AS (
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 --	Before saving, accounts are not detected yet, so we need to rely on resource definition.
 	JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R.[DefinitionId]
+	JOIN dbo.Agents AG ON E.[NotedAgentId] = AG.[Id]
 	WHERE RD.[Code] = N'EmployeeBenefits'
 	AND (@EmployeeId IS NULL OR E.[NotedAgentId] = @EmployeeId)
+	AND (@EstablishmentId IS NULL OR AG.[Lookup8Id] = @EstablishmentId)
 ) -- In SD, foreign currency benefits are translated to local currency for deductions
 INSERT INTO @PeriodBenefits([Id], [EmployeeId], [ResourceCode], --[CurrencyId], [MonetaryValue], 
 [Value]) 
