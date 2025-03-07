@@ -10,7 +10,6 @@ RETURNS @Result TABLE ( -- Model
 	LeaseId	INT,
 	PostingDate DATE, -- Posting Date 0 -- input
 	Payment DECIMAL (19, 6), -- Monetary Value 0 -- input
---	PaymentAtEndOfDate BIT,
 	NumberOfPeriods INT,
 	NetPresentValue DECIMAL (19, 6) DEFAULT (0),
 	OpeningLiability DECIMAL (19, 6) DEFAULT (0),
