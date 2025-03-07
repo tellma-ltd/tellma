@@ -95,6 +95,9 @@
     <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-document-definitions-picker>
 
+    <t-report-definitions-picker *ngSwitchCase="'ReportDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+    </t-report-definitions-picker>
+
     <div class="text-danger font-weight-bold" *ngSwitchDefault>
         TODO: control for '{{ desc.control }}''
     </div>
