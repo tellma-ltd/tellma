@@ -45,17 +45,18 @@ AS BEGIN
 			SELECT SUM(US.[NetPresentValue])
 			FROM @UpdatedSchedules US
 			JOIN @Leases L ON L.[LeaseId] = US.[LeaseId]
-			WHERE US.[LeaseId] = @LeaseId AND US.[PostingDate] >= L.TenancyStartDate);
+			WHERE US.[LeaseId] = @LeaseId); -- AND US.[PostingDate] >= L.TenancyStartDate);
 
 		-- Focus on the 
-		DECLARE @Date DATE = (SELECT MIN([PostingDate]) FROM @UpdatedSchedules WHERE [LeaseId] = @LeaseId AND [PostingDate] >= @TenancyStartDate);
+		DECLARE @Date DATE = (SELECT MIN([PostingDate]) FROM @UpdatedSchedules WHERE [LeaseId] = @LeaseId);-- AND [PostingDate] >= @TenancyStartDate);
 		DECLARE @ClosingLiability DECIMAL (19, 6) = ISNULL(@StartingLiability, 0);
 		WHILE @Date IS NOT NULL
 		BEGIN
 			UPDATE @UpdatedSchedules
 			SET 
 				[OpeningLiability] = @ClosingLiability,
-				[InterestExpense] = @DiscountRate * (@ClosingLiability - [Payment]) / 100 -- @Interest on liability a/t payment
+				[InterestExpense] = IIF([PostingDate] < @UpdatedStartDate, 0,
+					@DiscountRate * (@ClosingLiability - [Payment]) / 100) -- @Interest on liability a/t payment
 			WHERE [LeaseId] = @LeaseId AND [PostingDate] = @Date;
 			-- closing liability of the ith date = Starting liability + total interest expenses - total payments
 			SET @ClosingLiability  = @StartingLiability + ISNULL(
@@ -71,7 +72,7 @@ AS BEGIN
 		[InterestExpense] = ROUND([InterestExpense], 2);
 
 	INSERT INTO @Result SELECT * FROM @PriorSchedules WHERE [PostingDate] < @UpdatedStartDate;
-	INSERT INTO @Result SELECT * FROM @UpdatedSchedules WHERE [PostingDate] >= @UpdatedStartDate;
+	INSERT INTO @Result SELECT * FROM @UpdatedSchedules;-- WHERE [PostingDate] >= @UpdatedStartDate;
 	
 	-- Recall from the prior schedule the payments that are scheduled to happen after the new change date
 	MERGE @Result AS t
