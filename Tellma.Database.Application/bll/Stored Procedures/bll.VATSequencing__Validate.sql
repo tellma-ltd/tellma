@@ -22,6 +22,7 @@ BEGIN
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = L.[DefinitionId]
 	JOIN map.Documents() D ON D.[Id] = L.[DocumentId]
 	AND L.[State] >= 0
+	AND LD.[LineType] = 100 -- MA:2025-03-11
 	AND LD.[Code] = N'ToValueAddedTaxPayablesFromCurrentValueAddedTaxReceivables'
 	AND L.[PostingDate] >= @DocumentsVATDate
 

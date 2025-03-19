@@ -16,7 +16,7 @@ BEGIN
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 	AND (	
 			[RuleType] = 'Public' OR
-			[RuleType] = 'ByUser' AND ([OnBehalfOfUserId] = @UserId OR [CreatedById] = @UserId) OR 
+			[RuleType] IN ('ByUser', 'ByCustodian') AND ([OnBehalfOfUserId] = @UserId OR [CreatedById] = @UserId) OR 
 			[RuleType] = 'ByRole' AND [RoleId] IN (SELECT [RoleId] FROM dbo.[RoleMemberships]
 													WHERE [UserId] = @UserId
 													AND [ValidTo] > GETDATE())

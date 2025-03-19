@@ -3,6 +3,7 @@
 	YearlyDiscountRate DECIMAL (19, 6), --new or updated rate
 	DiscountRate DECIMAL (19, 6), --new or updated rate
 	TenancyStartDate DATE, -- Original start
+	TenancyEndDate DATE, -- Original start
 	UpdatedStartDate DATE, -- Date of new/updated conditions
 	UpdatedEndDate DATE,
 	-- IFRS Model must filled before passing the data

@@ -12,7 +12,8 @@ RETURN (
 			COALESCE(
 				WS.UserId,
 				(
-					SELECT MIN(UserId) FROM dbo.[AgentUsers] WHERE [AgentId] IN (
+--					SELECT MIN(UserId) FROM dbo.[AgentUsers] WHERE [AgentId] IN (
+					SELECT UserId FROM dbo.[Agents] WHERE [Id] IN (
 						SELECT [Agent1Id] FROM dbo.[Agents] WHERE [Id] IN (
 							SELECT [AgentId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 						)
@@ -124,3 +125,4 @@ RETURN (
 		CanSign, ProxyRoleId, CanSignOnBehalf, ReasonId, ReasonDetails
 	FROM AvailableSignatures S
 );
+GO

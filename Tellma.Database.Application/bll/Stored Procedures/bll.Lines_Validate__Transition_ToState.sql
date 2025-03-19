@@ -73,7 +73,6 @@ DECLARE @PreScript NVARCHAR(MAX) = N'
 		DEALLOCATE LineDefinition_Cursor
 	END
 	
-	
 	SET @IsError = CASE WHEN EXISTS(SELECT 1 FROM @ValidationErrors) THEN 1 ELSE 0 END;
 
 	IF @IsError = 1 -- 

@@ -1029,6 +1029,7 @@
     <Build Include="dbo\Functions\dbo.ft_GetMonthEndDates.sql" />
     <Build Include="wiz\Stored Procedures\wiz.FixedAssets__Depreciate_V3.sql" />
     <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource__Balances_V2.sql" />
+    <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation_V3.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

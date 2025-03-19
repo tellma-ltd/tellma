@@ -216,8 +216,8 @@ BEGIN
 	JOIN [dbo].[Units] UR ON R.[UnitId] = UR.[Id]
 	JOIN @ResourceUnits RU ON R.[Index] = RU.[HeaderIndex]
 	JOIN [dbo].[Units] URU ON RU.[UnitId] = URU.[Id]
-	WHERE URU.[UnitType] <> N'Mass'
-	AND URU.[UnitType] <> UR.[UnitType]
+	WHERE URU.[UnitType] <> UR.[UnitType];
+	-- AND URU.[UnitType] <> N'Mass'. MA: 2025-03-05 Commented Out
 
 	-- Cannot change currency if resource is already used in Entries with different currency
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
