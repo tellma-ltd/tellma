@@ -47,7 +47,7 @@ DECLARE @PreScript NVARCHAR(MAX) = N'
 			FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 			DELETE FROM @L; DELETE FROM @E;
 			INSERT INTO @L SELECT * FROM @Lines WHERE DefinitionId = @LineDefinitionId
-			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+			INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 			BEGIN TRY
 				INSERT INTO @ValidationErrors
 				EXECUTE	dbo.sp_executesql @Script, N'

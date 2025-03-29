@@ -284,8 +284,8 @@ BEGIN
 			L.[Decimal1], L.[Decimal2], L.[Boolean1], L.[Text1], L.[Text2]
 	FROM [dbo].[Lines] L
 	JOIN map.LineDefinitions() LD ON LD.[Id] = L.[DefinitionId]
-	JOIN @Ids FE ON L.[DocumentId] = FE.[Id]
-	JOIN [map].[Documents]() D ON FE.[Id] = D.[Id]
+	JOIN @Ids FE ON FE.[Id] = L.[DocumentId]
+	JOIN [map].[Documents]() D ON D.[Id] = FE.[Id]
 	WHERE LD.[LastLineState] = 4
 
 	INSERT INTO @Entries (

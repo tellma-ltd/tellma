@@ -37,13 +37,13 @@ BEGIN
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon], 
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
 	)
-	SELECT [Id], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+	SELECT  Ids.[Index], D.[Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon],  [ResourceId], [ResourceIsCommon],
 		[NotedAgentId], [NotedAgentIsCommon],[NotedResourceId], [NotedResourceIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [ExternalReference], [ExternalReferenceIsCommon],
 		[ReferenceSourceId], [ReferenceSourceIsCommon], [InternalReference], [InternalReferenceIsCommon]
-	FROM dbo.Documents
-	WHERE [Id] IN (SELECT [Id] FROM @Ids)
+	FROM dbo.Documents D
+	JOIN @Ids Ids ON Ids.Id = D.[Id]
 
 	INSERT INTO @DocumentLineDefinitionEntries(
 		[Index], [DocumentIndex], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
@@ -52,15 +52,15 @@ BEGIN
 		[Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
 		[InternalReferenceIsCommon])
-	SELECT 		[Id], [DocumentId], [Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
+	SELECT 	DLDE.[Id], Ids.[Index], DLDE.[Id], [LineDefinitionId], [EntryIndex], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon],
 		[NotedAgentId], [NotedAgentIsCommon], [ResourceId], [ResourceIsCommon], [NotedResourceId], [NotedResourceIsCommon],
 		[Quantity], [QuantityIsCommon], [UnitId], [UnitIsCommon],
 		[Time1], [Time1IsCommon], [Time2], [Time2IsCommon], [ExternalReference], [ExternalReferenceIsCommon], [InternalReference],
 		[InternalReferenceIsCommon]
-	FROM DocumentLineDefinitionEntries
-	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
-	AND [LineDefinitionId]  IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
+	FROM DocumentLineDefinitionEntries DLDE
+	JOIN @Ids Ids ON Ids.[Id] = DLDE.DocumentId
+	WHERE [LineDefinitionId]  IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 0);
 
 	-- Verify that workflow-less lines in Events can be in state draft
 	INSERT INTO @Lines(
