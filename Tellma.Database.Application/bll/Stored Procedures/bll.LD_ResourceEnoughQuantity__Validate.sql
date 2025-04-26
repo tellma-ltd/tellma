@@ -9,6 +9,7 @@
 	@FE_Index_Str NVARCHAR (255),
 	@InventoryCreditEntryIndex INT = 4
 AS
+-- MA2025-04-22: replacd E.CenterId with [dal].[fn_Center__BusinessUnit] (E.[CenterId])
 DECLARE @ValidationErrors ValidationErrorList;
 DECLARE @ErrorNames dbo.ErrorNameList;
 SET NOCOUNT ON;
@@ -20,7 +21,7 @@ DECLARE @DocumentsExcluded IdList;
 INSERT INTO @DocumentsExcluded([Id]) SELECT [Id] FROM @Documents;
 -- Summarize Quantity from this document
 With CurrentDocs AS (
-	SELECT L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId], 
+	SELECT L.[PostingDate], [dal].[fn_Center__BusinessUnit] (E.[CenterId]) AS CenterId, E.[AgentId], E.[ResourceId], E.[CurrencyId], 
 		SUM(E.[Direction] * 
 			bll.fn_Resource_EntryQuantity_EntryUnit__ResourceQuantity(E.[ResourceId], E.[Quantity], E.[UnitId])	
 		) AS [CurrentUsage]
@@ -28,10 +29,10 @@ With CurrentDocs AS (
 	JOIN @Lines L ON L.[DocumentIndex] = D.[Index]
 	JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	WHERE E.[Index] = @InventoryCreditEntryIndex
-	GROUP BY L.[PostingDate], E.[CenterId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
+	GROUP BY L.[PostingDate], [dal].[fn_Center__BusinessUnit] (E.[CenterId]), E.[AgentId], E.[ResourceId], E.[CurrencyId]
 ),
 Excesses AS (
-	SELECT CD.[CenterId], CD.[AgentId], CD.[ResourceId], CD.[CurrentUsage] + ISNULL(OD.[Quantity], 0) AS NetBalance
+	SELECT CD.CenterId, CD.[AgentId], CD.[ResourceId], CD.[CurrentUsage] + ISNULL(OD.[Quantity], 0) AS NetBalance
 	FROM CurrentDocs CD
 	-- we need to consider starting from State = 3
 	-- Also cannot repeat the same E.[CenterId], E.[AccountId], D.[AgentId], E.[ResourceId] in the same document as it may cause neg inventory
@@ -57,8 +58,8 @@ SELECT DISTINCT TOP (@Top)
 FROM @Documents FE
 JOIN @Lines L ON L.[DocumentIndex] = FE.[Index]
 JOIN @Entries E ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-JOIN Excesses S ON S.[CenterId] = E.[CenterId] AND S.[AgentId] = E.[AgentId] AND S.[ResourceId] = E.[ResourceId]
-JOIN dbo.Centers C ON C.[Id] = E.[CenterId]
+JOIN Excesses S ON S.[CenterId] = [dal].[fn_Center__BusinessUnit] (E.[CenterId]) AND S.[AgentId] = E.[AgentId] AND S.[ResourceId] = E.[ResourceId]
+JOIN dbo.Centers C ON C.[Id] = [dal].[fn_Center__BusinessUnit] (E.[CenterId])
 -- MA: 2023-11-14 
 --JOIN dbo.Centers P ON C.[Node].IsDescendantOf(P.[Node]) = 1
 JOIN dbo.Resources R ON R.[Id] = E.[ResourceId]
@@ -68,4 +69,3 @@ JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
 
 IF EXISTS (SELECT * FROM @ValidationErrors)
 	SELECT * FROM @ValidationErrors;
-GO

@@ -15,7 +15,7 @@ DECLARE @UsersEmails StringList;
 INSERT INTO @UsersEmails ([Id])
 SELECT Email
 FROM dbo.Users
-WHERE IsService = 0 AND IsActive = 1
+WHERE IsService = 0 AND IsActive = 1 AND [State] = 2 -- MA: Added last condition 2025-04-22 to exclude new and invited
 AND [Name] NOT LIKE N'%test%'
 AND Email NOT LIKE N'%banan-it.com'
 AND Email NOT LIKE N'%tellma.com'
