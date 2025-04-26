@@ -376,7 +376,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return result;
   }
 
-  clone: (item: Document, removeIds?: boolean) => Document = (item: Document, removeIds = true) => {
+  clone: (item: Document, resetIdsAndDate?: boolean) => Document = (item: Document, resetIdsAndDate = true) => {
     if (!!item) {
       // Cost a lot to duplicate in edit mode, so we use this trick
       const temp = item.Attachments;
@@ -385,9 +385,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       item.Attachments = temp;
 
       // Standard
-      if (removeIds) {
+      if (resetIdsAndDate) {
         delete clone.Id;
+        clone.PostingDate = todayISOString();
       }
+
       delete clone.EntityMetadata;
       delete clone.serverErrors;
 
@@ -413,7 +415,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!clone.LineDefinitionEntries) {
         clone.LineDefinitionEntries.forEach(tabEntry => {
           // Standard
-          if (removeIds) {
+          if (resetIdsAndDate) {
             delete tabEntry.Id;
           }
           delete tabEntry.EntityMetadata;
