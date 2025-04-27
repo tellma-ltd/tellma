@@ -169,7 +169,7 @@ WITH UnpaidAbsenceLogs AS (
 	AND A.[AccountTypeId] = @HRExtenstion
 	AND R.[DefinitionId] = @LeaveTypesRD
 	AND E.[Time1] <= @Time2
-	AND ISNULL(E.[Time2], N'9999-12-31') > @Time1
+	AND ISNULL(E.[Time2], N'9999-12-31') >= @Time1
 	AND R.[Code] IN (N'UnpaidLeave') -- excluded annual leave
 ) --select * from UnpaidAbsenceLogs
 INSERT INTO @Shortlines([Index],	[CurrencyId0], [MonetaryValue0], [NotedDate0], [AgentId0], [Time10], [Time20], [Memo])
