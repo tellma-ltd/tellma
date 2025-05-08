@@ -121,7 +121,7 @@ AS BEGIN
 	FROM @MyResult R
 	JOIN dbo.Agents AG ON AG.[Id] = R.[EmployeeId]
 	WHERE DATEDIFF(YEAR, AG.DateOfBirth, @PeriodEnd) >= 50
-
+	OR [EmployeeIncomeTax] < 0 -- MA:2025-04-29 If Zakat is more than income tax
 	RETURN
 END
 GO

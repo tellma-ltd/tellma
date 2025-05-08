@@ -7,19 +7,19 @@
 @Entries EntryList READONLY,
 @EstablishmentId INT = NULL
 AS
---DECLARE @Country NCHAR (2) = dal.fn_Settings__GetCountry();
 DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayables.M');
 DECLARE @ContractAmendmentLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesAmended.M');
 DECLARE @ContractTerminationLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayablesTerminated.M');
 
-DECLARE @DurationUnitId INT = dal.fn_UnitCode__Id(N'mo');
+DECLARE @Monthly INT = dal.fn_UnitCode__Id(N'mo');
 DECLARE @PostingDate DATE = (SELECT TOP 1 [PostingDate] FROM @Documents);
-DECLARE @PeriodEnd DATE = [dbo].[fn_PeriodEnd](@DurationUnitId, @PostingDate);
-DECLARE @PeriodStart DATE = [dbo].[fn_PeriodStart](@DurationUnitId, @PostingDate);
-DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
 
-DECLARE @WagesAndSalariesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'WagesAndSalaries');
+DECLARE @PeriodStart DATE = dbo.fn_MonthStart(@PostingDate);
+DECLARE @PeriodEnd DATE = dbo.fn_MonthEnd(@PostingDate);
+DECLARE @PeriodLength INT = DATEDIFF(DAY, @PeriodStart, @PeriodEnd) + 1;
 DECLARE @EmployeeAD INT = dal.fn_AgentDefinitionCode__Id(N'Employee');
+DECLARE @WagesAndSalariesNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'WagesAndSalaries');
+
 DECLARE @Widelines WidelineList;
 INSERT INTO @Widelines
 SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
@@ -27,7 +27,7 @@ SELECT * FROM bll.ft_Widelines_Period_EventFromModel__Generate(
 	@ContractAmendmentLineDefinitionId,
 	@ContractTerminationLineDefinitionId,
 	@PeriodStart, @PeriodEnd,
-	@DurationUnitId,
+	@Monthly,
 	1,			-- @EntryIndex
 	@TaxDepartmentId,	-- @AgentId
 	NULL,			-- @ResourceId
@@ -42,8 +42,7 @@ AND (@EstablishmentId IS NULL OR
 DECLARE @PeriodBenefits  [dbo].[PeriodBenefitsList];
 
 WITH PeriodBenefitEntries AS (
-	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, --E.[CurrencyId], E.[Direction] * E.[MonetaryValue] AS [MonetaryValue], 
-	E.[Direction] * E.[Value] AS [Value]
+	SELECT E.[NotedAgentId], R.[Code] AS ResourceCode, E.[Direction] * E.[Value] AS [Value]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Resources] R ON R.[Id] = E.[ResourceId]
