@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save] -- TODO: PUBLISH
+﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
 	@Entities [dbo].[AccountList] READONLY,
 	@Top INT = 200,
 	@IsError BIT OUTPUT
@@ -17,6 +17,14 @@ SET NOCOUNT ON;
     WHERE [Id] <> 0
 	AND [Id] NOT IN (SELECT [Id] from [dbo].[Accounts])
 
+	-- Code is required
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
+		N'Error_CodeIsRequired'
+	FROM @Entities
+	WHERE LEN(ISNULL([Code], N'')) = 0;
+
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
@@ -24,7 +32,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[Accounts] BE ON FE.[Code] = BE.[Code]
+	JOIN [dbo].[Accounts] BE ON FE.[Code] = BE.[Code]	
 	WHERE (FE.[Id] <> BE.[Id]);
 
 	-- Code must not be duplicated in the uploaded list (Depends on SQL Collation)
