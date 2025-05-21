@@ -511,6 +511,10 @@ namespace Tellma.Api.Metadata
                                     {
                                         return result;
                                     }
+                                    else if (double.TryParse(str, out double doubleResult))
+                                    {
+                                        return (decimal) doubleResult;
+                                    }
                                     else
                                     {
                                         throw new ParseException(_localizer["Error_Value0IsNotAValid1Example2", str, _localizer["Decimal"], format(21502.75m)]);
