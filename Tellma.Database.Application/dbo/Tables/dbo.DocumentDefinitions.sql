@@ -1,6 +1,5 @@
 ﻿CREATE TABLE [dbo].[DocumentDefinitions] (
--- table managed by Banan
--- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
+-- table managed by Tellma implementation partner (e.g., Banan IT)
 	[Id]						INT				CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY IDENTITY,
 	[Code]						NVARCHAR (50)	CONSTRAINT [UQ_DocumentDefinitions__Code] UNIQUE NOT NULL,
 	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
