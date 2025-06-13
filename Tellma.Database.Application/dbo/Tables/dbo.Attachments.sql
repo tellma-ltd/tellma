@@ -13,4 +13,6 @@
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]				INT	NOT NULL CONSTRAINT [FK_Attachments__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
 
-)
+);
+GO
+CREATE INDEX IX_Attachments__DocumentId ON dbo.Attachments([DocumentId])
