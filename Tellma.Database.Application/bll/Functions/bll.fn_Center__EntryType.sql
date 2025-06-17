@@ -18,8 +18,8 @@ BEGIN
 		WHEN @CenterType = N'BusinessUnit' THEN ISNULL(@EntryTypeId, @AdministrativeExpense)
 
 		WHEN @CenterType = N'Administration' THEN @AdministrativeExpense
-		WHEN @CenterType = N'Marketing' THEN @DistributionCosts
-		WHEN @CenterType IN (N'Operation', 'CostOfSales') THEN @CostOfSales
+		WHEN @CenterType IN (N'Marketing', N'Sale') THEN @DistributionCosts
+		WHEN @CenterType IN (N'Operation', N'CostOfSales') THEN @CostOfSales
 		WHEN @CenterType = N'Service' THEN @OtherExpenseByFunction
 		WHEN @CenterType IN (
 			N'ConstructionInProgressExpendituresControl',
