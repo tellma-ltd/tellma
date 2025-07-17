@@ -1031,6 +1031,7 @@
     <Build Include="dal\Functions\dal.ft_Concept_Center_Agent_Resource__Balances_V2.sql" />
     <Build Include="bll\Functions\bll.ft_FixedAssets__Depreciation_V3.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_EOSDate__RemainingAnnualLeaveDays_WM.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET_20250707.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

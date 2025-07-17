@@ -3,6 +3,7 @@
 	@DocumentIndex	INT = 0,
 	@BusinessUnitId INT,
 	@ToDate			DATE,
+	@CenterId		INT, -- MA: 2025-07-17
 	@CIPAccountId INT
 AS
 	DECLARE @BSAccountTypeConcept NVARCHAR (255) = N'ConstructionInProgress'
@@ -39,6 +40,7 @@ AS
 		AND E.[AccountId] IN (SELECT [Id] FROM ExpenseByNatureAccounts)
 		AND C.CenterType = @CenterType
 		AND C.[Node].IsDescendantOf(@BusinessUnitNode) = 1
+		AND C.[Id] =  @CenterId-- MA: 2025-07-17
 		AND L.PostingDate <= @ToDate
 		GROUP BY E.[AccountId],  E.[CenterId], E.[AgentId], E.[ResourceId], E.[UnitId], E.[CurrencyId]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0

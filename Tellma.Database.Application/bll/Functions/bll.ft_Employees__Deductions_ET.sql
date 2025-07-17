@@ -70,7 +70,9 @@ AS BEGIN
 	-- Income Tax Deduction
 	Update R
 	SET
-		[EmployeeIncomeTax] = bll.fn_EmployeeIncomeTax_ET(SS.[TotalValueSubjectToEmployeeIncomeTax]),
+		[EmployeeIncomeTax] = IIF(@PeriodStart <= '20250707',
+			bll.fn_EmployeeIncomeTax_ET_20250707(SS.[TotalValueSubjectToEmployeeIncomeTax]),
+			bll.fn_EmployeeIncomeTax_ET(SS.[TotalValueSubjectToEmployeeIncomeTax])),
 		[AmountSubjectToEmployeeIncomeTax] = SS.[TotalValueSubjectToEmployeeIncomeTax]
 	FROM @MyResult R
 	CROSS APPLY (
