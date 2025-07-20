@@ -1,43 +1,104 @@
 # Tellma Database Documentation
 
 ## Table of Contents
-1. [System Overview](#system-overview)
-2. [Accounting System](#accounting-system)
-   - [Accounts](#accounts)
-   - [Account Types](#account-types)
-   - [Account Classifications](#account-classifications)
-   - [Agent Definitions](#agent-definitions)
-   - [Resource Definitions](#resource-definitions)
-   - [Account Type Agent Definitions](#account-type-agent-definitions)
-   - [Account Type Noted Agent Definitions](#account-type-noted-agent-definitions)
-   - [Account Type Noted Resource Definitions](#account-type-noted-resource-definitions)
-   - [Account Type Resource Definitions](#account-type-resource-definitions)
-3. [Document System](#document-system)
-   - [Documents](#documents)
-   - [Lines](#lines)
-   - [Entries](#entries)
-   - [Document Definitions](#document-definitions)
-   - [Line Definitions](#line-definitions)
-   - [Line Definition Entries](#line-definition-entries)
-   - [Entry Types](#entry-types)
-   - [Workflows](#workflows)
-4. [Reference Data](#reference-data)
-   - [Centers](#centers)
-   - [Currencies](#currencies)
-   - [Users](#users)
-   - [Settings](#settings)
-   - [Lookups](#lookups)
-   - [Lookup Definitions](#lookup-definitions)
-5. [Appendix](#appendix)
+1. [System Architecture](#system-architecture)
+   - [Multi-Tenant Design](#multi-tenant-design)
+   - [Core Concepts](#core-concepts)
+   - [Data Model Overview](#data-model-overview)
+
+2. [Core Modules](#core-modules)
+   - [Agents & Resources](#agents--resources)
+   - [Documents & Entries](#documents--entries)
+   - [Reporting & Analytics](#reporting--analytics)
+   - [System Configuration](#system-configuration)
+
+3. [Detailed Table Documentation](#detailed-table-documentation)
+   - [Agent-Related Tables](#agent-related-tables)
+   - [Attachment Tables](#attachment-tables)
+   - [Dashboard Tables](#dashboard-tables)
+   - [Document System Tables](#document-system-tables)
+   - [Reference Data Tables](#reference-data-tables)
+
+4. [Appendix](#appendix)
    - [Common Fields](#common-fields)
-   - [Multi-Tenant Considerations](#multi-tenant-considerations)
    - [Validation Rules](#validation-rules)
+   - [Deployment Considerations](#deployment-considerations)
 
-## System Overview
+## System Architecture
 
-### Key Concepts
-1. **Multi-Tenant Architecture**
-   - Each tenant has its own database
+### Multi-Tenant Design
+- Each tenant has its own database instance
+- Complete data isolation between tenants
+- Shared schema structure across all tenants
+
+### Core Concepts
+1. **Agents**: Core entities that can be people, organizations, or other accountable entities
+2. **Documents**: Represent business transactions with financial impact
+3. **Entries**: Individual accounting entries that affect account balances
+4. **Dashboards**: Configurable views for data visualization and reporting
+
+### Data Model Overview
+The database follows a flexible, definition-driven approach where:
+- Definitions (e.g., AgentDefinitions, DocumentDefinitions) control behavior and validation
+- Data tables store the actual business data
+- Relationships are explicitly defined and enforced through foreign keys
+
+## Core Modules
+
+### Agents & Resources
+Central to the system's data model, representing the core business entities and their relationships.
+
+### Documents & Entries
+Handles all financial transactions and their accounting impact through a double-entry system.
+
+### Reporting & Analytics
+Provides tools for data visualization and business intelligence through configurable dashboards and reports.
+
+### System Configuration
+Manages application settings, user permissions, and system-wide parameters.
+
+## Detailed Table Documentation
+
+### Agent-Related Tables
+- [Agents](Agents.md): Core entities representing people, organizations, or other accountable entities
+- [AgentAttachments](AgentAttachments.md): Files associated with agents
+- [AgentDefinitionReportDefinitions](AgentDefinitionReportDefinitions.md): Links agent definitions to report definitions
+- [AgentUsers](AgentUsers.md): (Unused) Designed to manage user-agent relationships
+
+### Attachment Tables
+- [Attachments](Attachments.md): General file attachments for documents
+- [ResourceAttachments](ResourceAttachments.md): Files associated with resources
+- [Blobs](Blobs.md): Binary data storage (on-premises only)
+
+### Dashboard Tables
+- [DashboardDefinitions](DashboardDefinitions.md): Configuration for dashboards
+- [DashboardDefinitionWidgets](DashboardDefinitionWidgets.md): Widgets/layout for dashboards
+- [DashboardDefinitionRoles](DashboardDefinitionRoles.md): Role-based access control for dashboards
+
+### Document System Tables
+*(Documentation pending - will be added as we document these tables)*
+
+### Reference Data Tables
+*(Documentation pending - will be added as we document these tables)*
+
+## Appendix
+
+### Common Fields
+Most tables include these standard fields:
+- `Id`: Primary key
+- `CreatedAt`: Timestamp of record creation
+- `CreatedById`: User who created the record
+- `ModifiedAt`: Timestamp of last modification
+- `ModifiedById`: User who last modified the record
+
+### Validation Rules
+- `[Required]`: Indicates a NOT NULL database constraint
+- `[ValidateRequired]`: Enforces non-null, non-whitespace validation in the API
+
+### Deployment Considerations
+- **On-Premises**: Uses database tables for file storage
+- **Azure**: Uses Azure Blob Storage for better scalability
+- The application automatically handles the appropriate storage mechanism based on deployment type
    - Schema is shared across all tenant databases
    - Data is isolated per tenant
 
