@@ -278,7 +278,11 @@ BEGIN
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-		WHERE (A.[AgentDefinitionId] IS NOT NULL) AND (E.[AgentId] IS NULL);
+		WHERE ((A.[AgentDefinitionId] IS NOT NULL) OR
+				A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeAgentDefinitions
+									WHERE [AgentDefinitionId] IS NOT NULL)
+				)
+		AND (E.[AgentId] IS NULL);
 
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
@@ -290,7 +294,11 @@ BEGIN
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-		WHERE (A.[ResourceDefinitionId] IS NOT NULL) AND (E.[ResourceId] IS NULL);
+		WHERE ((A.[ResourceDefinitionId] IS NOT NULL) OR
+				A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeResourceDefinitions
+									WHERE [ResourceDefinitionId] IS NOT NULL)		
+				)
+		AND (E.[ResourceId] IS NULL);
 	
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
@@ -302,7 +310,11 @@ BEGIN
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-		WHERE (A.[NotedAgentDefinitionId] IS NOT NULL) AND (E.[NotedAgentId] IS NULL);
+		WHERE ((A.[NotedAgentDefinitionId] IS NOT NULL) OR
+				A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeNotedAgentDefinitions
+									WHERE [NotedAgentDefinitionId] IS NOT NULL)
+				)
+		AND (E.[NotedAgentId] IS NULL);
 
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
@@ -314,7 +326,11 @@ BEGIN
 		FROM @Lines L
 		JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 		JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-		WHERE (A.[NotedResourceDefinitionId] IS NOT NULL) AND (E.[NotedResourceId] IS NULL);
+		WHERE ((A.[NotedResourceDefinitionId] IS NOT NULL) OR
+				A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeNotedResourceDefinitions
+									WHERE [NotedResourceDefinitionId] IS NOT NULL)		
+				)
+		AND (E.[NotedResourceId] IS NULL);
 		
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)

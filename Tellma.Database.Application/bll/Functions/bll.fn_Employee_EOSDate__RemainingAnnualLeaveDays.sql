@@ -30,19 +30,20 @@ BEGIN
 
 	DECLARE @TotalNonCompensated INT = 0;
 	WITH RequestedLeaves AS (
-	SELECT Time1, Time2
-	FROM dbo.Entries E
-	JOIN dbo.Lines L ON L.Id = E.LineId
-	JOIN dbo.LineDefinitions LD ON LD.Id = L.DefinitionId
-	JOIN dbo.Accounts A ON A.Id = E.AccountId
-	JOIN dbo.AccountTypes AC ON AC.Id = A.AccountTypeId
-	JOIN dbo.Resources R ON R.Id = E.ResourceId
-	WHERE AC.[Concept] = N'HRExtension'
-	AND LD.[LineType] = 100
-	AND R.[Code] = N'AnnualLeave'
-	AND L.[State] = 4
-	AND L.PostingDate > '2023-10-01'
-	AND E.AgentId = @EmployeeId
+		SELECT Time1, Time2
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON L.Id = E.LineId
+		JOIN dbo.LineDefinitions LD ON LD.Id = L.DefinitionId
+		JOIN dbo.Accounts A ON A.Id = E.AccountId
+		JOIN dbo.AccountTypes AC ON AC.Id = A.AccountTypeId
+		JOIN dbo.Resources R ON R.Id = E.ResourceId
+		WHERE AC.[Concept] = N'HRExtension'
+		AND LD.[LineType] = 100
+		AND R.[Code] = N'AnnualLeave'
+		AND L.[State] = 4
+		AND L.PostingDate > '2023-10-01'
+		AND Time1 <= @EndOfServiceDate -- MA: 2025-08-15 to exclude future requests
+		AND E.AgentId = @EmployeeId
 	),
 	ProvisionedLeaves AS ( 
 		SELECT E.AgentId, Time1, Time2
