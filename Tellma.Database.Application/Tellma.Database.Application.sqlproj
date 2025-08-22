@@ -1034,6 +1034,11 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax_ET_20250707.sql" />
     <Build Include="map\WideLines.sql" />
     <Build Include="dal\Functions\dal.fn_Agent__Text2.sql" />
+    <Build Include="dal\Functions\dal.fn_Documents__HaveAbstractAgent.sql" />
+    <Build Include="dal\Functions\dal.fn_UserInRoleCodes.sql" />
+    <Build Include="dal\Functions\dal.fn_RoleCode__Name.sql" />
+    <Build Include="dal\Functions\dal.fn_RoleCode__Name2.sql" />
+    <Build Include="dal\Functions\dal.fn_RoleCode__Name3.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
