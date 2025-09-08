@@ -41,7 +41,9 @@ AND (
 	AC.[Node].IsDescendantOf(@PPENode) = 1 OR
 	AC.[Node].IsDescendantOf(@ROUNode) = 1 OR
 	AC.[Node].IsDescendantOf(@IANode) = 1
-);--select *, dal.fn_Account__Name([FixedAssetAccountId]) AS AccountName from @FixedAssetsAccountIds;
+)
+AND AC.[Concept] NOT IN (N'ConstructionInProgress', N'IntangibleAssetsUnderDevelopment')
+;--select *, dal.fn_Account__Name([FixedAssetAccountId]) AS AccountName from @FixedAssetsAccountIds;
 
 DECLARE @AccumulatedDepreciationEntryTypeIds IdList;
 INSERT INTO @AccumulatedDepreciationEntryTypeIds 
@@ -440,3 +442,4 @@ IF @Debug=0 SELECT * from @Widelines;
 -- 163s Moving function fn_EntryTypeConcept__Id outside the loop, 150 put them back!!!
 -- Back to using Temp variables for tables: 160 s. I will stick with those
 END
+GO

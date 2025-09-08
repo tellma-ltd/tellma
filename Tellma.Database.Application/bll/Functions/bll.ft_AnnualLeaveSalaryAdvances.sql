@@ -2,7 +2,8 @@
 	@LastIndex INT,
 	@EmployeeId INT,
 	@Time1 DATE,
-	@Time2 DATE
+	@Time2 DATE,
+	@DeductLoans BIT = 1
 )
 -- @Time1 < @Time2 and fall in the same month
 RETURNS 
@@ -131,6 +132,7 @@ BEGIN
 	FROM EffectiveSSDeductions;
 	SELECT @LastIndex = MAX([Index]) FROM @Shortlines;
 
+	IF @DeductLoans = 1
 	WITH LoanDeductions AS (
 		SELECT E.[AgentId] AS [AgentId0], E.[CurrencyId] AS [CurrencyId0], SUM([Direction] * [MonetaryValue]) AS [MonetaryValue0]
 		FROM dbo.Entries E

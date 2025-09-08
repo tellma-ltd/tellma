@@ -1,5 +1,4 @@
 ﻿CREATE TABLE [dbo].[Entries] (
---	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
 	[Id]						INT				CONSTRAINT [PK_Entries] PRIMARY KEY IDENTITY,
 	[LineId]					INT				NOT NULL CONSTRAINT [FK_Entries__LineId] REFERENCES [dbo].[Lines] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL DEFAULT 0,

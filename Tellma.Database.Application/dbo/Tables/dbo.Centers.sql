@@ -12,6 +12,7 @@
 														N'Service',
 														N'Operation',
 														N'Sale',
+														N'FinanceCost',
 														N'OtherPL', -- to avoid Null centers. Used with Expenses (not) by nature
 														-- Leaves only, to be capitalized
 														N'ConstructionInProgressExpendituresControl',

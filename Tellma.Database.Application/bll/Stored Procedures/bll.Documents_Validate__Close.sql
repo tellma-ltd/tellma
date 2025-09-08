@@ -359,8 +359,9 @@ BEGIN
 			@DocumentLineDefinitionEntries [dbo].[DocumentLineDefinitionEntryList] READONLY,
 			@Lines [dbo].[LineList] READONLY, 
 			@Entries [dbo].EntryList READONLY,
-			@Top INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
-			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top;
+			@Top INT,
+			@UserId INT', 	@DefinitionId = @DefinitionId, @Documents = @Documents,
+			@DocumentLineDefinitionEntries = @DocumentLineDefinitionEntries, @Lines = @Lines, @Entries = @Entries, @Top = @Top, @UserId = @UserId;
 	END TRY
 	BEGIN CATCH
 		DECLARE @ErrorNumber INT = 100000 + ERROR_NUMBER();

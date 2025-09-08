@@ -10,16 +10,17 @@ BEGIN
 	DECLARE @DistributionCosts INT = dal.fn_EntryTypeConcept__Id(N'DistributionCosts');
 	DECLARE @CostOfSales INT = dal.fn_EntryTypeConcept__Id(N'CostOfSales');
 	DECLARE @OtherExpenseByFunction INT = dal.fn_EntryTypeConcept__Id(N'OtherExpenseByFunction');
+	DECLARE @FinanceCosts INT = dal.fn_EntryTypeConcept__Id(N'FinanceCosts');
 
 	DECLARE @CapitalizationExpenseByNatureExtension INT = dal.fn_EntryTypeConcept__Id(N'CapitalizationExpenseByNatureExtension');
 	DECLARE @CenterType NVARCHAR (255) = dal.fn_Center__CenterType(@CenterId);
 
 	RETURN CASE
 		WHEN @CenterType = N'BusinessUnit' THEN ISNULL(@EntryTypeId, @AdministrativeExpense)
-
+		WHEN @CenterType = N'FinanceCost' THEN ISNULL(@EntryTypeId, @FinanceCosts) -- MA:2025-08-10
 		WHEN @CenterType = N'Administration' THEN @AdministrativeExpense
-		WHEN @CenterType = N'Marketing' THEN @DistributionCosts
-		WHEN @CenterType IN (N'Operation', 'CostOfSales') THEN @CostOfSales
+		WHEN @CenterType IN (N'Marketing', N'Sale') THEN @DistributionCosts
+		WHEN @CenterType IN (N'Operation', N'CostOfSales') THEN @CostOfSales
 		WHEN @CenterType = N'Service' THEN @OtherExpenseByFunction
 		WHEN @CenterType IN (
 			N'ConstructionInProgressExpendituresControl',
