@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Title>Tellma.Client</Title>
+    <Version>0.1.10</Version>
+    <Authors>Tellma</Authors>
+    <PackageId>Tellma.Client</PackageId>
+    <Description>A .NET client library to simplify the interaction with the Tellma web API.</Description>
+    <Copyright>Copyright (c) Tellma 2025.</Copyright>
+    <PackageProjectUrl>https://www.tellma.com/</PackageProjectUrl>
+    <PackageIcon>tellma.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/tellma-ltd/tellma/tree/master/Tellma.Client</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Tellma; ERP; Client; Web API</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +24,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tellma.Api.Web.Dto\Tellma.Api.Web.Dto.csproj" />
+    <ProjectReference Include="..\Tellma.Api.Web.Dto\Tellma.Api.Web.Dto.csproj" PrivateAssets="all" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Manually include the referenced project's output DLL -->
+    <Content Include="$(SolutionDir)Tellma.Api.Web.Dto\bin\$(Configuration)\$(TargetFramework)\Tellma.Api.Web.Dto.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+    <Content Include="$(SolutionDir)Tellma.Api.Dto\bin\$(Configuration)\$(TargetFramework)\Tellma.Api.Dto.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+    <Content Include="$(SolutionDir)Tellma.Model.Application\bin\$(Configuration)\$(TargetFramework)\Tellma.Model.Application.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+    <Content Include="$(SolutionDir)Tellma.Model.Admin\bin\$(Configuration)\$(TargetFramework)\Tellma.Model.Admin.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+    <Content Include="$(SolutionDir)Tellma.Model.Common\bin\$(Configuration)\$(TargetFramework)\Tellma.Model.Common.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="tellma.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>
