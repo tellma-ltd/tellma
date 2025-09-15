@@ -32,8 +32,8 @@ USING (
 		IIF(@AgentIsIncluded = 0, NULL, E.[AgentId]) AS [AgentId], 
 		IIF(@ResourceIsIncluded = 0, NULL, E.[ResourceId]) AS [ResourceId], 
 		IIF(@NotedAgentIsIncluded = 0, NULL, E.[NotedAgentId]) AS [NotedAgentId], 
-		IIF(@NotedResourceIsIncluded = 0, NULL, E.[NotedResourceId]) AS [NotedResourceId],
-		L.[Decimal1] -- MA: Added 2023.04.07
+		IIF(@NotedResourceIsIncluded = 0, NULL, E.[NotedResourceId]) AS [NotedResourceId]
+		--, L.[Decimal1] -- MA: Added 2023.04.07, Commented 2025-08-28
 	FROM @Ids FL
 	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
@@ -48,11 +48,11 @@ USING (
 	AND (ISNULL(t.[ResourceId], -1)		= ISNULL(s.[ResourceId], -1)		OR @ResourceIsIncluded = 0)
 	AND (ISNULL(t.[NotedAgentId], -1)	= ISNULL(s.[NotedAgentId], -1)		OR @NotedAgentIsIncluded = 0)
 	AND (ISNULL(t.[NotedResourceId], -1)= ISNULL(s.[NotedResourceId], -1)	OR @NotedResourceIsIncluded = 0)
-	AND t.[Decimal1]					= s.[Decimal1] -- MA: Added 2023.04.07
+--	AND t.[Decimal1]					= s.[Decimal1] -- MA: Added 2023.04.07, Commented 2025-08-28
 )
 WHEN NOT MATCHED THEN
-INSERT ([LineDefinitionId],		[EntryIndex], [CenterId],	[CurrencyId],	[AgentId], [ResourceId],	[NotedAgentId],		[NotedResourceId], [Decimal1])
-VALUES (s.[LineDefinitionId], s.[EntryIndex], s.[CenterId], s.[CurrencyId], s.[AgentId], s.[ResourceId], s.[NotedAgentId], s.[NotedResourceId], s.[Decimal1]);
+INSERT ([LineDefinitionId],		[EntryIndex], [CenterId],	[CurrencyId],	[AgentId], [ResourceId],	[NotedAgentId],		[NotedResourceId])--, [Decimal1]) --  Commented 2025-08-28
+VALUES (s.[LineDefinitionId], s.[EntryIndex], s.[CenterId], s.[CurrencyId], s.[AgentId], s.[ResourceId], s.[NotedAgentId], s.[NotedResourceId]);--, s.[Decimal1]); --  Commented 2025-08-28
 
 WITH VLines AS (
 	SELECT L.[LineKey], @ContractLineDefinitionId AS [LineDefinitionId], @EntryIndex As [EntryIndex], 
@@ -62,8 +62,8 @@ WITH VLines AS (
 		IIF(@AgentIsIncluded = 0, NULL, E.[AgentId]) AS [AgentId], 
 		IIF(@ResourceIsIncluded = 0, NULL, E.[ResourceId]) AS [ResourceId], 
 		IIF(@NotedAgentIsIncluded = 0, NULL, E.[NotedAgentId]) AS [NotedAgentId], 
-		IIF(@NotedResourceIsIncluded = 0, NULL, E.[NotedResourceId]) AS [NotedResourceId],
-		L.[Decimal1] -- MA: Added 2023.04.07
+		IIF(@NotedResourceIsIncluded = 0, NULL, E.[NotedResourceId]) AS [NotedResourceId]
+		--L.[Decimal1] -- MA: Added 2023.04.07  Commented 2025-08-28
 	FROM @Ids FL
 	JOIN dbo.Lines L ON L.[Id] = FL.[Id]
 	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
@@ -82,6 +82,6 @@ AND (ISNULL(T.[AgentId], -1)		= ISNULL(V.[AgentId], -1)			OR @AgentIsIncluded = 
 AND (ISNULL(T.[ResourceId], -1)		= ISNULL(V.[ResourceId], -1)		OR @ResourceIsIncluded = 0)
 AND (ISNULL(T.[NotedAgentId], -1)	= ISNULL(V.[NotedAgentId], -1)		OR @NotedAgentIsIncluded = 0)
 AND (ISNULL(T.[NotedResourceId], -1)= ISNULL(V.[NotedResourceId], -1)	OR @NotedResourceIsIncluded = 0)
-AND (T.[Decimal1]					= V.[Decimal1])  -- MA: Added 2023.04.07
+--AND (T.[Decimal1]					= V.[Decimal1])  -- MA: Added 2023.04.07  Commented 2025-08-28
 WHERE [LineKey] IS NULL OR [LineKey] <> T.[Id];
 GO

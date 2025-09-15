@@ -412,7 +412,7 @@ SELECT [FixedAssetId], [PeriodStart], [PeriodEnd], [PeriodUsage], [PeriodDepreci
 GROUP BY [FixedAssetId], [PeriodStart], [PeriodEnd], [DepreciationCenterId], [DepreciationAgentId], [DepreciationNotedAgentId]
 HAVING SUM([PeriodUsage]) <> 0 OR 
 ABS(SUM([PeriodDepreciation])) > 0.1;
-IF @Debug=1 select N'@VarianceDepreciations' AS [Table], vd.*, r.[code] as FA_Code, r.[name] as FA_Name from @VarianceDepreciations VD join dbo.resources R on r.id = vd.fixedassetid order by FixedAssetId, PeriodStart, PeriodEnd;
+IF @Debug=1 select N'@VarianceDepreciations' AS [Table], vd.*, r.[code] as FA_Code, r.[name] as FA_Name from @VarianceDepreciations VD JOIN dbo.Resources R on r.id = vd.fixedassetid ORDER BY FixedAssetId, PeriodStart, PeriodEnd;
 --78
 DECLARE @Widelines WidelineList;
 DECLARE @DepreciationPropertyPlantAndEquipment INT = dal.fn_EntryTypeConcept__Id(N'DepreciationPropertyPlantAndEquipment');

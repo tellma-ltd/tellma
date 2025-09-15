@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER FUNCTION [map].[WideLines]()
+﻿CREATE FUNCTION [map].[WideLines]()
 RETURNS TABLE
 AS
 RETURN (

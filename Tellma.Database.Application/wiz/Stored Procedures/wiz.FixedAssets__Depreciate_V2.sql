@@ -61,7 +61,7 @@ WHILE @PeriodStart IS NOT NULL
 BEGIN
 	DELETE FROM @FixedAssetsDepreciations; 
 	INSERT INTO @FixedAssetsDepreciations([ResourceId], [BookMinusResidual], [RemainingLifeTime], [PeriodUsage], [PeriodStart], [PeriodEnd], [PostedPeriodDepreciation],
-											[Centerid], [AgentId], [NotedResourceId], [NotedAgentId], [EntryTypeId])
+											[CenterId], [AgentId], [NotedResourceId], [NotedAgentId], [EntryTypeId])
 	SELECT E.[ResourceId], SUM(E.[Direction] * E.[MonetaryValue] - E.[Direction] * ISNULL(E.[NotedAmount], 0)) AS [BookMinusResidual], 
 			SUM(E.[Direction] * E.[Quantity]) AS [RemainingLifeTime], dbo.fn_DateDiffWithPrecision_V2(@MonthUnit, @PeriodStart, @PeriodEnd), @PeriodStart, @PeriodEnd, 0,
 			E.[CenterId], E.[AgentId], E.[NotedResourceId], E.[NotedAgentId], A.[EntryTypeId]

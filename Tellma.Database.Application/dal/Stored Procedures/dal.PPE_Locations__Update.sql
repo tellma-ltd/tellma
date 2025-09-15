@@ -3,14 +3,11 @@ BEGIN
 	DECLARE @FA TABLE ([ResourceId] INT PRIMARY KEY, [Profile_DutyStationId] INT, [Entries_DutyStationId] INT);
 
 	INSERT INTO @FA([ResourceId], [Profile_DutyStationId])
-	select R.Id, r.Agent2Id AS DS
-	from resources r
-	join resourcedefinitions rd on rd.id = r.definitionId
-	join dbo.Agents AG on AG.Id =r.Agent2Id
-	where rd.code like N'%Member'
---	and rd.code <> N'RightofuseAssetsMember'
---	and R.Id = 1608
-	;
+	SELECT R.Id, R.Agent2Id AS DS
+	FROM dbo.Resources R
+	JOIN dbo.ResourceDefinitions rd on rd.Id = r.definitionId
+	JOIN dbo.Agents AG on AG.Id =r.Agent2Id
+	where rd.Code like N'%Member';
 
 	WITH LatestEntries AS (
 			SELECT 
@@ -66,3 +63,4 @@ BEGIN
 	JOIN Disposed D ON FA.[Id] = D.[ResourceId]
 	WHERE Agent2Id IS NOT NULL
 END
+GO
