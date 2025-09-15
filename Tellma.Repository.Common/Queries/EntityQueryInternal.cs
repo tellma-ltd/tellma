@@ -118,7 +118,8 @@ namespace Tellma.Repository.Common
                        offsetFetchSql: null,
                        groupbySql: null,
                        havingSql: null,
-                       selectFromTempSql: null
+                       selectFromTempSql: null,
+                       optionRecompile: false
                    );
 
             sql = $@"SELECT COUNT(*) As [Count] FROM (
@@ -176,7 +177,8 @@ namespace Tellma.Repository.Common
                     offsetFetchSql: offsetFetchSql,
                     groupbySql: null,
                     havingSql: null,
-                    selectFromTempSql: null
+                    selectFromTempSql: null,
+                    optionRecompile: true
                 );
 
             // (8) Return the result
@@ -244,7 +246,8 @@ namespace Tellma.Repository.Common
                     offsetFetchSql: offsetFetchSql,
                     groupbySql: null,
                     havingSql: null,
-                    selectFromTempSql: null
+                    selectFromTempSql: null,
+                    optionRecompile: false
                 );
 
             // (8) Return the result

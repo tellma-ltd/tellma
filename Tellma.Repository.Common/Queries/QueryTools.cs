@@ -28,7 +28,8 @@ namespace Tellma.Repository.Common
             string offsetFetchSql,
             string groupbySql,
             string havingSql,
-            string selectFromTempSql)
+            string selectFromTempSql,
+            bool optionRecompile)
         {
             var finalSQL = new StringBuilder();
 
@@ -81,6 +82,12 @@ namespace Tellma.Repository.Common
                     finalSQL.AppendLine();
                     finalSQL.Append(orderbySql);
                 }
+            }
+
+            if (optionRecompile)
+            {
+                finalSQL.AppendLine();
+                finalSQL.Append("OPTION(RECOMPILE) ");
             }
 
             return finalSQL.ToString();

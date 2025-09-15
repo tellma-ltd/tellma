@@ -279,7 +279,8 @@ namespace Tellma.Repository.Common
                             offsetFetchSql: null,
                             groupbySql: null,
                             havingSql: null,
-                            selectFromTempSql: null);
+                            selectFromTempSql: null,
+                            optionRecompile: false);
 
                         // Get the index of the id select
                         int idIndex = SelectIndexDictionary[idSelect];
@@ -318,7 +319,8 @@ namespace Tellma.Repository.Common
                     offsetFetchSql: null,
                     groupbySql: principalGroupbySql,
                     havingSql: principalHavingSql,
-                    selectFromTempSql: principalSelectFromTempSql
+                    selectFromTempSql: principalSelectFromTempSql,
+                    optionRecompile: false
                 );
 
 

@@ -387,6 +387,9 @@ namespace Tellma.Client
             private CurrenciesClient _currencies;
             public CurrenciesClient Currencies => _currencies ??= new CurrenciesClient(this);
 
+            private CentersClient _centers;
+            public CentersClient Centers => _centers ??= new CentersClient(this);
+
             private DashboardDefinitionsClient _dashboardDefinitions;
             public DashboardDefinitionsClient DashboardDefinitions => _dashboardDefinitions ??= new DashboardDefinitionsClient(this);
 
