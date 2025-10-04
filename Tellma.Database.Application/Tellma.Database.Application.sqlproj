@@ -1037,6 +1037,8 @@
     <Build Include="dal\Functions\dal.fn_RoleCode__Name2.sql" />
     <Build Include="dal\Functions\dal.fn_RoleCode__Name3.sql" />
     <Build Include="bll\Stored Procedures\bll.FASequencing__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__ToDate.sql" />
+    <Build Include="bll\Functions\bll.fn_Repeat_SalesInvoice_CustomerAccount_CourseSection__CostPerSeat.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

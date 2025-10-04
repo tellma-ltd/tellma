@@ -152,12 +152,12 @@ AS BEGIN
 		FROM @T
 		WHERE [EmployeeId] = R.[EmployeeId]
 	) SS
-	-- 50 years old are exempt
-	UPDATE R
-	SET [EmployeeIncomeTax] = 0
-	FROM @MyResult R
-	JOIN dbo.Agents AG ON AG.[Id] = R.[EmployeeId]
-	WHERE DATEDIFF(YEAR, AG.DateOfBirth, @PeriodEnd) >= 50
+	-- 50 years old are exempt.. No any more. MA: 2025-09-30
+	--UPDATE R
+	--SET [EmployeeIncomeTax] = 0
+	--FROM @MyResult R
+	--JOIN dbo.Agents AG ON AG.[Id] = R.[EmployeeId]
+	--WHERE DATEDIFF(YEAR, AG.DateOfBirth, @PeriodEnd) >= 50
 
 	RETURN
 END
