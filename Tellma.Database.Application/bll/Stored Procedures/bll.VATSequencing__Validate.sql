@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[VATSequencing__Validate]
-@Lines Linelist READONLY,
+@Lines LineList READONLY,
 @Entries EntryList READONLY
 AS
 DECLARE @DocumentsVATDate DATE, @Err NVARCHAR (1024);

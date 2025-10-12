@@ -448,7 +448,6 @@
 	IF @ContractAmendmentLineDefinitionId <> 0
 	BEGIN
 		DECLARE @ContractAmendmentLineDefinitionCode NVARCHAR (255) = dal.fn_LineDefinition__Code(@ContractAmendmentLineDefinitionId);
-		--IF @ContractAmendmentLineDefinitionCode IS NULL THROW 50000, N'New Contract Amendment Version is not deployed', 1;
 		SET @OldContractAmendmentLineDefinitionId = ISNULL(dal.fn_LineDefinitionCode__Id(N'(Old)' + @ContractAmendmentLineDefinitionCode), 0);
 	END
 
@@ -468,7 +467,7 @@
 		--UNIQUE ([LineKey], [EntryIndex], [Time1], [CenterId], [AgentId], [NotedResourceId], [EntryTypeId]) -- MA: added 2023-03-24 because they were changing after contract termination
 	);
 	WITH FilteredLines AS (
-		SELECT DISTINCT L.[LineKey]--, L.[Decimal1]
+		SELECT DISTINCT L.[LineKey]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
@@ -476,7 +475,6 @@
 		AND (L.[State] = 2)
 		AND (@DurationUnitId IS NULL OR E.[DurationUnitId] = @DurationUnitId) -- Should be moved to the line level, and renamed to @FrequencyId
 		-- next line is needed when terminating contracts but not when ag salaries
-		--AND (E.[UnitId] IS NULL OR E.[UnitId] NOT IN (@Hour, @Day))
 		AND (E.[Index] = @EntryIndex) -- Primary entry whose data needs to be filtered
 		AND (E.[Time1] <= @ToDate)
 		AND (ISNULL(E.[Time2], '9999-12-31') >= @FromDate)
@@ -497,6 +495,7 @@
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
 															@OldContractAmendmentLineDefinitionId)
 		AND L.[State] = 2 AND E.[Time1] <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
+--		AND (@ResourceId IS NULL OR E.ResourceId = @ResourceId)-- caused empty for SS
 		UNION ALL
 		SELECT FL.[LineKey], E.[Index] % @LdEntryCount AS [Index], E.[DurationUnitId], --FL.[Decimal1],
 			DATEADD(DAY, 1, E.[Time2]) AS [Time1], '9999-12-31' AS [Time2],
@@ -507,9 +506,8 @@
 		JOIN FilteredLines FL ON FL.[LineKey] = L.[LineKey]
 		WHERE L.DefinitionId IN (@ContractLineDefinitionId, @ContractAmendmentLineDefinitionId, @ContractTerminationLineDefinitionId,
 															@OldContractAmendmentLineDefinitionId)
---		MA: 2023-10-16. The following line was commented out because it was causing an overflow. Rewrote the logic
---		AND L.[State] = 2 AND ISNULL(DATEADD(DAY, 1, E.[Time2]), '9999-12-31') <= @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
 		AND L.[State] = 2 AND ISNULL(E.[Time2], '9999-12-31') < @ToDate AND ISNULL(E.[Time2], '9999-12-31') >= @FromDate
+--		AND (@ResourceId IS NULL OR E.ResourceId = @ResourceId)
 	) --  select * from FilteredEntries 
 	INSERT INTO @T([LineKey], [EntryIndex], [DurationUnitId], --[Decimal1], 
 		[Time1],[Direction],[AccountId], [CenterId], [AgentId], [ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
@@ -537,7 +535,7 @@
 			[ResourceId], [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 			SUM([Quantity]) AS [Quantity], SUM([MonetaryValue]) AS [MonetaryValue], SUM([Value]) AS [Value], SUM([NotedAmount]) AS [NotedAmount]
 		FROM FilteredEntries
-		GROUP BY --[LineId], 
+		GROUP BY
 			[LineKey], [Index] , [DurationUnitId], [Time1], [Time2], Direction, AccountId, CenterId, AgentId, ResourceId, UnitId, [CurrencyId], NotedAgentId, NotedResourceId, EntryTypeId
 	) AFE -- Aggregated filtered entries. To act on the total resulting entries
 	-- MA: next line is helpful to know which employees are causing anmalies

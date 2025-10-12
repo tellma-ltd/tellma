@@ -4,7 +4,8 @@
 @CenterId INT,
 @Documents DocumentList READONLY,
 @Lines LineList READONLY,
-@Entries EntryList READONLY
+@Entries EntryList READONLY,
+@ExtraWidelines WidelineList READONLY -- Allow custom lines to be injected by the auto generate script
 AS
 DECLARE @Country NCHAR (2) = dal.[fn_Settings__Country]();
 DECLARE @ContractLineDefinitionId INT = dal.fn_LineDefinitionCode__Id(N'ToEmployeeBenefitAccrualsFromTradePayables.M');
@@ -118,6 +119,16 @@ BEGIN
 	FROM @Widelines WL
 	JOIN EmployeesCenters EC ON EC.[NotedAgentId] = WL.[NotedAgentId1]
 	WHERE WL.[AgentId1] = @EmployeeIncomeTaxAG
+END;
+
+DECLARE @Count INT = (SELECT COUNT(*) FROM @ExtraWidelines);
+IF @Count > 0
+BEGIN
+	DECLARE @LastIndex INT = ISNULL((SELECT MAX([Index]) FROM @Widelines), 0);
+
+	INSERT INTO @Widelines([Index], [DocumentIndex], [Id], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Decimal2], [Text1], [Text2], [Id0], [Direction0], [AccountId0], [AgentId0], [NotedAgentId0], [ResourceId0], [CenterId0], [CurrencyId0], [EntryTypeId0], [MonetaryValue0], [Quantity0], [UnitId0], [Value0], [Time10], [Duration0], [DurationUnitId0], [Time20], [ExternalReference0], [ReferenceSourceId0], [InternalReference0], [NotedAgentName0], [NotedAmount0], [NotedDate0], [NotedResourceId0], [Id1], [Direction1], [AccountId1], [AgentId1], [NotedAgentId1], [ResourceId1], [CenterId1], [CurrencyId1], [EntryTypeId1], [MonetaryValue1], [Quantity1], [UnitId1], [Value1], [Time11], [Duration1], [DurationUnitId1], [Time21], [ExternalReference1], [ReferenceSourceId1], [InternalReference1], [NotedAgentName1], [NotedAmount1], [NotedDate1], [NotedResourceId1])
+	SELECT [Index] + @LastIndex + 1, [DocumentIndex], [Id], [DefinitionId], [PostingDate], [Memo], [Boolean1], [Decimal1], [Decimal2], [Text1], [Text2], [Id0], [Direction0], [AccountId0], [AgentId0], [NotedAgentId0], [ResourceId0], [CenterId0], [CurrencyId0], [EntryTypeId0], [MonetaryValue0], [Quantity0], [UnitId0], [Value0], [Time10], [Duration0], [DurationUnitId0], [Time20], [ExternalReference0], [ReferenceSourceId0], [InternalReference0], [NotedAgentName0], [NotedAmount0], [NotedDate0], [NotedResourceId0], [Id1], [Direction1], [AccountId1], [AgentId1], [NotedAgentId1], [ResourceId1], [CenterId1], [CurrencyId1], [EntryTypeId1], [MonetaryValue1], [Quantity1], [UnitId1], [Value1], [Time11], [Duration1], [DurationUnitId1], [Time21], [ExternalReference1], [ReferenceSourceId1], [InternalReference1], [NotedAgentName1], [NotedAmount1], [NotedDate1], [NotedResourceId1]
+	FROM @ExtraWidelines;	
 END
 SELECT * FROM @Widelines order by [Index];
 GO

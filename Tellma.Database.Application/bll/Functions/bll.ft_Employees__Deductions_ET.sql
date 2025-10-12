@@ -33,9 +33,22 @@ AS BEGIN
 	SET [ValueSubjectToEmployeeIncomeTax] = 0
 	WHERE [ResourceCode] IN (N'EndOfService', N'SocialSecurityContribution', N'RepresentationAllowance');
 
-	UPDATE @T 
-	SET [ValueSubjectToEmployeeIncomeTax] = IIF([Value] > 600, [Value] - 600, 0) -- 2023-10-01 changed from 800
-	WHERE [ResourceCode] IN (N'TransportationAllowance');
+	IF @PeriodStart <= '20250707'
+		UPDATE @T 
+		SET [ValueSubjectToEmployeeIncomeTax] = IIF([Value] > 600, [Value] - 600, 0) -- 2023-10-01 changed from 800
+		WHERE [ResourceCode] IN (N'TransportationAllowance');
+	ELSE
+		WITH TransportationAllowancesExemptions AS (
+			SELECT [EmployeeId], IIF(0.25 * [Value] > 2200, 2200, 0.25 * [Value]) AS Amount
+			FROM @T
+			WHERE [ResourceCode] IN (N'BasicSalary')
+		)
+		UPDATE @T
+		SET [ValueSubjectToEmployeeIncomeTax] =
+			IIF([Value] > VE.[Amount], [Value] - VE.[Amount], 0)
+		FROM @T T
+		JOIN TransportationAllowancesExemptions TE ON TE.[EmployeeId] = T.[EmployeeId]
+		WHERE T.[ResourceCode] IN (N'TransportationAllowance');
 
 	-- IF BusinessVisitAllowance < 2,200 and less than 25% of Basic Salary. Any excess will not be exempt.
 	WITH BusinessVisitsExemptions AS (

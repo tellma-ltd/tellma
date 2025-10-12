@@ -1,11 +1,11 @@
-﻿CREATE FUNCTION [dal].[fn_Agent__ToDate] (
+﻿CREATE FUNCTION [dal].[fn_Agent__FromDate] (
 	@Id INT
 )
 RETURNS DATE
 AS
 BEGIN
 	RETURN 	(
-		SELECT [ToDate] FROM [dbo].[Agents]
+		SELECT [FromDate] FROM [dbo].[Agents]
 		WHERE [Id] = @Id
 	)
 END

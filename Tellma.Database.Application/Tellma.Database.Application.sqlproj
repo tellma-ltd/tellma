@@ -421,8 +421,6 @@
     <Build Include="map\map.DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinancialRatios.sql" />
-    <Build Include="dbo\Tables\dbo.ApportionmentRates.sql" />
-    <Build Include="dbo\Tables\dbo.AbsorptionRates.sql" />
     <Build Include="dal\Stored Procedures\dal.InboxCounts__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Preview.sql" />
     <Build Include="dal\Stored Procedures\dal.Inbox__Check.sql" />
@@ -438,7 +436,6 @@
     <Build Include="bll\Stored Procedures\bll.PrintingTemplates_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.PrintingTemplates__Delete.sql" />
     <Build Include="map\map.PrintingTemplates.sql" />
-    <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
     <Build Include="api\Stored Procedures\api.LookupDefinitions__Save.sql" />
     <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
@@ -1039,6 +1036,9 @@
     <Build Include="dal\Functions\dal.fn_RoleCode__Name.sql" />
     <Build Include="dal\Functions\dal.fn_RoleCode__Name2.sql" />
     <Build Include="dal\Functions\dal.fn_RoleCode__Name3.sql" />
+    <Build Include="bll\Stored Procedures\bll.FASequencing__Validate.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__ToDate.sql" />
+    <Build Include="bll\Functions\bll.fn_Repeat_SalesInvoice_CustomerAccount_CourseSection__CostPerSeat.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
