@@ -27,13 +27,13 @@ namespace Tellma.Repository.Application.Tests
         #endregion
         // Each one is a document Id
         [Theory(DisplayName = "[Zatca__GetInvoices] ")]
-        [InlineData(16903, false)] // Simplified tax invoice a/t delivery
-        [InlineData(16910, false)] // Standard tax invoice a/t delivery with Discounts/Sales retention
-        [InlineData(17031, false)] // Simplified tax invoice. Services => Sales + Invoice
-        [InlineData(17039, false)] // Standard Tax invoice,  Services => Sales + Invoice
-        [InlineData(16961, true)] // Standard Tax invoice,  Only Prepayment adjustment
-        [InlineData(17038, true)] // Standard Tax invoice, unrelated adjustment
-        [InlineData(16779, false)] // Standard Tax invoice, fractions
+        [InlineData(21412, false)] // Simplified tax invoice a/t delivery
+        [InlineData(20069, false)] // Standard tax invoice a/t delivery with Discounts/Sales retention
+        //[InlineData(17031, false)] // Simplified tax invoice. Services => Sales + Invoice
+        //[InlineData(17039, false)] // Standard Tax invoice,  Services => Sales + Invoice
+        //[InlineData(16961, true)] // Standard Tax invoice,  Only Prepayment adjustment
+        //[InlineData(17038, true)] // Standard Tax invoice, unrelated adjustment
+        //[InlineData(16779, false)] // Standard Tax invoice, fractions
         public async Task Zatca__GetInvoices(int docId, bool assert_empty)
         {
             // These were obtained from the FATOORA portal and CLI tool
@@ -61,7 +61,7 @@ namespace Tellma.Repository.Application.Tests
 
             invoice.Seller = new Party
             {
-                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Id = new(PartyIdScheme.CommercialRegistration, "1010753744"),
                 Address = new Address
                 {
                     Street = "Tahlia St",

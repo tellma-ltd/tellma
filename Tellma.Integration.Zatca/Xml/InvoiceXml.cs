@@ -127,7 +127,7 @@ namespace Tellma.Integration.Zatca
                 var partyElem = new XElement(cac + "Party");
 
                 // Party Id
-                if (party?.Id != null)
+                if (party?.Id?.Value != null)
                 {
                     PartyId id = party.Id.Value;
                     partyElem.Add(new XElement(cac + "PartyIdentification",

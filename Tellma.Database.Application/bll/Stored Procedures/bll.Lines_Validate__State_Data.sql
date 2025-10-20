@@ -280,8 +280,12 @@ BEGIN
 			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 			WHERE ((A.[AgentDefinitionId] IS NOT NULL) OR
-					A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeAgentDefinitions
-										WHERE [AgentDefinitionId] IS NOT NULL)
+					A.AccountTypeId IN (
+						SELECT [AccountTypeId]
+						FROM dbo.AccountTypeAgentDefinitions ATAD
+						JOIN dbo.AgentDefinitions AD ON AD.[Id] = ATAD.[AgentDefinitionId]
+						WHERE AD.[State] = N'Visible'
+						)
 					)
 			AND (E.[AgentId] IS NULL);
 
@@ -296,8 +300,12 @@ BEGIN
 			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 			WHERE ((A.[ResourceDefinitionId] IS NOT NULL) OR
-					A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeResourceDefinitions
-										WHERE [ResourceDefinitionId] IS NOT NULL)		
+					A.AccountTypeId IN (
+						SELECT [AccountTypeId]
+						FROM dbo.AccountTypeResourceDefinitions ATRD
+						JOIN dbo.ResourceDefinitions RD ON RD.[Id] = ATRD.[ResourceDefinitionId]
+						WHERE RD.[State] = N'Visible'
+						)		
 					)
 			AND (E.[ResourceId] IS NULL);
 	
@@ -312,8 +320,12 @@ BEGIN
 			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 			WHERE ((A.[NotedAgentDefinitionId] IS NOT NULL) OR
-					A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeNotedAgentDefinitions
-										WHERE [NotedAgentDefinitionId] IS NOT NULL)
+					A.AccountTypeId IN (
+						SELECT [AccountTypeId]
+						FROM dbo.AccountTypeNotedAgentDefinitions ATNAD
+						JOIN dbo.AgentDefinitions AD ON AD.[Id] = ATNAD.[NotedAgentDefinitionId]
+						WHERE AD.[State] = N'Visible'
+						)
 					)
 			AND (E.[NotedAgentId] IS NULL);
 
@@ -328,8 +340,12 @@ BEGIN
 			JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 			JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 			WHERE ((A.[NotedResourceDefinitionId] IS NOT NULL) OR
-					A.AccountTypeId IN (SELECT [AccountTypeId] FROM dbo.AccountTypeNotedResourceDefinitions
-										WHERE [NotedResourceDefinitionId] IS NOT NULL)		
+					A.AccountTypeId IN (
+						SELECT [AccountTypeId]
+						FROM dbo.AccountTypeNotedResourceDefinitions ATNRD
+						JOIN dbo.ResourceDefinitions RD ON RD.[Id] = ATNRD.[NotedResourceDefinitionId]
+						WHERE RD.[State] = N'Visible'
+						)		
 					)
 			AND (E.[NotedResourceId] IS NULL);
 		END
