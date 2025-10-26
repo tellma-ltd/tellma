@@ -1123,6 +1123,9 @@
   <data name="Error_Amount0DoesNotMatchAmount1" xml:space="preserve">
     <value>مجموع مبالغ الأسطر الداخلية {0} لا يساوي مجموع مبالغ الأسطر الخارجية {1}.</value>
   </data>
+  <data name="Error_ArchiveDateMustPrecedeFreezeDate" xml:space="preserve">
+    <value>تاريخ الأرشفة ينبغي أن يقع قبل تاريخ التجميد</value>
+  </data>
   <data name="Error_AttachmentCannotBeAnEmptyFile" xml:space="preserve">
     <value>لا يمكن للمرفق أن يكون ملفا فارغا.</value>
   </data>
@@ -1185,6 +1188,9 @@
   </data>
   <data name="Error_CenterMustBeBusinessUnit" xml:space="preserve">
     <value>المركز ينبغي أن يكون وحدة أعمال.</value>
+  </data>
+  <data name="Error_CodeIsRequired" xml:space="preserve">
+    <value>الكود مطلوب</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
@@ -1602,6 +1608,9 @@
   </data>
   <data name="Error_TheDocumentIsClosed" xml:space="preserve">
     <value>هذا المستند مقفل، قم بفتحه أولا.</value>
+  </data>
+  <data name="Error_TheDocumentPostingDateMustBeToday" xml:space="preserve">
+    <value>تاريخ المستند ينبغي أن يكون مساويا لتاريخ اليوم</value>
   </data>
   <data name="Error_TheDocumentWithId0WasNotFound" xml:space="preserve">
     <value>لم يتم العثور على المستند ذي المفتاح {0}.</value>

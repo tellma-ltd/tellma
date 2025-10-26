@@ -179,7 +179,7 @@
     <value>የመለያ አይነት የንብረት ፍቺ</value>
   </data>
   <data name="AccountTypeResourceDefinitions" xml:space="preserve">
-    <value>የመለያ አይነት የመርጃ ፍቺዎች</value>
+    <value>የመለያ አይነት የንብረት መግለጫዎች</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>የመለያ አይነቶች</value>
@@ -566,7 +566,7 @@
     <value>ተደብቋል</value>
   </data>
   <data name="Definition_State_Testing" xml:space="preserve">
-    <value>መሞከር</value>
+    <value>በመሞከር ላይ</value>
   </data>
   <data name="Definition_State_Visible" xml:space="preserve">
     <value>የሚታይ</value>
@@ -839,7 +839,7 @@
     <value>የእውቂያ ኢሜይል</value>
   </data>
   <data name="Entity_ContactMobile" xml:space="preserve">
-    <value>ሞባይል ያግኙ</value>
+    <value>ሞባይልን ያግኙ</value>
   </data>
   <data name="Entity_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
@@ -1148,10 +1148,10 @@
     <value>ቀን ወደፊት ላይ መሆን አይችልም</value>
   </data>
   <data name="Error_Definition0AlreadyContainsData" xml:space="preserve">
-    <value>'{0}' ትርጉሙ አስቀድሞ ውሂብ ይዟል።</value>
+    <value>ትርጉሙ '{0}' አስቀድሞ ውሂብ ይዟል።</value>
   </data>
   <data name="Error_Definition0IsUsedInAccount1" xml:space="preserve">
-    <value>ትርጉሙ '{0}' በ "{1}" መለያ ውስጥ ጥቅም ላይ ይውላል።</value>
+    <value>«{0}» የሚለው ፍቺ በ«{1}» መለያ ውስጥ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_Definition0IsUsedInAccountType1" xml:space="preserve">
     <value>«{0}» የሚለው ፍቺ በ«{1}» መለያ አይነት ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -1235,7 +1235,7 @@
     <value>ልክ ያልሆነ አብነት</value>
   </data>
   <data name="Error_InvalidTemplateExpression0" xml:space="preserve">
-    <value>ልክ ያልሆነ የአብነት መግለጫ ({0})።</value>
+    <value>ልክ ያልሆነ የአብነት አገላለጽ ({0})።</value>
   </data>
   <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
     <value>ንብረት {0} በመጣው ፋይል ውስጥ መሆን አለበት።</value>
@@ -1244,7 +1244,7 @@
     <value>ንብረት {0} እንደ ቁልፍ ንብረት አይሰራም፣ ቁልፍ ባሕሪያት int ወይም ሕብረቁምፊ አይነት መሆን አለባቸው</value>
   </data>
   <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
-    <value>የ«{0}» መስኩን ለማዘጋጀት ቁልፍ ንብረት ያስፈልጋል፣ ከተቀነሰ ምልክት በኋላ ቁልፍ ንብረቶች በመስክ መለያው ላይ ይታከላሉ፣ ለምሳሌ፡- 'ሰራተኛ - ስም'።</value>
+    <value>የ«{0}» መስኩን ለማዘጋጀት ቁልፍ ንብረት ያስፈልጋል፣ ከተቀነሰ ምልክት በኋላ ቁልፍ ንብረቶች ወደ የመስክ መለያው ይታከላሉ፣ ለምሳሌ፡- 'ሰራተኛ - ስም'።</value>
   </data>
   <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
     <value>የ«{0}» መለያ በ{1} አይነት ከማንኛውም ስብስብ ጋር አይዛመድም።</value>
@@ -1409,7 +1409,7 @@
     <value>መለያ '{0}' ዜሮ ያልሆነ የብዛት ሒሳብ {1} አለው።</value>
   </data>
   <data name="Error_TheAccount0HasNonZeroValueBalance1" xml:space="preserve">
-    <value>መለያ «{0}» ዜሮ ያልሆነ እሴት ቀሪ ሒሳብ {1} አለው።</value>
+    <value>መለያ '{0}' ዜሮ ያልሆነ እሴት ቀሪ {1} አለው።</value>
   </data>
   <data name="Error_TheAccount0IsInactive" xml:space="preserve">
     <value>መለያ «{0}» ቦዝኗል</value>
@@ -1430,7 +1430,7 @@
     <value>መለያ «{0}» በ{1} {2} ምንዛሬ «{3}» ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheAccount0IsUsedInDocument12WithResource3" xml:space="preserve">
-    <value>መለያ '{0}' በ{1} {2} ውስጥ ከንብረት '{3}' ጋር ጥቅም ላይ ይውላል።</value>
+    <value>መለያ «{0}» በ{1} {2} ውስጥ ከንብረት «{3}» ጋር ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheAccountClassification0HasAccount1WithNonZeroBalance" xml:space="preserve">
     <value>የመለያ ምደባ '{0}' መለያ '{1}' ዜሮ ያልሆነ ቀሪ ሂሳብ አለው።</value>
@@ -1472,7 +1472,7 @@
     <value>ወኪሉ {0} ንቁ አይደለም።</value>
   </data>
   <data name="Error_TheAgentDefinition0IsNotVisible" xml:space="preserve">
-    <value>የወኪሉ ፍቺ «{0}» አይታይም።</value>
+    <value>የወኪሉ ፍቺ '{0}' አይታይም።</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
     <value>መጠኑ ከ0 በላይ መሆን አለበት።</value>
@@ -1490,7 +1490,7 @@
     <value>የደንበኛ መታወቂያ '{0}' የተባዛ ነው።</value>
   </data>
   <data name="Error_TheClientId0IsUsed" xml:space="preserve">
-    <value>የደንበኛ መታወቂያ «{0}» አስቀድሞ ጥቅም ላይ ውሏል።</value>
+    <value>የደንበኛ መታወቂያ '{0}' አስቀድሞ ጥቅም ላይ ውሏል።</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
     <value>ኮድ «{0}» የተባዙ ነው.</value>
@@ -1610,7 +1610,7 @@
     <value>የ«{0}» መርጃ ገቢር አይደለም።</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCenter2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በ{1} መለያ {2} መሃል ጥቅም ላይ ይውላል።</value>
+    <value>ይህ {0} መዝገብ በ{1} መለያ {2} መሃል ላይ ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResource0WasUsedInAccount1WithCurrency2" xml:space="preserve">
     <value>ይህ {0} መዝገብ በ {1} ምንዛሪ «{2}» ውስጥ ጥቅም ላይ ይውላል።</value>
@@ -1619,7 +1619,7 @@
     <value>ይህ {0} መዝገብ በሰነድ {1} ከመሃል '{2}' ጋር ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResource0WasUsedInDocument1WithCurrency2" xml:space="preserve">
-    <value>ይህ {0} መዝገብ በሰነድ {1} ምንዛሬ «{2}» ጥቅም ላይ ይውላል።</value>
+    <value>ይህ የ{0} መዝገብ በሰነድ {1} ምንዛሬ «{2}» ጥቅም ላይ ይውላል።</value>
   </data>
   <data name="Error_TheResourceDefinition0IsNotVisible" xml:space="preserve">
     <value>የንብረት ፍቺ '{0}' አይታይም።</value>
@@ -2471,7 +2471,7 @@
     <value>የወጪ ሳጥን</value>
   </data>
   <data name="OutboxRecord" xml:space="preserve">
-    <value>የወጪ ሳጥን መዝገብ</value>
+    <value>የውጪ ሳጥን መዝገብ</value>
   </data>
   <data name="OutboxRecords" xml:space="preserve">
     <value>የወጪ ሳጥን መዝገቦች</value>

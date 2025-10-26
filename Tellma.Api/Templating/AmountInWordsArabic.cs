@@ -5,7 +5,7 @@ namespace Tellma.Api.Templating
     /// <summary>
     /// Credit to: https://bit.ly/3SwfBH1
     /// </summary>
-    class AmountInWordsArabic
+    public class AmountInWordsArabic
     {
         /// Group Levels: 987,654,321.234
         /// 234 : Group Level -1
@@ -386,9 +386,9 @@ namespace Tellma.Api.Templating
 
                         if (tens == 1 && groupLevel > 0)
                             retVal += arabicGroup[groupLevel];
-                        else
-                            if ((tens == 1 || tens == 2) && (groupLevel == 0 || groupLevel == -1) && hundreds == 0 && remainingNumber == 0)
-                            retVal += string.Empty; // Special case for 1 and 2 numbers like: ليرة سورية و ليرتان سوريتان
+                        //else
+                        //    if ((tens == 1 || tens == 2) && (groupLevel == 0 || groupLevel == -1) && hundreds == 0 && remainingNumber == 0)
+                        //    retVal += string.Empty; // Special case for 1 and 2 numbers like: ليرة سورية و ليرتان سوريتان
                         else
                             retVal += GetDigitFeminineStatus(tens, groupLevel);// Get Feminine status for this digit
                     }
