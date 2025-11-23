@@ -237,7 +237,7 @@ namespace Tellma.Api.Templating
 
             if (hundreds > 0)
             {
-                if (tens == 0 && hundreds == 2) // حالة المضاف
+                if (hundreds == 2 && groupLevel > 0 && (tens == 0 || tens == 1)) // حالة المضاف
                     retVal = string.Format("{0}", arabicAppendedTwos[0]);
                 else //  الحالة العادية
                     retVal = string.Format("{0}", arabicHundreds[hundreds]);
@@ -248,22 +248,20 @@ namespace Tellma.Api.Templating
                 if (tens < 20)
                 { // if we are processing under 20 numbers
                     if (tens == 2 && hundreds == 0 && groupLevel > 0)
-                    { // This is special case for number 2 when it comes alone in the group
-                        if (_intergerValue == 2000 || _intergerValue == 2000000 || _intergerValue == 2000000000 || _intergerValue == 2000000000000 || _intergerValue == 2000000000000000 || _intergerValue == 2000000000000000000)
-                            retVal = string.Format("{0}", arabicAppendedTwos[groupLevel]); // في حالة الاضافة
-                        else
-                            retVal = string.Format("{0}", arabicTwos[groupLevel]);//  في حالة الافراد
+                    {
+                        retVal = string.Format("{0}", arabicTwos[groupLevel]);//  في حالة الافراد
                     }
                     else
-                    { // General case
-                            if (retVal != string.Empty)
-                                retVal += " و";
+                    {
+                        // General case
+                        if (tens == 1 && hundreds > 0 && groupLevel > 0)
+                            retVal += " " + arabicGroup[groupLevel]; // To say ثلاثمائة مليون ومليون instead of ثلاثمائة ومليون
+
+                        if (retVal != string.Empty)
+                            retVal += " و";
 
                         if (tens == 1 && groupLevel > 0)
                             retVal += arabicGroup[groupLevel];
-                        //else
-                        //    if ((tens == 1 || tens == 2) && (groupLevel == 0 || groupLevel == -1) && hundreds == 0 && remainingNumber == 0)
-                        //    retVal += string.Empty; // Special case for 1 and 2 numbers like: ليرة سورية و ليرتان سوريتان
                         else
                             retVal += GetDigitFeminineStatus(tens, groupLevel);// Get Feminine status for this digit
                     }
