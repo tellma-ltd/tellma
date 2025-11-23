@@ -143,131 +143,6 @@ namespace Tellma.Api.Templating
         }
         #endregion
 
-        #region English Number To Word
-
-        #region Varaibles
-
-        private static readonly string[] englishOnes =
-           new string[] {
-            "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
-            "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
-        };
-
-        private static readonly string[] englishTens =
-            new string[] {
-            "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
-        };
-
-        private static readonly string[] englishGroup =
-            new string[] {
-            "Hundred", "Thousand", "Million", "Billion", "Trillion", "Quadrillion", "Quintillion", "Sextillian",
-            "Septillion", "Octillion", "Nonillion", "Decillion", "Undecillion", "Duodecillion", "Tredecillion",
-            "Quattuordecillion", "Quindecillion", "Sexdecillion", "Septendecillion", "Octodecillion", "Novemdecillion",
-            "Vigintillion", "Unvigintillion", "Duovigintillion", "10^72", "10^75", "10^78", "10^81", "10^84", "10^87",
-            "Vigintinonillion", "10^93", "10^96", "Duotrigintillion", "Trestrigintillion"
-        };
-        #endregion
-
-        /// <summary>
-        /// Process a group of 3 digits
-        /// </summary>
-        /// <param name="groupNumber">The group number to process</param>
-        /// <returns></returns>
-        private static string ProcessGroup(int groupNumber)
-        {
-            int tens = groupNumber % 100;
-
-            int hundreds = groupNumber / 100;
-
-            string retVal = string.Empty;
-
-            if (hundreds > 0)
-            {
-                retVal = string.Format("{0} {1}", englishOnes[hundreds], englishGroup[0]);
-            }
-            if (tens > 0)
-            {
-                if (tens < 20)
-                {
-                    retVal += ((retVal != string.Empty) ? " " : string.Empty) + englishOnes[tens];
-                }
-                else
-                {
-                    int ones = tens % 10;
-
-                    tens = (tens / 10) - 2; // 20's offset
-
-                    retVal += ((retVal != string.Empty) ? " " : string.Empty) + englishTens[tens];
-
-                    if (ones > 0)
-                    {
-                        retVal += ((retVal != string.Empty) ? " " : string.Empty) + englishOnes[ones];
-                    }
-                }
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Convert stored number to words using selected currency
-        /// </summary>
-        /// <returns></returns>
-        public string ConvertToEnglish()
-        {
-            decimal tempNumber = Number;
-
-            if (tempNumber == 0)
-                return "Zero";
-
-            string decimalString = ProcessGroup(_decimalValue);
-
-            string retVal = string.Empty;
-
-            int group = 0;
-
-            if (tempNumber < 1)
-            {
-                retVal = englishOnes[0];
-            }
-            else
-            {
-                while (tempNumber >= 1)
-                {
-                    int numberToProcess = (int)(tempNumber % 1000);
-
-                    tempNumber /= 1000;
-
-                    string groupDescription = ProcessGroup(numberToProcess);
-
-                    if (groupDescription != string.Empty)
-                    {
-                        if (group > 0)
-                        {
-                            retVal = string.Format("{0} {1}", englishGroup[group], retVal);
-                        }
-
-                        retVal = string.Format("{0} {1}", groupDescription, retVal);
-                    }
-
-                    group++;
-                }
-            }
-
-            string formattedNumber = string.Empty;
-            formattedNumber += (EnglishPrefixText != string.Empty) ? string.Format("{0} ", EnglishPrefixText) : string.Empty;
-            formattedNumber += (retVal != string.Empty) ? retVal : string.Empty;
-            formattedNumber += (retVal != string.Empty) ? (_intergerValue == 1 ? Currency.EnglishCurrencyName : Currency.EnglishPluralCurrencyName) : string.Empty;
-            formattedNumber += (decimalString != string.Empty) ? " and " : string.Empty;
-            formattedNumber += (decimalString != string.Empty) ? decimalString : string.Empty;
-            formattedNumber += (decimalString != string.Empty) ? " " + (_decimalValue == 1 ? Currency.EnglishCurrencyPartName : Currency.EnglishPluralCurrencyPartName) : string.Empty;
-            formattedNumber += (EnglishSuffixText != string.Empty) ? string.Format(" {0}", EnglishSuffixText) : string.Empty;
-
-            return formattedNumber;
-        }
-
-        #endregion
-
         #region Arabic Number To Word
 
         #region Varaibles
@@ -381,8 +256,8 @@ namespace Tellma.Api.Templating
                     }
                     else
                     { // General case
-                        if (retVal != string.Empty)
-                            retVal += " و";
+                            if (retVal != string.Empty)
+                                retVal += " و";
 
                         if (tens == 1 && groupLevel > 0)
                             retVal += arabicGroup[groupLevel];
@@ -417,118 +292,6 @@ namespace Tellma.Api.Templating
 
             return retVal;
         }
-
-        /// <summary>
-        /// Convert stored number to words using selected currency
-        /// </summary>
-        /// <returns></returns>
-        public string ConvertToArabicOld()
-        {
-            decimal tempNumber = Number;
-
-            if (tempNumber == 0)
-                return "صفر";
-
-            // Get Text for the decimal part
-            string decimalString = ProcessArabicGroup(_decimalValue, -1, 0);
-
-            string retVal = string.Empty;
-            byte group = 0;
-            while (tempNumber >= 1)
-            {
-                // seperate number into groups
-                int numberToProcess = (int)(tempNumber % 1000);
-
-                tempNumber /= 1000;
-
-                // convert group into its text
-                string groupDescription = ProcessArabicGroup(numberToProcess, group, Math.Floor(tempNumber));
-
-                if (groupDescription != string.Empty)
-                { // here we add the new converted group to the previous concatenated text
-                    if (group > 0)
-                    {
-                        if (retVal != string.Empty)
-                            retVal = string.Format("{0}{1}", "و", retVal);
-
-                        if (numberToProcess != 2)
-                        {
-                            if (numberToProcess % 100 != 1)
-                            {
-                                if (numberToProcess >= 3 && numberToProcess <= 10) // for numbers between 3 and 9 we use plural name
-                                    retVal = string.Format("{0} {1}", arabicPluralGroups[group], retVal);
-                                else
-                                {
-                                    if (retVal != string.Empty) // use appending case
-                                        retVal = string.Format("{0} {1}", arabicAppendedGroup[group], retVal);
-                                    else
-                                        retVal = string.Format("{0} {1}", arabicGroup[group], retVal); // use normal case
-                                }
-                            }
-                        }
-                    }
-
-                    retVal = string.Format("{0} {1}", groupDescription, retVal);
-                }
-
-                group++;
-            }
-
-            string formattedNumber = string.Empty;
-            formattedNumber += (ArabicPrefixText != string.Empty) ? string.Format("{0} ", ArabicPrefixText) : string.Empty;
-            formattedNumber += (retVal != string.Empty) ? retVal : string.Empty;
-            if (_intergerValue != 0)
-            { // here we add currency name depending on _intergerValue : 1 ,2 , 3--->10 , 11--->99
-                int remaining100 = (int)(_intergerValue % 100);
-
-                if (remaining100 == 0)
-                    formattedNumber += Currency.Arabic1CurrencyName;
-                else
-                    if (remaining100 == 1)
-                    formattedNumber += Currency.Arabic1CurrencyName;
-                else
-                        if (remaining100 == 2)
-                {
-                    if (_intergerValue == 2)
-                        formattedNumber += Currency.Arabic2CurrencyName;
-                    else
-                        formattedNumber += Currency.Arabic1CurrencyName;
-                }
-                else
-                            if (remaining100 >= 3 && remaining100 <= 10)
-                    formattedNumber += Currency.Arabic310CurrencyName;
-                else
-                                if (remaining100 >= 11 && remaining100 <= 99)
-                    formattedNumber += Currency.Arabic1199CurrencyName;
-            }
-            formattedNumber += (_decimalValue != 0) ? " و" : string.Empty;
-            formattedNumber += (_decimalValue != 0) ? decimalString : string.Empty;
-            if (_decimalValue != 0)
-            { // here we add currency part name depending on _intergerValue : 1 ,2 , 3--->10 , 11--->99
-                formattedNumber += " ";
-
-                int remaining100 = _decimalValue % 100;
-
-                if (remaining100 == 0)
-                    formattedNumber += Currency.Arabic1CurrencyPartName;
-                else
-                    if (remaining100 == 1)
-                    formattedNumber += Currency.Arabic1CurrencyPartName;
-                else
-                        if (remaining100 == 2)
-                    formattedNumber += Currency.Arabic2CurrencyPartName;
-                else
-                            if (remaining100 >= 3 && remaining100 <= 10)
-                    formattedNumber += Currency.Arabic310CurrencyPartName;
-                else
-                                if (remaining100 >= 11 && remaining100 <= 99)
-                    formattedNumber += Currency.Arabic1199CurrencyPartName;
-            }
-            formattedNumber += (ArabicSuffixText != string.Empty) ? string.Format(" {0}", ArabicSuffixText) : string.Empty;
-
-            return formattedNumber;
-        }
-
 
         /// <summary>
         /// Convert stored number to words using selected currency
@@ -639,6 +402,7 @@ namespace Tellma.Api.Templating
                                 if (remaining100 >= 11 && remaining100 <= 99)
                     formattedNumber += Currency.Arabic1199CurrencyPartName;
             }
+            formattedNumber = formattedNumber.Trim();
             formattedNumber += (ArabicSuffixText != string.Empty) ? string.Format(" {0}", ArabicSuffixText) : string.Empty;
 
 
