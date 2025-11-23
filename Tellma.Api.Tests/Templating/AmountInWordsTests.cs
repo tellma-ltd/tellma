@@ -76,6 +76,7 @@ namespace Tellma.Api.Tests.Templating
         [InlineData(101201, "مائة ألف وألف ومئتان وواحد")]
         [InlineData(102000, "مائة واثنان ألف")]
         [InlineData(103000, "مائة وثلاثة ألف")]
+        [InlineData(201000, "مئتا ألف وألف")]
         [InlineData(301000, "ثلاثمائة ألف وألف")]
         [InlineData(1000000, "مليون")]
         [InlineData(301000000, "ثلاثمائة مليون ومليون")]
