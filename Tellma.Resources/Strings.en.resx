@@ -2933,7 +2933,7 @@
     <value>Trade and other payables</value>
   </data>
   <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
-    <value>Trade and other receiveables</value>
+    <value>Trade and other receivables</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>Recovery Code</value>
