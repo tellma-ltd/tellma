@@ -266,7 +266,7 @@
                 ReasonText = e.ItemVatExemptionReasonText ?? "",
                 TaxableAmount = e.NetAmount,
                 TaxAmount = e.VatAmount
-            }).Union(AllowanceCharges.Select(e => new
+            }).Concat(AllowanceCharges.Select(e => new
             {
                 Category = e.VatCategory,
                 Rate = e.VatRate,
