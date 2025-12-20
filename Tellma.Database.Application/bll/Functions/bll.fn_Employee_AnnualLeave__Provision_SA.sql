@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [bll].[fn_Employee_AnnualLeave__Provision_SA]
 (
 	@EmployeeIds IdList READONLY,
-	@AsOfDate DATE
+	@AsOfDate DATE -- should be as of end of month or termination date (whichever is earlier)
 )
 RETURNS @Result TABLE (
 	[EmployeeId] INT PRIMARY KEY,
@@ -30,6 +30,7 @@ BEGIN
 	@YearsInPhase1 INT = 5,
 	@DaysInPhase2 INT = 30;
 
+	-- TODO: [ToDate] shoud be termination date if employee is not active on @AsOfDate
 	INSERT INTO @Result([EmployeeId], [FromDate], [ToDate], [ServiceDaysLost], [Provision])
 	SELECT [Id], [FromDate], @AsOfDate, 0, 0
 	FROM dbo.Agents
@@ -57,6 +58,7 @@ BEGIN
 	);
 	INSERT INTO @GrossSalariesBenefits
 	SELECT [NotedAgentId0], [ResourceId0], [CurrencyId1], SUM([MonetaryValue1]) AS [Benefit]
+	-- @AsOfDate should be end of month or termination date (whichever is earlier)
 	FROM [bll].[ft_Employees_Period_EventFromModel_Salaries__Generate](@AsOfDate, @AsOfDate, NULL, @EmployeeIds) SS
 	JOIN dbo.Resources R ON R.[Id] = SS.[ResourceId0]
 	WHERE R.[UnitId] = @MonthUnitId

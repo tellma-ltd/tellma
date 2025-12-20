@@ -1039,6 +1039,11 @@
     <Build Include="bll\Stored Procedures\bll.FASequencing__Validate.sql" />
     <Build Include="dal\Functions\dal.fn_Resource__ToDate.sql" />
     <Build Include="bll\Functions\bll.fn_Repeat_SalesInvoice_CustomerAccount_CourseSection__CostPerSeat.sql" />
+    <Build Include="dal\Functions\dal.fn_PostingDate__DefaultWTRate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdKeyValuePairList.sql" />
+    <Build Include="dbo\Functions\dbo.ft_ReportsUnauthorizedAccess__SELECT.sql" />
+    <Build Include="bll\Functions\bll.fn_UserSettingsFavorites__RemoveUnauthorizedAccess.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.ReportsUnauthorizedAccess__DELETE.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
@@ -1069,6 +1074,7 @@
     <None Include="TellmaStaging.101.publish.xml" />
     <None Include="XMLFile1.xml" />
     <None Include="XMLFile2.xml" />
+    <None Include="wiz\XMLFile1.xml" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

@@ -19,7 +19,9 @@ WHERE IsService = 0 AND IsActive = 1 AND [State] = 2 -- MA: Added last condition
 AND [Name] NOT LIKE N'%test%'
 AND Email NOT LIKE N'%banan-it.com'
 AND Email NOT LIKE N'%tellma.com'
-AND Email NOT IN (N'mosab.alhaafith@gmail.com', N'amirahakawaty26@gmail.com', N'mkanafani40@gmail.com');
+AND Email NOT IN (N'mosab.alhaafith@gmail.com', N'amirahakawaty26@gmail.com', N'mkanafani40@gmail.com',
+					N'alsamaniomer45@gmail.com', N'omeralsamanee@gmail.com'
+);
 
 INSERT INTO @returntable([ComponentType], [Id], [Component], [Source])
 SELECT [Component Type], [Id], [Component], IIF(MIN([Source]) = MAX([Source]), MIN([Source]), MIN([Source]) + ',' +  MAX([Source])) AS [Source]

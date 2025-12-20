@@ -1,0 +1,9 @@
+﻿{"infoMessages":[{"type":"INFO","code":"XSD_ZATCA_VALID","category":"XSD validation",
+"message":"Complied with UBL 2.1 standards in line with ZATCA specifications","status":"PASS"}],
+"warningMessages":[{"type":"WARNING","code":"BR-S-08","category":"EN_16931",
+"message":"[BR-S-08]-In a VAT breakdown (BG-23) 
+where the VAT category code (BT-118) is \u0027 Standard rated\u0027 
+the VAT category taxable amount (BT-116) shall equal the sum of Invoice line net amounts (BT-131) 
+minus the sum of Document level allowance amounts (BT-92) plus the sum of Document level charge amounts (BT-99)
+where the VAT category codes (BT-151, BT-95, BT-102) are \u0027Standard Rate\u0027.","status":"WARNING"}],
+"errorMessages":[],"status":"WARNING"}

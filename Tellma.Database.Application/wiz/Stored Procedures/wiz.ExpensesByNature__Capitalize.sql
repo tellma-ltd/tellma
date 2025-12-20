@@ -74,6 +74,7 @@ AS
 			SUM([NetQuantity]) AS [TotalQuantity], SUM([NetValue]) AS TotalValue
 		FROM TargetInput
 		GROUP BY [AccountId], [AgentId]--,[ResourceId]
+		HAVING SUM([NetValue]) <> 0
 	),
 	ExpenseDistribution AS (
 		SELECT TI.PostingDate,
