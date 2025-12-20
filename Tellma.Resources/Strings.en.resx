@@ -2296,6 +2296,9 @@
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
   </data>
+  <data name="Line_State_Review" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
   <data name="Line_Supplier" xml:space="preserve">
     <value>Supplier</value>
   </data>
