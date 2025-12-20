@@ -1316,7 +1316,9 @@ namespace Tellma.Api.Behaviors
         {
             // var settings = await Settings(cancellation);
             var settings = (await _settingsCache.GetSettings(tenantId, settingsVersion, cancellation)).Data;
- 
+
+            globalVars.Add("$TenantId", new EvaluationVariable(tenantId));
+
             globalVars.Add("$ShortCompanyName", new EvaluationVariable(settings.ShortCompanyName));
             globalVars.Add("$ShortCompanyName2", new EvaluationVariable(settings.ShortCompanyName2));
             globalVars.Add("$ShortCompanyName3", new EvaluationVariable(settings.ShortCompanyName3));
