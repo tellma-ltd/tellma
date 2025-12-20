@@ -229,6 +229,7 @@ BEGIN
 		WHERE [Value] IS NULL;
 
 		-- Lines must be balanced
+		DECLARE @StatisticalAccountsNode HIERARCHYID = dal.fn_AccountTypeConcept__Node(N'StatisticalAccountsExtension');
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -242,7 +243,8 @@ BEGIN
 		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 		WHERE LD.[LineType] > 40
-		AND AC.[Concept] NOT IN ('HRExtension')
+		--AND AC.[Concept] NOT IN ('HRExtension', N'FinancialsExtension')
+		AND AC.[Node].IsDescendantOf(@StatisticalAccountsNode) = 0
 		GROUP BY L.[DocumentIndex], L.[Index]
 		HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 

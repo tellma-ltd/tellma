@@ -26,6 +26,7 @@ CREATE PROCEDURE [AzureSQLMaintenance]
 		@LogToTable bit = 0,
 		@debug nvarchar(10) = 'off'
 	)
+WITH EXECUTE AS OWNER --
 as
 begin
 	set nocount on;

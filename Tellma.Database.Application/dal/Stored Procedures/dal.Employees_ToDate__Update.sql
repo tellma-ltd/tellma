@@ -148,8 +148,13 @@ BEGIN
 	WHERE AG.[DefinitionId] = @EmployeeAD
 	PRINT @@ROWCOUNT;
 
-	--INSERT 
+	UPDATE dbo.Agents
+	SET [IsActive] = 1
+	WHERE [DefinitionId] = @EmployeeAD
+	AND ([ToDate] IS NULL OR [ToDate] >= GETDATE())
+	AND [IsActive] = 0;
 
+	--INSERT 
 	-- Move to a separate job and raise error if it returns such employees
 	--SELECT [NotedAgentId0] AS EmployeeId_WithMultipleCenters, MIN([CenterId0]) AS Center1Id, MAX([CenterId0]) AS Center2Id
 	--FROM bll.ft_Employees_Period_EventFromModel_Salaries__Generate
