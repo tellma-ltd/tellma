@@ -1044,6 +1044,8 @@
     <Build Include="dbo\Functions\dbo.ft_ReportsUnauthorizedAccess__SELECT.sql" />
     <Build Include="bll\Functions\bll.fn_UserSettingsFavorites__RemoveUnauthorizedAccess.sql" />
     <Build Include="dbo\Stored Procedures\dbo.ReportsUnauthorizedAccess__DELETE.sql" />
+    <Build Include="dal\Functions\dal.fn_Resource__Text1.sql" />
+    <Build Include="bll\Functions\bll.fn_AgentDefinitionCode_Prefix_CodeWidth__NewCodes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

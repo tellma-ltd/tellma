@@ -15,7 +15,8 @@
 	[OpenedAt]		DATETIMEOFFSET (7)
 );
 GO
-CREATE INDEX [IX_Assignments__AssigneeId] ON [dbo].[DocumentAssignments]([AssigneeId]);
-GO
 CREATE INDEX [IX_Assignments__CreatedBy] ON [dbo].[DocumentAssignments]([CreatedById]);
+GO
+CREATE NONCLUSTERED INDEX [IX_Assignments__AssigneeId_Covering] ON [dbo].[DocumentAssignments] ([AssigneeId])
+INCLUDE ([OpenedAt], [CreatedAt]);
 GO
