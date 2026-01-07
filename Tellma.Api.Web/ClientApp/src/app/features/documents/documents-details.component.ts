@@ -28,6 +28,7 @@ import { of, Observable, Subscription, timer } from 'rxjs';
 import { Account, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
+import { Role } from '~/app/data/entities/role';
 import { metadata_Agent, Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment, AttachmentForSave } from '~/app/data/entities/attachment';
@@ -2202,7 +2203,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!this.resourceForUnit(entry);
   }
 
-  public showUnit(entry: Entry): boolean {    
+  public showUnit(entry: Entry): boolean {
     const resource = this.resource(entry); // this.resourceForUnit(entry);
     const resourceDef = !!resource && !!resource.DefinitionId ? this.ws.definitions.Resources[resource.DefinitionId] : null;
     return !!resourceDef && !!resourceDef.UnitCardinality;
@@ -2986,7 +2987,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     let prefix: string;
     if (s.FeatureFlags && s.FeatureFlags.RelyOnCanSignForUnsigning) {
       return !!signature.SignedById && (signature.CanSign || signature.CanSignOnBehalf);
-    } else {    
+    } else {
       return !!signature.SignedById && (signature.SignedById === this.ws.userSettings.UserId ||
         signature.OnBehalfOfUserId === this.ws.userSettings.UserId);
     }
@@ -3009,24 +3010,67 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public positiveActionDisplay(toState: number): string {
+  public positiveActionDisplay(signature: RequiredSignature, lineDefId: number): string {
     // Used for button
-    return this.actionDisplay(Math.abs(toState));
+    if (this.isApprovalByNonCeoRole(signature, lineDefId)) {
+      return this.translate.instant('Line_State_Review');
+    }
+    return this.actionDisplay(Math.abs(signature?.ToState));
   }
 
-  public positiveActionIcon(toState: number): string {
+  public positiveActionIcon(signature: RequiredSignature): string {
     // Used for button
-    return this.actionIcon(Math.abs(toState));
+    return this.actionIcon(Math.abs(signature?.ToState));
   }
 
-  public negativeActionDisplay(toState: number): string {
+  public negativeActionDisplay(signature: RequiredSignature): string {
     // Used for button
-    return this.actionDisplay(-Math.abs(toState));
+    return this.actionDisplay(-Math.abs(signature?.ToState));
   }
 
-  public negativeActionIcon(toState: number): string {
+  public negativeActionIcon(signature: RequiredSignature): string {
     // Used for button
-    return this.actionIcon(-Math.abs(toState));
+    return this.actionIcon(-Math.abs(signature?.ToState));
+  }
+
+  public actionDisplayFromSignature(signature: RequiredSignature, lineDefId: number): string {
+    if (this.isApprovalByNonCeoRole(signature, lineDefId)) {
+      return this.translate.instant('Line_State_Review');
+    }
+    return this.actionDisplay(signature?.ToState);
+  }
+
+  private isApprovalByNonCeoRole(signature: RequiredSignature, lineDefId: number): boolean {
+    // Some customers only allow the CEO to approve requisitions
+    const s = this.ws.settings;
+    return s.FeatureFlags && s.FeatureFlags.ShowNonCeoApproverAsReviewerOnRequisitions &&
+      !!signature &&
+      signature.ToState === 2 &&
+      signature.RuleType === 'ByRole' &&
+      signature.RoleId &&
+      this.lineDefinition(lineDefId)?.Code === 'Requisition' &&
+      this.ws.get('Role', signature.RoleId)?.Code !== 'CEO';
+  }
+
+  public actionDisplay(toState: number): string {
+    if (toState >= 0) {
+      return this.translate.instant('Line_State_' + toState);
+    } else {
+      return this.translate.instant('Line_State_minus_' + (-toState));
+    }
+  }
+
+  public requiredSignatureDisplay(signature: RequiredSignature, lineDefId: number) {
+    // Used for the footer of the stamp in all rule types except 'Public'
+    if (this.isApprovalByNonCeoRole(signature, lineDefId)) {
+      return this.translate.instant('RequiredSignature_Review');
+    }
+    return this.translate.instant('RequiredSignature_' + Math.abs(signature.ToState));
+  }
+
+  public requiredSignatoryDisplay(signature: RequiredSignature) {
+    // Used for the footer of the stamp for rule type 'Public'
+    return this.translate.instant('RequiredSigner_' + Math.abs(signature.ToState));
   }
 
   private actionIcon(toState: number): string {
@@ -3047,24 +3091,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public get assignIcon(): string {
     return this.workspace.ws.isRtl ? 'angle-left' : 'angle-right';
-  }
-
-  public actionDisplay(toState: number): string {
-    if (toState >= 0) {
-      return this.translate.instant('Line_State_' + toState);
-    } else {
-      return this.translate.instant('Line_State_minus_' + (-toState));
-    }
-  }
-
-  public requiredSignatureDisplay(signature: RequiredSignature) {
-    // Used for the footer of the stamp in all rule types except 'Public'
-    return this.translate.instant('RequiredSignature_' + Math.abs(signature.ToState));
-  }
-
-  public requiredSignatoryDisplay(signature: RequiredSignature) {
-    // Used for the footer of the stamp for rule type 'Public'
-    return this.translate.instant('RequiredSigner_' + Math.abs(signature.ToState));
   }
 
   private isTooEarlyForThisSignature(signature: RequiredSignature): boolean {

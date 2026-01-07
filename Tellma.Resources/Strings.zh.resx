@@ -1343,7 +1343,7 @@
     <value>文件日期不能是未来日期。</value>
   </data>
   <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
-    <value>属性 {0} 用作键属性，因此是更新模式所必需的。</value>
+    <value>属性 {0} 用作键属性，因此更新模式是必需的。</value>
   </data>
   <data name="Error_ReadOnlyStateCannotBeBeforeRequiredState" xml:space="preserve">
     <value>只读状态不能先于必需状态。</value>
@@ -1532,7 +1532,7 @@
     <value>该文件包含已批准的语句。</value>
   </data>
   <data name="Error_TheDocumentHasControlAccount0For1WithNetBalance2" xml:space="preserve">
-    <value>控制账户“{0}”的“{1}”净余额非零，为“{2}”。</value>
+    <value>控制账户“{0}”的净余额“{1}”不为零，为“{2}”。</value>
   </data>
   <data name="Error_TheDocumentHasLinesWithMissingSignatures" xml:space="preserve">
     <value>部分行缺少必要的签名。</value>
@@ -1697,7 +1697,7 @@
     <value>值“{0}”重复出现，即使它是键属性“{1}”的值。</value>
   </data>
   <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
-    <value>值“{0}”不是有效的{1}。有效值示例：{2}。</value>
+    <value>值“{0}”不是有效的{1}。有效值的示例：{2}。</value>
   </data>
   <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
     <value>值“{0}”对字段“{1}”无效，您是不是想输入“{2}”？</value>
@@ -1986,6 +1986,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>无效</value>
+  </data>
+  <data name="Line_State_Review" xml:space="preserve">
+    <value>已审核</value>
   </data>
   <data name="Line_Supplier" xml:space="preserve">
     <value>供应商</value>
@@ -2603,7 +2606,7 @@
     <value>贸易及其他应付款项</value>
   </data>
   <data name="RD_Type_TradeAndOtherReceivables" xml:space="preserve">
-    <value>Loading...</value>
+    <value>贸易应收款及其他应收款</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>恢复码</value>
@@ -3011,7 +3014,7 @@
     <value>公司简称</value>
   </data>
   <data name="Settings_SmsEnabled" xml:space="preserve">
-    <value>已启用短信通知</value>
+    <value>短信通知已启用</value>
   </data>
   <data name="Settings_Street" xml:space="preserve">
     <value>街道</value>

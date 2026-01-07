@@ -1195,7 +1195,7 @@
                                     <div class="px-1 font-weight-bold t-large"
                                         [class.t-positive-stamp]="signature.ToState > 0"
                                         [class.t-negative-stamp]="signature.ToState < 0">
-                                        <span>{{ actionDisplay(signature.ToState) }}</span>
+                                        <span>{{ actionDisplayFromSignature(signature, lineDefId) }}</span>
                                     </div>
                                 </div>
                                 <!-- Reason if any -->
@@ -1225,16 +1225,16 @@
                                     <button class="btn btn-danger px-2 w-100 h-100"
                                         (click)="onSignNo(lineDefId, signature)"
                                         [disabled]="disableSign(signature, lineDefId, model)">
-                                        <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
-                                        <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
+                                        <fa-icon [icon]="negativeActionIcon(signature)"></fa-icon>
+                                        <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature) }}</span>
                                     </button>
                                 </div>
                                 <div class="w-50 px-1" placement="bottom"
                                     [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
                                     <button class="btn btn-success px-2 w-100 h-100" (click)="onSignYes(signature)"
                                         [disabled]="disableSign(signature, lineDefId, model)">
-                                        <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
-                                        <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
+                                        <fa-icon [icon]="positiveActionIcon(signature)"></fa-icon>
+                                        <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature, lineDefId) }}</span>
                                     </button>
                                 </div>
                                 <div *ngIf="!signature.CanSign && !!signature.OnBehalfOfUserId">
@@ -1258,7 +1258,7 @@
                             <div class="text-truncate">
                                 <span>
                                     <!-- Action -->
-                                    <span *ngIf="signature.RuleType !== 'Public'">{{ requiredSignatureDisplay(signature)
+                                    <span *ngIf="signature.RuleType !== 'Public'">{{ requiredSignatureDisplay(signature, lineDefId)
                                         }}&nbsp;</span>
                                     <span *ngIf="signature.RuleType === 'Public'">{{ requiredSignatoryDisplay(signature)
                                         }}</span>

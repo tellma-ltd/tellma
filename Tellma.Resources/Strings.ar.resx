@@ -2164,6 +2164,9 @@
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>خطأ</value>
   </data>
+  <data name="Line_State_Review" xml:space="preserve">
+    <value>مراجع</value>
+  </data>
   <data name="Line_Supplier" xml:space="preserve">
     <value>المورد</value>
   </data>
