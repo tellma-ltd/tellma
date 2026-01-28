@@ -19,7 +19,7 @@ RETURNS @Result TABLE (
 	[AgentId] INT,
 	[NotedResourceId] INT,
 	[EntryTypeId] INT,
-	[X] INT, [Y] INT, [Z] INT
+	[Z] INT
 )
 AS
 BEGIN
@@ -112,28 +112,25 @@ BEGIN
 		[Years] = dbo.fn_FromDate_ToDate__FullYears(@Calendar, FromDate, ToDate), 
 		[Months] = dbo.fn_FromDate_ToDate__ExtraFullMonths(@Calendar, FromDate, ToDate), 
 		[Days] = dbo.fn_FromDate_ToDate__ExtraFullDays(@Calendar, FromDate, ToDate);
-/*
-	Let n = number of complete years elapsed, m = number of months elapsed, d = number of days elapsed
-	Let x = (n-2) / 2 (Integer division)
-	Let y = (n-1) / 2 (integer division)
-	Let z = (n-0) / 2 (integer division)
-	Leave days accrued = 
-	16n + x(x+1)/2 + y(y+1)/2 + 
-	(16 + z) m/12.0 +
-	(16 + z) d/360.0
-*/
-	UPDATE @Result SET [X] = ([Years] - 2) /2, [Y] = ([Years] - 1) /2, [Z] = ([Years] - 0) /2;
-	UPDATE @Result SET [X] = 0, [Y] = 0 WHERE [Years] <= 2;
+
+	-- Z = partial year rate increment
+	UPDATE @Result SET [Z] = ([Years] + 1) / 2;
+
+	/*
+		Complete years accrual = @YearlyAccrual * n + n² / 4
+		Partial year rate = @YearlyAccrual + (n + 1) / 2
+		
+		Year 1: 16, Year 2: 17, Year 3: 17, Year 4: 18, Year 5: 18, ...
+	*/
+	UPDATE @Result
+	SET
+		[Quantity] = @YearlyAccrual * [Years] + ([Years] * [Years]) / 4 
+		           + (@YearlyAccrual + [Z]) * ([Months] / 12.0 + [Days] / 360.0);
 
 	UPDATE @Result
 	SET
-	--	[Quantity] = (@YearlyAccrual + [Years] / 2) * ([Years] + [Months] / 12.0 + [Days] / 360.0)
-		[Quantity] = @YearlyAccrual*[Years] + X*(X+1)/2 + Y*(Y+1)/2 + (@YearlyAccrual + Z) * ([Months]/12.0 + [Days]/360.0);
-
-	UPDATE @Result
-		SET
-			[Quantity] = ROUND([Quantity], 4),
-			[Provision] = ROUND([Salary] * [Quantity] / 30.0, 2);
+		[Quantity] = ROUND([Quantity], 4),
+		[Provision] = ROUND([Salary] * [Quantity] / 30.0, 2);
 
 	RETURN
 END

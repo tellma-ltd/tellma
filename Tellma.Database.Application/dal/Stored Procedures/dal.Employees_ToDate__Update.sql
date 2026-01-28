@@ -4,6 +4,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	DECLARE @BasicSalaryRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'BasicSalary');
+	DECLARE @DailyWageRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'DailyWage');
 	DECLARE @EmployeeAD INT = dal.fn_AgentDefinitionCode__Id('Employee');
 	DECLARE @FromDate DATE = DATEADD(YEAR, -1, GETDATE()); -- Go back 1 Year
 
@@ -63,6 +64,18 @@ BEGIN
 		@EmployeeIds --@NotedAgentId INT = NULL,
 	)
 	--WHERE @EmployeeCount = 0 OR [NotedAgentId0] IN (SELECT [Id] FROM @EmployeeIds)
+	GROUP BY [NotedAgentId0]
+	HAVING MIN([CenterId0]) = MAX([CenterId0]);
+
+	INSERT INTO @EmployeeCenters(EmployeeId, CenterId)
+	SELECT [NotedAgentId0] AS EmployeeId, MIN([CenterId0]) AS CenterId
+	FROM  bll.ft_Employees_Period_EventFromModel_Salaries__Generate
+	(
+		GETDATE(), GETDATE(),
+		@DailyWageRS, -- @ResourceId
+		@EmployeeIds --@NotedAgentId INT = NULL,
+	)
+	WHERE [NotedAgentId0] NOT IN (SELECT EmployeeId FROM @EmployeeCenters)
 	GROUP BY [NotedAgentId0]
 	HAVING MIN([CenterId0]) = MAX([CenterId0]);
 

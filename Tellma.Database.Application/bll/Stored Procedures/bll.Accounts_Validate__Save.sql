@@ -129,7 +129,7 @@ SET NOCOUNT ON;
 	-- Account Classification must be a leaf
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ClassificationId',
 		N'Error_TheAccountClassification0IsNotLeaf',
 		FE.[ClassificationId]
 	FROM @Entities FE 
