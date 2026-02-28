@@ -122,6 +122,14 @@ namespace Tellma.Api.Templating
                 [nameof(QueryQuote)] = QueryQuote(),
                 [nameof(QueryDateTime)] = QueryDateTime(),
                 [nameof(QueryDateTimeOffset)] = QueryDateTimeOffset(),
+                [nameof(Len)] = Len(),
+                [nameof(Left)] = Left(),
+                [nameof(Right)] = Right(),
+                [nameof(Mid)] = Mid(),
+                [nameof(Trim)] = Trim(),
+                [nameof(Replace)] = Replace(),
+                [nameof(Upper)] = Upper(),
+                [nameof(Lower)] = Lower(),
             };
 
             // Built-In Global Variables
@@ -1584,6 +1592,322 @@ namespace Tellma.Api.Templating
             else
             {
                 throw new TemplateException($"Function '{nameof(EndsWith)}' expects a 1st argument text of type string.");
+            }
+        }
+
+        #endregion
+
+        #region Len
+
+        private EvaluationFunction Len()
+        {
+            return new EvaluationFunction(LenImpl);
+        }
+
+        private object LenImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Len)}' expects {argCount} argument: (text).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+            else if (textObj is string text)
+            {
+                return text.Length;
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Len)}' expects a 1st argument text of type string.");
+            }
+        }
+
+        #endregion
+
+        #region Left
+
+        private EvaluationFunction Left()
+        {
+            return new EvaluationFunction(LeftImpl);
+        }
+
+        private object LeftImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Left)}' expects {argCount} arguments: (text, count).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+
+            if (textObj is not string text)
+            {
+                throw new TemplateException($"Function '{nameof(Left)}' expects a 1st argument text of type string.");
+            }
+
+            var countObj = args[1];
+            if (countObj is not int count)
+            {
+                throw new TemplateException($"Function '{nameof(Left)}' expects a 2nd argument count of type integer.");
+            }
+
+            if (count < 0)
+            {
+                throw new TemplateException($"Function '{nameof(Left)}' expects a non-negative 2nd argument count.");
+            }
+
+            return text[..Math.Min(count, text.Length)];
+        }
+
+        #endregion
+
+        #region Right
+
+        private EvaluationFunction Right()
+        {
+            return new EvaluationFunction(RightImpl);
+        }
+
+        private object RightImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 2;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Right)}' expects {argCount} arguments: (text, count).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+
+            if (textObj is not string text)
+            {
+                throw new TemplateException($"Function '{nameof(Right)}' expects a 1st argument text of type string.");
+            }
+
+            var countObj = args[1];
+            if (countObj is not int count)
+            {
+                throw new TemplateException($"Function '{nameof(Right)}' expects a 2nd argument count of type integer.");
+            }
+
+            if (count < 0)
+            {
+                throw new TemplateException($"Function '{nameof(Right)}' expects a non-negative 2nd argument count.");
+            }
+
+            var safeCount = Math.Min(count, text.Length);
+            return text.Substring(text.Length - safeCount, safeCount);
+        }
+
+        #endregion
+
+        #region Mid
+
+        private EvaluationFunction Mid()
+        {
+            return new EvaluationFunction(MidImpl);
+        }
+
+        private object MidImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 3;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects {argCount} arguments: (text, start, length).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+
+            if (textObj is not string text)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects a 1st argument text of type string.");
+            }
+
+            var startObj = args[1];
+            if (startObj is not int start)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects a 2nd argument start of type integer.");
+            }
+
+            var lengthObj = args[2];
+            if (lengthObj is not int length)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects a 3rd argument length of type integer.");
+            }
+
+            if (start < 1)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects a 2nd argument start that is at least 1 (1-based index).");
+            }
+
+            if (length < 0)
+            {
+                throw new TemplateException($"Function '{nameof(Mid)}' expects a non-negative 3rd argument length.");
+            }
+
+            var zeroBasedStart = start - 1;
+            if (zeroBasedStart >= text.Length)
+            {
+                return "";
+            }
+
+            var safeLength = Math.Min(length, text.Length - zeroBasedStart);
+            return text.Substring(zeroBasedStart, safeLength);
+        }
+
+        #endregion
+
+        #region Trim
+
+        private EvaluationFunction Trim()
+        {
+            return new EvaluationFunction(TrimImpl);
+        }
+
+        private object TrimImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Trim)}' expects {argCount} argument: (text).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+            else if (textObj is string text)
+            {
+                return text.Trim();
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Trim)}' expects a 1st argument text of type string.");
+            }
+        }
+
+        #endregion
+
+        #region Replace
+
+        private EvaluationFunction Replace()
+        {
+            return new EvaluationFunction(ReplaceImpl);
+        }
+
+        private object ReplaceImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 3;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Replace)}' expects {argCount} arguments: (text, oldValue, newValue).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+
+            if (textObj is not string text)
+            {
+                throw new TemplateException($"Function '{nameof(Replace)}' expects a 1st argument text of type string.");
+            }
+
+            var oldValueObj = args[1];
+            if (oldValueObj is not string oldValue)
+            {
+                throw new TemplateException($"Function '{nameof(Replace)}' expects a 2nd argument oldValue of type string.");
+            }
+
+            var newValueObj = args[2];
+            if (newValueObj is not string newValue)
+            {
+                throw new TemplateException($"Function '{nameof(Replace)}' expects a 3rd argument newValue of type string.");
+            }
+
+            return text.Replace(oldValue, newValue);
+        }
+
+        #endregion
+
+        #region Upper
+
+        private EvaluationFunction Upper()
+        {
+            return new EvaluationFunction(UpperImpl);
+        }
+
+        private object UpperImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Upper)}' expects {argCount} argument: (text).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+            else if (textObj is string text)
+            {
+                return text.ToUpper();
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Upper)}' expects a 1st argument text of type string.");
+            }
+        }
+
+        #endregion
+
+        #region Lower
+
+        private EvaluationFunction Lower()
+        {
+            return new EvaluationFunction(LowerImpl);
+        }
+
+        private object LowerImpl(object[] args, EvaluationContext ctx)
+        {
+            int argCount = 1;
+            if (args.Length != argCount)
+            {
+                throw new TemplateException($"Function '{nameof(Lower)}' expects {argCount} argument: (text).");
+            }
+
+            var textObj = args[0];
+            if (textObj is null)
+            {
+                return null;
+            }
+            else if (textObj is string text)
+            {
+                return text.ToLower();
+            }
+            else
+            {
+                throw new TemplateException($"Function '{nameof(Lower)}' expects a 1st argument text of type string.");
             }
         }
 
