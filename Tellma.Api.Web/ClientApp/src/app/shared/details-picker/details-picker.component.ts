@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
+import { PlacementArray } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -20,7 +20,7 @@ enum SearchStatus {
   showError = 'showError'
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-details-picker',
   templateUrl: './details-picker.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DetailsPickerComponent }]

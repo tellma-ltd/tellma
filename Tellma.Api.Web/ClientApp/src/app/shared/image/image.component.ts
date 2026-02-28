@@ -22,7 +22,7 @@ enum ImageStatus {
   error = 3,
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-image',
   templateUrl: './image.component.html',
   styleUrls: ['./image.component.scss'],

@@ -17,7 +17,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-lookup-definitions-details',
   templateUrl: './lookup-definitions-details.component.html',
   styles: []

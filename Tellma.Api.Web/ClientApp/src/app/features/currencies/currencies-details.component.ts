@@ -10,7 +10,7 @@ import { metadata_Currency, CurrencyForSave, Currency } from '~/app/data/entitie
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-currencies-details',
   templateUrl: './currencies-details.component.html',
   styles: []

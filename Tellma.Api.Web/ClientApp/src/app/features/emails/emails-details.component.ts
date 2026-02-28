@@ -8,7 +8,7 @@ import { EmailForQuery, EmailState, metadata_Email } from '~/app/data/entities/e
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-emails-details',
   templateUrl: './emails-details.component.html',
   styles: []

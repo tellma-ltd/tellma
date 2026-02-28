@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PropDescriptor } from '~/app/data/entities/base/metadata';
 
-@Pipe({
+@Pipe({standalone: false, 
   name: 'label',
   pure: false
 })

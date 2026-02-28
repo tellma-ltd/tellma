@@ -9,7 +9,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { GlobalSettingsForClient } from '~/app/data/dto/global-settings';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-admin-users-master',
   templateUrl: './admin-users-master.component.html',
   styles: []

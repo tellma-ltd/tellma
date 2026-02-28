@@ -9,7 +9,7 @@ import { DOCUMENT } from '@angular/common';
 import { supportedCultures } from '~/app/data/supported-cultures';
 import { StorageService } from '~/app/data/storage.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-root-shell',
   templateUrl: './root-shell.component.html'
 })

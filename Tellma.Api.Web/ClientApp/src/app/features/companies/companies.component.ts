@@ -6,7 +6,7 @@ import { UserCompany } from '~/app/data/dto/user-company';
 import { DOCUMENT } from '@angular/common';
 import { Key } from '~/app/data/util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-companies',
   templateUrl: './companies.component.html'
 })

@@ -61,7 +61,7 @@ export function LoadAdminModule() {
  * (2) base address '/', the guard checks if the user is authenticated, if s/he is the guard redirects
  * the user to the application module, otherwise to the landing module/welcome screen
  */
-@Component({ template: '<div></div>' }) export class PlaceholderComponent { }
+@Component({standalone: false,  template: '<div></div>' }) export class PlaceholderComponent { }
 
 export const routes: Routes = [
   ///// Almost all routes require loading the global settings first

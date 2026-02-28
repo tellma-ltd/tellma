@@ -27,7 +27,7 @@ import { ParameterInfo, QueryexUtil } from '~/app/data/queryex-util';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { toLocalDateTimeISOString } from '~/app/data/date-util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-report',
   templateUrl: './report.component.html',
   styles: []

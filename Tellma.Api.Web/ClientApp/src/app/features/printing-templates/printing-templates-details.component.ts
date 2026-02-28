@@ -20,7 +20,7 @@ import { PrintingTemplates } from '../print/print.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-printing-templates-details',
   templateUrl: './printing-templates-details.component.html',
   styles: []

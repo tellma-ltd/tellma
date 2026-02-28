@@ -5,7 +5,7 @@ import { formatSerial, metadata_Document } from '~/app/data/entities/document';
 import { TranslateService } from '@ngx-translate/core';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-outbox',
   templateUrl: './outbox.component.html',
   styles: []

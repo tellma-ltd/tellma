@@ -10,7 +10,7 @@ import { TenantWorkspace } from '~/app/data/workspace.service';
  * it provides all common functionality of the TypeScript part of the component
  * and complements a t-details in the root of its HTML template
  */
-@Component({
+@Component({standalone: false, 
   template: ''
 })
 export class DetailsBaseComponent implements ICanDeactivate, OnInit, OnDestroy {

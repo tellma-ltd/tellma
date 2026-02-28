@@ -9,7 +9,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-units-master',
   templateUrl: './units-master.component.html'
 })

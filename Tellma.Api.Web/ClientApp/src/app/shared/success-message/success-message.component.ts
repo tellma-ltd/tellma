@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-success-message',
   templateUrl: './success-message.component.html',
 })

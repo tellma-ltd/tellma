@@ -3,7 +3,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { toLocalDateOnlyISOString } from '~/app/data/date-util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-exchange-rates-master',
   templateUrl: './exchange-rates-master.component.html',
   styles: []

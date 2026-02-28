@@ -24,7 +24,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { isSpecified, onCodeTextareaKeydown } from '~/app/data/util';
 import { LineDefinitionGenerateParameter } from '~/app/data/entities/line-definition-generate-parameter';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-line-definitions-details',
   templateUrl: './line-definitions-details.component.html',
   styles: []

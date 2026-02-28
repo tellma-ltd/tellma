@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 import { ResourceDefinition } from '~/app/data/entities/resource-definition';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-resource-definitions-master',
   templateUrl: './resource-definitions-master.component.html',
   styles: []

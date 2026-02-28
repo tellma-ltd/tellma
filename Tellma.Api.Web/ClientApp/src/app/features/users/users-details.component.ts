@@ -10,7 +10,7 @@ import { addToWorkspace, daysDiff, FriendlyError } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-users-details',
   templateUrl: './users-details.component.html'
 })

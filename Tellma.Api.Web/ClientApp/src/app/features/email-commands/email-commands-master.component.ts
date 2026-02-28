@@ -4,7 +4,7 @@ import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-commands-master',
   templateUrl: './email-commands-master.component.html',
   styles: [

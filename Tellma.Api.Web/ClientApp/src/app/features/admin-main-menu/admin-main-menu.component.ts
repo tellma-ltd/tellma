@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-admin-main-menu',
   templateUrl: './admin-main-menu.component.html',
   styles: []

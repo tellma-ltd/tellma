@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 import { AgentDefinition } from '~/app/data/entities/agent-definition';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-agent-definitions-master',
   templateUrl: './agent-definitions-master.component.html',
   styles: []

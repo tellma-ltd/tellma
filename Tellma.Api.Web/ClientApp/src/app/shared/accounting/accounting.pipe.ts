@@ -3,7 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { isSpecified } from '~/app/data/util';
 import { accountingFormat } from './accounting-format';
 
-@Pipe({
+@Pipe({standalone: false, 
   name: 'accounting'
 })
 export class AccountingPipe implements PipeTransform {

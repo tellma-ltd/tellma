@@ -20,7 +20,7 @@ interface ConcreteViewInfo {
   actions: { [action: string]: { supportsCriteria: boolean, supportsMask: boolean } };
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-roles-details',
   templateUrl: './roles-details.component.html'
 })

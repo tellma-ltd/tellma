@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-landing',
   templateUrl: './landing.component.html'
 })

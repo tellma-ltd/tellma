@@ -13,7 +13,7 @@ import { PropVisualDescriptor } from '~/app/data/entities/base/metadata';
 import { descFromControlOptions, FriendlyError, isSpecified, updateOn } from '~/app/data/util';
 import { ReportArguments, WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-standalone',
   templateUrl: './email-standalone.component.html',
   styles: [

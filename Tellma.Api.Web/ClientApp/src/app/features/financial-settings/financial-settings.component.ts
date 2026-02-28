@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { SettingsBaseComponent } from '~/app/shared/settings-base/settings-base';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-financial-settings',
   templateUrl: './financial-settings.component.html',
   styles: []

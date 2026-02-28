@@ -25,10 +25,10 @@ $primary-disabled: #69c3d1;
 $md-width: 768px;
 
 // customize bootstrap colors and then import bootstrap
-@import "node_modules/bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap";
 
 // For angular overlay to work
-@import "~@angular/cdk/overlay-prebuilt.css";
+@import "@angular/cdk/overlay-prebuilt.css";
 
 // Remove any other round corners
 .modal-content,

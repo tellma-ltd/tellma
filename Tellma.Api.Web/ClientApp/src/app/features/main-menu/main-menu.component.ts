@@ -30,7 +30,7 @@ interface MenuItemInfo {
   sortKey: number;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-main-menu',
   templateUrl: './main-menu.component.html'
 })

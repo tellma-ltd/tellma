@@ -25,7 +25,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { defaultHeight, defaultWidth, overlapY, rearrange } from '../dashboard/dashboard-util';
 
 
-@Component({
+@Component({standalone: false, 
   selector: 't-dashboard-definitions-details',
   templateUrl: './dashboard-definitions-details.component.html',
   styles: []

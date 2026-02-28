@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-templates-master',
   templateUrl: './message-templates-master.component.html',
   styles: [

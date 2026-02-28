@@ -20,7 +20,7 @@ import { ReportStatus, ReportStore, WorkspaceService } from '~/app/data/workspac
 import { ReportView } from '../report-results/report-results.component';
 import { cleanupWidgetPreviews, maxOffset, maxSize, overlapY, rearrange, tileHeight, tileWidth } from './dashboard-util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-dashboard',
   templateUrl: './dashboard.component.html',
   styles: []

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.component';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-currencies-picker',
   templateUrl: './currencies-picker.component.html',
   styles: [],

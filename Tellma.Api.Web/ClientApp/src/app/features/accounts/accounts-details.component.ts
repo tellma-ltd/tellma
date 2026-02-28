@@ -15,7 +15,7 @@ import { AccountClassification } from '~/app/data/entities/account-classificatio
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { Agent } from '~/app/data/entities/agent';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-accounts-details',
   templateUrl: './accounts-details.component.html',
   styles: []

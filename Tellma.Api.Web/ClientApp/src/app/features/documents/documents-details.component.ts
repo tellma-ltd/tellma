@@ -119,7 +119,7 @@ interface DocumentStateChangeEvent extends DocumentEventBase {
 
 type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentStateChangeEvent;
 
-@Component({
+@Component({standalone: false, 
   selector: 't-documents-details',
   templateUrl: './documents-details.component.html',
   styles: []

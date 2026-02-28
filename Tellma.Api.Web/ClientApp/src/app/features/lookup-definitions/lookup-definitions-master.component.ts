@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 import { LookupDefinition } from '~/app/data/entities/lookup-definition';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-lookup-definitions-master',
   templateUrl: './lookup-definitions-master.component.html',
   styles: []

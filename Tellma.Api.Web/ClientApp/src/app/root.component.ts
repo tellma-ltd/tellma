@@ -15,7 +15,7 @@ import { ContextMenuService } from './data/context-menu.service';
 import { Overlay, OverlayRef, ConnectedPosition } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-root',
   templateUrl: './root.component.html',
   styles: []

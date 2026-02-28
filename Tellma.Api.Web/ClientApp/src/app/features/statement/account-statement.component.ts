@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-account-statement',
   template: '<t-statement type="account"></t-statement>'
 })

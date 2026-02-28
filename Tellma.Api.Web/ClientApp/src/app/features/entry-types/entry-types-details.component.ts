@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-entry-types-details',
   templateUrl: './entry-types-details.component.html'
 })

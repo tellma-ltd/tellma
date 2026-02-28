@@ -8,7 +8,7 @@ import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-control-options',
   templateUrl: './control-options.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ControlOptionsComponent }]

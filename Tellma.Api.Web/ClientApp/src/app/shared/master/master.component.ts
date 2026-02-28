@@ -66,7 +66,7 @@ export interface MultiselectAction {
   showAction?: (ids: (string | number)[]) => boolean;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-master',
   templateUrl: './master.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

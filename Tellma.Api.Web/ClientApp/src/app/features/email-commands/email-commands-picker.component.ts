@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-commands-picker',
   templateUrl: './email-commands-picker.component.html',
   styles: [

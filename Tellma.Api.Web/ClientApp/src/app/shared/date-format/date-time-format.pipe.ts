@@ -5,7 +5,7 @@ import { Calendar, DateFormat, DateTimeGranularity, TimeFormat } from '~/app/dat
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { datetimeFormat } from './date-time-format';
 
-@Pipe({
+@Pipe({standalone: false, 
   name: 'datetimeFormat',
   pure: false
 })

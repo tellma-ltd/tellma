@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, HostBinding } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-brand',
   templateUrl: './brand.component.html'
 })

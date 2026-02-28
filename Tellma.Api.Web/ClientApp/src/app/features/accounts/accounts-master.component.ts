@@ -7,7 +7,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-accounts-master',
   templateUrl: './accounts-master.component.html',
   styles: []

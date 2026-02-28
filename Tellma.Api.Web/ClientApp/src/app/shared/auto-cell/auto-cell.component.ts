@@ -16,7 +16,7 @@ import { Entity } from '~/app/data/entities/base/entity';
 import { formatPercent } from '@angular/common';
 import { accountingFormat } from '../accounting/accounting-format';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-auto-cell',
   templateUrl: './auto-cell.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

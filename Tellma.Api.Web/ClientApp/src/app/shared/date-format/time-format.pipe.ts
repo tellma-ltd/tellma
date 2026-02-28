@@ -5,7 +5,7 @@ import { TimeGranularity, TimeFormat } from '~/app/data/entities/base/metadata-t
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timeFormat } from './date-time-format';
 
-@Pipe({
+@Pipe({standalone: false, 
   name: 'timeFormat',
   pure: false
 })

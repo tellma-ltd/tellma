@@ -3,7 +3,7 @@
 // import { Observable, Subject } from 'rxjs';
 // import { xMin, xMax, yMin, yMax } from 'geojson-bounds';
 
-// @Component({
+// @Component({standalone: false, 
 //   selector: 't-map-bounds-fitter',
 //   template: '',
 //   providers: [

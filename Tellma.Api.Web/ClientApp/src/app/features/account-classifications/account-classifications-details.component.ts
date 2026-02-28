@@ -7,7 +7,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { AccountClassificationForSave, AccountClassification } from '~/app/data/entities/account-classification';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-account-classifications-details',
   templateUrl: './account-classifications-details.component.html',
   styles: []

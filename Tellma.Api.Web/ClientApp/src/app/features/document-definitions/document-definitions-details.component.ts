@@ -18,7 +18,7 @@ import { DocumentDefinitionLineDefinition } from '~/app/data/entities/document-d
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-document-definitions-details',
   templateUrl: './document-definitions-details.component.html',
   styles: []

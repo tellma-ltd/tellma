@@ -78,7 +78,7 @@ interface PivotHash {
   undefined?: PivotHash;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-report-results',
   templateUrl: './report-results.component.html',
   styles: [],

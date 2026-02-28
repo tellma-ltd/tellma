@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-admin-page-not-found',
   templateUrl: './admin-page-not-found.component.html',
   styles: []

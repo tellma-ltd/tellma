@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-printing-templates-master',
   templateUrl: './printing-templates-master.component.html',
   styles: []

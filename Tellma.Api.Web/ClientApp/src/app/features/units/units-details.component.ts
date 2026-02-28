@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-units-details',
   templateUrl: './units-details.component.html'
 })

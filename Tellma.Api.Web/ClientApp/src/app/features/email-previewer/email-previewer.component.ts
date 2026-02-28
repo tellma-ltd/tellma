@@ -5,7 +5,7 @@ import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-previewer',
   templateUrl: './email-previewer.component.html',
   styles: [

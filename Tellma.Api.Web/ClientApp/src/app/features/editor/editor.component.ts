@@ -13,7 +13,7 @@ import { Calendar, DateGranularity, DateTimeGranularity } from '~/app/data/entit
 import { IdService } from '~/app/data/id.service';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-editor',
   templateUrl: './editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: EditorComponent },

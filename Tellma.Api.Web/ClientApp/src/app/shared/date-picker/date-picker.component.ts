@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { Calendar, DateFormat, DateGranularity } from '~/app/data/entities/base/metadata-types';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-date-picker',
   templateUrl: './date-picker.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DatePickerComponent },

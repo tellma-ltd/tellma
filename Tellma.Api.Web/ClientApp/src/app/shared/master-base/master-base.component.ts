@@ -2,7 +2,7 @@ import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output, OnInit } 
 import { Subscription, Subject } from 'rxjs';
 import { MasterComponent } from '../master/master.component';
 
-@Component({
+@Component({standalone: false, 
   template: ''
 })
 export class MasterBaseComponent implements OnDestroy {

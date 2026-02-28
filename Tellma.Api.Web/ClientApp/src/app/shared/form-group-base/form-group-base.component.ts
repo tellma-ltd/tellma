@@ -51,7 +51,7 @@ export function areServerErrors(serverErrors: string[]) {
   return !!serverErrors && serverErrors.length > 0;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-form-group-base',
   template: ''
 })

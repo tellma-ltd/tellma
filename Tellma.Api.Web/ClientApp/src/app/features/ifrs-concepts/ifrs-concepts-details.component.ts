@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-ifrs-concepts-details',
   templateUrl: './ifrs-concepts-details.component.html',
   styles: []
