@@ -1,4 +1,5 @@
 @use "sass:math";
+@use "sass:color";
 
 // Override a few of the default variables of bootstrap before importing it
 $enable-rounded: false; // Square corners
@@ -1519,10 +1520,10 @@ td.t-highlight {
     background-color: $base-color;
   }
   .t-menu-item:hover {
-    background-color: darken($base-color, 5%);
+    background-color: color.adjust($base-color, $lightness: -5%);
   }
   .t-menu-item:active {
-    background-color: darken($base-color, 10%);
+    background-color: color.adjust($base-color, $lightness: -10%);
   }
 }
 
