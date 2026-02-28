@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef, NgZone } from '@angular/core';
+import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef, NgZone, computed } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
@@ -188,10 +188,9 @@ export class RootComponent {
     }
   }
 
-  get showOverlay(): boolean {
-    // when there is a save in progress, block the user screen and prevent any navigation.
-    return this.api.showRotator || this.progress.asyncOperationInProgress;
-  }
+  readonly showOverlay = computed(
+    () => this.api.showRotatorSignal() || this.progress.asyncOperationInProgress
+  );
 
   get showOfflineIndicator(): boolean {
     return this.workspace.offline;
