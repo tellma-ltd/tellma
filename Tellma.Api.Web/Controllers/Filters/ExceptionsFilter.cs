@@ -11,7 +11,7 @@ using System.Web;
 using Tellma.Api.Base;
 using Tellma.Services.Utilities;
 using Tellma.Utilities.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Tellma.Api.Web.Controllers
 {

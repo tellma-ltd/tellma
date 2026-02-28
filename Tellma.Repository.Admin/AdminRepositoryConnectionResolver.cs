@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Utilities.Sharding;
@@ -43,6 +43,7 @@ namespace Tellma.Repository.Admin
         {
             string password = null;
             bool isWindowsAuth = false;
+            bool trustServerCertificate = false;
 
             if (string.IsNullOrWhiteSpace(dbName))
             {
@@ -58,6 +59,7 @@ namespace Tellma.Repository.Admin
                 password = adminConnBuilder.Password;
 
                 isWindowsAuth = adminConnBuilder.IntegratedSecurity;
+                trustServerCertificate = adminConnBuilder.TrustServerCertificate;
             }
 
             // ELSE: this is a different SQL Server use the information in ConnectionInfo
@@ -82,7 +84,8 @@ namespace Tellma.Repository.Admin
                 databaseName: dbName,
                 userName: userName,
                 password: password,
-                isWindowsAuth: isWindowsAuth);
+                isWindowsAuth: isWindowsAuth,
+                trustServerCertificate: trustServerCertificate);
         }
     }
 }

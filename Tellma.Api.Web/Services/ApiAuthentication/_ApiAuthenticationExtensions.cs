@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.Utilities;
@@ -38,10 +38,16 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 // Add the Bearer scheme for the API
                 // This relies on tokens from an external identity server
-                authBuilder.AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, opt =>
+                authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
-                    opt.Authority = authorityUri;
-                    opt.ApiName = Constants.ApiResourceName;
+                    options.Authority = authorityUri;
+                    options.Audience = Constants.ApiResourceName;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = true,
+                        ValidateIssuer = true
+                    };
                 });
             }
 

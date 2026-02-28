@@ -1,4 +1,4 @@
-﻿using IdentityModel.Client;
+﻿using Duende.IdentityModel.Client;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

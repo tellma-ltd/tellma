@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -86,7 +86,8 @@ namespace Tellma.Utilities.Sharding
                                 IntegratedSecurity = connInfo.IsWindowsAuth,
                                 PersistSecurityInfo = false,
                                 MultipleActiveResultSets = true,
-                                ConnectTimeout = 30
+                                ConnectTimeout = 30,
+                                TrustServerCertificate = connInfo.TrustServerCertificate
                             };
 
                             shardConnString = shardConnStringBuilder.ConnectionString;

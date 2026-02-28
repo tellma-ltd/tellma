@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Localization;
 using QRCoder;
+using SkiaSharp;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -1705,7 +1707,7 @@ namespace Tellma.Api.Templating
                 return "";
             }
 
-            var barcodeType = BarcodeLib.TYPE.CODE128; // Default
+            var barcodeType = BarcodeStandard.Type.Code128; // Default
             if (args.Length >= 2)
             {
                 // Some of the most widely used 1D barcodes according to
@@ -1713,17 +1715,17 @@ namespace Tellma.Api.Templating
                 string barcodeTypeString = args[1]?.ToString();
                 barcodeType = barcodeTypeString switch
                 {
-                    "UPC-A" => BarcodeLib.TYPE.UPCA,
-                    "UPC-E" => BarcodeLib.TYPE.UPCE,
-                    "EAN-8" => BarcodeLib.TYPE.EAN8,
-                    "EAN-13" => BarcodeLib.TYPE.EAN13,
-                    "Industrial 2 of 5" => BarcodeLib.TYPE.Industrial2of5,
-                    "Interleaved 2 of 5" => BarcodeLib.TYPE.Interleaved2of5,
-                    "Codabar" => BarcodeLib.TYPE.Codabar,
-                    "Code 11" => BarcodeLib.TYPE.CODE11,
-                    "Code 39" => BarcodeLib.TYPE.CODE39,
-                    "Code 93" => BarcodeLib.TYPE.CODE93,
-                    "Code 128" => BarcodeLib.TYPE.CODE128,
+                    "UPC-A" => BarcodeStandard.Type.UpcA,
+                    "UPC-E" => BarcodeStandard.Type.UpcE,
+                    "EAN-8" => BarcodeStandard.Type.Ean8,
+                    "EAN-13" => BarcodeStandard.Type.Ean13,
+                    "Industrial 2 of 5" => BarcodeStandard.Type.Industrial2Of5,
+                    "Interleaved 2 of 5" => BarcodeStandard.Type.Interleaved2Of5,
+                    "Codabar" => BarcodeStandard.Type.Codabar,
+                    "Code 11" => BarcodeStandard.Type.Code11,
+                    "Code 39" => BarcodeStandard.Type.Code39,
+                    "Code 93" => BarcodeStandard.Type.Code93,
+                    "Code 128" => BarcodeStandard.Type.Code128,
                     null => barcodeType,
                     _ => throw new TemplateException($"Unknown barcode standard '{barcodeTypeString}'."),
                 };
@@ -1786,10 +1788,9 @@ namespace Tellma.Api.Templating
 
             try
             {
-                var barcodeEncoder = new BarcodeLib.Barcode(barcodeValue, barcodeType)
+                var barcodeEncoder = new BarcodeStandard.Barcode(barcodeValue, barcodeType)
                 {
-                    IncludeLabel = includeLabel,
-                    StandardizeLabel = true,
+                    IncludeLabel = includeLabel
                 };
 
                 if (height != null)
@@ -1802,9 +1803,11 @@ namespace Tellma.Api.Templating
                     barcodeEncoder.BarWidth = barWidth;
                 }
 
-                var img = barcodeEncoder.Encode(barcodeType, barcodeValue);
+                using var img = barcodeEncoder.Encode(barcodeType, barcodeValue);
                 using var memoryStream = new System.IO.MemoryStream();
-                img.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+
+                data.SaveTo(memoryStream);
                 return "data:image/png;base64," + Convert.ToBase64String(memoryStream.ToArray());
             }
             catch (Exception e)
