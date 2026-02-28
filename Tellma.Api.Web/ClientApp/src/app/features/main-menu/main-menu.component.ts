@@ -1,5 +1,6 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef,
+  AfterViewInit, OnDestroy, Inject, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { isSpecified, Key } from '~/app/data/util';
@@ -60,8 +61,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // constructor
   constructor(
-    private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
-    private translate: TranslateService, private workspace: WorkspaceService, private userSettings: CustomUserSettingsService) { }
+    private router: Router, private route: ActivatedRoute,
+    @Inject(DOCUMENT) private document: Document,
+    private translate: TranslateService, private workspace: WorkspaceService,
+    private userSettings: CustomUserSettingsService,
+    private cdr: ChangeDetectorRef) { }
 
   // Angular lifecycle hooks
   ngOnInit() {
@@ -86,7 +90,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (!this.rendered) {
-      timer(1).subscribe(() => this.render());
+      timer(1).subscribe(() => {
+        this.render();
+        this.cdr.detectChanges();
+      });
     }
   }
 
