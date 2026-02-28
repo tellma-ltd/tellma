@@ -617,6 +617,158 @@ namespace Tellma.Repository.Common.Queryex
                         break;
                     }
 
+                case "len": // (str: string) => numeric
+                    {
+                        int expectedArgCount = 1;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.String, ctx, out string strSql, out QxNullity strNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        resultType = QxType.Numeric;
+                        resultNullity = strNullity;
+                        resultSql = $"LEN({strSql.DeBracket()})";
+                        break;
+                    }
+
+                case "left":
+                case "right": // (str: string, n: numeric) => string
+                    {
+                        int expectedArgCount = 2;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.String, ctx, out string strSql, out QxNullity strNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        var arg2 = Arguments[1];
+                        if (!arg2.TryCompile(QxType.Numeric, ctx, out string nSql, out QxNullity nNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} could not be interpreted as a {QxType.Numeric}.");
+                        }
+                        if (nNullity != QxNullity.NotNull)
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} cannot be a nullable expression.");
+                        }
+
+                        resultType = QxType.String;
+                        resultNullity = strNullity;
+                        resultSql = $"{Name.ToUpper()}({strSql.DeBracket()}, {nSql.DeBracket()})";
+                        break;
+                    }
+
+                case "mid": // (str: string, start: numeric [, len: numeric]) => string
+                    {
+                        if (Arguments.Length < 2 || Arguments.Length > 3)
+                        {
+                            throw new QueryException($"No overload for function '{Name}' accepts {Arguments.Length} arguments.");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.String, ctx, out string strSql, out QxNullity strNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        var arg2 = Arguments[1];
+                        if (!arg2.TryCompile(QxType.Numeric, ctx, out string startSql, out QxNullity startNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} could not be interpreted as a {QxType.Numeric}.");
+                        }
+                        if (startNullity != QxNullity.NotNull)
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} cannot be a nullable expression.");
+                        }
+
+                        string lenSql;
+                        if (Arguments.Length == 3)
+                        {
+                            var arg3 = Arguments[2];
+                            if (!arg3.TryCompile(QxType.Numeric, ctx, out lenSql, out QxNullity lenNullity))
+                            {
+                                throw new QueryException($"Function '{Name}': The third argument {arg3} could not be interpreted as a {QxType.Numeric}.");
+                            }
+                            if (lenNullity != QxNullity.NotNull)
+                            {
+                                throw new QueryException($"Function '{Name}': The third argument {arg3} cannot be a nullable expression.");
+                            }
+                        }
+                        else
+                        {
+                            lenSql = $"LEN({strSql.DeBracket()})";
+                        }
+
+                        resultType = QxType.String;
+                        resultNullity = strNullity;
+                        resultSql = $"SUBSTRING({strSql.DeBracket()}, {startSql.DeBracket()}, {lenSql})";
+                        break;
+                    }
+
+                case "trim":
+                case "upper":
+                case "lower": // (str: string) => string
+                    {
+                        int expectedArgCount = 1;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.String, ctx, out string strSql, out QxNullity strNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        resultType = QxType.String;
+                        resultNullity = strNullity;
+                        resultSql = $"{Name.ToUpper()}({strSql.DeBracket()})";
+                        break;
+                    }
+
+                case "replace": // (str: string, old: string, new: string) => string
+                    {
+                        int expectedArgCount = 3;
+                        if (Arguments.Length != expectedArgCount)
+                        {
+                            throw new QueryException($"Function '{Name}' accepts exactly {expectedArgCount} argument(s).");
+                        }
+
+                        var arg1 = Arguments[0];
+                        if (!arg1.TryCompile(QxType.String, ctx, out string strSql, out QxNullity strNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The first argument {arg1} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        var arg2 = Arguments[1];
+                        if (!arg2.TryCompile(QxType.String, ctx, out string oldSql, out QxNullity oldNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The second argument {arg2} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        var arg3 = Arguments[2];
+                        if (!arg3.TryCompile(QxType.String, ctx, out string newSql, out QxNullity newNullity))
+                        {
+                            throw new QueryException($"Function '{Name}': The third argument {arg3} could not be interpreted as a {QxType.String}.");
+                        }
+
+                        resultType = QxType.String;
+                        resultNullity = strNullity | oldNullity | newNullity;
+                        resultSql = $"REPLACE({strSql.DeBracket()}, {oldSql.DeBracket()}, {newSql.DeBracket()})";
+                        break;
+                    }
+
                 default:
                     {
                         throw new QueryException($"Unknown function '{Name}'.");

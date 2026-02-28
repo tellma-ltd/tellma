@@ -2054,6 +2054,113 @@ export class QueryexUtil {
                         };
                     }
 
+                    case 'len': {
+                        const expectedArgCount = 1;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        if (!tryDescImpl(arg1, 'string')) {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a string.`);
+                        }
+
+                        return {
+                            datatype: 'numeric',
+                            control: 'number',
+                            minDecimalPlaces: 0,
+                            maxDecimalPlaces: 0,
+                            isRightAligned: false,
+                            noSeparator: true,
+                            label: noLabel(trx)
+                        };
+                    }
+
+                    case 'left':
+                    case 'right': {
+                        const expectedArgCount = 2;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        if (!tryDescImpl(arg1, 'string')) {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a string.`);
+                        }
+
+                        const arg2 = ex.arguments[1];
+                        if (!tryDescImpl(arg2, 'numeric')) {
+                            throw new Error(`Function '${ex.name}': The second argument ${arg2} could not be interpreted as a numeric.`);
+                        }
+
+                        return { datatype: 'string', control: 'text', label: noLabel(trx) };
+                    }
+
+                    case 'mid': {
+                        if (ex.arguments.length < 2 || ex.arguments.length > 3) {
+                            throw new Error(`No overload for function '${ex.name}' accepts ${ex.arguments.length} arguments.`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        if (!tryDescImpl(arg1, 'string')) {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a string.`);
+                        }
+
+                        const arg2 = ex.arguments[1];
+                        if (!tryDescImpl(arg2, 'numeric')) {
+                            throw new Error(`Function '${ex.name}': The second argument ${arg2} could not be interpreted as a numeric.`);
+                        }
+
+                        if (ex.arguments.length === 3) {
+                            const arg3 = ex.arguments[2];
+                            if (!tryDescImpl(arg3, 'numeric')) {
+                                throw new Error(`Function '${ex.name}': The third argument ${arg3} could not be interpreted as a numeric.`);
+                            }
+                        }
+
+                        return { datatype: 'string', control: 'text', label: noLabel(trx) };
+                    }
+
+                    case 'trim':
+                    case 'upper':
+                    case 'lower': {
+                        const expectedArgCount = 1;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        if (!tryDescImpl(arg1, 'string')) {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a string.`);
+                        }
+
+                        return { datatype: 'string', control: 'text', label: noLabel(trx) };
+                    }
+
+                    case 'replace': {
+                        const expectedArgCount = 3;
+                        if (ex.arguments.length !== expectedArgCount) {
+                            throw new Error(`Function '${ex.name}' accepts exactly ${expectedArgCount} argument(s).`);
+                        }
+
+                        const arg1 = ex.arguments[0];
+                        if (!tryDescImpl(arg1, 'string')) {
+                            throw new Error(`Function '${ex.name}': The first argument ${arg1} could not be interpreted as a string.`);
+                        }
+
+                        const arg2 = ex.arguments[1];
+                        if (!tryDescImpl(arg2, 'string')) {
+                            throw new Error(`Function '${ex.name}': The second argument ${arg2} could not be interpreted as a string.`);
+                        }
+
+                        const arg3 = ex.arguments[2];
+                        if (!tryDescImpl(arg3, 'string')) {
+                            throw new Error(`Function '${ex.name}': The third argument ${arg3} could not be interpreted as a string.`);
+                        }
+
+                        return { datatype: 'string', control: 'text', label: noLabel(trx) };
+                    }
+
                     default:
                         {
                             throw new Error(`Unknown function '${ex.name}'.`);
@@ -2632,6 +2739,59 @@ export class QueryexUtil {
 
                     case 'me':
                         return wss.currentTenant.userSettings.UserId;
+
+                    case 'len': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        return str === null ? null : str.length;
+                    }
+
+                    case 'left': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        const n = evaluate(ex.arguments[1]) as number;
+                        return str === null ? null : str.slice(0, n);
+                    }
+
+                    case 'right': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        const n = evaluate(ex.arguments[1]) as number;
+                        return str === null ? null : (n === 0 ? '' : str.slice(-n));
+                    }
+
+                    case 'mid': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        if (str === null) { return null; }
+                        const start = evaluate(ex.arguments[1]) as number; // 1-indexed
+                        if (ex.arguments.length === 3) {
+                            const len = evaluate(ex.arguments[2]) as number;
+                            return str.slice(start - 1, start - 1 + len);
+                        } else {
+                            return str.slice(start - 1);
+                        }
+                    }
+
+                    case 'trim': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        return str === null ? null : str.trim();
+                    }
+
+                    case 'replace': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        const oldVal = evaluate(ex.arguments[1]) as string;
+                        const newVal = evaluate(ex.arguments[2]) as string;
+                        return str === null || oldVal === null || newVal === null
+                            ? null
+                            : str.split(oldVal).join(newVal);
+                    }
+
+                    case 'upper': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        return str === null ? null : str.toUpperCase();
+                    }
+
+                    case 'lower': {
+                        const str = evaluate(ex.arguments[0]) as string;
+                        return str === null ? null : str.toLowerCase();
+                    }
 
                     default: {
                         throw new Error(`Unknown function '${ex.name}'.`);
