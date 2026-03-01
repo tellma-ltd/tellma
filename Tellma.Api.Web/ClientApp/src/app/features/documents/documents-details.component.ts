@@ -119,7 +119,7 @@ interface DocumentStateChangeEvent extends DocumentEventBase {
 
 type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentStateChangeEvent;
 
-@Component({
+@Component({standalone: false, 
   selector: 't-documents-details',
   templateUrl: './documents-details.component.html',
   styles: []
@@ -1618,16 +1618,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentUnit &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentUnit = true;
-              }
-              break;
-            case 'Time1':
-              if (!this._requireDocumentTime1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDocumentTime1 = true;
-              }
-              if (!this._readonlyDocumentTime1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDocumentTime1 = true;
               }
               break;
             case 'Duration':

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-error-message',
   templateUrl: './error-message.component.html',
 })

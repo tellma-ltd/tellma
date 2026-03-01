@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-warning-message',
   templateUrl: './warning-message.component.html'
 })

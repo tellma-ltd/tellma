@@ -9,7 +9,7 @@ import { SettingsBaseComponent } from '~/app/shared/settings-base/settings-base'
 import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { GeneralSettingsForSave } from '~/app/data/entities/general-settings';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-general-settings',
   templateUrl: './general-settings.component.html'
 })

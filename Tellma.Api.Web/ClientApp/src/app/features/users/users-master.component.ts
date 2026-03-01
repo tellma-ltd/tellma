@@ -9,7 +9,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalSettingsForClient } from '~/app/data/dto/global-settings';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-users-master',
   templateUrl: './users-master.component.html'
 })

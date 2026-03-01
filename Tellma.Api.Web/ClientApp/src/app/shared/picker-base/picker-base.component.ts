@@ -1,7 +1,7 @@
 import { Component, Input, HostBinding, ViewChild, Output, EventEmitter } from '@angular/core';
 import { DetailsPickerComponent } from '../details-picker/details-picker.component';
 
-@Component({
+@Component({standalone: false, 
   template: ''
 })
 export class PickerBaseComponent {

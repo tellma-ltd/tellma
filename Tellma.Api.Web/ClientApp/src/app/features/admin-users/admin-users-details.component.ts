@@ -16,7 +16,7 @@ interface ConcreteViewInfo {
   actions: { [action: string]: { supportsCriteria: boolean } };
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-admin-users-details',
   templateUrl: './admin-users-details.component.html',
   styles: []

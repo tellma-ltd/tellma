@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-resources-master',
   templateUrl: './resources-master.component.html',
   styles: []

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { StorageService } from '~/app/data/storage.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-error',
   templateUrl: './error.component.html'
 })

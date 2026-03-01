@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { metadata, PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Subscription } from 'rxjs';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-auto-label',
   templateUrl: './auto-label.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

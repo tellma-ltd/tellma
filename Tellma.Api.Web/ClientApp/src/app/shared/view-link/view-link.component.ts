@@ -1,6 +1,6 @@
 import { Component, OnInit, HostBinding, Input } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-view-link',
   templateUrl: './view-link.component.html'
 })

@@ -2,7 +2,7 @@ import { Component, Input, TemplateRef } from '@angular/core';
 import { FormGroupBaseComponent } from '../form-group-base/form-group-base.component';
 
 
-@Component({
+@Component({standalone: false, 
   selector: 't-form-group',
   templateUrl: './form-group.component.html',
 })

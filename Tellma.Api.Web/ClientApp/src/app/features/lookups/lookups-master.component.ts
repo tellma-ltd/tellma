@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-lookups-master',
   templateUrl: './lookups-master.component.html',
   styles: []

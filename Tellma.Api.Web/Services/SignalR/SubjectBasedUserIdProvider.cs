@@ -1,4 +1,4 @@
-﻿using IdentityModel;
+﻿using Duende.IdentityModel;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Tellma.Services.SignalR

@@ -9,7 +9,7 @@ import { IdResult } from '~/app/data/dto/id-result';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-button',
   templateUrl: './message-button.component.html',
   styles: [

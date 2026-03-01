@@ -21,7 +21,7 @@ import { IdResult } from '~/app/data/dto/id-result';
 import { MessageCommandPreview } from '~/app/data/dto/message-command-preview';
 import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-agents-details',
   templateUrl: './agents-details.component.html'
 })
@@ -583,7 +583,7 @@ User,Agent1,Agent2,AddressCountry,Users.User,Attachments.Category,Attachments.Cr
     return this.definition.TaxIdentificationNumberVisibility === 'Required';
   }
 
-  public get ExternalReference_label(): boolean {
+  public get ExternalReference_label(): string {
     return !!this.definition.ExternalReferenceLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'ExternalReferenceLabel') :
       this.translate.instant('Agent_ExternalReference');

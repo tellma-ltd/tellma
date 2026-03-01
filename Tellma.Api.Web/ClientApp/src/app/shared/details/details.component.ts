@@ -34,7 +34,7 @@ export interface DropdownAction {
 
 export type DocumentLayout = 'document' | 'full-screen';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-details',
   templateUrl: './details.component.html'
 })

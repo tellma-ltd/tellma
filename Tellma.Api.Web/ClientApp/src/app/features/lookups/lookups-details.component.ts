@@ -12,7 +12,7 @@ import {
 } from '~/app/data/dto/definitions-for-client';
 import { ReportView } from '../report-results/report-results.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-lookups-details',
   templateUrl: './lookups-details.component.html',
   styles: []

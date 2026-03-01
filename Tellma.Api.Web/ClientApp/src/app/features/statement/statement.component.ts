@@ -29,7 +29,7 @@ import { ResourceDefinitionForClient, AgentDefinitionForClient } from '~/app/dat
 import { dateFormat } from '~/app/shared/date-format/date-time-format';
 import { accountingFormat } from '~/app/shared/accounting/accounting-format';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-statement',
   templateUrl: './statement.component.html',
   styles: []

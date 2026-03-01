@@ -5,7 +5,7 @@ import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { MessageCommandPreview, MessagePreview } from '~/app/data/dto/message-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-previewer',
   templateUrl: './message-previewer.component.html',
   styles: [

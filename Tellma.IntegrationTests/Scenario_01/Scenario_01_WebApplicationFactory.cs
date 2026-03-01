@@ -1,5 +1,5 @@
-﻿using IdentityServer4;
-using IdentityServer4.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using Tellma.Services.EmbeddedIdentityServer;
-using M = IdentityServer4.Models;
+using M = Duende.IdentityServer.Models;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {

@@ -1,5 +1,5 @@
-﻿using IdentityServer4.Models;
-using IdentityServer4.Stores;
+﻿using Duende.IdentityServer.Models;
+using Duende.IdentityServer.Stores;
 using System.Linq;
 using System.Threading.Tasks;
 using Tellma.Repository.Admin;

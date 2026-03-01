@@ -24,7 +24,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-templates-details',
   templateUrl: './message-templates-details.component.html',
   styles: [

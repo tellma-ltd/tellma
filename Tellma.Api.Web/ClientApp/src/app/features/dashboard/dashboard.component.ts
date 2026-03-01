@@ -2,7 +2,7 @@ import { CdkDragDrop, CdkDragMove, CdkDragRelease, CdkDragStart } from '@angular
 import { DOCUMENT } from '@angular/common';
 import {
   AfterViewInit,
-  ApplicationRef, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges,
+  ApplicationRef, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges,
   OnDestroy, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { ReportStatus, ReportStore, WorkspaceService } from '~/app/data/workspac
 import { ReportView } from '../report-results/report-results.component';
 import { cleanupWidgetPreviews, maxOffset, maxSize, overlapY, rearrange, tileHeight, tileWidth } from './dashboard-util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-dashboard',
   templateUrl: './dashboard.component.html',
   styles: []
@@ -64,7 +64,8 @@ export class DashboardComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService, private appRef: ApplicationRef,
-    private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private zone: NgZone) {
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private zone: NgZone,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -106,7 +107,10 @@ export class DashboardComponent implements OnInit, OnChanges, AfterViewInit, OnD
     // Our famous trick, ensuring that the navigation to the dashboard screen
     // is lightening fast, and then rendering occurs asynchronously
     if (!this.rendered) {
-      timer(1).subscribe(() => this.render());
+      timer(1).subscribe(() => {
+        this.render();
+        this.cdr.detectChanges();
+      });
     }
   }
 

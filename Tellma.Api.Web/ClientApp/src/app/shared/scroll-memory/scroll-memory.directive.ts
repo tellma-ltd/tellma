@@ -2,7 +2,7 @@ import { Directive, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges } fro
 import { timer } from 'rxjs';
 import { AdminWorkspace, TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 
-@Directive({
+@Directive({standalone: false, 
   selector: '[tScrollMemory]'
 })
 export class ScrollMemoryDirective implements OnChanges, OnDestroy {

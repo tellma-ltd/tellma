@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AdminWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-identity-server-clients-master',
   templateUrl: './identity-server-clients-master.component.html',
   styles: [

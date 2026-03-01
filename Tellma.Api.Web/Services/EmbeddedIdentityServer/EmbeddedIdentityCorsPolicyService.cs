@@ -1,4 +1,4 @@
-﻿using IdentityServer4.Services;
+﻿using Duende.IdentityServer.Services;
 using System.Threading.Tasks;
 using Tellma.Services.ClientProxy;
 using Tellma.Utilities.Common;

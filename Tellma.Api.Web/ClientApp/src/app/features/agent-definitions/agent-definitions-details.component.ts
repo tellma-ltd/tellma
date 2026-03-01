@@ -18,7 +18,7 @@ import { AgentDefinitionReportDefinition } from '~/app/data/entities/agent-defin
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-agent-definitions-details',
   templateUrl: './agent-definitions-details.component.html',
   styles: []

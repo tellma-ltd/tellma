@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-info-message',
   templateUrl: './info-message.component.html'
 })

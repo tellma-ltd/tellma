@@ -5,7 +5,7 @@ import { catchError, finalize, tap } from 'rxjs/operators';
 import { AttachmentPreview, EmailPreview } from '~/app/data/dto/email-command-preview';
 import { colorFromExtension, downloadBlob, iconFromExtension } from '~/app/data/util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email',
   templateUrl: './email.component.html',
   styles: [

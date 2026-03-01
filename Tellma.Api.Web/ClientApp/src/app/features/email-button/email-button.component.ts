@@ -9,7 +9,7 @@ import { IdResult } from '~/app/data/dto/id-result';
 import { EmailCommandPreview, EmailCommandVersions, EmailPreview } from '~/app/data/dto/email-command-preview';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-button',
   templateUrl: './email-button.component.html',
   styles: [

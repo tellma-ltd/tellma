@@ -7,7 +7,7 @@ namespace Tellma.Utilities.Sharding
     /// </summary>
     public struct DatabaseConnectionInfo
     {
-        public DatabaseConnectionInfo(string serverName, string databaseName, string userName, string password, bool isWindowsAuth)
+        public DatabaseConnectionInfo(string serverName, string databaseName, string userName, string password, bool isWindowsAuth, bool trustServerCertificate)
         {
             if (string.IsNullOrWhiteSpace(serverName))
             {
@@ -37,12 +37,14 @@ namespace Tellma.Utilities.Sharding
             UserName = userName;
             Password = password;
             IsWindowsAuth = isWindowsAuth;
+            TrustServerCertificate = trustServerCertificate;
         }
 
         public string ServerName { get; }
         public string DatabaseName { get; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool IsWindowsAuth { get; set; }
+        public string UserName { get; }
+        public string Password { get; }
+        public bool IsWindowsAuth { get; }
+        public bool TrustServerCertificate { get; }
     }
 }

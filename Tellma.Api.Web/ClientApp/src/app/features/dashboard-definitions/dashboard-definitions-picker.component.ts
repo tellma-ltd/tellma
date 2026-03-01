@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-dashboard-definitions-picker',
   templateUrl: './dashboard-definitions-picker.component.html',
   styles: []

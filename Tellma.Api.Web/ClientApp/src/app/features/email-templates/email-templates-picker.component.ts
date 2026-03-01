@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-templates-picker',
   templateUrl: './email-templates-picker.component.html',
   styles: [

@@ -1,7 +1,7 @@
 ﻿using Tellma.Services.EmbeddedIdentityServer;
 using Tellma.Services.Utilities;
-using IdentityModel;
-using IdentityServer4.Models;
+using Duende.IdentityModel;
+using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +12,8 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Tellma.Api;
-using IdentityServer4.Services;
+using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.CookiePolicy;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

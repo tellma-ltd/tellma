@@ -10,7 +10,6 @@ using Tellma.Api.Dto;
 using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
 using Tellma.Model.Application;
-using Tellma.Model.Common;
 using Tellma.Repository.Application;
 using Tellma.Repository.Common;
 using Tellma.Utilities.Blobs;
@@ -23,7 +22,6 @@ namespace Tellma.Api
         private readonly ApplicationFactServiceBehavior _behavior;
         private readonly IStringLocalizer _localizer;
         private readonly IBlobService _blobService;
-        private readonly ITenantLogger _tenantLogger;
 
         // Shared across multiple methods
         private List<string> _blobsToDelete;

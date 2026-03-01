@@ -6,7 +6,7 @@ import { ExchangeRateForSave, metadata_ExchangeRate, ExchangeRate } from '~/app/
 import { todayISOString, toLocalDateOnlyISOString } from '~/app/data/date-util';
 import { Currency } from '~/app/data/entities/currency';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-exchange-rates-details',
   templateUrl: './exchange-rates-details.component.html',
   styles: []

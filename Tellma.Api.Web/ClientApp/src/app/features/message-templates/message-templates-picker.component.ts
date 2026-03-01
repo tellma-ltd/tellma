@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-templates-picker',
   templateUrl: './message-templates-picker.component.html',
   styles: [

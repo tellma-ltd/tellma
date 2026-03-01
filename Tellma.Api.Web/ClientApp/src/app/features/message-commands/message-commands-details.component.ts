@@ -4,7 +4,7 @@ import { ApiService } from '~/app/data/api.service';
 import { TenantWorkspace, WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message-commands-details',
   templateUrl: './message-commands-details.component.html',
   styles: [

@@ -4,7 +4,7 @@ import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service'
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-email-commands-details',
   templateUrl: './email-commands-details.component.html',
   styles: [

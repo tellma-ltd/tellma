@@ -16,7 +16,7 @@ import { ReportView } from '../report-results/report-results.component';
 import { ResourceAttachment, ResourceAttachmentForSave } from '~/app/data/entities/resource-attachment';
 import { of } from 'rxjs';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-resources-details',
   templateUrl: './resources-details.component.html',
   styles: []

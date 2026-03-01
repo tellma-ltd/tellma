@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-agent-statement',
   template: '<t-statement type="agent"></t-statement>'
 })

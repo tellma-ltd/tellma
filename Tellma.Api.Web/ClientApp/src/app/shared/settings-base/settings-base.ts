@@ -9,7 +9,7 @@ import { SettingsComponent } from '../settings/settings.component';
  * it provides all common functionality of the TypeScript part of the component
  * and complements a t-settings in the root of its HTML template
  */
-@Component({
+@Component({standalone: false, 
   template: ''
 })
 export class SettingsBaseComponent implements ICanDeactivate {

@@ -19,7 +19,7 @@ import { addSingleToWorkspace } from '~/app/data/util';
 import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-admin-shell',
   templateUrl: './admin-shell.component.html',
   styles: []

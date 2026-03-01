@@ -34,7 +34,7 @@ export interface FieldInfo {
   match?: boolean;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-report-definitions-details',
   templateUrl: './report-definitions-details.component.html',
   styles: []

@@ -18,7 +18,7 @@ import { ResourceDefinitionReportDefinition } from '~/app/data/entities/resource
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-resource-definitions-details',
   templateUrl: './resource-definitions-details.component.html',
   styles: []

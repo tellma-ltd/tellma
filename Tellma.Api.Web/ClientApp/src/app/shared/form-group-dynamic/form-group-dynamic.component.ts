@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroupBaseComponent } from '../form-group-base/form-group-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-form-group-dynamic',
   templateUrl: './form-group-dynamic.component.html'
 })

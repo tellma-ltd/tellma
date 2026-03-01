@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-entry-types-master',
   templateUrl: './entry-types-master.component.html'
 })

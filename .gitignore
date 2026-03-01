@@ -262,3 +262,6 @@ __pycache__/
 *.pyc
 
 # Post deployment scripts
+
+# Claude Code local settings
+.claude/

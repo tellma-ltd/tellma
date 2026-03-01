@@ -10,7 +10,7 @@ import { QueryexUtil } from '~/app/data/queryex-util';
 import { MasterStatus, MAXIMUM_COUNT, ReportStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ReportResultsComponent } from '../report-results/report-results.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-drilldown',
   templateUrl: './drilldown.component.html',
   styles: []

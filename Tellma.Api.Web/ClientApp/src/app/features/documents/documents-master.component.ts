@@ -13,7 +13,7 @@ import { Document } from '~/app/data/entities/document';
 import { EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 import { MasterComponent } from '~/app/shared/master/master.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-documents-master',
   templateUrl: './documents-master.component.html',
   styles: []

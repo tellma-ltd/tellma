@@ -8,7 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
 
-@Component({
+@Component({standalone: false, 
   selector: 't-messages-details',
   templateUrl: './messages-details.component.html',
   styles: []

@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, Input, HostBinding, OnChanges, Simple
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { formatSerial } from '~/app/data/entities/document';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-serial-editor',
   templateUrl: './serial-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: SerialEditorComponent }]

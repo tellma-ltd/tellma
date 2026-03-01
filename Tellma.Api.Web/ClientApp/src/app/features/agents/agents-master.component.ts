@@ -12,7 +12,7 @@ import { AgentDefinitionForClient, DefinitionsForClient, EmailTemplateForClient,
 import { MasterComponent } from '~/app/shared/master/master.component';
 import { EmailCommandVersions } from '~/app/data/dto/email-command-preview';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-agents-master',
   templateUrl: './agents-master.component.html'
 })

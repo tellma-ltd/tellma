@@ -9,7 +9,7 @@ import { ResetPasswordArgs } from '~/app/data/dto/reset-password-args';
 import { tap, catchError } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-identity-server-users-details',
   templateUrl: './identity-server-users-details.component.html',
   styles: []

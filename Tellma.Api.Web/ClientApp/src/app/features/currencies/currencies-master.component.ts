@@ -7,7 +7,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-currencies-master',
   templateUrl: './currencies-master.component.html',
   styles: []

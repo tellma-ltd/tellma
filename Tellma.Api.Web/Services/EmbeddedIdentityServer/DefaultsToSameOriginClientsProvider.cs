@@ -1,5 +1,5 @@
-﻿using IdentityServer4;
-using IdentityServer4.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using Tellma.Services.ClientProxy;

@@ -14,7 +14,7 @@ import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { applyServerErrors, clearServerErrors } from '../details/details.component';
 import { SettingsBase } from '~/app/data/entities/base/settings-base';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-settings',
   templateUrl: './settings.component.html',
   styles: []

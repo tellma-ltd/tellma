@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormGroupBaseComponent } from '../form-group-base/form-group-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-form-group-cell',
   templateUrl: './form-group-cell.component.html',
   styles: []

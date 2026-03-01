@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-table',
   templateUrl: './table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

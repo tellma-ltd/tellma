@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-account-types-master',
   templateUrl: './account-types-master.component.html',
   styles: []

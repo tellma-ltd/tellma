@@ -3,7 +3,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-details-entries',
   templateUrl: './details-entries.component.html',
   styles: []

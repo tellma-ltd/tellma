@@ -26,7 +26,7 @@ export interface PrintingTemplates {
   body?: string;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-print',
   templateUrl: './print.component.html',
   styles: [

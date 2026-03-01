@@ -4,8 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Calendar } from '~/app/data/entities/base/metadata-types';
 import { monthFullName, monthShortName, weekdayVeryShortName } from '~/app/data/date-time-localizations';
-import { TranslationWidth } from '@angular/common';
-
 @Injectable()
 export class DatePickerLocalization extends NgbDatepickerI18n {
 
@@ -18,7 +16,7 @@ export class DatePickerLocalization extends NgbDatepickerI18n {
         return this.workspace.calendarForPicker;
     }
 
-    getWeekdayLabel(weekday: number, width?: TranslationWidth): string {
+    getWeekdayLabel(weekday: number, width?: Intl.DateTimeFormatOptions['weekday']): string {
         return weekdayVeryShortName(weekday, this.translation, this.calendar);
     }
 

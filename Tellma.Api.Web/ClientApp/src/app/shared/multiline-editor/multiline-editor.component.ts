@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, Input, HostBinding, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-multiline-editor',
   templateUrl: './multiline-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: MultilineEditorComponent }]

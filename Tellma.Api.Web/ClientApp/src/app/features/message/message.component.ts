@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MessagePreview } from '~/app/data/dto/message-command-preview';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-message',
   templateUrl: './message.component.html',
   styles: [

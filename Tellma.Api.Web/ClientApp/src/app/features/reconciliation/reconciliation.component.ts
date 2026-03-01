@@ -36,7 +36,7 @@ interface AutoReconcileArguments {
   externalRefTolerance: number;
 }
 
-@Component({
+@Component({standalone: false, 
   selector: 't-reconciliation',
   templateUrl: './reconciliation.component.html',
   styles: []

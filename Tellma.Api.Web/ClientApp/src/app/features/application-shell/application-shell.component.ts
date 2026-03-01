@@ -32,7 +32,7 @@ import { Router } from '@angular/router';
 import { Calendar } from '~/app/data/entities/base/metadata-types';
 import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-application-shell',
   templateUrl: './application-shell.component.html'
 })

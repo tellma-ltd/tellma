@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-dashboard-definitions-master',
   templateUrl: './dashboard-definitions-master.component.html',
   styles: []

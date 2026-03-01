@@ -12,7 +12,7 @@ import {
 } from '~/app/data/entities/center';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
-@Component({
+@Component({standalone: false, 
   selector: 't-centers-details',
   templateUrl: './centers-details.component.html',
   styles: []

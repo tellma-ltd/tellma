@@ -281,7 +281,7 @@ namespace Tellma.Integration.Zatca
         {
             // Add basic authentication header
             if (creds != null)
-                msg.Headers.Authorization = new BasicAuthenticationHeaderValue(creds.Username, creds.Password);
+                msg.Headers.Authorization = new AuthenticationHeaderValue(creds.Username, creds.Password);
 
             // Add standard headers
             msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

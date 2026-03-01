@@ -2,7 +2,7 @@
 import { Directive, Input, TemplateRef, HostListener } from '@angular/core';
 import { ContextMenuService } from './context-menu.service';
 
-@Directive({
+@Directive({standalone: false, 
   selector: '[tContextMenu]'
 })
 export class ContextMenuDirective {
