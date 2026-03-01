@@ -451,6 +451,7 @@ END AS [AccumulatedDepreciationEntryTypeId]
 FROM dbo.[Accounts] A
 JOIN dbo.[AccountTypes] AC ON AC.[Id] = A.[AccountTypeId]
 WHERE A.[IsActive] = 1
+AND A.[IsAutoSelected] = 1 -- MA: 2026-01-30 added to exclude variance accounts
 AND (
 	AC.[Node].IsDescendantOf(@PPENode) = 1 OR
 	AC.[Node].IsDescendantOf(@ROUNode) = 1 OR
