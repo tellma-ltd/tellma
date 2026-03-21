@@ -150,6 +150,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";
                 opt.UserInteraction.LogoutUrl = "/identity/sign-out";
                 opt.UserInteraction.ErrorUrl = "/server-error";
+                opt.KeyManagement.Enabled = false;
+
+                if (!string.IsNullOrWhiteSpace(idOptions.Duende.LicenseKey))
+                {
+                    opt.LicenseKey = idOptions.Duende.LicenseKey;
+                }
             })
                 .AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiScopes(GetApiScopes())
