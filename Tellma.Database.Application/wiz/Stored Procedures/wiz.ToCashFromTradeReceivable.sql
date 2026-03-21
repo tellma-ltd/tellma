@@ -3,7 +3,8 @@
 	@DueOnOrBefore DATE,
 	@CashAccountId INT,
 	@PostingDate DATE = NULL,
-	@DueOnOrAfter DATE = NULL
+	@DueOnOrAfter DATE = NULL,
+	@ResourceId INT = NULL
 AS
 	DECLARE @CurrencyId0 NCHAR (3) = dal.fn_Agent__CurrencyId(@CashAccountId);
 	SET @PostingDate = ISNULL(@PostingDate, GETDATE());
@@ -14,6 +15,20 @@ AS
 		THROW 50000, N'Please specify the currency in the cash account', 1;
 
 	DECLARE @WideLines WidelineList;
+	WITH ResourceInvoices AS (
+		SELECT E.NotedAgentId AS SI_Id
+		FROM dbo.Lines L
+		JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		JOIN dbo.Agents SI ON SI.[Id] = E.[NotedAgentId]
+		WHERE L.[State] = 4
+		AND AC.[Concept] = N'CurrentValueAddedTaxPayables'
+		AND SI.[Agent1Id] = @TradeReceivableAccountId
+		AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] <= ISNULL(@DueOnOrBefore, @PostingDate))
+		AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] >= ISNULL(@DueOnOrAfter, N'1753-01-01'))
+		AND E.[NotedResourceId] = @ResourceId
+	)
 	INSERT INTO @WideLines([Index], [DocumentIndex],
 		[AccountId1], [CenterId1], [AgentId1], [MonetaryValue1], [NotedAmount1], [CurrencyId1], [NotedDate1],
 		[MonetaryValue0], [CurrencyId0], [Value1])
@@ -26,6 +41,7 @@ AS
 	WHERE SI.[Agent1Id] = @TradeReceivableAccountId
 	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] <= ISNULL(@DueOnOrBefore, @PostingDate))
 	AND ([SI].[ToDate] IS NULL OR [SI].[ToDate] >= ISNULL(@DueOnOrAfter, N'1753-01-01'))
+	AND (@ResourceId IS NULL OR SI.[Id] IN (SELECT SI_Id FROM ResourceInvoices))
 	GROUP BY SI.[Id], SS.[AccountId], SS.[CenterId], SS.[AgentId], SS.[CurrencyId], SI.[ToDate]
 	HAVING SUM(SS.[Balance]) > 0
 

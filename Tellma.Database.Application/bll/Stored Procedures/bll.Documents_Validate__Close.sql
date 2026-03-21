@@ -12,6 +12,93 @@ BEGIN
 			@Lines [dbo].[LineList], @Entries [dbo].[EntryList];
 	DECLARE @ManualJV INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournalVoucher');
 	SET @IsError = 0;
+	DECLARE @EndOfLine NVARCHAR(5) = ',' + CHAR(13) + CHAR(10);
+	-- Fill vaidation error list like the others
+	DECLARE @Err NVARCHAR(MAX)
+	SELECT @Err = STRING_AGG(Err, @EndOfLine) 
+	FROM (
+		SELECT
+		N'Tab: ' + LD.titlesingular +
+		N', dbo.Line #: '+ CAST (e.[index] + 1 as nvarchar (50)) +
+		N', Account: '+ A.[Name] +
+		N', Amount: '+ FORMAT(e.MonetaryValue, N'N2') +
+		N', Value: '+ FORMAT(e.[Value], N'N2') +
+		N'. Resource: '+ R.[Name] + ' is wrong' AS Err
+		FROM entries e
+		JOIN dbo.Lines l ON L.id = e.Lineid
+		JOIN dbo.LineDefinitions LD ON LD.id = L.definitionid
+		JOIN dbo.Accounts A ON A.id = e.accountid
+		JOIN dbo.AccountTypes ac ON ac.id = A.accounttypeid
+		JOIN dbo.Resources r ON R.id = e.resourceid
+		LEFT JOIN AccountTypeResourceDefinitions ACRD ON ACRD.AccountTypeId = ac.id and ACRD.ResourceDefinitionId = R.DefinitionId
+		WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
+		AND ACRD.id IS NULL
+		AND L.[State] >= 0
+
+		UNION
+
+		SELECT
+		N'Tab: ' + LD.titlesingular +
+		N', dbo.Line #: '+ CAST (e.[index] + 1 as nvarchar (50)) +
+		N', Account: '+ A.[Name] +
+		N', Amount: '+ FORMAT(e.MonetaryValue, N'N2') +
+		N', Value: '+ FORMAT(e.[Value], N'N2') +
+		N'. Noted Resource: '+ R.[Name] + ' is wrong'
+		FROM entries e
+		JOIN dbo.Lines l ON L.id = e.Lineid
+		JOIN dbo.LineDefinitions LD ON LD.id = L.definitionid
+		JOIN dbo.Accounts A ON A.id = e.accountid
+		JOIN dbo.AccountTypes ac ON ac.id = A.accounttypeid
+		JOIN dbo.Resources r ON R.id = e.NotedResourceId
+		LEFT JOIN AccountTypeNotedResourceDefinitions ACRD ON ACRD.AccountTypeId = ac.id and ACRD.NotedResourceDefinitionId = R.DefinitionId
+		WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
+		AND ACRD.id IS NULL
+		AND L.[State] >= 0
+
+		UNION
+
+		SELECT
+		N'Tab: ' + LD.titlesingular +
+		N', dbo.Line #: '+ CAST (e.[index] + 1 as nvarchar (50)) +
+		N', Account: '+ A.[Name] +
+		N', Amount: '+ FORMAT(e.MonetaryValue, N'N2') +
+		N', Value: '+ FORMAT(e.[Value], N'N2') +
+		N'. Agent: '+ AG.[Name] + ' is wrong'
+		FROM entries e
+		JOIN dbo.Lines l ON L.id = e.Lineid
+		JOIN dbo.LineDefinitions LD ON LD.id = L.definitionid
+		JOIN dbo.Accounts A ON A.id = e.accountid
+		JOIN dbo.AccountTypes ac ON ac.id = A.accounttypeid
+		JOIN agents AG ON AG.id = e.agentid
+		LEFT JOIN AccountTypeagentDefinitions ACRD ON ACRD.AccountTypeId = ac.id and ACRD.agentDefinitionId = AG.DefinitionId
+		WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
+		AND ACRD.id IS NULL
+		AND L.[State] >= 0
+
+		UNION
+
+		SELECT
+		N'Tab: ' + LD.titlesingular +
+		N', dbo.Line #: '+ CAST (e.[index] + 1 as nvarchar (50)) +
+		N', Account: '+ A.[Name] +
+		N', Amount: '+ FORMAT(e.MonetaryValue, N'N2') +
+		N', Value: '+ FORMAT(e.[Value], N'N2') +
+		N'. Noted Agent: '+ AG.[Name] + ' is wrong'
+		FROM entries e
+		JOIN dbo.Lines l ON L.id = e.Lineid
+		JOIN dbo.LineDefinitions LD ON LD.id = L.definitionid
+		JOIN dbo.Accounts A ON A.id = e.accountid
+		JOIN dbo.AccountTypes ac ON ac.id = A.accounttypeid
+		JOIN agents AG ON AG.id = e.NotedagentId
+		LEFT JOIN AccountTypeNotedagentDefinitions ACRD ON ACRD.AccountTypeId = ac.id and ACRD.NotedagentDefinitionId = AG.DefinitionId
+		WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
+		AND ACRD.id IS NULL
+		AND L.[State] >= 0
+	) T
+
+	IF @Err IS NOT NULL
+		THROW 50000, @Err, 1;
+
 	-- cannot close if the line posting date falls in an archived period. Logic repeated at line level
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT TOP (@Top)

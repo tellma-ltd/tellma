@@ -190,31 +190,31 @@ BEGIN
 	-- Step 6c: Apply window functions on smaller dataset
 	-- OPTIMIZATION: Use ROWS UNBOUNDED PRECEDING for better performance
 	RunningTotals AS (
-		SELECT
-			[LineKey], [EntryIndex], [DurationUnitId], [Time1],
-			DATEADD(DAY, -1, LEAD([Time1]) OVER (
-				PARTITION BY [LineKey], [EntryIndex]
-				ORDER BY [Time1]
-			)) AS [Time2],
-			[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], 
-			[UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
-			SUM([Quantity]) OVER (
-				PARTITION BY [LineKey], [EntryIndex]
-				ORDER BY [Time1] ROWS UNBOUNDED PRECEDING
-			) AS [Quantity],
-			SUM([MonetaryValue]) OVER (
-				PARTITION BY [LineKey], [EntryIndex]
-				ORDER BY [Time1] ROWS UNBOUNDED PRECEDING
-			) AS [MonetaryValue],
-			SUM([Value]) OVER (
-				PARTITION BY [LineKey], [EntryIndex]
-				ORDER BY [Time1] ROWS UNBOUNDED PRECEDING
-			) AS [Value],
-			SUM([NotedAmount]) OVER (
-				PARTITION BY [LineKey], [EntryIndex]
-				ORDER BY [Time1] ROWS UNBOUNDED PRECEDING
-			) AS [NotedAmount]
-		FROM AggregatedEvents
+    SELECT
+        [LineKey], [EntryIndex], [DurationUnitId], [Time1],
+        DATEADD(DAY, -1, LEAD([Time1]) OVER (
+            PARTITION BY [LineKey], [EntryIndex]
+            ORDER BY [Time1], [MonetaryValue]    -- ← add secondary sort
+        )) AS [Time2],
+        [Direction], [AccountId], [CenterId], [AgentId], [ResourceId], 
+        [UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
+        SUM([Quantity]) OVER (
+            PARTITION BY [LineKey], [EntryIndex]
+            ORDER BY [Time1], [MonetaryValue] ROWS UNBOUNDED PRECEDING  -- ← here too
+        ) AS [Quantity],
+        SUM([MonetaryValue]) OVER (
+            PARTITION BY [LineKey], [EntryIndex]
+            ORDER BY [Time1], [MonetaryValue] ROWS UNBOUNDED PRECEDING  -- ← here too
+        ) AS [MonetaryValue],
+        SUM([Value]) OVER (
+            PARTITION BY [LineKey], [EntryIndex]
+            ORDER BY [Time1], [MonetaryValue] ROWS UNBOUNDED PRECEDING  -- ← here too
+        ) AS [Value],
+        SUM([NotedAmount]) OVER (
+            PARTITION BY [LineKey], [EntryIndex]
+            ORDER BY [Time1], [MonetaryValue] ROWS UNBOUNDED PRECEDING  -- ← here too
+        ) AS [NotedAmount]
+    FROM AggregatedEvents
 	)
 	INSERT INTO @T (
 		[LineKey], [EntryIndex], [DurationUnitId], [Time1], [Time2],
@@ -227,9 +227,9 @@ BEGIN
 		[Direction], [AccountId], [CenterId], [AgentId], [ResourceId], 
 		[UnitId], [CurrencyId], [NotedAgentId], [NotedResourceId], [EntryTypeId],
 		[Quantity], [MonetaryValue], [Value], [NotedAmount]
-	FROM RunningTotals
+	FROM RunningTotals;
 	-- Pre-filter obvious invalid rows during INSERT (instead of DELETE after)
-	WHERE [MonetaryValue] <> 0 OR [Quantity] <> 0;
+	--WHERE [MonetaryValue] <> 0 OR [Quantity] <> 0;
 
 	-- ═══════════════════════════════════════════════════════════════════════════
 	-- OPTIMIZATION #7: Single DELETE pass instead of multiple
