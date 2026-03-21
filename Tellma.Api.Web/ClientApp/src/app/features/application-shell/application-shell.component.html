@@ -58,7 +58,7 @@
         [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
 
         <!-- Favorites -->
-        @for (favorite of favorites; track favorite) {
+        @for (favorite of favorites; track favorite.id) {
           <li class="nav-item" [tContextMenu]="favoriteMenu" [tContext]="favorite"
             cdkDrag>
             <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"

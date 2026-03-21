@@ -2858,7 +2858,7 @@
       }
 
       <!-- All history -->
-      @for (dayEvents of sortChronologically(model); track dayEvents) {
+      @for (dayEvents of sortChronologically(model); track dayEvents.date) {
         <div class="px-3 py-3 small font-weight-bold">{{ dayEvents.date }}</div>
         <!-- Day's history -->
         @for (event of dayEvents.events; track event; let i = $index) {
