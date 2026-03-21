@@ -1,11 +1,17 @@
 <div class="d-flex flex-column h-100">
 
   <!-- Offline indicator -->
-  <ng-container *ngIf="showBanner">
-    <t-info-message *ngIf="bannerType === 'Info'" [height]="bannerHeight">{{bannerContent}}</t-info-message>
-    <t-warning-message *ngIf="bannerType === 'Warning'" [height]="bannerHeight">{{bannerContent}}</t-warning-message>
-    <t-error-message *ngIf="bannerType === 'Error'" height="15" [height]="bannerHeight">{{bannerContent}}</t-error-message>
-  </ng-container>
+  @if (showBanner) {
+    @if (bannerType === 'Info') {
+      <t-info-message [height]="bannerHeight">{{bannerContent}}</t-info-message>
+    }
+    @if (bannerType === 'Warning') {
+      <t-warning-message [height]="bannerHeight">{{bannerContent}}</t-warning-message>
+    }
+    @if (bannerType === 'Error') {
+      <t-error-message height="15" [height]="bannerHeight">{{bannerContent}}</t-error-message>
+    }
+  }
 
   <!-- <t-warning-message>The license has expired, the system will become read-only in <b>22 days.</b></t-warning-message> -->
   <!-- <t-error-message>The system is readonly, please renew your license</t-error-message> -->
@@ -17,23 +23,29 @@
     </a>
     <!-- Forward and Backward Navigation -->
     <div class="mx-2 d-flex">
-      <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
-        *ngIf="nav.showBack">
-        <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
-      </button>
+      @if (nav.showBack) {
+        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+          >
+          <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
+        </button>
+      }
       &nbsp;
-      <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
-        *ngIf="nav.showForward">
-        <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
-      </button>
+      @if (nav.showForward) {
+        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
+          >
+          <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
+        </button>
+      }
     </div>
     <!-- Inbox Button (on mobile) -->
-    <div class="nav navbar-nav" *ngIf="!isMdScreen">
-      <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" (click)="onModalInbox()">
-        <ng-container *ngTemplateOutlet="inboxButtonContent">
-        </ng-container>
-      </button>
-    </div>
+    @if (!isMdScreen) {
+      <div class="nav navbar-nav">
+        <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" (click)="onModalInbox()">
+          <ng-container *ngTemplateOutlet="inboxButtonContent">
+          </ng-container>
+        </button>
+      </div>
+    }
     <!-- Hamburger Button -->
     <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
       <span class="navbar-toggler-icon"></span>
@@ -46,21 +58,22 @@
         [cdkDropListOrientation]="menuOrientation" (cdkDropListDropped)="onDragDropFavorite($event)">
 
         <!-- Favorites -->
-        <li class="nav-item" *ngFor="let favorite of favorites" [tContextMenu]="favoriteMenu" [tContext]="favorite"
-          cdkDrag>
-          <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
-            (click)="onClickFavorite(favorite.url)">
-            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-          </button>
-
-          <!-- Drag preview -->
-          <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
-            style="height:50px">
-            {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
-          </div>
-          <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
-          </div>
-        </li>
+        @for (favorite of favorites; track favorite) {
+          <li class="nav-item" [tContextMenu]="favoriteMenu" [tContext]="favorite"
+            cdkDrag>
+            <button class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100 text-nowrap"
+              (click)="onClickFavorite(favorite.url)">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </button>
+            <!-- Drag preview -->
+            <div *cdkDragPreview class="t-dark d-flex flex-column justify-content-center text-white p-2"
+              style="height:50px">
+              {{ ws.getMultilingualValueImmediate(favorite, 'label') }}
+            </div>
+            <div *cdkDragPlaceholder class="bg-secondary p-2" style="cursor: unset; width: 4rem">
+            </div>
+          </li>
+        }
 
         <!-- Context menu for results -->
         <ng-template #favoriteMenu let-favorite let-close="close">
@@ -86,21 +99,22 @@
           </div>
         </ng-template>
       </ol>
-      <!-- </div> -->
+    <!-- </div> -->
 
-      <ol class="nav navbar-nav flex-nowrap">
+    <ol class="nav navbar-nav flex-nowrap">
 
-        <!-- Add to Favorites -->
-        <li class="nav-item">
-          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center"
-            (click)="onAddFavorite()" [title]="'AddScreenToFavorites' | translate">
-            <fa-icon icon="star"></fa-icon>
-          </button>
-        </li>
+      <!-- Add to Favorites -->
+      <li class="nav-item">
+        <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center"
+          (click)="onAddFavorite()" [title]="'AddScreenToFavorites' | translate">
+          <fa-icon icon="star"></fa-icon>
+        </button>
+      </li>
 
-        <!-- Inbox Button (Desktop) -->
+      <!-- Inbox Button (Desktop) -->
+      @if (isMdScreen) {
         <li class="nav-item" ngbDropdown #inboxDrop="ngbDropdown" container="" (openChange)="onDropdownInbox($event)"
-          *ngIf="isMdScreen">
+          >
           <!-- Inbox button -->
           <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" ngbDropdownToggle>
             <ng-container *ngTemplateOutlet="inboxButtonContent">
@@ -109,118 +123,133 @@
           <!-- Inbox Dropdown -->
           <div class="dropdown-menu shadow m-0 p-0" [class.dropdown-menu-right]="!isRtl"
             style="width: 27rem; max-height: 30rem; overflow-y: auto;" ngbDropdownMenu>
-
             <!-- Inbox header -->
             <div class="px-2 py-1 border-bottom d-flex justify-content-between t-slightly-bold">
               <!-- Title and Spinner -->
-              <div>{{ 'Inbox' | translate }}&nbsp;<t-spinner [scale]="1" *ngIf="showInboxSpinner"></t-spinner>
-              </div>
-              <!-- Link to Inbox -->
-              <a [routerLink]="'/app/' + tenantId + '/inbox'" (click)="inboxDrop.close()">{{ 'SeeAll' | translate }}</a>
+              <div>{{ 'Inbox' | translate }}&nbsp;@if (showInboxSpinner) {
+                <t-spinner [scale]="1"></t-spinner>
+              }
             </div>
-
-            <!-- Empty inbox message -->
-            <ng-container *ngTemplateOutlet="emptyInboxMessage">
-            </ng-container>
-
-            <!-- The inbox items -->
+            <!-- Link to Inbox -->
+            <a [routerLink]="'/app/' + tenantId + '/inbox'" (click)="inboxDrop.close()">{{ 'SeeAll' | translate }}</a>
+          </div>
+          <!-- Empty inbox message -->
+          <ng-container *ngTemplateOutlet="emptyInboxMessage">
+          </ng-container>
+          <!-- The inbox items -->
+          @for (id of ids; track id) {
             <button class="p-2 border-bottom t-inbox-item b" [class.bg-light]="c[id].OpenedAt"
               [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id?.toString(), { state_key: 'navinbox' }]"
-              *ngFor="let id of ids" ngbDropdownItem (click)="inboxDrop.close()">
+              ngbDropdownItem (click)="inboxDrop.close()">
               <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
             </button>
-
-            <!-- If there are more than 25 inbox items -->
-            <div class="t-slightly-bold p-1 text-center" *ngIf="showSeeAll">
+          }
+          <!-- If there are more than 25 inbox items -->
+          @if (showSeeAll) {
+            <div class="t-slightly-bold p-1 text-center">
               <ng-container *ngTemplateOutlet="seeAllLink; context:{ closable: inboxDrop }">
               </ng-container>
             </div>
+          }
+        </div>
+      </li>
+    }
+
+    <!-- The user dropdown -->
+    <li class="nav-item" ngbDropdown container="">
+      <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow" ngbDropdownToggle>
+        <div class="align-self-center">
+          <div class="t-dp-wrapper t-dp-dark bg-white mx-1">
+            <t-image [src]="'users/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
+            shape="circle" [size]="28"></t-image>
           </div>
-        </li>
+        </div>
+        &nbsp;&nbsp;
+        <div class="d-flex flex-column justify-content-center align-self-center">
+          <div style="line-height:1.1rem">{{ userName }}</div>
+          <div class="small font-weight-bold"> {{ companyName }}</div>
+        </div>
+        &nbsp;&nbsp;
+      </button>
+      <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+        [class.dropdown-menu-right]="!isRtl">
 
-        <!-- The user dropdown -->
-        <li class="nav-item" ngbDropdown container="">
-          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow" ngbDropdownToggle>
-            <div class="align-self-center">
-              <div class="t-dp-wrapper t-dp-dark bg-white mx-1">
-                <t-image [src]="'users/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
-                  shape="circle" [size]="28"></t-image>
-              </div>
-            </div>
-            &nbsp;&nbsp;
-            <div class="d-flex flex-column justify-content-center align-self-center">
-              <div style="line-height:1.1rem">{{ userName }}</div>
-              <div class="small font-weight-bold"> {{ companyName }}</div>
-            </div>
-            &nbsp;&nbsp;
-          </button>
-          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
-            [class.dropdown-menu-right]="!isRtl">
-
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies"
-              (click)="onCollapse()">
-              {{ 'ChangeCompany' | translate }}
-            </button>
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome"
-              (click)="onCollapse()">
-              {{ 'WelcomePage' | translate }}
-            </button>
+        <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies"
+          (click)="onCollapse()">
+          {{ 'ChangeCompany' | translate }}
+        </button>
+        <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome"
+          (click)="onCollapse()">
+          {{ 'WelcomePage' | translate }}
+        </button>
+        <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+          (click)="onMySystemAccount();onCollapse()">
+          {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+        </button>
+        <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+          (click)="onMyCompanyAccount();onCollapse()">
+          {{ 'My0Account' | translate: { placeholder: companyName } }}
+        </button>
+        <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
+          {{ 'SignOut' | translate }}
+        </button>
+        <!-- Company languages -->
+        @if (settings?.SecondaryLanguageId || settings?.TernaryLanguageId) {
+          <hr />
+          @if (!ws.isPrimaryLanguage) {
             <button type="button" class="dropdown-item btn-light" ngbDropdownItem
-              (click)="onMySystemAccount();onCollapse()">
-              {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+              (click)="onPrimary();onCollapse()">
+              {{ settings?.PrimaryLanguageName }}
             </button>
+          }
+          @if (!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId) {
+            <button type="button" class="dropdown-item btn-light"
+              ngbDropdownItem
+              (click)="onSecondary();onCollapse()">
+              {{ settings?.SecondaryLanguageName }}
+            </button>
+          }
+          @if (!ws.isTernaryLanguage && !!settings?.TernaryLanguageId) {
+            <button type="button" class="dropdown-item btn-light"
+              ngbDropdownItem
+              (click)="onTernary();onCollapse()">
+              {{ settings?.TernaryLanguageName }}
+            </button>
+          }
+        }
+        @if (!!settings?.SecondaryCalendar) {
+          <hr />
+          @if (!ws.isPrimaryCalendar) {
             <button type="button" class="dropdown-item btn-light" ngbDropdownItem
-              (click)="onMyCompanyAccount();onCollapse()">
-              {{ 'My0Account' | translate: { placeholder: companyName } }}
+              (click)="onPrimaryCalendar();onCollapse()">
+              {{ ('Calendar_' + settings?.PrimaryCalendar) | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
-              {{ 'SignOut' | translate }}
+          }
+          @if (!ws.isSecondaryCalendar) {
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+              (click)="onSecondaryCalendar();onCollapse()">
+              {{ ('Calendar_' + settings?.SecondaryCalendar) | translate }}
             </button>
-            <!-- Company languages -->
-            <ng-container *ngIf="settings?.SecondaryLanguageId || settings?.TernaryLanguageId">
-              <hr />
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage" ngbDropdownItem
-                (click)="onPrimary();onCollapse()">
-                {{ settings?.PrimaryLanguageName }}
-              </button>
-              <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" ngbDropdownItem
-                (click)="onSecondary();onCollapse()">
-                {{ settings?.SecondaryLanguageName }}
-              </button>
-              <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" ngbDropdownItem
-                (click)="onTernary();onCollapse()">
-                {{ settings?.TernaryLanguageName }}
-              </button>
-            </ng-container>
-            <ng-container *ngIf="!!settings?.SecondaryCalendar">
-              <hr />
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryCalendar" ngbDropdownItem
-                (click)="onPrimaryCalendar();onCollapse()">
-                {{ ('Calendar_' + settings?.PrimaryCalendar) | translate }}
-              </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isSecondaryCalendar" ngbDropdownItem
-                (click)="onSecondaryCalendar();onCollapse()">
-                {{ ('Calendar_' + settings?.SecondaryCalendar) | translate }}
-              </button>
-            </ng-container>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </nav>
+          }
+        }
+      </div>
+    </li>
+  </ol>
+</div>
+</nav>
 
-  <main class="t-rest-of-screen container-fluid">
-    <router-outlet></router-outlet>
-  </main>
+<main class="t-rest-of-screen container-fluid">
+  <router-outlet></router-outlet>
+</main>
 </div>
 
 <ng-template #inboxButtonContent>
   <div style="position: relative;">
     <fa-icon icon="inbox" style="font-size: 1.1rem;"></fa-icon>
-    <div class="badge badge-danger t-notification-badge" [style.border-color]="settings?.BrandColor"
-      *ngIf="unknownInboxCountDisplay"> {{ unknownInboxCountDisplay }} </div>
+    @if (unknownInboxCountDisplay) {
+      <div class="badge badge-danger t-notification-badge" [style.border-color]="settings?.BrandColor"
+      > {{ unknownInboxCountDisplay }} </div>
+    }
   </div>
   <div>&nbsp;&nbsp;{{ inboxCountDisplay }}</div>
 </ng-template>
@@ -229,7 +258,7 @@
   <div class="d-flex">
     <!-- Sender image -->
     <t-image [src]="'users/' + c[id].CreatedById + '/image'" [imageId]="ws.get('User', c[id].CreatedById)?.ImageId"
-      shape="circle" [size]="32"></t-image>
+    shape="circle" [size]="32"></t-image>
 
     <!-- Small margin -->
     <div class="px-1"></div>
@@ -249,18 +278,24 @@
       <div class="text-truncate text-muted">
         <t-auto-cell collection="Document" [definitionId]="docs[id].DefinitionId" [entity]="docs[id]">
         </t-auto-cell>
-        <span *ngIf="docs[id].Memo">{{ ' - ' + docs[id].Memo }}</span>
+        @if (docs[id].Memo) {
+          <span>{{ ' - ' + docs[id].Memo }}</span>
+        }
       </div>
       <!-- Bottom row -->
-      <div class="text-wrap" *ngIf="c[id].Comment">{{ '"' + c[id].Comment + '"' }}</div>
+      @if (c[id].Comment) {
+        <div class="text-wrap">{{ '"' + c[id].Comment + '"' }}</div>
+      }
     </div>
   </div>
 </ng-template>
 
 <ng-template #emptyInboxMessage>
-  <div class="p-2 my-2 alert-success text-center" *ngIf="showEmptyInboxMessage">
-    <fa-icon icon="check"></fa-icon>&nbsp;&nbsp;&nbsp;{{ 'EmptyInboxMessage' | translate }}
-  </div>
+  @if (showEmptyInboxMessage) {
+    <div class="p-2 my-2 alert-success text-center">
+      <fa-icon icon="check"></fa-icon>&nbsp;&nbsp;&nbsp;{{ 'EmptyInboxMessage' | translate }}
+    </div>
+  }
 </ng-template>
 
 <ng-template #seeAllLink let-closable="closable">
@@ -271,33 +306,39 @@
 <ng-template #inboxModal let-modal>
   <!-- Inbox header -->
   <div class="modal-header">
-    <h5 class="modal-title"> {{ ('Inbox' | translate) + ' (' + inboxCountDisplay + ')' }}&nbsp;<t-spinner [scale]="1"
-        *ngIf="showInboxSpinner"></t-spinner>
-    </h5>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
+    <h5 class="modal-title"> {{ ('Inbox' | translate) + ' (' + inboxCountDisplay + ')' }}&nbsp;@if (showInboxSpinner) {
+      <t-spinner [scale]="1"
+      ></t-spinner>
+    }
+  </h5>
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
 
-  <!-- Inbox header -->
-  <div class="modal-body p-0 bg-white t-rest-of-screen">
-    <!-- Empty inbox message -->
-    <ng-container *ngTemplateOutlet="emptyInboxMessage">
-    </ng-container>
+<!-- Inbox header -->
+<div class="modal-body p-0 bg-white t-rest-of-screen">
+  <!-- Empty inbox message -->
+  <ng-container *ngTemplateOutlet="emptyInboxMessage">
+  </ng-container>
 
-    <!-- The inbox items -->
+  <!-- The inbox items -->
+  @for (id of ids; track id) {
     <button class="p-2 border-bottom t-inbox-item a" [class.bg-light]="c[id].OpenedAt"
       [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id?.toString(), { state_key: 'navinbox' }]"
-      *ngFor="let id of ids" ngbDropdownItem (click)="modal.close()">
+      ngbDropdownItem (click)="modal.close()">
       <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
     </button>
+  }
 
-    <!-- If there are more than 25 inbox items -->
-    <div class="t-slightly-bold p-2 text-center" *ngIf="showSeeAll">
+  <!-- If there are more than 25 inbox items -->
+  @if (showSeeAll) {
+    <div class="t-slightly-bold p-2 text-center">
       <ng-container *ngTemplateOutlet="seeAllLink; context:{ closable: modal }">
       </ng-container>
     </div>
-  </div>
+  }
+</div>
 </ng-template>
 
 <!-- My Account Modal -->
@@ -312,51 +353,59 @@
 
   <!-- body -->
   <div class="modal-body p-0 bg-white">
-    <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5" *ngIf="isMyUserLoaded">
-      <!-- Header Name -->
-      <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2">
-        <h2 class="font-weight-normal">{{ myEmail }}</h2>
-      </t-form-group>
-
-      <!-- Image -->
-      <div class="col-12 col-md-4 t-details-image-container">
-        <div class="border">
-          <t-image [src]="'users/' + ws.userSettings.UserId + '/image'" [imageId]="myImageId" [(ngModel)]="myUser.Image"
+    @if (isMyUserLoaded) {
+      <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
+        <!-- Header Name -->
+        <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2">
+          <h2 class="font-weight-normal">{{ myEmail }}</h2>
+        </t-form-group>
+        <!-- Image -->
+        <div class="col-12 col-md-4 t-details-image-container">
+          <div class="border">
+            <t-image [src]="'users/' + ws.userSettings.UserId + '/image'" [imageId]="myImageId" [(ngModel)]="myUser.Image"
             [isEdit]="true" [size]="70"></t-image>
+          </div>
         </div>
+        <!-- Name -->
+        <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
+          [serverErrors]="myUser?.serverErrors?.Name">
+          <t-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+          </t-text-editor>
+        </t-form-group>
+        <!-- Name2 -->
+        @if (ws.settings.SecondaryLanguageId) {
+          <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
+            [serverErrors]="myUser?.serverErrors?.Name2">
+            <t-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+        }
+        <!-- Name3 -->
+        @if (ws.settings.TernaryLanguageId) {
+          <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
+            [serverErrors]="myUser?.serverErrors?.Name3">
+            <t-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          </t-form-group>
+        }
       </div>
-
-      <!-- Name -->
-      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
-        [serverErrors]="myUser?.serverErrors?.Name">
-        <t-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </t-text-editor>
-      </t-form-group>
-
-      <!-- Name2 -->
-      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
-        *ngIf="ws.settings.SecondaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name2">
-        <t-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group>
-
-      <!-- Name3 -->
-      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
-        *ngIf="ws.settings.TernaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name3">
-        <t-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group>
-    </div>
-    <t-error-message *ngIf="isMyUserLoaded && !!saveErrorMessage">
-      {{ saveErrorMessage }}
-    </t-error-message>
-    <t-error-message *ngIf="isMyUserError">
-      {{ errorMessage }}
-    </t-error-message>
-    <div *ngIf="isMyUserLoading" class="d-flex justify-content-center py-2">
-      <t-spinner [scale]="2">
-      </t-spinner>
-    </div>
+    }
+    @if (isMyUserLoaded && !!saveErrorMessage) {
+      <t-error-message>
+        {{ saveErrorMessage }}
+      </t-error-message>
+    }
+    @if (isMyUserError) {
+      <t-error-message>
+        {{ errorMessage }}
+      </t-error-message>
+    }
+    @if (isMyUserLoading) {
+      <div class="d-flex justify-content-center py-2">
+        <t-spinner [scale]="2">
+        </t-spinner>
+      </div>
+    }
   </div>
 
   <!-- footer -->
@@ -379,18 +428,20 @@
   <div class="modal-header">
     <h5 class="modal-title"> {{ 'EditFavorite' | translate }}&nbsp;&nbsp;&nbsp;</h5>
 
-    <div class="btn-group btn-group-toggle t-toolbar-button" *ngIf="showAdvancedToggle">
-      <label class="btn btn-sm btn-light t-pointer" [class.active]="isBasic" title="{{ 'Basic' | translate }}"
-        (click)="onBasicFavoriteEditMode()">
-        <input type="radio" name="editMode">
-        {{ 'Basic' | translate }}
-      </label>
-      <label class="btn btn-sm btn-light t-pointer" [class.active]="isAdvanced" title="{{ 'Advanced' | translate }}"
-        (click)="onAdvancedFavoriteEditMode()">
-        <input type="radio" name="editMode">
-        {{ 'Advanced' | translate }}
-      </label>
-    </div>
+    @if (showAdvancedToggle) {
+      <div class="btn-group btn-group-toggle t-toolbar-button">
+        <label class="btn btn-sm btn-light t-pointer" [class.active]="isBasic" title="{{ 'Basic' | translate }}"
+          (click)="onBasicFavoriteEditMode()">
+          <input type="radio" name="editMode">
+          {{ 'Basic' | translate }}
+        </label>
+        <label class="btn btn-sm btn-light t-pointer" [class.active]="isAdvanced" title="{{ 'Advanced' | translate }}"
+          (click)="onAdvancedFavoriteEditMode()">
+          <input type="radio" name="editMode">
+          {{ 'Advanced' | translate }}
+        </label>
+      </div>
+    }
 
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
       <span aria-hidden="true">&times;</span>
@@ -407,16 +458,20 @@
       <t-text-editor [(ngModel)]="favoriteToSave.label" [focusIf]="true"></t-text-editor>
     </t-form-group>
 
-    <ng-container *ngIf="isAdvanced">
-      <t-form-group class="t-form-group" *ngIf="!!ws.settings.SecondaryLanguageId" style="margin-top:0!important"
-        [label]="('Label' | translate) + ws.secondaryPostfix">
-        <t-text-editor [(ngModel)]="favoriteToSave.label2" [focusIf]="true"></t-text-editor>
-      </t-form-group>
-      <t-form-group class="t-form-group" *ngIf="!!ws.settings.TernaryLanguageId" style="margin-top:0!important"
-        [label]="('Label' | translate) + ws.ternaryPostfix">
-        <t-text-editor [(ngModel)]="favoriteToSave.label3" [focusIf]="true"></t-text-editor>
-      </t-form-group>
-    </ng-container>
+    @if (isAdvanced) {
+      @if (!!ws.settings.SecondaryLanguageId) {
+        <t-form-group class="t-form-group" style="margin-top:0!important"
+          [label]="('Label' | translate) + ws.secondaryPostfix">
+          <t-text-editor [(ngModel)]="favoriteToSave.label2" [focusIf]="true"></t-text-editor>
+        </t-form-group>
+      }
+      @if (!!ws.settings.TernaryLanguageId) {
+        <t-form-group class="t-form-group" style="margin-top:0!important"
+          [label]="('Label' | translate) + ws.ternaryPostfix">
+          <t-text-editor [(ngModel)]="favoriteToSave.label3" [focusIf]="true"></t-text-editor>
+        </t-form-group>
+      }
+    }
   </div>
 
   <!-- footer -->

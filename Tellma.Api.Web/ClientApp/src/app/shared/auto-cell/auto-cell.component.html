@@ -1,40 +1,47 @@
-<ng-container [ngSwitch]="metavalue">
+
+@switch (metavalue) {
   <!-- Loaded Value -->
-  <ng-container *ngSwitchCase="2" [ngSwitch]="control">
-
-    <!-- Error -->
-    <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
-
-    <!-- Choice -->
-    <div class="d-inline text-nowrap" *ngSwitchCase="'choice'" [style.text-align]="alignment">
-      
-      <span *ngIf="hasColor; else nocolor" class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
-      <ng-template #nocolor>
-        <span>{{ displayValue }}</span>
-      </ng-template>
-    </div>
-    
-    <!-- Number -->
-    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">&zwnj;{{ displayValue }}&zwnj;</span>
-    
-    <ng-container *ngSwitchDefault>
-      <!-- Entity -->
-      <span *ngIf="isEntity; else simple">{{ navigationValue }}</span>
-
-      <!-- Everything Else -->
-      <ng-template #simple>
-        <span>{{ displayValue }}</span>
-      </ng-template>
-    </ng-container>
-
-  </ng-container>
-
+  @case (2) {
+    @switch (control) {
+      <!-- Error -->
+      @case ('error') {
+        <span class="text-danger"> Error </span>
+      }
+      <!-- Choice -->
+      @case ('choice') {
+        <div class="d-inline text-nowrap" [style.text-align]="alignment">
+          @if (hasColor) {
+            <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
+          } @else {
+            <span>{{ displayValue }}</span>
+          }
+        </div>
+      }
+      <!-- Number -->
+      @case ('number') {
+        <span class="d-inline" [style.float]="alignment">&zwnj;{{ displayValue }}&zwnj;</span>
+      }
+      @default {
+        <!-- Entity -->
+        @if (isEntity) {
+          <span>{{ navigationValue }}</span>
+        } @else {
+          <span>{{ displayValue }}</span>
+        }
+        <!-- Everything Else -->
+      }
+    }
+  }
   <!-- Restricted Value -->
-  <span *ngSwitchCase="1" class="text-muted font-weight-bold" title="{{ 'Restricted' | translate }}">*******</span>
-
+  @case (1) {
+    <span class="text-muted font-weight-bold" title="{{ 'Restricted' | translate }}">*******</span>
+  }
   <!-- Value Not Loaded -->
-  <span *ngSwitchCase="0" class="text-muted font-italic">({{ 'NotLoaded' | translate }})</span>
-
+  @case (0) {
+    <span class="text-muted font-italic">({{ 'NotLoaded' | translate }})</span>
+  }
   <!-- Invalid Path -->
-  <span *ngSwitchCase="-1" class="text-danger font-italic" [title]="errorMessage">({{ 'Error' | translate }})</span>
-</ng-container>
+  @case (-1) {
+    <span class="text-danger font-italic" [title]="errorMessage">({{ 'Error' | translate }})</span>
+  }
+}

@@ -17,129 +17,191 @@
 
   <!-- Header Name -->
   <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
-    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    @if (!isEdit) {
+      <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    }
 
-    <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required>
-    </t-text-editor>
+    @if (isEdit && ws.isPrimaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required>
+      </t-text-editor>
+    }
 
-    <t-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
-    </t-text-editor>
+    @if (isEdit && ws.isSecondaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+      </t-text-editor>
+    }
 
-    <t-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
-    </t-text-editor>
+    @if (isEdit && ws.isTernaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
+      </t-text-editor>
+    }
   </t-form-group>
 
   <!-- Name -->
-  <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-    [serverErrors]="model?.serverErrors?.Name">
-    <div *ngIf="!isEdit">{{ model?.Name }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </t-text-editor>
-  </t-form-group>
+  @if (!ws.isPrimaryLanguage) {
+    <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
+      [serverErrors]="model?.serverErrors?.Name">
+      @if (!isEdit) {
+        <div>{{ model?.Name }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+      }
+    </t-form-group>
+  }
 
   <!-- Name2 -->
-  <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
-    [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
-    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-  </t-form-group>
+  @if (!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId) {
+    <t-form-group class="t-form-group"
+      [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+      @if (!isEdit) {
+        <div>{{ model?.Name2 }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+      }
+    </t-form-group>
+  }
 
   <!-- Name3 -->
-  <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
-    [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
-    <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-  </t-form-group>
+  @if (!ws.isTernaryLanguage && ws.settings.TernaryLanguageId) {
+    <t-form-group class="t-form-group"
+      [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+      @if (!isEdit) {
+        <div>{{ model?.Name3 }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+      }
+    </t-form-group>
+  }
 
   <!-- Code -->
   <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <span *ngIf="!isEdit">{{model?.Code}}</span>
-    <t-text-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.Code"
-      [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </t-text-editor>
+    @if (!isEdit) {
+      <span>{{model?.Code}}</span>
+    }
+    @if (isEdit) {
+      <t-text-editor [disabled]="model.IsSystem" [(ngModel)]="model.Code"
+        [ngModelOptions]="{ updateOn: 'blur' }" required>
+      </t-text-editor>
+    }
   </t-form-group>
 
   <!-- Concept -->
   <t-form-group class="t-form-group" [label]="'AccountType_Concept' | translate"
     [serverErrors]="model?.serverErrors?.Concept">
-    <span *ngIf="!isEdit">{{model?.Concept}}</span>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Concept" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </t-text-editor>
+    @if (!isEdit) {
+      <span>{{model?.Concept}}</span>
+    }
+    @if (isEdit) {
+      <t-text-editor [(ngModel)]="model.Concept" [ngModelOptions]="{ updateOn: 'blur' }" required>
+      </t-text-editor>
+    }
   </t-form-group>
 
   <!-- Parent -->
   <t-form-group class="t-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Parent">
-      <t-view-link link="../../account-types" [itemId]="model?.ParentId">{{
+    @if (!isEdit) {
+      <t-restricted [metadata]="model?.EntityMetadata?.Parent">
+        <t-view-link link="../../account-types" [itemId]="model?.ParentId">{{
         ws.getMultilingualValue('AccountType', model?.ParentId, 'Name') }}</t-view-link>
-    </t-restricted>
-    <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
-    </t-account-types-picker>
+      </t-restricted>
+    }
+    @if (isEdit) {
+      <t-account-types-picker [(ngModel)]="model.ParentId">
+      </t-account-types-picker>
+    }
   </t-form-group>
 
   <!-- Entry Type Parent -->
-  <t-form-group class="t-form-group" *ngIf="showEntryTypeParent(model)"
-    [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EntryTypeParent">
-      <t-view-link link="../../entry-types" [itemId]="model?.EntryTypeParentId">{{
-        ws.getMultilingualValue('EntryType', model?.EntryTypeParentId, 'Name') }}</t-view-link>
-    </t-restricted>
-    <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeParentId">
-    </t-entry-types-picker>
-  </t-form-group>
+  @if (showEntryTypeParent(model)) {
+    <t-form-group class="t-form-group"
+      [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
+      @if (!isEdit) {
+        <t-restricted [metadata]="model?.EntityMetadata?.EntryTypeParent">
+          <t-view-link link="../../entry-types" [itemId]="model?.EntryTypeParentId">{{
+          ws.getMultilingualValue('EntryType', model?.EntryTypeParentId, 'Name') }}</t-view-link>
+        </t-restricted>
+      }
+      @if (isEdit) {
+        <t-entry-types-picker [(ngModel)]="model.EntryTypeParentId">
+        </t-entry-types-picker>
+      }
+    </t-form-group>
+  }
 
   <!-- IsAssignable -->
   <t-form-group class="t-form-group" [label]="'IsAssignable' | translate"
     [serverErrors]="model?.serverErrors?.IsAssignable">
-    <div *ngIf="!isEdit">{{ (model?.IsAssignable ? 'Yes' : 'No') | translate }}</div>
-    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAssignable" id="isAssignable">
-      <label class="custom-control-label t-pointer" for="isAssignable">&zwnj;</label>
-    </div>
+    @if (!isEdit) {
+      <div>{{ (model?.IsAssignable ? 'Yes' : 'No') | translate }}</div>
+    }
+    @if (isEdit) {
+      <div class="custom-control custom-checkbox t-labelless-checkbox">
+        <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAssignable" id="isAssignable">
+        <label class="custom-control-label t-pointer" for="isAssignable">&zwnj;</label>
+      </div>
+    }
   </t-form-group>
 
   <!-- StandardAndPure -->
   <t-form-group class="t-form-group" [label]="'AccountType_StandardAndPure' | translate"
     [serverErrors]="model?.serverErrors?.StandardAndPure">
-    <div *ngIf="!isEdit">{{ (model?.StandardAndPure ? 'Yes' : 'No') | translate }}</div>
-    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.StandardAndPure" id="standardandpure">
-      <label class="custom-control-label t-pointer" for="standardandpure">&zwnj;</label>
-    </div>
+    @if (!isEdit) {
+      <div>{{ (model?.StandardAndPure ? 'Yes' : 'No') | translate }}</div>
+    }
+    @if (isEdit) {
+      <div class="custom-control custom-checkbox t-labelless-checkbox">
+        <input type="checkbox" class="custom-control-input" [(ngModel)]="model.StandardAndPure" id="standardandpure">
+        <label class="custom-control-label t-pointer" for="standardandpure">&zwnj;</label>
+      </div>
+    }
   </t-form-group>
 
   <!-- IsMonetary -->
   <t-form-group class="t-form-group" [label]="'AccountType_IsMonetary' | translate"
     [serverErrors]="model?.serverErrors?.IsMonetary">
-    <div *ngIf="!isEdit">{{ (model?.IsMonetary ? 'Yes' : 'No') | translate }}</div>
-    <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsMonetary" id="ismonetary">
-      <label class="custom-control-label t-pointer" for="ismonetary">&zwnj;</label>
-    </div>
+    @if (!isEdit) {
+      <div>{{ (model?.IsMonetary ? 'Yes' : 'No') | translate }}</div>
+    }
+    @if (isEdit) {
+      <div class="custom-control custom-checkbox t-labelless-checkbox">
+        <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsMonetary" id="ismonetary">
+        <label class="custom-control-label t-pointer" for="ismonetary">&zwnj;</label>
+      </div>
+    }
   </t-form-group>
 
   <!-- Is Active -->
-  <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <t-auto-cell collection="AccountType" [entity]="model" path="IsActive"></t-auto-cell>
-  </t-form-group>
+  @if (!isEdit) {
+    <t-form-group class="t-form-group" [label]="'IsActive' | translate">
+      <t-auto-cell collection="AccountType" [entity]="model" path="IsActive"></t-auto-cell>
+    </t-form-group>
+  }
 
   <!-- IsSystem -->
-  <t-form-group class="t-form-group" [label]="'IsSystem' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsSystem ? 'Yes' : 'No') | translate }}</div>
-  </t-form-group>
+  @if (!isEdit) {
+    <t-form-group class="t-form-group" [label]="'IsSystem' | translate">
+      <div>{{ (!model ? '' : model.IsSystem ? 'Yes' : 'No') | translate }}</div>
+    </t-form-group>
+  }
 
   <ul ngbNav #tabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs" [destroyOnHide]="true">
 
     <!-- Descriptions -->
     <li ngbNavItem="description">
       <a ngbNavLink>
-        <span *ngIf="showDescriptionsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showDescriptionsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span class="small t-slightly-bold">{{ 'Description' | translate }}</span>
       </a>
       <ng-template ngbNavContent>
@@ -148,28 +210,44 @@
           <!-- Description -->
           <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.Description">
-            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description }}</div>
-            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-multiline-editor>
+            @if (!isEdit) {
+              <div class="t-multiline">{{ model?.Description }}</div>
+            }
+            @if (isEdit) {
+              <t-multiline-editor [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-multiline-editor>
+            }
           </t-form-group>
 
           <!-- Description2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('Description' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.Description2">
-            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description2 }}</div>
-            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-multiline-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('Description' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.Description2">
+              @if (!isEdit) {
+                <div class="t-multiline">{{ model?.Description2 }}</div>
+              }
+              @if (isEdit) {
+                <t-multiline-editor [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-multiline-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- Description3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('Description' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.Description3">
-            <div *ngIf="!isEdit" class="t-multiline">{{ model?.Description3 }}</div>
-            <t-multiline-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-multiline-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('Description' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.Description3">
+              @if (!isEdit) {
+                <div class="t-multiline">{{ model?.Description3 }}</div>
+              }
+              @if (isEdit) {
+                <t-multiline-editor [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-multiline-editor>
+              }
+            </t-form-group>
+          }
         </div>
       </ng-template>
     </li>
@@ -177,10 +255,12 @@
     <!-- Labels -->
     <li ngbNavItem="labels">
       <a ngbNavLink>
-        <span *ngIf="showLabelsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showLabelsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span class="small t-slightly-bold">{{ 'Labels' | translate }}</span>
       </a>
       <ng-template ngbNavContent>
@@ -189,226 +269,354 @@
           <!-- Time1Label -->
           <t-form-group class="t-form-group" [label]="('AccountType_Time1Label' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.Time1Label">
-            <div *ngIf="!isEdit">{{ model?.Time1Label }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time1Label" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.Time1Label }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.Time1Label" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- Time1Label2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_Time1Label' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.Time1Label2">
-            <div *ngIf="!isEdit">{{ model?.Time1Label2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time1Label2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_Time1Label' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.Time1Label2">
+              @if (!isEdit) {
+                <div>{{ model?.Time1Label2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.Time1Label2" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- Time1Label3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_Time1Label' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.Time1Label3">
-            <div *ngIf="!isEdit">{{ model?.Time1Label3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time1Label3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_Time1Label' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.Time1Label3">
+              @if (!isEdit) {
+                <div>{{ model?.Time1Label3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.Time1Label3" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- Time2Label -->
           <t-form-group class="t-form-group" [label]="('AccountType_Time2Label' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.Time2Label">
-            <div *ngIf="!isEdit">{{ model?.Time2Label }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time2Label" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.Time2Label }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.Time2Label" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- Time2Label2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_Time2Label' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.Time2Label2">
-            <div *ngIf="!isEdit">{{ model?.Time2Label2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time2Label2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_Time2Label' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.Time2Label2">
+              @if (!isEdit) {
+                <div>{{ model?.Time2Label2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.Time2Label2" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- Time2Label3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_Time2Label' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.Time2Label3">
-            <div *ngIf="!isEdit">{{ model?.Time2Label3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Time2Label3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_Time2Label' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.Time2Label3">
+              @if (!isEdit) {
+                <div>{{ model?.Time2Label3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.Time2Label3" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- ExternalReferenceLabel -->
           <t-form-group class="t-form-group"
             [label]="('AccountType_ExternalReferenceLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.ExternalReferenceLabel">
-            <div *ngIf="!isEdit">{{ model?.ExternalReferenceLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReferenceLabel"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.ExternalReferenceLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.ExternalReferenceLabel"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- ExternalReferenceLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_ExternalReferenceLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.ExternalReferenceLabel2">
-            <div *ngIf="!isEdit">{{ model?.ExternalReferenceLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReferenceLabel2"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_ExternalReferenceLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.ExternalReferenceLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.ExternalReferenceLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.ExternalReferenceLabel2"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- ExternalReferenceLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_ExternalReferenceLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.ExternalReferenceLabel3">
-            <div *ngIf="!isEdit">{{ model?.ExternalReferenceLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ExternalReferenceLabel3"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_ExternalReferenceLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.ExternalReferenceLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.ExternalReferenceLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.ExternalReferenceLabel3"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- ReferenceSourceLabel -->
           <t-form-group class="t-form-group"
             [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.ReferenceSourceLabel">
-            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.ReferenceSourceLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.ReferenceSourceLabel"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- ReferenceSourceLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.ReferenceSourceLabel2">
-            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel2"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.ReferenceSourceLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.ReferenceSourceLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.ReferenceSourceLabel2"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- ReferenceSourceLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.ReferenceSourceLabel3">
-            <div *ngIf="!isEdit">{{ model?.ReferenceSourceLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReferenceSourceLabel3"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_ReferenceSourceLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.ReferenceSourceLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.ReferenceSourceLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.ReferenceSourceLabel3"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- InternalReferenceLabel -->
           <t-form-group class="t-form-group"
             [label]="('AccountType_InternalReferenceLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.InternalReferenceLabel">
-            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.InternalReferenceLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.InternalReferenceLabel"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- InternalReferenceLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_InternalReferenceLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.InternalReferenceLabel2">
-            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel2"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_InternalReferenceLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.InternalReferenceLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.InternalReferenceLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.InternalReferenceLabel2"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- InternalReferenceLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_InternalReferenceLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.InternalReferenceLabel3">
-            <div *ngIf="!isEdit">{{ model?.InternalReferenceLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.InternalReferenceLabel3"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_InternalReferenceLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.InternalReferenceLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.InternalReferenceLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.InternalReferenceLabel3"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedAgentNameLabel -->
           <t-form-group class="t-form-group"
             [label]="('AccountType_NotedAgentNameLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.NotedAgentNameLabel">
-            <div *ngIf="!isEdit">{{ model?.NotedAgentNameLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAgentNameLabel"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.NotedAgentNameLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.NotedAgentNameLabel"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- NotedAgentNameLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_NotedAgentNameLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedAgentNameLabel2">
-            <div *ngIf="!isEdit">{{ model?.NotedAgentNameLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAgentNameLabel2"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedAgentNameLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedAgentNameLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.NotedAgentNameLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedAgentNameLabel2"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedAgentNameLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_NotedAgentNameLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedAgentNameLabel3">
-            <div *ngIf="!isEdit">{{ model?.NotedAgentNameLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAgentNameLabel3"
-              [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedAgentNameLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedAgentNameLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.NotedAgentNameLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedAgentNameLabel3"
+                  [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedAmountLabel -->
           <t-form-group class="t-form-group" [label]="('AccountType_NotedAmountLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.NotedAmountLabel">
-            <div *ngIf="!isEdit">{{ model?.NotedAmountLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAmountLabel" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.NotedAmountLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.NotedAmountLabel" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- NotedAmountLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_NotedAmountLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedAmountLabel2">
-            <div *ngIf="!isEdit">{{ model?.NotedAmountLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAmountLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedAmountLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedAmountLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.NotedAmountLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedAmountLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedAmountLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_NotedAmountLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedAmountLabel3">
-            <div *ngIf="!isEdit">{{ model?.NotedAmountLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedAmountLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedAmountLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedAmountLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.NotedAmountLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedAmountLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedDateLabel -->
           <t-form-group class="t-form-group" [label]="('AccountType_NotedDateLabel' | translate) + ws.primaryPostfix"
             [serverErrors]="model?.serverErrors?.NotedDateLabel">
-            <div *ngIf="!isEdit">{{ model?.NotedDateLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedDateLabel" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
+            @if (!isEdit) {
+              <div>{{ model?.NotedDateLabel }}</div>
+            }
+            @if (isEdit) {
+              <t-text-editor [(ngModel)]="model.NotedDateLabel" [ngModelOptions]="{ updateOn: 'blur' }">
+              </t-text-editor>
+            }
           </t-form-group>
 
           <!-- NotedDateLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_NotedDateLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedDateLabel2">
-            <div *ngIf="!isEdit">{{ model?.NotedDateLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedDateLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.SecondaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedDateLabel' | translate) + ws.secondaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedDateLabel2">
+              @if (!isEdit) {
+                <div>{{ model?.NotedDateLabel2 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedDateLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
 
           <!-- NotedDateLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_NotedDateLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.NotedDateLabel3">
-            <div *ngIf="!isEdit">{{ model?.NotedDateLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.NotedDateLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
+          @if (ws.settings.TernaryLanguageId) {
+            <t-form-group class="t-form-group"
+              [label]="('AccountType_NotedDateLabel' | translate) + ws.ternaryPostfix"
+              [serverErrors]="model?.serverErrors?.NotedDateLabel3">
+              @if (!isEdit) {
+                <div>{{ model?.NotedDateLabel3 }}</div>
+              }
+              @if (isEdit) {
+                <t-text-editor [(ngModel)]="model.NotedDateLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+              }
+            </t-form-group>
+          }
         </div>
       </ng-template>
     </li>
@@ -416,30 +624,36 @@
     <!-- AgentDefinitions -->
     <li ngbNavItem="agentDefs">
       <a ngbNavLink>
-        <span *ngIf="showAgentDefinitionsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showAgentDefinitionsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span
-          class="small t-slightly-bold">{{ ('AccountType_AgentDefinitions' | translate) + ' (' + (model?.AgentDefinitions?.length | number) + ')'  }}</span>
+        class="small t-slightly-bold">{{ ('AccountType_AgentDefinitions' | translate) + ' (' + (model?.AgentDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
         <t-table [dataSource]="model?.AgentDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
-          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+          'Definition' : { headerTemplate : header1, rowTemplate : row1, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_AgentDefinition' | translate}}</ng-template>
-        <ng-template #row let-item="item" let-index="index" let-update="update">
+        <ng-template #header1>{{ 'Account_AgentDefinition' | translate}}</ng-template>
+        <ng-template #row1 let-item="item" let-index="index" let-update="update">
           <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.AgentDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../agent-definitions" [itemId]="item?.AgentDefinitionId">
-              {{ getMultilingualValue(ws.AgentDefinition[item.AgentDefinitionId], 'TitleSingular', ws) }}
-            </t-view-link>
-            <t-agent-definitions-picker *ngIf="isEdit" [(ngModel)]="item.AgentDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH" [filter]="agentDefinitionFilter(model)">
-            </t-agent-definitions-picker>
+            @if (!isEdit) {
+              <t-view-link link="../../agent-definitions" [itemId]="item?.AgentDefinitionId">
+                {{ getMultilingualValue(ws.AgentDefinition[item.AgentDefinitionId], 'TitleSingular', ws) }}
+              </t-view-link>
+            }
+            @if (isEdit) {
+              <t-agent-definitions-picker [(ngModel)]="item.AgentDefinitionId"
+                (ngModelChange)="update.call(null, item)" [required]="!item.PH" [filter]="agentDefinitionFilter(model)">
+              </t-agent-definitions-picker>
+            }
           </t-form-group-cell>
         </ng-template>
 
@@ -449,31 +663,37 @@
     <!-- ResourceDefinitions -->
     <li ngbNavItem="resourceDefs">
       <a ngbNavLink>
-        <span *ngIf="showResourceDefinitionsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showResourceDefinitionsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span
-          class="small t-slightly-bold">{{ ('AccountType_ResourceDefinitions' | translate) + ' (' + (model?.ResourceDefinitions?.length | number) + ')'  }}</span>
+        class="small t-slightly-bold">{{ ('AccountType_ResourceDefinitions' | translate) + ' (' + (model?.ResourceDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
         <t-table [dataSource]="model?.ResourceDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
-          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+          'Definition' : { headerTemplate : header2, rowTemplate : row2, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_ResourceDefinition' | translate}}</ng-template>
-        <ng-template #row let-item="item" let-index="index" let-update="update">
+        <ng-template #header2>{{ 'Account_ResourceDefinition' | translate}}</ng-template>
+        <ng-template #row2 let-item="item" let-index="index" let-update="update">
           <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.ResourceDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../resource-definitions" [itemId]="item?.ResourceDefinitionId">
-              {{ getMultilingualValue(ws.ResourceDefinition[item.ResourceDefinitionId], 'TitleSingular', ws) }}
-            </t-view-link>
-            <t-resource-definitions-picker *ngIf="isEdit" [(ngModel)]="item.ResourceDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
-              [filter]="resourceDefinitionFilter(model)">
-            </t-resource-definitions-picker>
+            @if (!isEdit) {
+              <t-view-link link="../../resource-definitions" [itemId]="item?.ResourceDefinitionId">
+                {{ getMultilingualValue(ws.ResourceDefinition[item.ResourceDefinitionId], 'TitleSingular', ws) }}
+              </t-view-link>
+            }
+            @if (isEdit) {
+              <t-resource-definitions-picker [(ngModel)]="item.ResourceDefinitionId"
+                (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+                [filter]="resourceDefinitionFilter(model)">
+              </t-resource-definitions-picker>
+            }
           </t-form-group-cell>
         </ng-template>
 
@@ -483,31 +703,37 @@
     <!-- NotedAgentDefinitions -->
     <li ngbNavItem="notedagentDefs">
       <a ngbNavLink>
-        <span *ngIf="showNotedAgentDefinitionsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showNotedAgentDefinitionsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span
-          class="small t-slightly-bold">{{ ('AccountType_NotedAgentDefinitions' | translate) + ' (' + (model?.NotedAgentDefinitions?.length | number) + ')'  }}</span>
+        class="small t-slightly-bold">{{ ('AccountType_NotedAgentDefinitions' | translate) + ' (' + (model?.NotedAgentDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
         <t-table [dataSource]="model?.NotedAgentDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
-          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+          'Definition' : { headerTemplate : header3, rowTemplate : row3, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_NotedAgentDefinition' | translate}}</ng-template>
-        <ng-template #row let-item="item" let-index="index" let-update="update">
+        <ng-template #header3>{{ 'Account_NotedAgentDefinition' | translate}}</ng-template>
+        <ng-template #row3 let-item="item" let-index="index" let-update="update">
           <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedAgentDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../agent-definitions" [itemId]="item?.NotedAgentDefinitionId">
-              {{ getMultilingualValue(ws.AgentDefinition[item.NotedAgentDefinitionId], 'TitleSingular', ws) }}
-            </t-view-link>
-            <t-agent-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedAgentDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
-              [filter]="notedAgentDefinitionFilter(model)">
-            </t-agent-definitions-picker>
+            @if (!isEdit) {
+              <t-view-link link="../../agent-definitions" [itemId]="item?.NotedAgentDefinitionId">
+                {{ getMultilingualValue(ws.AgentDefinition[item.NotedAgentDefinitionId], 'TitleSingular', ws) }}
+              </t-view-link>
+            }
+            @if (isEdit) {
+              <t-agent-definitions-picker [(ngModel)]="item.NotedAgentDefinitionId"
+                (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+                [filter]="notedAgentDefinitionFilter(model)">
+              </t-agent-definitions-picker>
+            }
           </t-form-group-cell>
         </ng-template>
 
@@ -517,31 +743,37 @@
     <!-- NotedResourceDefinitions -->
     <li ngbNavItem="notedresourceDefs">
       <a ngbNavLink>
-        <span *ngIf="showNotedResourceDefinitionsError(model)" class="text-danger">
-          <fa-icon icon="exclamation">
-          </fa-icon>&nbsp;
-        </span>
+        @if (showNotedResourceDefinitionsError(model)) {
+          <span class="text-danger">
+            <fa-icon icon="exclamation">
+            </fa-icon>&nbsp;
+          </span>
+        }
         <span
-          class="small t-slightly-bold">{{ ('AccountType_NotedResourceDefinitions' | translate) + ' (' + (model?.NotedResourceDefinitions?.length | number) + ')'  }}</span>
+        class="small t-slightly-bold">{{ ('AccountType_NotedResourceDefinitions' | translate) + ' (' + (model?.NotedResourceDefinitions?.length | number) + ')'  }}</span>
       </a>
       <ng-template ngbNavContent>
         <t-table [dataSource]="model?.NotedResourceDefinitions" [isEdit]="isEdit" [columnPaths]="['Definition']"
           [columnTemplates]="{
-          'Definition' : { headerTemplate : header, rowTemplate : row, weight : 1 }
+          'Definition' : { headerTemplate : header4, rowTemplate : row4, weight : 1 }
         }">
         </t-table>
 
         <!-- Header -->
-        <ng-template #header>{{ 'Account_NotedResourceDefinition' | translate}}</ng-template>
-        <ng-template #row let-item="item" let-index="index" let-update="update">
+        <ng-template #header4>{{ 'Account_NotedResourceDefinition' | translate}}</ng-template>
+        <ng-template #row4 let-item="item" let-index="index" let-update="update">
           <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.NotedResourceDefinitionId">
-            <t-view-link *ngIf="!isEdit" link="../../resource-definitions" [itemId]="item?.NotedResourceDefinitionId">
-              {{ getMultilingualValue(ws.ResourceDefinition[item.NotedResourceDefinitionId], 'TitleSingular', ws) }}
-            </t-view-link>
-            <t-resource-definitions-picker *ngIf="isEdit" [(ngModel)]="item.NotedResourceDefinitionId"
-              (ngModelChange)="update.call(null, item)" [required]="!item.PH"
-              [filter]="notedResourceDefinitionFilter(model)">
-            </t-resource-definitions-picker>
+            @if (!isEdit) {
+              <t-view-link link="../../resource-definitions" [itemId]="item?.NotedResourceDefinitionId">
+                {{ getMultilingualValue(ws.ResourceDefinition[item.NotedResourceDefinitionId], 'TitleSingular', ws) }}
+              </t-view-link>
+            }
+            @if (isEdit) {
+              <t-resource-definitions-picker [(ngModel)]="item.NotedResourceDefinitionId"
+                (ngModelChange)="update.call(null, item)" [required]="!item.PH"
+                [filter]="notedResourceDefinitionFilter(model)">
+              </t-resource-definitions-picker>
+            }
           </t-form-group-cell>
         </ng-template>
 

@@ -1,145 +1,190 @@
 <!-- minDecimalPlaces -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDecimalPlaces">
+@if (showDecimalPlaces) {
+  <div class="form-group col-12 col-sm-6 t-text-whitish">
     <label class="small" for="mindecimalplaces">{{ 'ControlOptions_minDecimalPlaces' | translate }}</label>
-    <div *ngIf="!isEdit; else mindecimalplaces">{{ options.minDecimalPlaces }}&zwnj;</div>
-    <ng-template #mindecimalplaces>
-        <input class="form-control t-studio-input" id="mindecimalplaces" type="number"
-            [(ngModel)]="options.minDecimalPlaces" (ngModelChange)="onOptionsChange()"
-            [ngModelOptions]="{ updateOn: 'blur' }" />
-    </ng-template>
-</div>
-
-<!-- maxDecimalPlaces -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDecimalPlaces">
-    <label class="small" for="maxdecimalplaces">{{ 'ControlOptions_maxDecimalPlaces' | translate }}</label>
-    <div *ngIf="!isEdit; else maxdecimalplaces">{{ options.maxDecimalPlaces }}&zwnj;</div>
-    <ng-template #maxdecimalplaces>
-        <input class="form-control t-studio-input" id="maxdecimalplaces" type="number"
-            [(ngModel)]="options.maxDecimalPlaces" (ngModelChange)="onOptionsChange()"
-            [ngModelOptions]="{ updateOn: 'blur' }" />
-    </ng-template>
-</div>
-
-<!-- prefix -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showPrefix">
-    <label class="small" for="prefix">{{ 'ControlOptions_prefix' | translate }}</label>
-    <div *ngIf="!isEdit; else prefix">{{ options.prefix }}&zwnj;</div>
-    <ng-template #prefix>
-        <input class="form-control t-studio-input" id="prefix" type="text" [(ngModel)]="options.prefix"
-            (ngModelChange)="onOptionsChange()" autocomplete="off" [ngModelOptions]="{ updateOn: 'blur' }" />
-    </ng-template>
-</div>
-
-<!-- codeWidth -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showCodeWidth">
-    <label class="small" for="codewidth">{{ 'ControlOptions_codeWidth' | translate }}</label>
-    <div *ngIf="!isEdit; else codewidth">{{ options.codeWidth }}&zwnj;</div>
-    <ng-template #codewidth>
-        <input class="form-control t-studio-input" id="codewidth" type="number" [(ngModel)]="options.codeWidth"
-            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }" />
-    </ng-template>
-</div>
-
-<!-- filter -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showFilter">
-    <label class="small" for="filter">{{ 'ControlOptions_filter' | translate }}</label>
-    <div *ngIf="!isEdit; else filter">{{ options.filter }}&zwnj;</div>
-    <ng-template #filter>
-        <input class="form-control t-studio-input" id="filter" type="text" [(ngModel)]="options.filter"
-            (ngModelChange)="onOptionsChange()" autocomplete="off" [ngModelOptions]="{ updateOn: 'blur' }" />
-    </ng-template>
-</div>
-
-<!-- definitionId -->
-<div class="form-group col-12 col-sm-6 t-text-whitish" *ngIf="showDefinitionId">
-    <label class="small" for="definitionid">{{ 'ControlOptions_definitionId' | translate }}</label>
-    <div *ngIf="!isEdit; else definitionid">{{ definitionIdDisplay(options.definitionId) }}&zwnj;</div>
-    <ng-template #definitionid>
-        <select class="form-control t-studio-input" id="definitionid" [ngModel]="options.definitionId"
-            (ngModelChange)="setDefId($event)" #definitionid="ngModel">
-            <option value=""></option>
-            <option *ngFor="let c of definitionIdOptions" value="{{c.value}}">
-                {{ c.name() }}</option>
-        </select>
-    </ng-template>
-</div>
-
-<!-- choices -->
-<div class="form-group t-wide-form-group t-text-whitish" *ngIf="showChoices">
-    <label class="small" for="prefix">{{ 'ControlOptions_choices' | translate }}</label>
-    <table class="table table-sm table-dark text-nowrap mb-1">
-
-        <thead class="small font-weight-normal">
-            <tr>
-                <th style="width: 1px;" *ngIf="isEdit">
-                    <!-- Drag handle -->
-                </th>
-                <th>{{ 'ControlOptions_value' | translate }}</th>
-                <th>{{ ('Name' | translate) + ws.primaryPostfix }}</th>
-                <th *ngIf="ws.settings.SecondaryLanguageId">{{ ('Name' | translate) + ws.secondaryPostfix }}</th>
-                <th *ngIf="ws.settings.TernaryLanguageId">{{ ('Name' | translate) + ws.ternaryPostfix }}</th>
-                <th style="width: 1px;" *ngIf="isEdit">
-                    <!-- Delete -->
-                </th>
-            </tr>
-        </thead>
-        <tbody cdkDropList [cdkDropListDisabled]="!isEdit" (cdkDropListDropped)="rowDrop($event, options.choices)">
-            <tr *ngFor="let choice of options.choices || []" cdkDrag cdkDragLockAxis="y">
-                <td *cdkDragPlaceholder colspan="1000">&zwnj;</td>
-                <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
-                    {{ ws.getMultilingualValueImmediate(choice, 'name') || choice.value }}&zwnj;</div>
-                <td cdkDragHandle class="px-2" style="cursor: move;" *ngIf="isEdit">
-                    <fa-icon icon="arrows-alt"></fa-icon>
-                </td>
-
-                <td [class.p-0]="isEdit">
-                    <ng-container *ngIf="!isEdit; else value"> {{ choice.value }}</ng-container>
-                    <ng-template #value>
-                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.value"
-                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
-                    </ng-template>
-                </td>
-                <td [class.p-0]="isEdit">
-                    <ng-container *ngIf="!isEdit; else name"> {{ choice.name }}</ng-container>
-                    <ng-template #name>
-                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name"
-                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
-                    </ng-template>
-                </td>
-                <td *ngIf="ws.settings.SecondaryLanguageId" [class.p-0]="isEdit">
-                    <ng-container *ngIf="!isEdit; else name2"> {{ choice.name2 }}</ng-container>
-                    <ng-template #name2>
-                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name2"
-                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
-                    </ng-template>
-                </td>
-                <td *ngIf="ws.settings.TernaryLanguageId" [class.p-0]="isEdit">
-                    <ng-container *ngIf="!isEdit; else name3"> {{ choice.name3 }}</ng-container>
-                    <ng-template #name3>
-                        <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name3"
-                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
-                    </ng-template>
-                </td>
-
-                <td *ngIf="isEdit">
-                    <button class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
-                        (click)="onDeleteRow(choice, options.choices)">
-                        <fa-icon icon="trash">
-                        </fa-icon>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div *ngIf="!isEdit && !options.choices?.length" class="font-italic mx-2">
-        {{ 'NoItemsFound' | translate }}
+    @if (!isEdit) {
+      <div>{{ options.minDecimalPlaces }}&zwnj;</div>
+    } @else {
+      <input class="form-control t-studio-input" id="mindecimalplaces" type="number"
+        [(ngModel)]="options.minDecimalPlaces" (ngModelChange)="onOptionsChange()"
+        [ngModelOptions]="{ updateOn: 'blur' }" />
+      }
     </div>
-    <button *ngIf="isEdit" class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
-        (click)="onInsertChoice()">
-        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
-    </button>
-</div>
+  }
+
+  <!-- maxDecimalPlaces -->
+  @if (showDecimalPlaces) {
+    <div class="form-group col-12 col-sm-6 t-text-whitish">
+      <label class="small" for="maxdecimalplaces">{{ 'ControlOptions_maxDecimalPlaces' | translate }}</label>
+      @if (!isEdit) {
+        <div>{{ options.maxDecimalPlaces }}&zwnj;</div>
+      } @else {
+        <input class="form-control t-studio-input" id="maxdecimalplaces" type="number"
+          [(ngModel)]="options.maxDecimalPlaces" (ngModelChange)="onOptionsChange()"
+          [ngModelOptions]="{ updateOn: 'blur' }" />
+        }
+      </div>
+    }
+
+    <!-- prefix -->
+    @if (showPrefix) {
+      <div class="form-group col-12 col-sm-6 t-text-whitish">
+        <label class="small" for="prefix">{{ 'ControlOptions_prefix' | translate }}</label>
+        @if (!isEdit) {
+          <div>{{ options.prefix }}&zwnj;</div>
+        } @else {
+          <input class="form-control t-studio-input" id="prefix" type="text" [(ngModel)]="options.prefix"
+            (ngModelChange)="onOptionsChange()" autocomplete="off" [ngModelOptions]="{ updateOn: 'blur' }" />
+          }
+        </div>
+      }
+
+      <!-- codeWidth -->
+      @if (showCodeWidth) {
+        <div class="form-group col-12 col-sm-6 t-text-whitish">
+          <label class="small" for="codewidth">{{ 'ControlOptions_codeWidth' | translate }}</label>
+          @if (!isEdit) {
+            <div>{{ options.codeWidth }}&zwnj;</div>
+          } @else {
+            <input class="form-control t-studio-input" id="codewidth" type="number" [(ngModel)]="options.codeWidth"
+              (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }" />
+            }
+          </div>
+        }
+
+        <!-- filter -->
+        @if (showFilter) {
+          <div class="form-group col-12 col-sm-6 t-text-whitish">
+            <label class="small" for="filter">{{ 'ControlOptions_filter' | translate }}</label>
+            @if (!isEdit) {
+              <div>{{ options.filter }}&zwnj;</div>
+            } @else {
+              <input class="form-control t-studio-input" id="filter" type="text" [(ngModel)]="options.filter"
+                (ngModelChange)="onOptionsChange()" autocomplete="off" [ngModelOptions]="{ updateOn: 'blur' }" />
+              }
+            </div>
+          }
+
+          <!-- definitionId -->
+          @if (showDefinitionId) {
+            <div class="form-group col-12 col-sm-6 t-text-whitish">
+              <label class="small" for="definitionid">{{ 'ControlOptions_definitionId' | translate }}</label>
+              @if (!isEdit) {
+                <div>{{ definitionIdDisplay(options.definitionId) }}&zwnj;</div>
+              } @else {
+                <select class="form-control t-studio-input" id="definitionid" [ngModel]="options.definitionId"
+                  (ngModelChange)="setDefId($event)" #definitionid="ngModel">
+                  <option value=""></option>
+                  @for (c of definitionIdOptions; track c) {
+                    <option value="{{c.value}}">
+                    {{ c.name() }}</option>
+                  }
+                </select>
+              }
+            </div>
+          }
+
+          <!-- choices -->
+          @if (showChoices) {
+            <div class="form-group t-wide-form-group t-text-whitish">
+              <label class="small" for="prefix">{{ 'ControlOptions_choices' | translate }}</label>
+              <table class="table table-sm table-dark text-nowrap mb-1">
+                <thead class="small font-weight-normal">
+                  <tr>
+                    @if (isEdit) {
+                      <th style="width: 1px;">
+                        <!-- Drag handle -->
+                      </th>
+                    }
+                    <th>{{ 'ControlOptions_value' | translate }}</th>
+                    <th>{{ ('Name' | translate) + ws.primaryPostfix }}</th>
+                    @if (ws.settings.SecondaryLanguageId) {
+                      <th>{{ ('Name' | translate) + ws.secondaryPostfix }}</th>
+                    }
+                    @if (ws.settings.TernaryLanguageId) {
+                      <th>{{ ('Name' | translate) + ws.ternaryPostfix }}</th>
+                    }
+                    @if (isEdit) {
+                      <th style="width: 1px;">
+                        <!-- Delete -->
+                      </th>
+                    }
+                  </tr>
+                </thead>
+                <tbody cdkDropList [cdkDropListDisabled]="!isEdit" (cdkDropListDropped)="rowDrop($event, options.choices)">
+                  @for (choice of options.choices || []; track choice) {
+                    <tr cdkDrag cdkDragLockAxis="y">
+                      <td *cdkDragPlaceholder colspan="1000">&zwnj;</td>
+                      <div *cdkDragPreview class="p-1 border t-dark-border t-much-less-dark text-white">
+                      {{ ws.getMultilingualValueImmediate(choice, 'name') || choice.value }}&zwnj;</div>
+                      @if (isEdit) {
+                        <td cdkDragHandle class="px-2" style="cursor: move;">
+                          <fa-icon icon="arrows-alt"></fa-icon>
+                        </td>
+                      }
+                      <td [class.p-0]="isEdit">
+                        @if (!isEdit) {
+                          {{ choice.value }}
+                        } @else {
+                          <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.value"
+                            (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                          }
+                        </td>
+                        <td [class.p-0]="isEdit">
+                          @if (!isEdit) {
+                            {{ choice.name }}
+                          } @else {
+                            <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name"
+                              (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                              autocomplete="off" />
+                            }
+                          </td>
+                          @if (ws.settings.SecondaryLanguageId) {
+                            <td [class.p-0]="isEdit">
+                              @if (!isEdit) {
+                                {{ choice.name2 }}
+                              } @else {
+                                <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name2"
+                                  (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                                  autocomplete="off" />
+                                }
+                              </td>
+                            }
+                            @if (ws.settings.TernaryLanguageId) {
+                              <td [class.p-0]="isEdit">
+                                @if (!isEdit) {
+                                  {{ choice.name3 }}
+                                } @else {
+                                  <input class="form-control t-studio-input" type="text" [(ngModel)]="choice.name3"
+                                    (ngModelChange)="onOptionsChange()" [ngModelOptions]="{ updateOn: 'blur' }"
+                                    autocomplete="off" />
+                                  }
+                                </td>
+                              }
+                              @if (isEdit) {
+                                <td>
+                                  <button class="btn btn-secondary t-white-button t-text-whitish btn-sm py-0 px-1 align-baseline"
+                                    (click)="onDeleteRow(choice, options.choices)">
+                                    <fa-icon icon="trash">
+                                    </fa-icon>
+                                  </button>
+                                </td>
+                              }
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                      @if (!isEdit && !options.choices?.length) {
+                        <div class="font-italic mx-2">
+                          {{ 'NoItemsFound' | translate }}
+                        </div>
+                      }
+                      @if (isEdit) {
+                        <button class="btn btn-sm t-toolbar-button t-text-whitish font-weight-normal"
+                          (click)="onInsertChoice()">
+                          <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                        </button>
+                      }
+                    </div>
+                  }

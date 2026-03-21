@@ -1,27 +1,32 @@
-<div class="p-1 w-100 d-flex justify-content-between border-bottom" *ngIf="isSearchResult || toolbar">
-  <div class="d-flex">
-    <ng-container *ngTemplateOutlet="toolbar">
-    </ng-container>
-  </div>
-  <div class="d-flex" *ngIf="isSearchResult" style="width: 25rem;">
-    <div class="flex-grow-1">
-      <t-text-editor [ngModel]="searchTerm" (ngModelChange)="onSearchTermChange($event)" (keydown.enter)="onNext()"
-        (keydown.escape)="onSearchTermChange(null)" [placeholder]="'Search' | translate"></t-text-editor>
+@if (isSearchResult || toolbar) {
+  <div class="p-1 w-100 d-flex justify-content-between border-bottom">
+    <div class="d-flex">
+      <ng-container *ngTemplateOutlet="toolbar">
+      </ng-container>
     </div>
-      
-    <div class="flex-grow-0 flex-shrink-0">
-      <span *ngIf="searchTerm">&nbsp;{{ currentSearchResultOrder }} / {{ searchResultCount }}&nbsp;</span>
-      <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
-        type="button" title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious()">
-        <fa-icon icon="angle-up"></fa-icon>
-      </button>
-      <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
-        type="button" title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext()">
-        <fa-icon icon="angle-down"></fa-icon>
-      </button>
-    </div>
+    @if (isSearchResult) {
+      <div class="d-flex" style="width: 25rem;">
+        <div class="flex-grow-1">
+          <t-text-editor [ngModel]="searchTerm" (ngModelChange)="onSearchTermChange($event)" (keydown.enter)="onNext()"
+          (keydown.escape)="onSearchTermChange(null)" [placeholder]="'Search' | translate"></t-text-editor>
+        </div>
+        <div class="flex-grow-0 flex-shrink-0">
+          @if (searchTerm) {
+            <span>&nbsp;{{ currentSearchResultOrder }} / {{ searchResultCount }}&nbsp;</span>
+          }
+          <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
+            type="button" title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious()">
+            <fa-icon icon="angle-up"></fa-icon>
+          </button>
+          <button class="btn btn-sm t-toolbar-button btn-light t-white-button"
+            type="button" title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext()">
+            <fa-icon icon="angle-down"></fa-icon>
+          </button>
+        </div>
+      </div>
+    }
   </div>
-</div>
+}
 <cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight" [minBufferPx]="itemSize * 5"
   [maxBufferPx]="itemSize * 7">
   <table #t class="table table-sm text-nowrap t-table">
@@ -30,70 +35,96 @@
     <thead class="small">
       <tr style="height:41px">
         <th class="border-top-0 text-align-right text-muted t-slimfit"> # </th>
-        <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
-          <ng-container
-            *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
-          </ng-container>
-        </th>
-        <th class="border-top-0 t-slimfit" *ngIf="commands">
-        </th>
-        <th class="border-top-0" style="width:1px" *ngIf="isEdit">
-          <!-- <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
+        @for (path of columnPaths; track path) {
+          <th class="border-top-0" [style.width]="colWith(path)">
+            <ng-container
+              *ngTemplateOutlet="columnTemplates[path]?.headerTemplate || headerTemplate; context: { argument: columnTemplates[path]?.argument }">
+            </ng-container>
+          </th>
+        }
+        @if (commands) {
+          <th class="border-top-0 t-slimfit">
+          </th>
+        }
+        @if (isEdit) {
+          <th class="border-top-0" style="width:1px">
+            <!-- <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
             style="background:transparent;color:transparent;border-color: transparent;cursor:inherit" disabled>
             <fa-icon icon="trash"></fa-icon>
           </button> -->
         </th>
-      </tr>
-    </thead>
+      }
+    </tr>
+  </thead>
 
-    <!-- Body -->
-    <tbody>
-      <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
-        <tr [class.t-draw-attention]="item === attentionItem" [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0"
-          [style.background-color]="highlight(item) ? '#eeff44' : null"
-          [class.t-search-result]="isSearchResultInner(item)"
-          [class.t-current-search-result]="isCurrentSearchResult(item)">
-          <td class="text-muted">
-            <div class="text-center">
-              <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>
-              <fa-icon style="font-size: 60%;" *ngIf="item.PH" icon="asterisk"> </fa-icon>
-            </div>
-          </td>
-          <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">
+  <!-- Body -->
+  <tbody>
+    <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
+      <tr [class.t-draw-attention]="item === attentionItem" [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0"
+        [style.background-color]="highlight(item) ? '#eeff44' : null"
+        [class.t-search-result]="isSearchResultInner(item)"
+        [class.t-current-search-result]="isCurrentSearchResult(item)">
+        <td class="text-muted">
+          <div class="text-center">
+            @if (!item.PH) {
+              <span> {{ i + 1 | number }} </span>
+            }
+            @if (item.PH) {
+              <fa-icon style="font-size: 60%;" icon="asterisk"> </fa-icon>
+            }
+          </div>
+        </td>
+        @for (path of columnPaths; track path) {
+          <td [class.table-bordered]="isEdit">
             <ng-container>
               <ng-container
                 *ngTemplateOutlet="columnTemplates[path]?.rowTemplate || rowTemplate;context: { item: item, argument: columnTemplates[path]?.argument, index: i, update: onUpdateLine, isEdit: isEdit }">
               </ng-container>
             </ng-container>
           </td>
-          <td *ngIf="commands">
+        }
+        @if (commands) {
+          <td>
             <ng-container
               *ngTemplateOutlet="commands; context: { item: item, index: i, update: onUpdateLine, isEdit: isEdit }">
             </ng-container>
           </td>
-          <td *ngIf="isEdit">
-            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline"
-              [style.opacity]="item.PH ? 0 : null" [style.cursor]="item.PH ? 'inherit' : null" (click)="onDeleteLine(i)"
-              *ngIf="isEdit">
-              <fa-icon icon="trash" [title]="item.PH ? '' : ('Delete' | translate)">
-              </fa-icon>
-            </button>
+        }
+        @if (isEdit) {
+          <td>
+            @if (isEdit) {
+              <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline"
+                [style.opacity]="item.PH ? 0 : null" [style.cursor]="item.PH ? 'inherit' : null" (click)="onDeleteLine(i)"
+                >
+                <fa-icon icon="trash" [title]="item.PH ? '' : ('Delete' | translate)">
+                </fa-icon>
+              </button>
+            }
           </td>
-        </tr>
-      </ng-container>
-      <tr *ngIf="visibleDataCount < 1" class="t-biege">
+        }
+      </tr>
+    </ng-container>
+    @if (visibleDataCount < 1) {
+      <tr class="t-biege">
         <td colspan="1000">&nbsp;&nbsp;
-          <span class="font-italic font-weight-light text-muted" *ngIf="!isEdit">
-            {{ 'NoItemsFound' | translate }}
-          </span>
+          @if (!isEdit) {
+            <span class="font-italic font-weight-light text-muted">
+              {{ 'NoItemsFound' | translate }}
+            </span>
+          }
         </td>
       </tr>
-      <tr *ngIf="visibleDataCount < 2">
+    }
+    @if (visibleDataCount < 2) {
+      <tr>
         <td colspan="1000">&nbsp;</td>
       </tr>
-      <tr *ngIf="visibleDataCount < 3" class="t-biege">
+    }
+    @if (visibleDataCount < 3) {
+      <tr class="t-biege">
         <td colspan="1000">&nbsp;</td>
       </tr>
-    </tbody>
-  </table>
+    }
+  </tbody>
+</table>
 </cdk-virtual-scroll-viewport>

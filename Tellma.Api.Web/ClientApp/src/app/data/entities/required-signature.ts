@@ -5,6 +5,7 @@ export interface RequiredSignature extends Entity {
     ToState?: number;
     RuleType?: 'ByCustodian' | 'ByRole' | 'ByUser' | 'Public';
     RoleId?: number;
+    CustodianId?: number;
     UserId?: number;
     LineSignatureId?: number; // Not grouped by
     SignedById?: number;

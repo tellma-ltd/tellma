@@ -1,3 +1,5 @@
-<a class="t-view-link" *ngIf="itemId" [routerLink]="[link, itemId]">
-  <ng-content></ng-content>
-</a>
+@if (itemId) {
+  <a class="t-view-link" [routerLink]="[link, itemId]">
+    <ng-content></ng-content>
+  </a>
+}

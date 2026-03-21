@@ -1,5 +1,5 @@
 <t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb"
     [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -9,242 +9,356 @@
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-    <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
-    <!-- Header Name -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
-        [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
-        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+  <!-- Header Name -->
+  <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
+    [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    @if (!isEdit) {
+      <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    }
 
-        <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
-            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'"
-            required>
+    @if (isEdit && ws.isPrimaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'"
+        required>
+      </t-text-editor>
+    }
+
+    @if (isEdit && ws.isSecondaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+      </t-text-editor>
+    }
+
+    @if (isEdit && ws.isTernaryLanguage) {
+      <t-text-editor [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+        [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
+      </t-text-editor>
+    }
+  </t-form-group>
+
+  <!-- Name -->
+  @if (!ws.isPrimaryLanguage) {
+    <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
+      [serverErrors]="model?.serverErrors?.Name">
+      @if (!isEdit) {
+        <div>{{ model?.Name }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
         </t-text-editor>
+      }
+    </t-form-group>
+  }
 
-        <t-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
-            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+  <!-- Name2 -->
+  @if (!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId) {
+    <t-form-group class="t-form-group"
+      [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+      @if (!isEdit) {
+        <div>{{ model?.Name2 }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-text-editor>
+      }
+    </t-form-group>
+  }
 
-        <t-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
-            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
+  <!-- Name3 -->
+  @if (!ws.isTernaryLanguage && ws.settings.TernaryLanguageId) {
+    <t-form-group class="t-form-group"
+      [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+      @if (!isEdit) {
+        <div>{{ model?.Name3 }}</div>
+      }
+      @if (isEdit) {
+        <t-text-editor [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-text-editor>
+      }
     </t-form-group>
+  }
 
-    <!-- Name -->
-    <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-        [serverErrors]="model?.serverErrors?.Name">
-        <div *ngIf="!isEdit">{{ model?.Name }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </t-text-editor>
-    </t-form-group>
+  <!-- Code -->
+  <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    @if (!isEdit) {
+      <div>{{ model?.Code }}</div>
+    }
+    @if (isEdit) {
+      <t-text-editor [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
+      </t-text-editor>
+    }
+  </t-form-group>
 
-    <!-- Name2 -->
-    <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
-        [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
-        <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Name3 -->
-    <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
-        [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
-        <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Code -->
-    <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-        <div *ngIf="!isEdit">{{ model?.Code }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-    </t-form-group>
-
-    <!-- Classification -->
-    <t-form-group class="t-form-group" [label]="'Account_Classification' | translate"
-        [serverErrors]="model?.serverErrors?.ClassificationId">
-        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.ClassificationId">
-            <t-auto-cell collection="Account" path="Classification" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId"
-            additionalSelect="AccountTypeParentId">
-        </t-account-classifications-picker>
-    </t-form-group>
-
-    <!-- Type -->
-    <t-form-group class="t-form-group" [label]="'Account_Type' | translate"
-        [serverErrors]="model?.serverErrors?.AccountTypeId">
-        <t-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.AccountTypeId">
-            <t-auto-cell collection="Account" path="AccountType" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
-            [additionalSelect]="accountTypeAdditionalSelect" [filter]="filterAccountType(model)">
-        </t-account-types-picker>
-    </t-form-group>
-
-    <!-- Agent Definition -->
-    <t-form-group class="t-form-group" *ngIf="showAgentDefinitionId(model)"
-        [label]="'Account_AgentDefinition' | translate" [serverErrors]="model?.serverErrors?.AgentDefinitionId">
-        <div *ngIf="!isEdit">{{ formatAgentDefinitionId(model.AgentDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.AgentDefinitionId" [choices]="choicesAgentDefinitionId(model)"
-            (ngModelChange)="onAgentDefinitionChange($event, model)">
-        </t-selector>
-    </t-form-group>
-
-    <!-- Agent -->
-    <t-form-group class="t-form-group" *ngIf="showAgent(model)" [label]="labelAgent(model)"
-        [serverErrors]="model?.serverErrors?.AgentId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
-            [itemId]="model?.AgentId">
-            <t-auto-cell collection="Account" path="Agent" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [definitionIds]="definitionIdsAgent(model)"
-            [additionalSelect]="agentAdditionalSelect">
-        </t-agents-picker>
-    </t-form-group>
-
-    <!-- Resource Definition -->
-    <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
-        [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
-        <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId"
-            [choices]="choicesResourceDefinitionId(model)" (ngModelChange)="onResourceDefinitionChange($event, model)">
-        </t-selector>
-    </t-form-group>
-
-    <!-- Resource -->
-    <t-form-group class="t-form-group" *ngIf="showResource(model)" [label]="labelResource(model)"
-        [serverErrors]="model?.serverErrors?.ResourceId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../resources/' + ws.get('Resource', model?.ResourceId)?.DefinitionId"
-            [itemId]="model?.ResourceId">
-            <t-auto-cell collection="Account" path="Resource" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId" [definitionIds]="definitionIdsResource(model)"
-            [additionalSelect]="resourceAdditionalSelect">
-        </t-resources-picker>
-    </t-form-group>
-
-    <!-- NotedAgent Definition -->
-    <t-form-group class="t-form-group" *ngIf="showNotedAgentDefinitionId(model)"
-        [label]="'Account_NotedAgentDefinition' | translate"
-        [serverErrors]="model?.serverErrors?.NotedAgentDefinitionId">
-        <div *ngIf="!isEdit">{{ formatNotedAgentDefinitionId(model.NotedAgentDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedAgentDefinitionId"
-            [choices]="choicesNotedAgentDefinitionId(model)"
-            (ngModelChange)="onNotedAgentDefinitionChange($event, model)">
-        </t-selector>
-    </t-form-group>
-
-    <!-- NotedAgent -->
-    <t-form-group class="t-form-group" *ngIf="showNotedAgent(model)" [label]="labelNotedAgent(model)"
-        [serverErrors]="model?.serverErrors?.NotedAgentId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.NotedAgentId)?.DefinitionId"
-            [itemId]="model?.NotedAgentId">
-            <t-auto-cell collection="Account" path="NotedAgent" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId"
-            [definitionIds]="definitionIdsNotedAgent(model)" [additionalSelect]="notedAgentAdditionalSelect">
-        </t-agents-picker>
-    </t-form-group>
-
-    <!-- NotedResource Definition -->
-    <t-form-group class="t-form-group" *ngIf="showNotedResourceDefinitionId(model)"
-        [label]="'Account_NotedResourceDefinition' | translate"
-        [serverErrors]="model?.serverErrors?.NotedResourceDefinitionId">
-        <div *ngIf="!isEdit">{{ formatNotedResourceDefinitionId(model.NotedResourceDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedResourceDefinitionId"
-            [choices]="choicesNotedResourceDefinitionId(model)"
-            (ngModelChange)="onNotedResourceDefinitionChange($event, model)">
-        </t-selector>
-    </t-form-group>
-
-    <!-- NotedResource -->
-    <t-form-group class="t-form-group" *ngIf="showNotedResource(model)" [label]="labelNotedResource(model)"
-        [serverErrors]="model?.serverErrors?.NotedResourceId">
-        <t-view-link *ngIf="!isEdit"
-            [link]="'../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
-            [itemId]="model?.NotedResourceId">
-            <t-auto-cell collection="Account" path="NotedResource" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.NotedResourceId"
-            [definitionIds]="definitionIdsNotedResource(model)" [additionalSelect]="notedResourceAdditionalSelect">
-        </t-resources-picker>
-    </t-form-group>
-
-    <!-- Currency -->
-    <t-form-group class="t-form-group" *ngIf="showCurrency(model)" [label]="'Account_Currency' | translate"
-        [serverErrors]="model?.serverErrors?.CurrencyId">
-        <!-- View mode -->
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <t-view-link link="../../currencies" [itemId]="viewModeCurrencyId(model)">
-                {{ ws.getMultilingualValue('Currency', viewModeCurrencyId(model), 'Name') }}
-            </t-view-link>
-        </t-restricted>
-
-        <!-- Edit mode -->
-        <ng-container *ngIf="isEdit">
-            <span *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency',
-                readonlyValueCurrencyId(model), 'Name') }}</span>
-            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
-            </t-currencies-picker>
-        </ng-container>
-    </t-form-group>
-
-    <!-- Center -->
-    <t-form-group class="t-form-group" *ngIf="showCenter(model)" [label]="'Account_Center' | translate"
-        [serverErrors]="model?.serverErrors?.CenterId">
-        <!-- View mode -->
-        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="viewModeCenterId(model)">
-            {{ ws.getMultilingualValue('Center', viewModeCenterId(model), 'Name') }}
-        </t-view-link>
-
-        <!-- Edit mode -->
-        <ng-container *ngIf="isEdit">
-            <span *ngIf="readonlyCenterId(model)">{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model),
-                'Name') }}</span>
-            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId"
-                [filter]="filterCenter(model)">
-            </t-centers-picker>
-        </ng-container>
-    </t-form-group>
-
-    <!-- Entry Type -->
-    <t-form-group class="t-form-group" *ngIf="showEntryType(model)" [label]="'Account_EntryType' | translate"
-        [serverErrors]="model?.serverErrors?.EntryTypeId">
-        <t-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.EntryTypeId">
-            <t-auto-cell collection="Account" path="EntryType" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId" [filter]="filterEntryType(model)">
-        </t-entry-types-picker>
-    </t-form-group>
-
-    <!-- IsAutoSelected -->
-    <t-form-group *ngIf="showIsAutoSelected()" class="t-form-group" [label]="'Account_IsAutoSelected' | translate"
-        [serverErrors]="model?.serverErrors?.IsAutoSelected">
-        <div *ngIf="!isEdit">{{ (model?.IsAutoSelected ? 'Yes' : 'No') | translate }}</div>
-        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAutoSelected" id="isautoselected">
-            <label class="custom-control-label t-pointer" for="isautoselected">&zwnj;</label>
-        </div>
-    </t-form-group>
-
-    <!-- Is Active -->
-    <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-        <t-auto-cell collection="Account" [entity]="model" path="IsActive">
+  <!-- Classification -->
+  <t-form-group class="t-form-group" [label]="'Account_Classification' | translate"
+    [serverErrors]="model?.serverErrors?.ClassificationId">
+    @if (!isEdit) {
+      <t-view-link link="../../account-classifications" [itemId]="model?.ClassificationId">
+        <t-auto-cell collection="Account" path="Classification" [entity]="model">
         </t-auto-cell>
+      </t-view-link>
+    }
+    @if (isEdit) {
+      <t-account-classifications-picker [(ngModel)]="model.ClassificationId"
+        additionalSelect="AccountTypeParentId">
+      </t-account-classifications-picker>
+    }
+  </t-form-group>
+
+  <!-- Type -->
+  <t-form-group class="t-form-group" [label]="'Account_Type' | translate"
+    [serverErrors]="model?.serverErrors?.AccountTypeId">
+    @if (!isEdit) {
+      <t-view-link link="../../account-types" [itemId]="model?.AccountTypeId">
+        <t-auto-cell collection="Account" path="AccountType" [entity]="model">
+        </t-auto-cell>
+      </t-view-link>
+    }
+    @if (isEdit) {
+      <t-account-types-picker [(ngModel)]="model.AccountTypeId" required
+        [additionalSelect]="accountTypeAdditionalSelect" [filter]="filterAccountType(model)">
+      </t-account-types-picker>
+    }
+  </t-form-group>
+
+  <!-- Agent Definition -->
+  @if (showAgentDefinitionId(model)) {
+    <t-form-group class="t-form-group"
+      [label]="'Account_AgentDefinition' | translate" [serverErrors]="model?.serverErrors?.AgentDefinitionId">
+      @if (!isEdit) {
+        <div>{{ formatAgentDefinitionId(model.AgentDefinitionId) }}</div>
+      }
+      @if (isEdit) {
+        <t-selector [(ngModel)]="model.AgentDefinitionId" [choices]="choicesAgentDefinitionId(model)"
+          (ngModelChange)="onAgentDefinitionChange($event, model)">
+        </t-selector>
+      }
     </t-form-group>
+  }
+
+  <!-- Agent -->
+  @if (showAgent(model)) {
+    <t-form-group class="t-form-group" [label]="labelAgent(model)"
+      [serverErrors]="model?.serverErrors?.AgentId">
+      @if (!isEdit) {
+        <t-view-link [link]="'../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
+          [itemId]="model?.AgentId">
+          <t-auto-cell collection="Account" path="Agent" [entity]="model">
+          </t-auto-cell>
+        </t-view-link>
+      }
+      @if (isEdit) {
+        <t-agents-picker [(ngModel)]="model.AgentId" [definitionIds]="definitionIdsAgent(model)"
+          [additionalSelect]="agentAdditionalSelect">
+        </t-agents-picker>
+      }
+    </t-form-group>
+  }
+
+  <!-- Resource Definition -->
+  @if (showResourceDefinitionId(model)) {
+    <t-form-group class="t-form-group"
+      [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
+      @if (!isEdit) {
+        <div>{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
+      }
+      @if (isEdit) {
+        <t-selector [(ngModel)]="model.ResourceDefinitionId"
+          [choices]="choicesResourceDefinitionId(model)" (ngModelChange)="onResourceDefinitionChange($event, model)">
+        </t-selector>
+      }
+    </t-form-group>
+  }
+
+  <!-- Resource -->
+  @if (showResource(model)) {
+    <t-form-group class="t-form-group" [label]="labelResource(model)"
+      [serverErrors]="model?.serverErrors?.ResourceId">
+      @if (!isEdit) {
+        <t-view-link [link]="'../../resources/' + ws.get('Resource', model?.ResourceId)?.DefinitionId"
+          [itemId]="model?.ResourceId">
+          <t-auto-cell collection="Account" path="Resource" [entity]="model">
+          </t-auto-cell>
+        </t-view-link>
+      }
+      @if (isEdit) {
+        <t-resources-picker [(ngModel)]="model.ResourceId" [definitionIds]="definitionIdsResource(model)"
+          [additionalSelect]="resourceAdditionalSelect">
+        </t-resources-picker>
+      }
+    </t-form-group>
+  }
+
+  <!-- NotedAgent Definition -->
+  @if (showNotedAgentDefinitionId(model)) {
+    <t-form-group class="t-form-group"
+      [label]="'Account_NotedAgentDefinition' | translate"
+      [serverErrors]="model?.serverErrors?.NotedAgentDefinitionId">
+      @if (!isEdit) {
+        <div>{{ formatNotedAgentDefinitionId(model.NotedAgentDefinitionId) }}</div>
+      }
+      @if (isEdit) {
+        <t-selector [(ngModel)]="model.NotedAgentDefinitionId"
+          [choices]="choicesNotedAgentDefinitionId(model)"
+          (ngModelChange)="onNotedAgentDefinitionChange($event, model)">
+        </t-selector>
+      }
+    </t-form-group>
+  }
+
+  <!-- NotedAgent -->
+  @if (showNotedAgent(model)) {
+    <t-form-group class="t-form-group" [label]="labelNotedAgent(model)"
+      [serverErrors]="model?.serverErrors?.NotedAgentId">
+      @if (!isEdit) {
+        <t-view-link [link]="'../../agents/' + ws.get('Agent', model?.NotedAgentId)?.DefinitionId"
+          [itemId]="model?.NotedAgentId">
+          <t-auto-cell collection="Account" path="NotedAgent" [entity]="model">
+          </t-auto-cell>
+        </t-view-link>
+      }
+      @if (isEdit) {
+        <t-agents-picker [(ngModel)]="model.NotedAgentId"
+          [definitionIds]="definitionIdsNotedAgent(model)" [additionalSelect]="notedAgentAdditionalSelect">
+        </t-agents-picker>
+      }
+    </t-form-group>
+  }
+
+  <!-- NotedResource Definition -->
+  @if (showNotedResourceDefinitionId(model)) {
+    <t-form-group class="t-form-group"
+      [label]="'Account_NotedResourceDefinition' | translate"
+      [serverErrors]="model?.serverErrors?.NotedResourceDefinitionId">
+      @if (!isEdit) {
+        <div>{{ formatNotedResourceDefinitionId(model.NotedResourceDefinitionId) }}</div>
+      }
+      @if (isEdit) {
+        <t-selector [(ngModel)]="model.NotedResourceDefinitionId"
+          [choices]="choicesNotedResourceDefinitionId(model)"
+          (ngModelChange)="onNotedResourceDefinitionChange($event, model)">
+        </t-selector>
+      }
+    </t-form-group>
+  }
+
+  <!-- NotedResource -->
+  @if (showNotedResource(model)) {
+    <t-form-group class="t-form-group" [label]="labelNotedResource(model)"
+      [serverErrors]="model?.serverErrors?.NotedResourceId">
+      @if (!isEdit) {
+        <t-view-link
+          [link]="'../../resources/' + ws.get('Resource', model?.NotedResourceId)?.DefinitionId"
+          [itemId]="model?.NotedResourceId">
+          <t-auto-cell collection="Account" path="NotedResource" [entity]="model">
+          </t-auto-cell>
+        </t-view-link>
+      }
+      @if (isEdit) {
+        <t-resources-picker [(ngModel)]="model.NotedResourceId"
+          [definitionIds]="definitionIdsNotedResource(model)" [additionalSelect]="notedResourceAdditionalSelect">
+        </t-resources-picker>
+      }
+    </t-form-group>
+  }
+
+  <!-- Currency -->
+  @if (showCurrency(model)) {
+    <t-form-group class="t-form-group" [label]="'Account_Currency' | translate"
+      [serverErrors]="model?.serverErrors?.CurrencyId">
+      <!-- View mode -->
+      @if (!isEdit) {
+        <t-restricted [metadata]="model?.EntityMetadata?.Currency">
+          <t-view-link link="../../currencies" [itemId]="viewModeCurrencyId(model)">
+            {{ ws.getMultilingualValue('Currency', viewModeCurrencyId(model), 'Name') }}
+          </t-view-link>
+        </t-restricted>
+      }
+      <!-- Edit mode -->
+      @if (isEdit) {
+        @if (readonlyCurrencyId(model)) {
+          <span>{{ ws.getMultilingualValue('Currency',
+          readonlyValueCurrencyId(model), 'Name') }}</span>
+        }
+        @if (!readonlyCurrencyId(model)) {
+          <t-currencies-picker [(ngModel)]="model.CurrencyId">
+          </t-currencies-picker>
+        }
+      }
+    </t-form-group>
+  }
+
+  <!-- Center -->
+  @if (showCenter(model)) {
+    <t-form-group class="t-form-group" [label]="'Account_Center' | translate"
+      [serverErrors]="model?.serverErrors?.CenterId">
+      <!-- View mode -->
+      @if (!isEdit) {
+        <t-view-link link="../../centers" [itemId]="viewModeCenterId(model)">
+          {{ ws.getMultilingualValue('Center', viewModeCenterId(model), 'Name') }}
+        </t-view-link>
+      }
+      <!-- Edit mode -->
+      @if (isEdit) {
+        @if (readonlyCenterId(model)) {
+          <span>{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model),
+          'Name') }}</span>
+        }
+        @if (!readonlyCenterId(model)) {
+          <t-centers-picker [(ngModel)]="model.CenterId"
+            [filter]="filterCenter(model)">
+          </t-centers-picker>
+        }
+      }
+    </t-form-group>
+  }
+
+  <!-- Entry Type -->
+  @if (showEntryType(model)) {
+    <t-form-group class="t-form-group" [label]="'Account_EntryType' | translate"
+      [serverErrors]="model?.serverErrors?.EntryTypeId">
+      @if (!isEdit) {
+        <t-view-link link="../../entry-types" [itemId]="model?.EntryTypeId">
+          <t-auto-cell collection="Account" path="EntryType" [entity]="model">
+          </t-auto-cell>
+        </t-view-link>
+      }
+      @if (isEdit) {
+        <t-entry-types-picker [(ngModel)]="model.EntryTypeId" [filter]="filterEntryType(model)">
+        </t-entry-types-picker>
+      }
+    </t-form-group>
+  }
+
+  <!-- IsAutoSelected -->
+  @if (showIsAutoSelected()) {
+    <t-form-group class="t-form-group" [label]="'Account_IsAutoSelected' | translate"
+      [serverErrors]="model?.serverErrors?.IsAutoSelected">
+      @if (!isEdit) {
+        <div>{{ (model?.IsAutoSelected ? 'Yes' : 'No') | translate }}</div>
+      }
+      @if (isEdit) {
+        <div class="custom-control custom-checkbox t-labelless-checkbox">
+          <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAutoSelected" id="isautoselected">
+          <label class="custom-control-label t-pointer" for="isautoselected">&zwnj;</label>
+        </div>
+      }
+    </t-form-group>
+  }
+
+  <!-- Is Active -->
+  @if (!isEdit) {
+    <t-form-group class="t-form-group" [label]="'IsActive' | translate">
+      <t-auto-cell collection="Account" [entity]="model" path="IsActive">
+      </t-auto-cell>
+    </t-form-group>
+  }
 
 </ng-template>
 

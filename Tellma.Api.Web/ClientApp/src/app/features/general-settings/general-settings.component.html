@@ -19,58 +19,88 @@
       <t-form-group-settings class="t-form-group" [label]="'Settings_PrimaryLanguage' | translate"
         [description]="'Settings_PrimaryLanguageDescription' | translate"
         [serverErrors]="model.serverErrors?.PrimaryLanguageId">
-        <div *ngIf="!isEdit">{{ cultureName(model?.PrimaryLanguageId) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" [choices]="cultures" required>
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ cultureName(model?.PrimaryLanguageId) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.PrimaryLanguageId" [choices]="cultures" required>
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- SecondaryLanguage -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_SecondaryLanguage' | translate"
         [description]="'Settings_SecondaryLanguageDescription' | translate"
         [serverErrors]="model.serverErrors?.SecondaryLanguageId">
-        <div *ngIf="!isEdit">{{ cultureName(model?.SecondaryLanguageId) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" [choices]="cultures" isOptional="true">
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ cultureName(model?.SecondaryLanguageId) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.SecondaryLanguageId" [choices]="cultures" isOptional="true">
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- TernaryLanguage -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_TernaryLanguage' | translate"
         [description]="'Settings_TernaryLanguageDescription' | translate"
         [serverErrors]="model.serverErrors?.TernaryLanguageId">
-        <div *ngIf="!isEdit">{{ cultureName(model?.TernaryLanguageId) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageId" [choices]="cultures" isOptional="true">
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ cultureName(model?.TernaryLanguageId) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.TernaryLanguageId" [choices]="cultures" isOptional="true">
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- PrimaryLanguageSymbol -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.SecondaryLanguageId"
-        [label]="'Settings_PrimaryLanguageSymbol' | translate"
-        [description]="'Settings_LanguageSymbolDescription' | translate"
-        [serverErrors]="model.serverErrors?.PrimaryLanguageSymbol">
-        <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="'Settings_PrimaryLanguageSymbol' | translate"
+          [description]="'Settings_LanguageSymbolDescription' | translate"
+          [serverErrors]="model.serverErrors?.PrimaryLanguageSymbol">
+          @if (!isEdit) {
+            <div>{{ model?.PrimaryLanguageSymbol || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- SecondaryLanguageSymbol -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.SecondaryLanguageId"
-        [label]="'Settings_SecondaryLanguageSymbol' | translate"
-        [description]="'Settings_LanguageSymbolDescription' | translate"
-        [serverErrors]="model.serverErrors?.SecondaryLanguageSymbol">
-        <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol"
-          [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="'Settings_SecondaryLanguageSymbol' | translate"
+          [description]="'Settings_LanguageSymbolDescription' | translate"
+          [serverErrors]="model.serverErrors?.SecondaryLanguageSymbol">
+          @if (!isEdit) {
+            <div>{{ model?.SecondaryLanguageSymbol || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.SecondaryLanguageSymbol"
+            [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- TernaryLanguageSymbol -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.TernaryLanguageId"
-        [label]="'Settings_TernaryLanguageSymbol' | translate"
-        [description]="'Settings_LanguageSymbolDescription' | translate"
-        [serverErrors]="model.serverErrors?.TernaryLanguageSymbol">
-        <div *ngIf="!isEdit">{{ model?.TernaryLanguageSymbol || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="'Settings_TernaryLanguageSymbol' | translate"
+          [description]="'Settings_LanguageSymbolDescription' | translate"
+          [serverErrors]="model.serverErrors?.TernaryLanguageSymbol">
+          @if (!isEdit) {
+            <div>{{ model?.TernaryLanguageSymbol || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.TernaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
     </div>
 
@@ -83,87 +113,131 @@
       <!-- CompanyName -->
       <t-form-group-settings class="t-form-group" [label]="('Settings_CompanyName' | translate) + primaryPostfix"
         [description]="'Settings_CompanyNameDescription' | translate" [serverErrors]="model.serverErrors?.CompanyName">
-        <div *ngIf="!isEdit">{{ model?.CompanyName || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.CompanyName" [ngModelOptions]="{ updateOn: 'blur' }"
+        @if (!isEdit) {
+          <div>{{ model?.CompanyName || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [(ngModel)]="model.CompanyName" [ngModelOptions]="{ updateOn: 'blur' }"
           required></t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- CompanyName 2 -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.SecondaryLanguageId"
-        [label]="('Settings_CompanyName' | translate) + secondaryPostfix"
-        [description]="'Settings_CompanyNameDescription' | translate" [serverErrors]="model.serverErrors?.CompanyName2">
-        <div *ngIf="!isEdit">{{ model?.CompanyName2 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.CompanyName2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="('Settings_CompanyName' | translate) + secondaryPostfix"
+          [description]="'Settings_CompanyNameDescription' | translate" [serverErrors]="model.serverErrors?.CompanyName2">
+          @if (!isEdit) {
+            <div>{{ model?.CompanyName2 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.CompanyName2" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- CompanyName 3 -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.TernaryLanguageId"
-        [label]="('Settings_CompanyName' | translate) + ternaryPostfix"
-        [description]="'Settings_CompanyNameDescription' | translate" [serverErrors]="model.serverErrors?.CompanyName3">
-        <div *ngIf="!isEdit">{{ model?.CompanyName3 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.CompanyName3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="('Settings_CompanyName' | translate) + ternaryPostfix"
+          [description]="'Settings_CompanyNameDescription' | translate" [serverErrors]="model.serverErrors?.CompanyName3">
+          @if (!isEdit) {
+            <div>{{ model?.CompanyName3 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.CompanyName3" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- ShortCompanyName -->
       <t-form-group-settings class="t-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
         [description]="'Settings_ShortCompanyNameDescription' | translate"
         [serverErrors]="model.serverErrors?.ShortCompanyName">
-        <div *ngIf="!isEdit">{{ model?.ShortCompanyName || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"
+        @if (!isEdit) {
+          <div>{{ model?.ShortCompanyName || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"
           required></t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- ShortCompanyName 2 -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.SecondaryLanguageId"
-        [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
-        [description]="'Settings_ShortCompanyNameDescription' | translate"
-        [serverErrors]="model.serverErrors?.ShortCompanyName2">
-        <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
+          [description]="'Settings_ShortCompanyNameDescription' | translate"
+          [serverErrors]="model.serverErrors?.ShortCompanyName2">
+          @if (!isEdit) {
+            <div>{{ model?.ShortCompanyName2 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- ShortCompanyName 3 -->
-      <t-form-group-settings class="t-form-group" *ngIf="model.TernaryLanguageId"
-        [label]="('Settings_ShortCompanyName' | translate) + ternaryPostfix"
-        [description]="'Settings_ShortCompanyNameDescription' | translate"
-        [serverErrors]="model.serverErrors?.ShortCompanyName3">
-        <div *ngIf="!isEdit">{{ model?.ShortCompanyName3 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group"
+          [label]="('Settings_ShortCompanyName' | translate) + ternaryPostfix"
+          [description]="'Settings_ShortCompanyNameDescription' | translate"
+          [serverErrors]="model.serverErrors?.ShortCompanyName3">
+          @if (!isEdit) {
+            <div>{{ model?.ShortCompanyName3 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [(ngModel)]="model.ShortCompanyName3" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- SupportEmails -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_SupportEmails' | translate"
         [description]="'Settings_SupportEmailsDescription' | translate"
         [serverErrors]="model.serverErrors?.SupportEmails">
-        <div *ngIf="!isEdit">{{ model?.SupportEmails || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.SupportEmails"
+        @if (!isEdit) {
+          <div>{{ model?.SupportEmails || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [(ngModel)]="model.SupportEmails"
           [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+        }
       </t-form-group-settings>
 
       <div class="w-100"></div>
-      
+
       <!-- Enforce2faOnLocalAccounts -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_Enforce2faOnLocalAccounts' | translate"
         [serverErrors]="model.serverErrors?.Enforce2faOnLocalAccounts">
-        <div *ngIf="!isEdit">{{ (model?.Enforce2faOnLocalAccounts ? 'Yes' : 'No') | translate }}</div>
-          <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+        @if (!isEdit) {
+          <div>{{ (model?.Enforce2faOnLocalAccounts ? 'Yes' : 'No') | translate }}</div>
+        }
+        @if (isEdit) {
+          <div class="custom-control custom-checkbox t-labelless-checkbox">
             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.Enforce2faOnLocalAccounts" id="Enforce2faOnLocalAccounts">
             <label class="custom-control-label t-pointer" for="Enforce2faOnLocalAccounts">&zwnj;</label>
           </div>
+        }
       </t-form-group-settings>
-      
+
       <!-- EnforceNoExternalAccounts -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_EnforceNoExternalAccounts' | translate"
         [serverErrors]="model.serverErrors?.EnforceNoExternalAccounts">
-        <div *ngIf="!isEdit">{{ (model?.EnforceNoExternalAccounts ? 'Yes' : 'No') | translate }}</div>
-          <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
+        @if (!isEdit) {
+          <div>{{ (model?.EnforceNoExternalAccounts ? 'Yes' : 'No') | translate }}</div>
+        }
+        @if (isEdit) {
+          <div class="custom-control custom-checkbox t-labelless-checkbox">
             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.EnforceNoExternalAccounts" id="EnforceNoExternalAccounts">
             <label class="custom-control-label t-pointer" for="EnforceNoExternalAccounts">&zwnj;</label>
           </div>
+        }
       </t-form-group-settings>
 
     </div>
@@ -178,34 +252,50 @@
       <t-form-group-settings class="t-form-group" [label]="'Settings_PrimaryCalendar' | translate"
         [description]="'Settings_PrimaryCalendarDescription' | translate"
         [serverErrors]="model.serverErrors?.PrimaryCalendar">
-        <div *ngIf="!isEdit">{{ calendarName(model?.PrimaryCalendar) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryCalendar" [choices]="calendars" required>
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ calendarName(model?.PrimaryCalendar) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.PrimaryCalendar" [choices]="calendars" required>
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- SecondaryCalendar -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_SecondaryCalendar' | translate"
         [description]="'Settings_SecondaryCalendarDescription' | translate"
         [serverErrors]="model.serverErrors?.SecondaryCalendar">
-        <div *ngIf="!isEdit">{{ calendarName(model?.SecondaryCalendar) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryCalendar" [choices]="calendars" isOptional="true">
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ calendarName(model?.SecondaryCalendar) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.SecondaryCalendar" [choices]="calendars" isOptional="true">
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- DateFormat -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_DateFormat' | translate"
         [description]="'Settings_DateFormatDescription' | translate" [serverErrors]="model.serverErrors?.DateFormat">
-        <div *ngIf="!isEdit">{{ dateFormatDisplay(model?.DateFormat) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.DateFormat" [choices]="dateFormats" isOptional="true">
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ dateFormatDisplay(model?.DateFormat) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.DateFormat" [choices]="dateFormats" isOptional="true">
+          </t-selector>
+        }
       </t-form-group-settings>
 
       <!-- TimeFormat -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_TimeFormat' | translate"
         [description]="'Settings_TimeFormatDescription' | translate" [serverErrors]="model.serverErrors?.TimeFormat">
-        <div *ngIf="!isEdit">{{ timeFormatDisplay(model?.TimeFormat) || '-' }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.TimeFormat" [choices]="timeFormats" isOptional="true">
-        </t-selector>
+        @if (!isEdit) {
+          <div>{{ timeFormatDisplay(model?.TimeFormat) || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-selector [(ngModel)]="model.TimeFormat" [choices]="timeFormats" isOptional="true">
+          </t-selector>
+        }
       </t-form-group-settings>
     </div>
 
@@ -217,9 +307,13 @@
       <!-- BrandColor -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_BrandColor' | translate"
         [description]="'Settings_BrandColorDescription' | translate" [serverErrors]="model.serverErrors?.BrandColor">
-        <div *ngIf="!isEdit">{{ model?.BrandColor || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.BrandColor" [ngModelOptions]="{ updateOn: 'blur' }"
+        @if (!isEdit) {
+          <div>{{ model?.BrandColor || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [(ngModel)]="model.BrandColor" [ngModelOptions]="{ updateOn: 'blur' }"
           placeholder="e.g. #343A40"></t-text-editor>
+        }
       </t-form-group-settings>
     </div>
 
@@ -233,126 +327,194 @@
       <!-- BuildingNumber -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_BuildingNumber' | translate"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.BuildingNumber || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.BuildingNumber"
-          (ngModelChange)="customFields(model).BuildingNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.BuildingNumber || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.BuildingNumber"
+            (ngModelChange)="customFields(model).BuildingNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- Street -->
       <t-form-group-settings class="t-form-group" [label]="('Settings_Street' | translate) + primaryPostfix"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.Street || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.Street"
-          (ngModelChange)="customFields(model).Street = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.Street || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.Street"
+            (ngModelChange)="customFields(model).Street = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- Street2 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_Street' | translate) + secondaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.SecondaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.Street2 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.Street2"
-          (ngModelChange)="customFields(model).Street2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_Street' | translate) + secondaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.Street2 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.Street2"
+              (ngModelChange)="customFields(model).Street2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- Street3 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_Street' | translate) + ternaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.TernaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.Street3 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.Street3"
-          (ngModelChange)="customFields(model).Street3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_Street' | translate) + ternaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.Street3 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.Street3"
+              (ngModelChange)="customFields(model).Street3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- SecondaryNumber -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_SecondaryNumber' | translate"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.SecondaryNumber || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.SecondaryNumber"
-          (ngModelChange)="customFields(model).SecondaryNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.SecondaryNumber || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.SecondaryNumber"
+            (ngModelChange)="customFields(model).SecondaryNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- District -->
       <t-form-group-settings class="t-form-group" [label]="('Settings_District' | translate) + primaryPostfix"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.District || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.District"
-          (ngModelChange)="customFields(model).District = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.District || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.District"
+            (ngModelChange)="customFields(model).District = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- District2 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_District' | translate) + secondaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.SecondaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.District2 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.District2"
-          (ngModelChange)="customFields(model).District2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_District' | translate) + secondaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.District2 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.District2"
+              (ngModelChange)="customFields(model).District2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- District3 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_District' | translate) + ternaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.TernaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.District3 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.District3"
-          (ngModelChange)="customFields(model).District3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_District' | translate) + ternaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.District3 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.District3"
+              (ngModelChange)="customFields(model).District3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- PostalCode -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_PostalCode' | translate"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.PostalCode || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.PostalCode"
-          (ngModelChange)="customFields(model).PostalCode = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.PostalCode || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.PostalCode"
+            (ngModelChange)="customFields(model).PostalCode = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- City -->
       <t-form-group-settings class="t-form-group" [label]="('Settings_City' | translate) + primaryPostfix"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.City || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.City"
-          (ngModelChange)="customFields(model).City = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.City || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.City"
+            (ngModelChange)="customFields(model).City = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- City2 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_City' | translate) + secondaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.SecondaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.City2 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.City2"
-          (ngModelChange)="customFields(model).City2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.SecondaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_City' | translate) + secondaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.City2 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.City2"
+              (ngModelChange)="customFields(model).City2 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- City3 -->
-      <t-form-group-settings class="t-form-group" [label]="('Settings_City' | translate) + ternaryPostfix"
-        [serverErrors]="model.serverErrors?.CustomFields" *ngIf="model.TernaryLanguageId">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.City3 || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.City3"
-          (ngModelChange)="customFields(model).City3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
-      </t-form-group-settings>
+      @if (model.TernaryLanguageId) {
+        <t-form-group-settings class="t-form-group" [label]="('Settings_City' | translate) + ternaryPostfix"
+          [serverErrors]="model.serverErrors?.CustomFields">
+          @if (!isEdit) {
+            <div>{{ model?.CustomFields?.City3 || '-' }}</div>
+          }
+          @if (isEdit) {
+            <t-text-editor [ngModel]="model?.CustomFields?.City3"
+              (ngModelChange)="customFields(model).City3 = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+          }
+        </t-form-group-settings>
+      }
 
       <!-- CountryCode -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_CountryCode' | translate"
         [serverErrors]="model.serverErrors?.CountryCode">
-        <div *ngIf="!isEdit">{{ model?.CountryCode || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.CountryCode" [ngModelOptions]="{ updateOn: 'blur' }"
+        @if (!isEdit) {
+          <div>{{ model?.CountryCode || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [(ngModel)]="model.CountryCode" [ngModelOptions]="{ updateOn: 'blur' }"
           required></t-text-editor>
+        }
       </t-form-group-settings>
 
       <!-- CommercialRegistrationNumber -->
       <t-form-group-settings class="t-form-group" [label]="'Settings_CommercialRegistrationNumber' | translate"
         [serverErrors]="model.serverErrors?.CustomFields">
-        <div *ngIf="!isEdit">{{ model?.CustomFields?.CommercialRegistrationNumber || '-' }}</div>
-        <t-text-editor *ngIf="isEdit" [ngModel]="model?.CustomFields?.CommercialRegistrationNumber"
-          (ngModelChange)="customFields(model).CommercialRegistrationNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-text-editor>
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.CommercialRegistrationNumber || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.CommercialRegistrationNumber"
+            (ngModelChange)="customFields(model).CommercialRegistrationNumber = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
       </t-form-group-settings>
 
     </div>

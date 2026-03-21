@@ -1,105 +1,135 @@
-<ng-container [ngSwitch]="desc?.control">
-    <!-- Unsupported -->
-    <span *ngSwitchCase="'unsupported'" class="font-italic text-muted">
-        {{ 'NotSupportedForDisplay' | translate }}
+
+@switch (desc?.control) {
+  <!-- Unsupported -->
+  @case ('unsupported') {
+    <span class="font-italic text-muted">
+      {{ 'NotSupportedForDisplay' | translate }}
     </span>
-
-    <!-- Text -->
-    <t-text-editor *ngSwitchCase="'text'" [(ngModel)]="value">
+  }
+  <!-- Text -->
+  @case ('text') {
+    <t-text-editor [(ngModel)]="value">
     </t-text-editor>
-
-    <!-- Decimal -->
-    <t-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator">
+  }
+  <!-- Decimal -->
+  @case ('number') {
+    <t-decimal-editor [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
+      [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator">
     </t-decimal-editor>
-
-    <!-- Percent -->
-    <t-decimal-editor *ngSwitchCase="'percent'" [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
-        [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator" [isPercentage]="true">
+  }
+  <!-- Percent -->
+  @case ('percent') {
+    <t-decimal-editor [(ngModel)]="value" [minDecimalPlaces]="minDecimalPlaces"
+      [maxDecimalPlaces]="maxDecimalPlaces" [noSeparator]="noSeparator" [isPercentage]="true">
     </t-decimal-editor>
-
-    <!-- Serial -->
-    <t-serial-editor *ngSwitchCase="'serial'" [(ngModel)]="value" [prefix]="prefix" [codeWidth]="codeWidth">
+  }
+  <!-- Serial -->
+  @case ('serial') {
+    <t-serial-editor [(ngModel)]="value" [prefix]="prefix" [codeWidth]="codeWidth">
     </t-serial-editor>
-
-    <!-- Date -->
-    <t-date-picker *ngSwitchCase="'date'" [(ngModel)]="value" [calendar]="calendar" [granularity]="dateGranularity">
+  }
+  <!-- Date -->
+  @case ('date') {
+    <t-date-picker [(ngModel)]="value" [calendar]="calendar" [granularity]="dateGranularity">
     </t-date-picker>
-
-    <!-- Date Time -->
-    <t-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="value" [calendar]="calendar">
+  }
+  <!-- Date Time -->
+  @case ('datetime') {
+    <t-date-picker [(ngModel)]="value" [calendar]="calendar">
     </t-date-picker>
-
-    <!-- Choice -->
-    <t-selector *ngSwitchCase="'choice'" [(ngModel)]="value" [choices]="choices">
+  }
+  <!-- Choice -->
+  @case ('choice') {
+    <t-selector [(ngModel)]="value" [choices]="choices">
     </t-selector>
-
-    <!-- Boolean -->
-    <div *ngSwitchCase="'check'" class="custom-control custom-checkbox t-labelless-checkbox">
-        <input type="checkbox" class="custom-control-input" [(ngModel)]="value" id="{{checkboxId}}">
-        <label class="custom-control-label t-pointer" for="{{checkboxId}}">&zwnj;</label>
+  }
+  <!-- Boolean -->
+  @case ('check') {
+    <div class="custom-control custom-checkbox t-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="value" id="{{checkboxId}}">
+      <label class="custom-control-label t-pointer" for="{{checkboxId}}">&zwnj;</label>
     </div>
-
-    <!-- Entities -->
-    <t-account-classifications-picker *ngSwitchCase="'AccountClassification'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  <!-- Entities -->
+  @case ('AccountClassification') {
+    <t-account-classifications-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-account-classifications-picker>
-
-    <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('IfrsConcept') {
+    <t-ifrs-concepts-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-ifrs-concepts-picker>
-
-    <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('AccountType') {
+    <t-account-types-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-account-types-picker>
-
-    <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Account') {
+    <t-accounts-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-accounts-picker>
-
-    <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Agent') {
+    <t-agents-picker [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
     </t-agents-picker>
-
-    <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Currency') {
+    <t-currencies-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-currencies-picker>
-
-    <t-documents-picker *ngSwitchCase="'Document'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Document') {
+    <t-documents-picker [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
     </t-documents-picker>
-
-    <t-entry-types-picker *ngSwitchCase="'EntryType'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('EntryType') {
+    <t-entry-types-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-entry-types-picker>
-
-    <t-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="value" [definitionId]="definitionId" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Lookup') {
+    <t-lookups-picker [(ngModel)]="value" [definitionId]="definitionId" [showCreate]="showCreate" [filter]="filter">
     </t-lookups-picker>
-
-    <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Unit') {
+    <t-units-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-units-picker>
-
-    <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Resource') {
+    <t-resources-picker [(ngModel)]="value" [definitionIds]="definitionIds" [showCreate]="showCreate" [filter]="filter">
     </t-resources-picker>
-
-    <t-centers-picker *ngSwitchCase="'Center'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Center') {
+    <t-centers-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-centers-picker>
-
-    <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('Role') {
+    <t-roles-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-roles-picker>
-
-    <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('User') {
+    <t-users-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-users-picker>
-
-    <t-agent-definitions-picker *ngSwitchCase="'AgentDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('AgentDefinition') {
+    <t-agent-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-agent-definitions-picker>
-
-    <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('ResourceDefinition') {
+    <t-resource-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-resource-definitions-picker>
-
-    <t-lookup-definitions-picker *ngSwitchCase="'LookupDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('LookupDefinition') {
+    <t-lookup-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-lookup-definitions-picker>
-
-    <t-document-definitions-picker *ngSwitchCase="'DocumentDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('DocumentDefinition') {
+    <t-document-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-document-definitions-picker>
-
-    <t-report-definitions-picker *ngSwitchCase="'ReportDefinition'" [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+  }
+  @case ('ReportDefinition') {
+    <t-report-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-report-definitions-picker>
-
-    <div class="text-danger font-weight-bold" *ngSwitchDefault>
-        TODO: control for '{{ desc.control }}''
+  }
+  @default {
+    <div class="text-danger font-weight-bold">
+      TODO: control for '{{ desc.control }}''
     </div>
-
-</ng-container>
+  }
+}

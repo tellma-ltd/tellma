@@ -2,11 +2,13 @@
   <div class="row text-center">
 
     <!-- Error Message -->
-    <div class="col-12 d-flex justify-content-center" *ngIf="showError">
-      <div class="border mt-4 p-2 px-3 alert-danger w-auto">
-        <fa-icon icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp; {{ error | translate }}
+    @if (showError) {
+      <div class="col-12 d-flex justify-content-center">
+        <div class="border mt-4 p-2 px-3 alert-danger w-auto">
+          <fa-icon icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp; {{ error | translate }}
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Title -->
     <div class="col-12 my-5">
@@ -19,12 +21,16 @@
 
     <!-- Action Button -->
     <div class="col-12 d-flex justify-content-center py-4">
-      <button class="btn btn-outline-primary" (click)="onSignIn()" *ngIf="showSignIn">
-        <fa-icon icon="sign-in-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'SignIn' | translate }}
-      </button>
-      <button class="btn btn-outline-primary" (click)="onGoToApp()"
-        *ngIf="showGoToApp">{{ 'GoToApp' | translate: { appName: ( 'AppName' | translate ) } }}&nbsp;&nbsp;<fa-icon
-          icon="chevron-right" [flip]="flip"></fa-icon></button>
+      @if (showSignIn) {
+        <button class="btn btn-outline-primary" (click)="onSignIn()">
+          <fa-icon icon="sign-in-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'SignIn' | translate }}
+        </button>
+      }
+      @if (showGoToApp) {
+        <button class="btn btn-outline-primary" (click)="onGoToApp()"
+          >{{ 'GoToApp' | translate: { appName: ( 'AppName' | translate ) } }}&nbsp;&nbsp;<fa-icon
+        icon="chevron-right" [flip]="flip"></fa-icon></button>
+      }
     </div>
 
     <!-- Promotion -->

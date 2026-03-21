@@ -617,6 +617,8 @@ Workflows.Signatures.User,Workflows.Signatures.ProxyRole,StateReasons`;
   }
 
   // Workflows
+  public positiveLineStates: PositiveLineState[] = [1, 2, 3, 4];
+
   public showWorkflowFor(model: LineDefinition, toState: PositiveLineState): boolean {
     if (toState > 2 && model.LineType < 100) { // 100 = Event
       return false; // Only events have states beyond 3

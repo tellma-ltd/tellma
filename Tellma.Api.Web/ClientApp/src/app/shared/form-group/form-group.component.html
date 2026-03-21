@@ -1,30 +1,36 @@
-<!-- 
-  A basic form group, it would typically have a label and content, on wide screens both will appears side by side,
-  with the label occupying a fixed minimum width and the content occupying the rest, on narrow screens they will
-  appear stacked label above the content, so that both are occupying 100% of the available width, any input in the
-  content will typically have a bottom border which turns teal when focused and turns red when invalid
+<!--
+A basic form group, it would typically have a label and content, on wide screens both will appears side by side,
+with the label occupying a fixed minimum width and the content occupying the rest, on narrow screens they will
+appear stacked label above the content, so that both are occupying 100% of the available width, any input in the
+content will typically have a bottom border which turns teal when focused and turns red when invalid
 -->
 <div class="d-flex flex-wrap flex-lg-nowrap" [ngbPopover]="invalid ? errorsPopover : null"
   popoverClass="t-error-popover" container="body" [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
   <!-- Label -->
-  <div class="font-weight-bold small t-form-group-label" style="overflow-wrap: anywhere;" [class.pr-2]="!isRtl"
-    [class.pl-2]="isRtl" *ngIf="showLabel" [tContextMenu]="labelContextMenu" [tContext]="labelContext"
-    [tDisableMenu]="!labelContextMenu || disableLabelMenu">
-    <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
-  </div>
+  @if (showLabel) {
+    <div class="font-weight-bold small t-form-group-label" style="overflow-wrap: anywhere;" [class.pr-2]="!isRtl"
+      [class.pl-2]="isRtl" [tContextMenu]="labelContextMenu" [tContext]="labelContext"
+      [tDisableMenu]="!labelContextMenu || disableLabelMenu">
+      <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
+    </div>
+  }
   <!-- Content -->
   <div class="d-flex form-group-container" style="overflow-wrap: anywhere;" [class.w-100]="!showLabel"
     [class.t-labeled-form-group-content]="showLabel" [class.is-invalid]="invalid">
-    <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="areServerErrors"></fa-icon>
+    @if (areServerErrors) {
+      <fa-icon class="text-danger mx-1" icon="exclamation-triangle"></fa-icon>
+    }
     <ng-content></ng-content>
   </div>
 </div>
 
 <ng-template #errorsPopover>
   <div style="width: 250px">
-    <p class="m-0 p-0" *ngFor="let error of errors">
-      <fa-icon icon="exclamation-triangle"></fa-icon>
-      &nbsp;{{ error() }}
-    </p>
+    @for (error of errors; track error) {
+      <p class="m-0 p-0">
+        <fa-icon icon="exclamation-triangle"></fa-icon>
+        &nbsp;{{ error() }}
+      </p>
+    }
   </div>
 </ng-template>

@@ -7,7 +7,9 @@
                 <li class="breadcrumb-item active">
                     <span>{{ 'BankReconciliation' | translate }}</span>
                     <!-- Dirty Asterisk -->
-                    <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">*</span>
+                    @if (isDirty) {
+                    <span class="text-danger t-dirty-asterisk px-1">*</span>
+                    }
                 </li>
             </ul>
         </div>
@@ -33,31 +35,36 @@
                     </t-form-group>
 
                     <!-- Agent -->
-                    <t-form-group class="t-form-group" [label]="labelAgent_Manual" *ngIf="showAgentParameter">
-                        <t-agents-picker *ngIf="!readonlyAgent_Manual" [(ngModel)]="agentId"
+                    @if (showAgentParameter) {
+                    <t-form-group class="t-form-group" [label]="labelAgent_Manual">
+                        @if (!readonlyAgent_Manual) {
+                        <t-agents-picker [(ngModel)]="agentId"
                             additionalSelect="Currency.E" [definitionIds]="definitionIdsAgent_Manual"
                             [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false"
                             [disabled]="isDirty">
                         </t-agents-picker>
-                        <t-view-link *ngIf="readonlyAgent_Manual"
+                        } @else {
+                        <t-view-link
                             [link]="'../agents/' + ws.get('Agent', readonlyValueAgentId_Manual)?.DefinitionId"
                             [itemId]="readonlyValueAgentId_Manual">
                             {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual, 'Name') }}
                         </t-view-link>
+                        }
                     </t-form-group>
+                    }
 
                     <!-- Unreconciled Parameters -->
-                    <ng-container *ngIf="isUnreconciled">
+                    @if (isUnreconciled) {
                         <!-- As Of Date -->
                         <t-form-group class="t-form-group" [label]="'AsOfDate' | translate">
                             <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }"
                                 [disabled]="isDirty">
                             </t-date-picker>
                         </t-form-group>
-                    </ng-container>
+                    }
 
                     <!-- Reconciled Parameters -->
-                    <ng-container *ngIf="isReconciled">
+                    @if (isReconciled) {
                         <!-- ExternalReferenceContains -->
                         <t-form-group class="t-form-group" [label]="'ExternalReferenceContains' | translate">
                             <t-text-editor [(ngModel)]="externalReferenceContains"
@@ -94,7 +101,7 @@
                                 [maxDecimalPlaces]="amountsDecimals">
                             </t-decimal-editor>
                         </t-form-group>
-                    </ng-container>
+                    }
                 </div>
             </div>
         </div>
@@ -103,7 +110,8 @@
         <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
 
             <!-- Reconcile toolbar -->
-            <div *ngIf="showCheckedEntriesToolbar">
+            @if (showCheckedEntriesToolbar) {
+            <div>
 
                 <span class="mx-2 t-vertical-align-middle">
                     {{ 'InternalEntries0ExternalEntries1' | translate: { '0': checkedEntriesTotal |
@@ -127,10 +135,12 @@
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
                 </button>
             </div>
+            }
 
 
             <!-- Edit Toolbar -->
-            <div *ngIf="showEditToolbar">
+            @if (showEditToolbar) {
+            <div>
 
                 <!-- Save -->
                 <button class="btn btn-sm t-toolbar-button btn-primary" (click)="onSave()">
@@ -142,52 +152,64 @@
                     <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
                 </button>
             </div>
+            }
 
             <!-- Left Buttons -->
-            <div *ngIf="showViewToolbar">
+            @if (showViewToolbar) {
+            <div>
 
                 <!-- Report -->
+                @if (showReport) {
                 <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="disableReport"
-                    container="body" *ngIf="showReport">
+                    container="body">
                     <button class="btn btn-primary btn-sm t-toolbar-button"
                         (click)="modalService.open(reconciliationReport)" [disabled]="!!disableReport">
                         <fa-icon icon="chart-line"></fa-icon>
                         <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Report' | translate }}</span>
                     </button>
                 </div>
+                }
 
                 <!-- Actions dropdown -->
                 <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-                    <button type="button" *ngIf="isUnreconciled"
+                    @if (isUnreconciled) {
+                    <button type="button"
                         class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
                         {{ 'Actions' | translate }}
                     </button>
+                    }
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <div *ngIf="showAutoReconcile" [placement]="actionsDropdownPlacement"
+                        @if (showAutoReconcile) {
+                        <div [placement]="actionsDropdownPlacement"
                             [ngbTooltip]="disableAutoReconcile" container="body">
                             <button type="button" class="dropdown-item btn-light" ngbDropdownItem
                                 (click)="modalService.open(autoReconcile)" [disabled]="!!disableAutoReconcile">
                                 {{ 'AutoReconcile' | translate }}
                             </button>
                         </div>
-                        <div *ngIf="showExport" [placement]="actionsDropdownPlacement" [ngbTooltip]="disableExport"
+                        }
+                        @if (showExport) {
+                        <div [placement]="actionsDropdownPlacement" [ngbTooltip]="disableExport"
                             container="body">
                             <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
                                 [disabled]="!!disableExport">
                                 {{ 'Export' | translate }}
                             </button>
                         </div>
+                        }
                     </div>
                 </div>
-                <!-- 
+                <!--
                 <t-spinner class="t-vertical-align-middle mx-1" *ngIf="showExportSpinner">
                 </t-spinner> -->
             </div>
+            }
 
             <!-- Right Buttons -->
             <div>
-                <div *ngIf="!isDirty" class="d-inline">
+                @if (!isDirty) {
+                <div class="d-inline">
                     <!-- Refresh -->
                     <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
                         [disabled]="!!disableRefresh" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
@@ -195,7 +217,8 @@
                     </button>
 
                     <!-- Paging -->
-                    <div class="d-inline" *ngIf="isReconciled">
+                    @if (isReconciled) {
+                    <div class="d-inline">
                         <span class="t-vertical-align-middle small mx-2">
                             {{ from | number }} - {{ to | number }} / {{ total | number }}</span>
                         <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
@@ -208,7 +231,9 @@
                             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                         </button>
                     </div>
+                    }
                 </div>
+                }
 
                 <!-- Expand/Collapse -->
                 <button class="btn btn-sm t-toolbar-button btn-light t-white-button font-weight-normal" type="button"
@@ -224,7 +249,8 @@
 
     <!-- Results -->
     <div class="row t-rest-of-screen">
-        <div class="table-responsive" *ngIf="initialized; else spinner">
+        @if (initialized) {
+        <div class="table-responsive">
             <!-- Details (Flat Table) -->
             <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
                 <table
@@ -239,7 +265,8 @@
                                         {{ 'InternalEntries' | translate }}
                                     </span>
                                     <!-- Internal Entries Paging -->
-                                    <div class="d-inline" *ngIf="isUnreconciled && !isDirty">
+                                    @if (isUnreconciled && !isDirty) {
+                                    <div class="d-inline">
                                         <span class="t-vertical-align-middle font-weight-normal mx-2">
                                             {{ entries_from | number }} - {{ entries_to | number }} /
                                             {{ entries_total | number }}</span>
@@ -254,35 +281,39 @@
                                             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                                         </button>
                                     </div>
+                                    }
                                 </div>
                             </th>
-                            <ng-container *ngIf="isUnreconciled; else reconciledheader1">
+                            @if (isUnreconciled) {
                                 <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                            </ng-container>
-                            <ng-template #reconciledheader1>
+                            } @else {
                                 <th></th>
-                            </ng-template>
+                            }
                             <th class="w-50" colSpan="4">
                                 <div class="d-flex justify-content-between align-items-baseline">
                                     <div class="d-inline">
                                         <span>{{ 'ExternalEntries' | translate }}</span>
-                                        <button (click)="onDownloadTemplate()" *ngIf="showDownloadTemplate"
+                                        @if (showDownloadTemplate) {
+                                        <button (click)="onDownloadTemplate()"
                                             [title]="'DownloadTemplate' | translate"
                                             class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 mx-2 align-baseline">
                                             <fa-icon icon="download" tabindex="-1"></fa-icon>
                                         </button>
+                                        }
+                                        @if (showImport) {
                                         <div class="d-inline-block" [placement]="actionsDropdownPlacement"
-                                            [ngbTooltip]="disableImport" container="body" *ngIf="showImport">
+                                            [ngbTooltip]="disableImport" container="body">
                                             <button (click)="fileInput.click()" [disabled]="!!disableImport"
                                                 [title]="'Import' | translate"
                                                 class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
                                                 <fa-icon icon="upload" tabindex="-1"></fa-icon>
                                             </button>
                                         </div>
+                                        }
 
                                         <!-- for the file dialog -->
                                         <input type="file" class="d-none" #fileInput
@@ -290,7 +321,8 @@
                                             accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
                                     </div>
                                     <!-- External Entries Paging -->
-                                    <div class="d-inline" *ngIf="isUnreconciled && !isDirty">
+                                    @if (isUnreconciled && !isDirty) {
+                                    <div class="d-inline">
                                         <span class="t-vertical-align-middle font-weight-normal mx-2">
                                             {{ ex_entries_from | number }} - {{ ex_entries_to | number }} /
                                             {{ ex_entries_total | number }}</span>
@@ -306,6 +338,7 @@
                                             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                                         </button>
                                     </div>
+                                    }
                                 </div>
                             </th>
                         </tr>
@@ -323,7 +356,7 @@
                             <th class="text-right" style="width:12%">
                                 {{ 'Entry_MonetaryValue' | translate }}
                             </th>
-                            <ng-container *ngIf="isUnreconciled; else reconciledheader2">
+                            @if (isUnreconciled) {
                                 <!-- Clone and Reconcile Buttons -->
                                 <th class="t-slimfit" style="min-width: 33px;"></th>
                                 <!-- Checkboxes #1 -->
@@ -334,11 +367,10 @@
                                 <th class="t-slimfit px-0"></th>
                                 <!-- Checkboxes #2 -->
                                 <th class="t-slimfit" style="min-width: 42px;"></th>
-                            </ng-container>
-                            <ng-template #reconciledheader2>
+                            } @else {
                                 <!-- Unreconcile -->
                                 <th class="t-slimfit"></th>
-                            </ng-template>
+                            }
                             <th style="width:12%">
                                 {{ 'Line_PostingDate' | translate }}
                             </th>
@@ -361,11 +393,13 @@
                             *cdkVirtualFor="let row of rows; index as i">
                             <td class="t-a">
                                 &nbsp;
-                                <t-view-link *ngIf="row.entry" [link]="'../documents/' + row.entry.DocumentDefinitionId"
+                                @if (row.entry) {
+                                <t-view-link [link]="'../documents/' + row.entry.DocumentDefinitionId"
                                     [itemId]="row.entry.DocumentId">
                                     {{ formatSerialNumber(row.entry.DocumentSerialNumber,
                                     row.entry.DocumentDefinitionId) }}
                                 </t-view-link>
+                                }
                             </td>
                             <td class="t-a">
                                 {{ row.entry?.PostingDate | dateFormat }}
@@ -378,122 +412,133 @@
                                 accounting:amountsFormat) : '' }}
                             </td>
 
-                            <ng-container *ngIf="isUnreconciled; else reconciledcolumns">
+                            @if (isUnreconciled) {
 
                                 <!-- Clone and Reconcile -->
                                 <td class="text-center t-a">
-                                    <ng-container *ngIf="row.entry && !row.entry.IsReconciledLater">
+                                    @if (row.entry && !row.entry.IsReconciledLater) {
+                                        @if (!row.entryReconciliation && !row.entryIsChecked) {
                                         <button (click)="onCloneAndReconcile(row)"
-                                            *ngIf="!row.entryReconciliation && !row.entryIsChecked"
                                             [title]="'Clone' | translate"
                                             class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
                                             <fa-icon icon="clone" tabindex="-1"></fa-icon>
                                         </button>
-                                    </ng-container>
+                                        }
+                                    }
                                 </td>
 
                                 <!-- Checkbox #1 -->
                                 <td class="text-center t-a">
-                                    <ng-container *ngIf="row.entry && !row.entry.IsReconciledLater">
+                                    @if (row.entry && !row.entry.IsReconciledLater) {
                                         <!-- Checkbox -->
-                                        <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
-                                            *ngIf="!row.entryReconciliation; else cancelButton">
+                                        @if (!row.entryReconciliation) {
+                                        <div class="custom-control custom-checkbox t-labelless-checkbox d-inline">
                                             <input type="checkbox" class="custom-control-input" id="entryCheck{{i}}"
                                                 [(ngModel)]="row.entryIsChecked">
                                             <label class="custom-control-label t-pointer"
                                                 for="entryCheck{{i}}">&zwnj;</label>
                                         </div>
+                                        } @else {
                                         <!-- Cancel reconcile -->
-                                        <ng-template #cancelButton>
-                                            <button (click)="onUndoReconcileCheckedEntry(row)"
-                                                (mouseenter)="onReconciledEntryMouseEnter(row)"
-                                                (mouseleave)="onReconciledEntryMouseLeave(row)"
-                                                [title]="'Unreconcile' | translate"
-                                                class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
-                                                    class="small">
-                                                    <fa-icon icon="times" tabindex="-1"></fa-icon>
-                                                </span></button>
-                                        </ng-template>
-                                    </ng-container>
-                                    <div class="mx-2" *ngIf="row.entry && row.entry.IsReconciledLater"
+                                        <button (click)="onUndoReconcileCheckedEntry(row)"
+                                            (mouseenter)="onReconciledEntryMouseEnter(row)"
+                                            (mouseleave)="onReconciledEntryMouseLeave(row)"
+                                            [title]="'Unreconcile' | translate"
+                                            class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
+                                                class="small">
+                                                <fa-icon icon="times" tabindex="-1"></fa-icon>
+                                            </span></button>
+                                        }
+                                    }
+                                    @if (row.entry && row.entry.IsReconciledLater) {
+                                    <div class="mx-2"
                                         [ngbPopover]="reconciledLaterInfo" container="body"
                                         triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement">
                                         <fa-icon class="text-muted" icon="exclamation-circle"></fa-icon>
                                     </div>
+                                    }
                                 </td>
 
                                 <!-- Validation Errors -->
                                 <td class="px-0 t-a">
-                                    <div class="mx-2" *ngIf="row.entryReconciliation?.serverErrors?.Entries"
+                                    @if (row.entryReconciliation?.serverErrors?.Entries) {
+                                    <div class="mx-2"
                                         [ngbPopover]="entryErrorsPopover" popoverClass="t-error-popover"
                                         container="body" triggers="mouseenter:mouseleave"
                                         [placement]="errorPopoverPlacement">
                                         <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>
                                     </div>
+                                    }
 
                                     <!-- Popover -->
                                     <ng-template #entryErrorsPopover>
                                         <div style="width: 250px;">
-                                            <p class="m-0 p-0"
-                                                *ngFor="let error of row.entryReconciliation?.serverErrors?.Entries">
+                                            @for (error of row.entryReconciliation?.serverErrors?.Entries; track $index) {
+                                            <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-triangle"></fa-icon>
                                                 &nbsp;
                                                 {{ error }}
                                             </p>
+                                            }
                                         </div>
                                     </ng-template>
                                 </td>
 
                                 <!-- Validation Errors -->
                                 <td class="px-0 t-b">
-                                    <div class="mx-2" *ngIf="row.exEntryReconciliation?.serverErrors?.ExternalEntries"
+                                    @if (row.exEntryReconciliation?.serverErrors?.ExternalEntries) {
+                                    <div class="mx-2"
                                         [ngbPopover]="exEntryErrorsPopover" popoverClass="t-error-popover"
                                         container="body" triggers="mouseenter:mouseleave"
                                         [placement]="errorPopoverPlacement">
                                         <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>
                                     </div>
+                                    }
 
                                     <!-- Popover -->
                                     <ng-template #exEntryErrorsPopover>
                                         <div style="width: 250px;">
-                                            <p class="m-0 p-0"
-                                                *ngFor="let error of row.exEntryReconciliation?.serverErrors?.ExternalEntries">
+                                            @for (error of row.exEntryReconciliation?.serverErrors?.ExternalEntries; track $index) {
+                                            <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-triangle"></fa-icon>
                                                 &nbsp;
                                                 {{ error }}
                                             </p>
+                                            }
                                         </div>
                                     </ng-template>
                                 </td>
 
                                 <!-- Checkbox #2 -->
                                 <td class="text-center t-b">
-                                    <ng-container *ngIf="row.exEntry && !row.exEntry.IsReconciledLater">
+                                    @if (row.exEntry && !row.exEntry.IsReconciledLater) {
                                         <!-- Checkbox -->
-                                        <div class="custom-control custom-checkbox t-labelless-checkbox d-inline"
-                                            *ngIf="!row.exEntryReconciliation; else excancelbutton">
+                                        @if (!row.exEntryReconciliation) {
+                                        <div class="custom-control custom-checkbox t-labelless-checkbox d-inline">
                                             <input type="checkbox" class="custom-control-input" id="exEntryCheck{{i}}"
                                                 [(ngModel)]="row.exEntryIsChecked">
                                             <label class="custom-control-label t-pointer"
                                                 for="exEntryCheck{{i}}">&zwnj;</label>
                                         </div>
+                                        } @else {
                                         <!-- Cancel Reconcile -->
-                                        <ng-template #excancelbutton>
-                                            <button (click)="onUndoReconciledCheckedExEntry(row)"
-                                                (mouseenter)="onReconciledExEntryMouseEnter(row)"
-                                                (mouseleave)="onReconciledExEntryMouseLeave(row)"
-                                                [title]="'Unreconcile' | translate"
-                                                class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
-                                                    class="small">
-                                                    <fa-icon icon="times" tabindex="-1"></fa-icon>
-                                                </span></button>
-                                        </ng-template>
-                                    </ng-container>
-                                    <div class="mx-2" *ngIf="row.exEntry && row.exEntry.IsReconciledLater"
+                                        <button (click)="onUndoReconciledCheckedExEntry(row)"
+                                            (mouseenter)="onReconciledExEntryMouseEnter(row)"
+                                            (mouseleave)="onReconciledExEntryMouseLeave(row)"
+                                            [title]="'Unreconcile' | translate"
+                                            class="btn btn-light text-black-50 t-white-button btn-sm py-0 px-1 align-baseline"><span
+                                                class="small">
+                                                <fa-icon icon="times" tabindex="-1"></fa-icon>
+                                            </span></button>
+                                        }
+                                    }
+                                    @if (row.exEntry && row.exEntry.IsReconciledLater) {
+                                    <div class="mx-2"
                                         [ngbPopover]="reconciledLaterInfo" container="body"
                                         triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement">
                                         <fa-icon class="text-muted" icon="exclamation-circle"></fa-icon>
                                     </div>
+                                    }
                                 </td>
 
                                 <ng-template #reconciledLaterInfo>
@@ -507,20 +552,20 @@
                                     </div>
                                 </ng-template>
 
-                            </ng-container>
-                            <ng-template #reconciledcolumns>
+                            } @else {
                                 <!-- Unreconcile button -->
                                 <td [class.border-top-0]="!row.firstOne" class="bg-white border-right border-left">
+                                    @if (row.firstOne) {
                                     <button (click)="onDeleteReconciliation(row)" [title]="'Unreconcile' | translate"
-                                        *ngIf="row.firstOne"
                                         class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 align-baseline">
                                         <fa-icon icon="times" tabindex="-1"></fa-icon>
                                     </button>
+                                    }
                                 </td>
-                            </ng-template>
+                            }
 
                             <!-- External Entry (Edit) -->
-                            <ng-container *ngIf="row.exEntryIsEdit && !row.exEntryReconciliation; else viewExEntry">
+                            @if (row.exEntryIsEdit && !row.exEntryReconciliation) {
                                 <td class="t-b">
                                     <t-form-group-dynamic class="t-form-group"
                                         [serverErrors]="row.exEntry?.serverErrors?.PostingDate">
@@ -550,25 +595,26 @@
                                         </t-decimal-editor>
                                     </t-form-group-dynamic>
                                 </td>
-                            </ng-container>
+                            } @else {
 
                             <!-- External Entry (View) -->
-                            <ng-template #viewExEntry>
                                 <td class="t-b" (dblclick)="onRowDoubleClick(row)"
                                     [ngbPopover]="row.exEntry?.serverErrors?.PostingDate ? postingDateErrors : null"
                                     container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
                                     triggers="mouseenter:mouseleave">
-                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
-                                        *ngIf="row.exEntry?.serverErrors?.PostingDate"></fa-icon>
+                                    @if (row.exEntry?.serverErrors?.PostingDate) {
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"></fa-icon>
+                                    }
                                     {{ row.exEntry?.PostingDate | dateFormat }}
 
                                     <ng-template #postingDateErrors>
                                         <div class="" style="width: 250px">
-                                            <p class="m-0 p-0"
-                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.PostingDate">
+                                            @for (errorMsg of row.exEntry?.serverErrors?.PostingDate; track $index) {
+                                            <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-triangle"></fa-icon>
                                                 &nbsp;{{ errorMsg }}
                                             </p>
+                                            }
                                         </div>
                                     </ng-template>
                                 </td>
@@ -576,44 +622,48 @@
                                     [ngbPopover]="row.exEntry?.serverErrors?.ExternalReference ? exRefErrors : null"
                                     container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
                                     triggers="mouseenter:mouseleave">
-                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
-                                        *ngIf="row.exEntry?.serverErrors?.ExternalReference"></fa-icon>
+                                    @if (row.exEntry?.serverErrors?.ExternalReference) {
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"></fa-icon>
+                                    }
                                     {{ row.exEntry?.ExternalReference }}
 
                                     <ng-template #exRefErrors>
                                         <div class="" style="width: 250px">
-                                            <p class="m-0 p-0"
-                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.ExternalReference">
+                                            @for (errorMsg of row.exEntry?.serverErrors?.ExternalReference; track $index) {
+                                            <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-triangle"></fa-icon>
                                                 &nbsp;{{ errorMsg }}
                                             </p>
+                                            }
                                         </div>
                                     </ng-template>
                                 </td>
                                 <td class="text-right t-b" (dblclick)="onRowDoubleClick(row)"
-                                    [ngbPopover]="row.exEntry?.serverErrors?.MonetaryValue ? exRefErrors : null"
+                                    [ngbPopover]="row.exEntry?.serverErrors?.MonetaryValue ? monetaryValueErrors : null"
                                     container="body" popoverClass="t-error-popover" [placement]="errorPopoverPlacement"
                                     triggers="mouseenter:mouseleave">
-                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"
-                                        *ngIf="row.exEntry?.serverErrors?.MonetaryValue"></fa-icon>
+                                    @if (row.exEntry?.serverErrors?.MonetaryValue) {
+                                    <fa-icon class="text-danger mx-1" icon="exclamation-triangle"></fa-icon>
+                                    }
                                     {{ !!row.exEntry ? (row.exEntry?.MonetaryValue * row.exEntry?.Direction |
                                     accounting:amountsFormat) : '' }}
 
                                     <ng-template #monetaryValueErrors>
                                         <div class="" style="width: 250px">
-                                            <p class="m-0 p-0"
-                                                *ngFor="let errorMsg of row.exEntry?.serverErrors?.MonetaryValue">
+                                            @for (errorMsg of row.exEntry?.serverErrors?.MonetaryValue; track $index) {
+                                            <p class="m-0 p-0">
                                                 <fa-icon icon="exclamation-triangle"></fa-icon>
                                                 &nbsp;{{ errorMsg }}
                                             </p>
+                                            }
                                         </div>
                                     </ng-template>
                                 </td>
-                            </ng-template>
+                            }
 
                             <td class="t-b">
                                 <!-- Edit Delete and Cancel -->
-                                <ng-container *ngIf="isUnreconciled && !!row.exEntry && !row.exEntryReconciliation">
+                                @if (isUnreconciled && !!row.exEntry && !row.exEntryReconciliation) {
                                     <div ngbDropdown [placement]="commandsDropdownPlacement">
                                         <button
                                             class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
@@ -621,33 +671,36 @@
                                                 <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
                                             </span></button>
                                         <div ngbDropdownMenu style="min-width: 5rem;">
+                                            @if (!row.exEntryIsEdit) {
                                             <button ngbDropdownItem class="t-transparent-background"
-                                                (click)="onEditExEntry(row)"
-                                                *ngIf="!row.exEntryIsEdit; else cancelTemplate">
+                                                (click)="onEditExEntry(row)">
                                                 {{ 'Edit' | translate }}
                                             </button>
-                                            <ng-template #cancelTemplate>
-                                                <button ngbDropdownItem class="t-transparent-background"
-                                                    (click)="onCancelEditExEntry(row, i)">
-                                                    {{ 'Cancel' | translate }}
-                                                </button>
-                                            </ng-template>
+                                            } @else {
                                             <button ngbDropdownItem class="t-transparent-background"
-                                                *ngIf="!!row.exEntry?.Id" (click)="onDeleteExEntry(row, i)">
+                                                (click)="onCancelEditExEntry(row, i)">
+                                                {{ 'Cancel' | translate }}
+                                            </button>
+                                            }
+                                            @if (!!row.exEntry?.Id) {
+                                            <button ngbDropdownItem class="t-transparent-background"
+                                                (click)="onDeleteExEntry(row, i)">
                                                 {{ 'Delete' | translate }}
                                             </button>
+                                            }
                                         </div>
                                     </div>
-                                </ng-container>
+                                }
                                 <!-- Create -->
-                                <ng-container *ngIf="row.exEntryIsCreate">
+                                @if (row.exEntryIsCreate) {
                                     <ng-container *ngTemplateOutlet="createMenu">
 
                                     </ng-container>
-                                </ng-container>
+                                }
                             </td>
                         </tr>
-                        <tr *ngIf="showBuiltInCreateRow">
+                        @if (showBuiltInCreateRow) {
+                        <tr>
                             <td [colSpan]="isUnreconciled ? 8 : 4"></td>
                             <td [colSpan]="isUnreconciled ? 4 : 3" (dblclick)="onCreateExEntry()"></td>
                             <td>
@@ -655,6 +708,7 @@
                                 </ng-container>
                             </td>
                         </tr>
+                        }
                     </tbody>
                 </table>
 
@@ -674,41 +728,48 @@
                 </ng-template>
 
                 <!-- Spinner -->
-                <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
+                @if (showSpinner) {
+                <div class="w-100 p-2 d-flex justify-content-center mt-3">
                     <t-spinner [scale]="2"></t-spinner>
                 </div>
+                }
 
                 <!-- Information -->
-                <div class="w-100 p-3 px-4" *ngIf="showInformation">
+                @if (showInformation) {
+                <div class="w-100 p-3 px-4">
                     <fa-icon icon="info-circle"></fa-icon>
                     &nbsp;
                     {{ information() }}
                 </div>
+                }
 
                 <!-- No items found -->
-                <div class="w-100 pl-3 pr-3 mt-3" *ngIf="showNoItemsFound">
+                @if (showNoItemsFound) {
+                <div class="w-100 pl-3 pr-3 mt-3">
                     {{ 'NoItemsFound' | translate }}
                 </div>
+                }
 
                 <!-- Error message -->
-                <div class="w-100 mt-3" *ngIf="showErrorMessage">
+                @if (showErrorMessage) {
+                <div class="w-100 mt-3">
                     <t-error-message>
                         {{ errorMessage }}
                     </t-error-message>
                 </div>
+                }
 
                 <div class="py-5 t-transparent">
 
                 </div>
             </cdk-virtual-scroll-viewport>
         </div>
-
+        } @else {
         <!-- Spinner for huge menu -->
-        <ng-template #spinner>
-            <div class="text-center w-100">
-                <t-spinner [scale]="2"></t-spinner>
-            </div>
-        </ng-template>
+        <div class="text-center w-100">
+            <t-spinner [scale]="2"></t-spinner>
+        </div>
+        }
     </div>
 </div>
 
