@@ -1,6 +1,6 @@
 // tslint:disable:member-ordering
 import {
-  AfterViewInit, Component, ElementRef, HostBinding, Input,
+  AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, Input,
   OnChanges, OnDestroy, OnInit, SimpleChanges, TemplateRef, ViewChild
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -64,7 +64,8 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private customUserSettings: CustomUserSettingsService) {
+    private customUserSettings: CustomUserSettingsService,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -379,14 +380,16 @@ export class PrintComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
 
         s.fileSizeDisplay = fileSizeDisplay(blob.size);
         s.reportStatus = ReportStatus.loaded;
+        this.cdr.detectChanges();
       }),
-      catchError((friendlyError: FriendlyError) => {
+      catchError((friendlyError) => {
         if (friendlyError instanceof TypeError) {
           console.error(friendlyError);
         }
 
-        s.errorMessage = friendlyError.error || 'Unknown error.';
+        s.errorMessage = (friendlyError && friendlyError.error) || 'Unknown error.';
         s.reportStatus = ReportStatus.error;
+        this.cdr.detectChanges();
         return of(null);
       })
     );
