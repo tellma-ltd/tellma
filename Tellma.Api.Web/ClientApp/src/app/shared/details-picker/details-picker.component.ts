@@ -1,5 +1,6 @@
 import {
-  Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef, OnChanges, SimpleChanges, OnInit, Output, EventEmitter
+  Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef, 
+  OnChanges, SimpleChanges, OnInit, Output, EventEmitter, ChangeDetectorRef
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -135,7 +136,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   ///////////////// Lifecycle Hooks
   constructor(
     private apiService: ApiService, private workspace: WorkspaceService,
-    public modalService: NgbModal, private translate: TranslateService) {
+    public modalService: NgbModal, private translate: TranslateService, 
+    private cdr: ChangeDetectorRef) {
 
   }
 
@@ -346,17 +348,17 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public set status(val: SearchStatus) {
+    this._status = val;
     if (!!val) {
       if (!this.resultsDropdown.isOpen()) {
         this.resultsDropdown.open();
+        this.cdr.markForCheck();
       }
     } else if (this.resultsDropdown.isOpen()) {
       this.resultsDropdown.close();
+      this.cdr.markForCheck();
     }
-
-    this._status = val;
   }
-
 
   onDocumentClick(event: any) {
     if (event.target !== this.input.nativeElement) {
