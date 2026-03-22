@@ -30,7 +30,7 @@ export class ServerNotificationsService {
   private _inboxChanged$ = new Subject<InboxStatusToSend>();
   private _cacheInvalidated$ = new Subject<CacheStatusToSend>();
 
-  private _currentTenantId;
+  private _currentTenantId: number;
 
   private state: {
     [tenantId: number]: TenantState;

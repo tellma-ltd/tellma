@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, OnDestroy, Inject, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, TemplateRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   WorkspaceService, TenantWorkspace, DetailsStatus,
@@ -68,7 +68,8 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     private translate: TranslateService, private progress: ProgressOverlayService,
     private auth: AuthService, private storage: StorageService, private api: ApiService,
     @Inject(DOCUMENT) private document: Document, private modalService: NgbModal,
-    private notificationsService: ServerNotificationsService, private userSettings: CustomUserSettingsService) {
+    private notificationsService: ServerNotificationsService, private userSettings: CustomUserSettingsService,
+    private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -370,6 +371,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   private doFetchInbox(count: number): Observable<void> {
     let s = this.inboxState;
     s.masterStatus = MasterStatus.loading;
+    this.cdr.markForCheck();
 
     const silent = true;
     const top = 25; // Only get the top 25 items
@@ -404,11 +406,13 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
           const newCount = response.TotalCount;
           const newUnknownCount = Math.min(response.Extras.UnknownCount, response.TotalCount); // Just in case
           this.notificationsService.handleFreshInboxCounts(tenantId, serverTime, newCount, newUnknownCount);
+          this.cdr.markForCheck();
         }),
         catchError((friendlyError) => {
           s = this.inboxState; // get the source
           s.masterStatus = MasterStatus.error;
           s.errorMessage = friendlyError.error;
+          this.cdr.markForCheck();
           return of(null);
         })
       );
