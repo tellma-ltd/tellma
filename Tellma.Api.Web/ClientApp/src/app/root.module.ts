@@ -1,4 +1,4 @@
-import { NgModule, Component, inject } from '@angular/core';
+import { NgModule, Component, inject, provideZoneChangeDetection } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
@@ -165,6 +165,7 @@ export const routes: Routes = [
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: OAuthStorage, useValue: localStorage },
     {
       provide: HTTP_INTERCEPTORS,
