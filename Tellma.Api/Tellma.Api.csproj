@@ -8,11 +8,11 @@
     <PackageReference Include="BarcodeLib" Version="3.1.5" />
     <PackageReference Include="Cronos" Version="0.11.1" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageReference Include="GeoJSON.Net" Version="1.4.1" />
     <PackageReference Include="GeoJSON.Net.Contrib.Wkb" Version="0.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
     <PackageReference Include="QRCoder" Version="1.7.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>

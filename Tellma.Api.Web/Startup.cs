@@ -62,7 +62,10 @@ namespace Tellma
                 services.AddClientAppAddressResolver(_config);
 
                 // Azure Application Insights
-                services.AddApplicationInsightsTelemetry();
+                if (!string.IsNullOrEmpty(_config["ApplicationInsights:ConnectionString"]))
+                {
+                    services.AddApplicationInsightsTelemetry();
+                }
 
                 // Register the API
                 services.AddTellmaApi(_config)
