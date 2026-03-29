@@ -1,11 +1,11 @@
 ﻿CREATE PROCEDURE [wiz].[FixedAssets__Depreciate_V3] --	 exec [wiz].[FixedAssets__Depreciate_V3] @ResourceId = 1634, @PostingDate = '2026-02-28', @Debug = 1
--- V4 vs V3: Depreciation entries are matched by NotedDate instead of Time1/Time2.
+-- Using Claude.AI
+-- Depreciation entries are matched by NotedDate instead of Time1/Time2.
 --   NotedDate = the date at the END of which the depreciation takes effect.
 --   Quantity  = months consumed by that entry.
 --   This correctly picks up manual journal entries (e.g. write-offs, accelerated
 --   depreciation) that have no Time1/Time2 but do carry a valid NotedDate.
--- WARNING: ANY EDITS HERE SHOULD ALSO REFLECT ON [bll].[ft_FixedAssets__Depreciation_V4]
--- Using Claude.AI
+--	WARNING: ANY EDITS HERE SHOULD ALSO REFLECT ON [bll].[ft_FixedAssets__Depreciation_V3]
 	@PostingDate DATE,           -- Depreciate up to and including this date
 	@StartDate   DATE = N'1753-01-01', -- Archive date; overridden to start of posting month
 	@ResourceDefinitionId INT = NULL,
@@ -174,7 +174,8 @@ WHERE L.[State] = 4
 UNION ALL
 -- Summarised path: single collapsed row per asset
 SELECT [FixedAssetId], [CenterId], [AgentId], [NotedAgentId],
-	IIF([PeriodStart] < @StartDate, @StartDate, [PeriodStart]),
+	--IIF([PeriodStart] < @StartDate, @StartDate, [PeriodStart]),
+	[PeriodStart],
 	[Amount], [Quantity], +1
 FROM @SummarizedFixedAssets
 WHERE NOT ([Quantity] = 0 AND ABS([Amount]) < 0.1);

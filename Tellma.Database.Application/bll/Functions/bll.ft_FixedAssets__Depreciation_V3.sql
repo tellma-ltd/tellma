@@ -584,7 +584,8 @@ WHERE L.[State] = 4
 UNION ALL
 -- Summarised path: single collapsed row per asset
 SELECT [FixedAssetId], [CenterId], [AgentId], [NotedAgentId],
-	IIF([PeriodStart] < @StartDate, @StartDate, [PeriodStart]),
+	--IIF([PeriodStart] < @StartDate, @StartDate, [PeriodStart]),
+	[PeriodStart],
 	[Amount], [Quantity], +1
 FROM @SummarizedFixedAssets
 WHERE NOT ([Quantity] = 0 AND ABS([Amount]) < 0.1);
@@ -1056,3 +1057,4 @@ OPTION (RECOMPILE);
 
 	RETURN
 END
+GO
