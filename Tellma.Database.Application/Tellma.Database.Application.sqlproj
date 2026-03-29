@@ -1049,6 +1049,7 @@
     <Build Include="dal\Functions\dal.fn_Agent__IsVatExempt.sql" />
     <Build Include="bll\Functions\bll.ft_Employees_AttendanceDate__IsWorkday.sql" />
     <Build Include="dbo\Functions\dbo.fn_Employee_Date__IsWeekendOrHoliday.sql" />
+    <Build Include="dal\Stored Procedures\dal.Students_AcademicAndPerformance__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />

@@ -13,8 +13,8 @@ BEGIN
 	RETURN
 	CASE
 		WHEN @CountryId = N'AE' THEN dbo.fn_ActiveDates__AccruedLeaveDays_AE(@FromDate, @ToDate, @YearlyAccrual)
-		WHEN @CountryId = N'ET' THEN dbo.fn_ActiveDates__AccruedLeaveDays_ET(@FromDate, @ToDate, 16)
-		WHEN @CountryId = N'LB' THEN dbo.fn_ActiveDates__AccruedLeaveDays_LB(@FromDate, @ToDate, 15)
+		WHEN @CountryId = N'ET' THEN dbo.fn_ActiveDates__AccruedLeaveDays_ET(@FromDate, @ToDate, @YearlyAccrual) -- was 16. made it variable to allow specifying zero for some
+		WHEN @CountryId = N'LB' THEN dbo.fn_ActiveDates__AccruedLeaveDays_LB(@FromDate, @ToDate, @YearlyAccrual) -- was 15. made it variable to allow specifying zero for some
 		WHEN @CountryId = N'SA' THEN dbo.fn_ActiveDates__AccruedLeaveDays_SA(@FromDate, @ToDate, @YearlyAccrual)
 		WHEN @CountryId = N'SD' THEN dbo.fn_ActiveDates__AccruedLeaveDays_SD(@FromDate, @ToDate, @YearlyAccrual)
 	END
