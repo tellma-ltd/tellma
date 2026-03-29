@@ -27,7 +27,7 @@ namespace Tellma.Repository.Application.Tests
         #endregion
         // Each one is a document Id
         [Theory(DisplayName = "[Zatca__GetInvoices] ")]
-        [InlineData(93989, false)] // Simplified tax invoice a/t delivery
+        [InlineData(99003, false)] // Simplified tax invoice a/t delivery
         //[InlineData(20069, false)] // Standard tax invoice a/t delivery with Discounts/Sales retention
         //[InlineData(21596, false)] // Standard tax invoice Services => POS
         //[InlineData(61467, false)] // Simplified tax invoice. Services => Sales + Invoice

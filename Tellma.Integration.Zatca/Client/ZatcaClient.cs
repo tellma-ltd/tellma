@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 
@@ -281,7 +282,7 @@ namespace Tellma.Integration.Zatca
         {
             // Add basic authentication header
             if (creds != null)
-                msg.Headers.Authorization = new AuthenticationHeaderValue(creds.Username, creds.Password);
+                msg.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{creds.Username}:{creds.Password}")));
 
             // Add standard headers
             msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
