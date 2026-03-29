@@ -159,7 +159,7 @@ namespace Tellma
                     services.AddSpaStaticFiles(opt =>
                     {
                         // In production, the Angular files will be served from this directory
-                        opt.RootPath = "ClientApp/dist";
+                        opt.RootPath = "ClientApp/dist/browser";
                     });
                 }
 
