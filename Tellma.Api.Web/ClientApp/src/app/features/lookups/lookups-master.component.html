@@ -1,7 +1,8 @@
-<t-master *ngIf="found;else pageNotFound" collection="Lookup" [definitionId]="definitionId" [mode]="mode"
-  [additionalSelect]="additionalSelect" [showCreateButton]="showCreate"
-  [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+@if (found) {
+  <t-master collection="Lookup" [definitionId]="definitionId" [mode]="mode"
+    [additionalSelect]="additionalSelect" [showCreateButton]="showCreate"
+    [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
               { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -10,13 +11,13 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]
           }">
-</t-master>
-
-<!-- If definitionId is invalid -->
-<ng-template #pageNotFound>
+  </t-master>
+} @else {
   <t-application-page-not-found [showHome]="!isPopupMode">
   </t-application-page-not-found>
-</ng-template>
+}
+
+<!-- If definitionId is invalid -->
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

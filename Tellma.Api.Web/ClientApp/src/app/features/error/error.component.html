@@ -7,16 +7,20 @@
     </h2>
 
     <!-- General Error -->
-    <p class="mt-4" *ngIf="generalErrorMessage">
-      {{ generalErrorMessage | translate }}
-    </p>
+    @if (generalErrorMessage) {
+      <p class="mt-4">
+        {{ generalErrorMessage | translate }}
+      </p>
+    }
 
     <!-- Detailed Error -->
-    <div class="d-flex justify-content-center mt-4" *ngIf="detailedErrorMessage">
-      <div class="alert alert-danger">
-        <fa-icon icon="exclamation-triangle" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ detailedErrorMessage }}
+    @if (detailedErrorMessage) {
+      <div class="d-flex justify-content-center mt-4">
+        <div class="alert alert-danger">
+          <fa-icon icon="exclamation-triangle" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ detailedErrorMessage }}
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Action Buttons -->
     <div class="mt-5">
@@ -26,10 +30,12 @@
       <button class="btn btn-primary m-1" (click)="onHome()">
         <fa-icon icon="home" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'Home' | translate }}
       </button>
-      <button class="btn btn-primary m-1" (click)="onTryAgain()" *ngIf="showTryAgain">
-        <fa-icon icon="redo-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'TryAgain' | translate }}
-      </button>
+      @if (showTryAgain) {
+        <button class="btn btn-primary m-1" (click)="onTryAgain()">
+          <fa-icon icon="redo-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'TryAgain' | translate }}
+        </button>
+      }
     </div>
-    
+
   </div>
 </div>

@@ -30,6 +30,8 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
         public MicrosoftOptions Microsoft { get; set; }
 
+        public DuendeOptions Duende { get; set; }
+
         public class GoogleOptions
         {
             [Required]
@@ -46,6 +48,12 @@ namespace Tellma.Services.EmbeddedIdentityServer
 
             [Required]
             public string ClientSecret { get; set; }
+        }
+
+        public class DuendeOptions
+        {
+            [Required]
+            public string LicenseKey { get; set; }
         }
     }
 

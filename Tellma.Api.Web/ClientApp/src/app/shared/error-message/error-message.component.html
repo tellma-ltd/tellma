@@ -2,9 +2,11 @@
   <div class="flex-grow-1">
     <fa-icon icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;<ng-content></ng-content>
   </div>
-  <div *ngIf="dismissable">
-    <button class="btn btn-sm p-0" style="color: #721c24" (click)="onDismiss()">
-      <fa-icon icon="times"></fa-icon>
-    </button>
-  </div>
+  @if (dismissable) {
+    <div>
+      <button class="btn btn-sm p-0" style="color: #721c24" (click)="onDismiss()">
+        <fa-icon icon="times"></fa-icon>
+      </button>
+    </div>
+  }
 </div>

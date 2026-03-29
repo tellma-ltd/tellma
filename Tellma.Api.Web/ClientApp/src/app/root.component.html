@@ -1,15 +1,18 @@
 <div class="h-100 d-flex flex-column">
 
   <!-- New version indicator -->
-  <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
-    *ngIf="showNewUpdateIsAvailable">
-    {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0" (click)="onRefresh()">{{
-      'Refresh' | translate }}</button>
+  @if (showNewUpdateIsAvailable) {
+    <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
+      >
+      {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0" (click)="onRefresh()">{{
+    'Refresh' | translate }}</button>
   </div>
+}
 
-  <!-- IE warning -->
+<!-- IE warning -->
+@if (showIEWarning) {
   <div class="alert alert-warning m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
-    *ngIf="showIEWarning">
+    >
     <div class="d-inline mx-3" style="font-size:1.5rem">
       <fa-icon [icon]="['fab', 'internet-explorer']"></fa-icon>
     </div>
@@ -22,25 +25,32 @@
       </p>
     </div>
   </div>
+}
 
-  <!-- Offline indicator -->
+<!-- Offline indicator -->
+@if (showOfflineIndicator) {
   <div class="alert alert-danger m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
-    *ngIf="showOfflineIndicator">
+    >
     <div class="d-inline mx-3" style="font-size:1.5rem">
       <fa-icon icon="wifi"></fa-icon>
     </div>
     {{ 'Error_ConnectionLostReconnecting' | translate }}
   </div>
+}
 
-  <!-- The app -->
-  <div class="t-rest-of-screen">
-    <router-outlet></router-outlet>
+<!-- The app -->
+<div class="t-rest-of-screen">
+  <router-outlet></router-outlet>
+</div>
+</div>
+
+@if (showOverlay()) {
+  <div class="t-overlay text-white">
+    <fa-icon class="t-overlay-spinner" icon="spinner" animation="spin"></fa-icon>
+    @for (labelName of labelNames; track labelName) {
+      @if (labelName) {
+        <div class="t-overlay-message"> {{ labelName | translate }}... </div>
+      }
+    }
   </div>
-</div>
-
-<div class="t-overlay text-white" *ngIf="showOverlay()">
-  <fa-icon class="t-overlay-spinner" icon="spinner" [spin]="true"></fa-icon>
-  <ng-container *ngFor="let labelName of labelNames">
-    <div class="t-overlay-message" *ngIf="labelName"> {{ labelName | translate }}... </div>
-  </ng-container>
-</div>
+}

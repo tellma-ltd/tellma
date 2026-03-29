@@ -85,7 +85,7 @@
                   "maximumError": "10kb"
                 }
               ],
-              "serviceWorker": true
+              "serviceWorker": "ngsw-config.json"
             },
 
             "local": {

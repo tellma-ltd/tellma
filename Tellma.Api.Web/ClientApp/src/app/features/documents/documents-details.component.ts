@@ -3091,7 +3091,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!signature.LastNegativeState;
   }
 
-  public disableSign(signature: RequiredSignature, lineDefId: string, model: Document): boolean {
+  public disableSign(signature: RequiredSignature, lineDefId: number, model: Document): boolean {
     if (!model) {
       return false;
     }
@@ -3102,7 +3102,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.areNegativeLines(signature);
   }
 
-  public signTooltip(signature: RequiredSignature, lineDefId: string, model: Document) {
+  public signTooltip(signature: RequiredSignature, lineDefId: number, model: Document) {
     if (!model) {
       return null;
     } else if (model.State === 1) {

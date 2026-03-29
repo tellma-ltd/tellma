@@ -2,28 +2,36 @@
 
   <div class="d-flex align-items-center justify-content-center w-100 h-100">
     <!-- image -->
-    <img *ngIf="showImg" [src]="dataUrl" alt="" [class.t-image-round]="isRound" [style.max-width]="size + sizeUnit"
-      [style.max-height]="size + sizeUnit" alt="Picture">
+    @if (showImg) {
+      <img [src]="dataUrl" alt="" [class.t-image-round]="isRound" [style.max-width]="size + sizeUnit"
+        [style.max-height]="size + sizeUnit" alt="Picture">
+    }
 
     <!-- placeholder if image is null -->
-    <fa-icon class="t-image-placeholder" *ngIf="showIcon" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'">
-    </fa-icon>
+    @if (showIcon) {
+      <fa-icon class="t-image-placeholder" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'">
+      </fa-icon>
+    }
 
     <!-- error -->
-    <fa-icon class="text-danger" *ngIf="showError" icon="exclamation" [style.font-size.rem]="errorSize"
+    @if (showError) {
+      <fa-icon class="text-danger" icon="exclamation" [style.font-size.rem]="errorSize"
       style="font-size: 1.5rem" [title]="'Error_FailedToLoadImage' | translate"></fa-icon>
+    }
   </div>
 
   <!-- edit controls -->
-  <div class="t-image-controls w-100" *ngIf="showEditControls">
-    <!-- we use divs to avoid tabbing and focus since they are hidden by default unless you hover and it's bad to let the user tab through hidden controls -->
-    <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onEdit()">
-      <fa-icon icon="pen"></fa-icon>
+  @if (showEditControls) {
+    <div class="t-image-controls w-100">
+      <!-- we use divs to avoid tabbing and focus since they are hidden by default unless you hover and it's bad to let the user tab through hidden controls -->
+      <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onEdit()">
+        <fa-icon icon="pen"></fa-icon>
+      </div>
+      <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onDelete()">
+        <fa-icon icon="trash"></fa-icon>
+      </div>
     </div>
-    <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onDelete()">
-      <fa-icon icon="trash"></fa-icon>
-    </div>
-  </div>
+  }
 </div>
 
 <!-- for the file dialog -->

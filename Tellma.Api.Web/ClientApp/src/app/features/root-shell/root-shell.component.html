@@ -11,15 +11,19 @@
 
       <!-- Back and Forward -->
       <div class="mx-2 d-flex">
-        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
-          *ngIf="nav.showBack">
-          <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
-        </button>
+        @if (nav.showBack) {
+          <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+            >
+            <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
+          </button>
+        }
         &nbsp;
-        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
-          *ngIf="nav.showForward">
-          <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
-        </button>
+        @if (nav.showForward) {
+          <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
+            >
+            <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
+          </button>
+        }
       </div>
 
       <!-- Collapse button -->
@@ -33,52 +37,59 @@
 
         </ol>
         <ol class="nav navbar-nav p-0 px-4 px-sm-0">
-          <li class="nav-item" ngbDropdown container="" *ngIf="activeLanguages.length > 1">
-            <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
-              <span class="px-1">
-                {{ currentLanguageDisplay }}
-              </span>
-            </button>
-            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
-              [class.dropdown-menu-right]="!isRtl">
-              <ng-container *ngFor="let lang of activeLanguages">
-                <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage" ngbDropdownItem
-                  (click)="onSetLanguage(lang)">
-                  {{ languageName(lang) }}
+          @if (activeLanguages.length > 1) {
+            <li class="nav-item" ngbDropdown container="">
+              <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
+                <span class="px-1">
+                  {{ currentLanguageDisplay }}
+                </span>
+              </button>
+              <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+                [class.dropdown-menu-right]="!isRtl">
+                @for (lang of activeLanguages; track lang) {
+                  @if (lang !== currentLanguage) {
+                    <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+                      (click)="onSetLanguage(lang)">
+                      {{ languageName(lang) }}
+                    </button>
+                  }
+                }
+              </div>
+            </li>
+          }
+          @if (!isAuthenticated) {
+            <li class="nav-item">
+              <button class="h-100 w-100 t-navbar-button" (click)="onSignIn()">
+                <span class="px-1">
+                  {{ 'SignIn' | translate }}
+                </span>
+              </button>
+            </li>
+          }
+          @if (isAuthenticated) {
+            <li class="nav-item" ngbDropdown container="">
+              <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
+                <span class="px-1">
+                  {{ userName }}
+                </span>
+              </button>
+              <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+                [class.dropdown-menu-right]="!isRtl">
+                <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies" (click)="onCollapse()">
+                  {{ 'MyCompanies' | translate }}
                 </button>
-              </ng-container>
-
-            </div>
-          </li>
-          <li class="nav-item" *ngIf="!isAuthenticated">
-            <button class="h-100 w-100 t-navbar-button" (click)="onSignIn()">
-              <span class="px-1">
-                {{ 'SignIn' | translate }}
-              </span>
-            </button>
-          </li>
-          <li class="nav-item" ngbDropdown container="" *ngIf="isAuthenticated">
-            <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
-              <span class="px-1">
-                {{ userName }}
-              </span>
-            </button>
-            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
-              [class.dropdown-menu-right]="!isRtl">
-              <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies" (click)="onCollapse()">
-                {{ 'MyCompanies' | translate }}
-              </button>
-              <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome" (click)="onCollapse()">
-                {{ 'WelcomePage' | translate }}
-              </button>
-              <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMySystemAccount();onCollapse()">
-                {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
-              </button>
-              <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
-                {{ 'SignOut' | translate }}
-              </button>
-            </div>
-          </li>
+                <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome" (click)="onCollapse()">
+                  {{ 'WelcomePage' | translate }}
+                </button>
+                <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMySystemAccount();onCollapse()">
+                  {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+                </button>
+                <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
+                  {{ 'SignOut' | translate }}
+                </button>
+              </div>
+            </li>
+          }
         </ol>
       </div>
     </div>
