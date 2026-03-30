@@ -95,9 +95,7 @@ namespace Tellma.Api
         private static string CryptographicallyStrongClientSecret()
         {
             // Generate a sequence of cryptographically strong random bytes
-            using var provider = new RNGCryptoServiceProvider();
-            var secretBytes = new byte[32];
-            provider.GetBytes(secretBytes); // Fills the byte array
+            var secretBytes = RandomNumberGenerator.GetBytes(32);
             
             // Convert the bytes to a string
             StringBuilder bldr = new();
