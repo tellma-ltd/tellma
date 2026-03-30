@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef, NgZone, computed } from '@angular/core';
+import { Component, ApplicationRef, Inject, ViewContainerRef, TemplateRef, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
@@ -133,7 +133,7 @@ export class RootComponent {
       // After ngx-translate successfully loads the language
       // we set it in the workspace so that all our components
       // reflect the change too
-      const culture = this.translate.currentLang;
+      const culture = this.translate.getCurrentLang();
       this.setWorkspaceCulture(culture);
       if (!!this.document) {
         // TODO Load from configuration instead
@@ -143,7 +143,7 @@ export class RootComponent {
 
     // IMPORTANT: also in application-shell.component.ts, keep in sync
     const defaultCulture = this.document.documentElement.lang || 'en';
-    this.translate.setDefaultLang(defaultCulture);
+    this.translate.setFallbackLang(defaultCulture);
 
     const userCulture = this.storage.getItem('user_culture') || defaultCulture;
     this.translate.use(userCulture);
@@ -188,9 +188,9 @@ export class RootComponent {
     }
   }
 
-  readonly showOverlay = computed(
-    () => this.api.showRotatorSignal() || this.progress.asyncOperationInProgress
-  );
+  get showOverlay(): boolean {
+    return this.api.showRotator || this.progress.asyncOperationInProgress;
+  }
 
   get showOfflineIndicator(): boolean {
     return this.workspace.offline;

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
@@ -89,10 +89,7 @@ import { IdResult } from './dto/id-result';
 })
 export class ApiService {
 
-  private readonly _showRotator = signal(false);
-  readonly showRotatorSignal = this._showRotator.asReadonly();
-  get showRotator(): boolean { return this._showRotator(); }
-  set showRotator(value: boolean) { this._showRotator.set(value); }
+  public showRotator = false;
 
   // Will abstract away standard API calls for CRUD operations
   constructor(public http: HttpClient, public trx: TranslateService) { }
