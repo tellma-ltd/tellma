@@ -59,7 +59,7 @@ namespace Tellma.Controllers
         /// </summary>
         private static string Sha1Hash(string text)
         {
-            using var sha1 = new SHA1Managed();
+            using var sha1 = SHA1.Create();
 
             // Compute hash bytes
             var bytes = Encoding.UTF8.GetBytes(text);
