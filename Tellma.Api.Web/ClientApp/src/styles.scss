@@ -28,6 +28,12 @@ $md-width: 768px;
 // customize bootstrap colors and then import bootstrap
 @import "bootstrap/scss/bootstrap";
 
+// ng-bootstrap v20 uses Bootstrap 5's "visually-hidden" class,
+// but we use Bootstrap 4 which only has "sr-only".
+.visually-hidden {
+  @extend .sr-only;
+}
+
 // For angular overlay to work
 @import "@angular/cdk/overlay-prebuilt.css";
 
