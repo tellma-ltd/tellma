@@ -55,7 +55,7 @@ namespace Tellma.Controllers
             var service = GetFactGetByIdService();
             var (fileBytes, fileName) = await service.PrintEntity(id, templateId, args, cancellation);
             var contentType = ControllerUtilities.ContentType(fileName);
-            Response.Headers.Add("x-filename", fileName);
+            Response.Headers["x-filename"] = fileName;
 
             return File(fileContents: fileBytes, contentType: contentType, fileName);
         }

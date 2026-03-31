@@ -71,7 +71,7 @@ namespace Tellma.Controllers
         {
             var result = await _service.GetImage(id, cancellation);
 
-            Response.Headers.Add("x-image-id", result.ImageId);
+            Response.Headers["x-image-id"] = result.ImageId;
             return File(result.ImageBytes, MimeTypes.Jpeg);
         }
 

@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     context.Request.Query.TryGetValue("access_token", out StringValues accessToken) &&
                     !string.IsNullOrWhiteSpace(accessToken))
                 {
-                    context.Request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                    context.Request.Headers["Authorization"] = $"Bearer {accessToken}";
                 }
 
                 await next.Invoke();

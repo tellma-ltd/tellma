@@ -21,8 +21,7 @@ namespace Tellma.Services.Utilities
                 throw new ArgumentException($"'{nameof(key)}' cannot be null or whitespace.", nameof(key));
             }
 
-            dic.Remove(key);
-            dic.Add(key, value);
+            dic[key] = value;
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace Tellma.Services.Utilities
 
             if (!dic.ContainsKey(key))
             {
-                dic.Add(key, value);
+                dic[key] = value;
             }
         }
     }

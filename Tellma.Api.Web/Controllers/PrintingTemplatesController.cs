@@ -34,7 +34,7 @@ namespace Tellma.Controllers
             var fileBytes = result.FileBytes;
             var fileName = result.FileName;
             var contentType = ControllerUtilities.ContentType(fileName);
-            Response.Headers.Add("x-filename", fileName);
+            Response.Headers["x-filename"] = fileName;
 
             return File(fileContents: fileBytes, contentType: contentType, fileName);
         }

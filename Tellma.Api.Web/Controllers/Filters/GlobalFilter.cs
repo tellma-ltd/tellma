@@ -26,12 +26,12 @@ namespace Tellma.Controllers
             if (!string.IsNullOrWhiteSpace(clientVersion))
             {
                 bool isFresh = _globalSettingsProvider.IsFresh(clientVersion);
-                context.HttpContext.Response.Headers.Add("x-global-settings-version", isFresh ? Constants.Fresh : Constants.Stale);
+                context.HttpContext.Response.Headers["x-global-settings-version"] = isFresh ? Constants.Fresh : Constants.Stale;
             }
 
             // Adds the server time
             var nowString = DateTimeOffsetConverter.ToString(DateTimeOffset.Now);
-            context.HttpContext.Response.Headers.Add("x-server-time", nowString);
+            context.HttpContext.Response.Headers["x-server-time"] = nowString;
         }
 
         public void OnResourceExecuted(ResourceExecutedContext context)
