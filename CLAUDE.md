@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tellma is a multi-tenant ERP system with a 3-tier architecture:
 - **Database Tier**: SQL Server (Admin DB: `Tellma`, App DBs: `Tellma.101`, `Tellma.102`, …)
-- **Application Tier**: ASP.NET Core 8 REST API (`Tellma.Api.Web`)
+- **Application Tier**: ASP.NET Core 10 REST API (`Tellma.Api.Web`)
 - **Client Tier**: Angular 21 SPA (`Tellma.Api.Web/ClientApp`)
 
 ## Commands
