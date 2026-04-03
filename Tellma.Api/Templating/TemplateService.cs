@@ -69,6 +69,7 @@ namespace Tellma.Api.Templating
             }
 
             client ??= _client;
+            args ??= new TemplateArguments();
 
             // (1) Create static evaluation context
             var customGlobalFunctions = args.CustomGlobalFunctions;
