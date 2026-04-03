@@ -8,18 +8,6 @@ namespace Tellma.Api.Tests.Templating
     {
         private readonly ITestOutputHelper _output = output;
 
-        [Fact]
-        public void Test_GenerateInlineData()
-        {
-            // Just a utility to help print out the InlineData attributes of the other unit test
-            foreach (var n in new[] { 101201 })
-            {
-                var x = ToWords(n);
-
-                _output.WriteLine($"[InlineData({n}, \"{x}\")]");
-            }
-        }
-
         [Theory]
         [InlineData(-1, "سالب واحد")]
         [InlineData(0, "صفر")]
@@ -81,14 +69,14 @@ namespace Tellma.Api.Tests.Templating
         [InlineData(1000000, "مليون")]
         [InlineData(301000000, "ثلاثمائة مليون ومليون")]
         [InlineData(302000000, "ثلاثمائة واثنان مليون")]
-        public void Test_Cases(int n, string expected)
+        public void Test_AmountInWordsArabic(int n, string expected)
         {
-            var actual = ToWords(n);
+            var actual = ToArabicWords(n);
             
             Assert.Equal(expected, actual);
         }
 
-        private static string ToWords(int n)
+        private static string ToArabicWords(int n)
         {
             return new AmountInWordsArabic(n,
                 new CurrencyInfo("USD"),
