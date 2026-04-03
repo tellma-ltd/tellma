@@ -7,17 +7,17 @@
         /// </summary>
         internal static Invoice ValidStandardInvoice() => new()
         {
-            UniqueInvoiceIdentifier = Guid.Parse("16e78469-64af-406d-9cfd-895e724198f0"),
+            UniqueInvoiceIdentifier = Guid.NewGuid(),
             InvoiceNumber = "SME00062",
             InvoiceType = InvoiceType.TaxInvoice,
-            InvoiceIssueDateTime = new DateTime(2022, 3, 13, 14, 40, 40),
+            InvoiceIssueDateTime = DateTimeOffset.UtcNow,
             InvoiceTypeTransactions = InvoiceTransaction.Standard | InvoiceTransaction.ThirdParty | InvoiceTransaction.Nominal | InvoiceTransaction.Summary,
             InvoiceCurrency = "SAR",
             InvoiceCounterValue = 62,
             PreviousInvoiceHash = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==",
             Seller = new Party
             {
-                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Id = new(PartyIdScheme.CommercialRegistration, "1010010000"),
                 Address = new Address
                 {
                     Street = "test",
@@ -35,7 +35,7 @@
             },
             Buyer = new Party
             {
-                Id = new(PartyIdScheme.NationalId, "2345"),
+                Id = new(PartyIdScheme.GccId, "GC14P022766"),
                 Address = new Address
                 {
                     Street = "baaoun",
@@ -51,8 +51,8 @@
                 VatNumber = null,
                 Name = "sdsa"
             },
-            SupplyDate = new DateTime(2022, 3, 13),
-            SupplyEndDate = new DateTime(2022, 3, 15),
+            SupplyDate = DateTime.Today,
+            SupplyEndDate = DateTime.Today,
             PaymentMeans = PaymentMeans.InCash,
             AllowanceCharges = [ new AllowanceCharge
                 {
@@ -63,9 +63,6 @@
                     VatRate = 0.15m
                 }
             ],
-            //VatCategoryTaxableAmount = 966.00m,
-            //VatCategory = VatCategory.StandardRate,
-            //VatRate = 0.1500m,
             InvoiceTotalVatAmountInAccountingCurrency = 144.9m,
 
             Lines =
@@ -84,10 +81,108 @@
                         ItemVatRate = 0.15m,
 
                         ItemNetPrice = 22.00m,
-                        ItemPriceDiscount = 2.00m,
                     }
                 ]
         };
+
+        /// <summary>
+        /// Create a Standard <see cref="Invoice"/> that fails ZATCA validation.
+        /// </summary>
+        internal static Invoice InvalidStandardInvoice() {
+            var invoice = ValidStandardInvoice();
+            invoice.InvoiceNumber = null; // This should cause validation to fail
+            return invoice;
+        }
+
+        /// <summary>
+        /// Create a valid Simplified <see cref="Invoice"/>.
+        /// </summary>
+        internal static Invoice ValidSimplifiedInvoice() => new()
+        {
+            UniqueInvoiceIdentifier = Guid.NewGuid(),
+            InvoiceNumber = "SME00062",
+            InvoiceType = InvoiceType.TaxInvoice,
+            InvoiceIssueDateTime = DateTimeOffset.UtcNow,
+            InvoiceTypeTransactions = InvoiceTransaction.Simplified | InvoiceTransaction.ThirdParty | InvoiceTransaction.Nominal,
+            InvoiceCurrency = "SAR",
+            InvoiceCounterValue = 62,
+            PreviousInvoiceHash = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==",
+            Seller = new Party
+            {
+                Id = new(PartyIdScheme.CommercialRegistration, "1010010000"),
+                Address = new Address
+                {
+                    Street = "test",
+                    AdditionalStreet = null,
+                    BuildingNumber = "3454",
+                    AdditionalNumber = "1234",
+                    District = "test",
+                    City = "Riyadh",
+                    PostalCode = "12345",
+                    Province = "test",
+                    CountryCode = "SA",
+                },
+                VatNumber = "300075588700003",
+                Name = "Ahmed Mohamed AL Ahmady"
+            },
+            SupplyDate = DateTime.Today,
+            SupplyEndDate = DateTime.Today,
+            PaymentMeans = PaymentMeans.InCash,
+            AllowanceCharges = [ new AllowanceCharge
+                {
+                    Indicator = AllowanceChargeType.Allowance,
+                    Reason = "discount",
+                    Amount = 2m,
+                    VatCategory = VatCategory.StandardRate,
+                    VatRate = 0.15m
+                }
+            ],
+            InvoiceTotalVatAmountInAccountingCurrency = 144.9m,
+
+            Lines =
+                [
+                    new()
+                    {
+                        Identifier = 1,
+                        Quantity = 44.0m,
+                        QuantityUnit = "PCE",
+
+                        NetAmount = 968.00m,
+                        VatAmount = 145.20m,
+
+                        ItemName = "dsd",
+                        ItemVatCategory = VatCategory.StandardRate,
+                        ItemVatRate = 0.15m,
+
+                        ItemNetPrice = 22.00m
+                    }
+                ]
+        };
+
+        /// <summary>
+        /// Create a valid Simplified <see cref="Invoice"/> that triggers warnings.
+        /// Uses intentionally incorrect CRN format to provoke BR-KSA-F-08 warnings.
+        /// </summary>
+        internal static Invoice ValidSimplifiedInvoiceWithWarnings()
+        {
+            var invoice = ValidSimplifiedInvoice();
+            if (invoice.Seller != null)
+            {
+                // Invalid CRN format should trigger a warning but not cause validation to fail
+                invoice.Seller.Id = new(PartyIdScheme.CommercialRegistration, "454634645645654");
+            }
+            return invoice;
+        }
+
+        /// <summary>
+        /// Create a Simplified <see cref="Invoice"/> that fails ZATCA validation.
+        /// </summary>
+        internal static Invoice InvalidSimplifiedInvoice()
+        {
+            var invoice = ValidSimplifiedInvoice();
+            invoice.Lines = []; // No lines should cause validation to fail
+            return invoice;
+        }
 
         /// <summary>
         /// Create an <see cref="Invoice"/> that has every field populated.
@@ -104,7 +199,7 @@
             PreviousInvoiceHash = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==",
             Seller = new Party
             {
-                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Id = new(PartyIdScheme.CommercialRegistration, "1010010000"),
                 Address = new Address
                 {
                     Street = "test",
@@ -122,7 +217,7 @@
             },
             Buyer = new Party
             {
-                Id = new(PartyIdScheme.NationalId, "2345"),
+                Id = new(PartyIdScheme.NationalId, "1000000000"),
                 Address = new Address
                 {
                     Street = "baaoun",

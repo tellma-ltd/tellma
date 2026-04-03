@@ -21,7 +21,7 @@ namespace Tellma.Integration.Zatca.Tests
             // Arrange
             var seller = new Party
             {
-                Id = new(PartyIdScheme.CommercialRegistration, "454634645645654"),
+                Id = new(PartyIdScheme.CommercialRegistration, "1010010000"),
                 Address = new Address
                 {
                     Street = "Tahlia St",

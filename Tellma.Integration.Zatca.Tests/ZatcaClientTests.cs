@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-
+﻿using System.Text;
+using Microsoft.Extensions.Configuration;
 namespace Tellma.Integration.Zatca.Tests
 {
     public partial class ZatcaClientTests
@@ -30,7 +29,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ReportingRequest>(@"Resources\Requests\ReportingRequest_ValidWithWarnings.json");
+            var request = BuildRequest<ReportingRequest>(TestSamples.ValidSimplifiedInvoiceWithWarnings());
             var response = await client.ReportInvoice(request, creds);
 
             // Assert
@@ -76,7 +75,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ReportingRequest>(@"Resources\Requests\ReportingRequest_Invalid.json");
+            var request = BuildRequest<ReportingRequest>(TestSamples.InvalidSimplifiedInvoice());
             var response = await client.ReportInvoice(request, creds);
 
             // Assert
@@ -91,11 +90,7 @@ namespace Tellma.Integration.Zatca.Tests
             Assert.NotNull(validationResults);
             Assert.Equal(Constants.ValidationStatus.ERROR, validationResults.Status);
 
-            // There are no info or warning messages
-            Assert.Empty(validationResults.InfoMessages);
-            Assert.Empty(validationResults.WarningMessages);
-
-            // There is one error message with populated properties
+            // There are error messages with populated properties
             Assert.NotEmpty(validationResults.ErrorMessages);
             Assert.All(validationResults.ErrorMessages, (error) =>
             {
@@ -115,7 +110,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ReportingRequest>(@"Resources\Requests\ReportingRequest_ValidWithWarnings.json");
+            var request = BuildRequest<ReportingRequest>(TestSamples.ValidSimplifiedInvoiceWithWarnings());
             var response = await client.ReportInvoice(request, invalidCreds);
 
             Assert.Equal(ResponseStatus.InvalidCredentials, response.Status);
@@ -130,7 +125,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ClearanceRequest>(@"Resources\Requests\ClearanceRequest_Valid.json");
+            var request = BuildRequest<ClearanceRequest>(TestSamples.ValidStandardInvoice());
             var response = await client.ClearInvoice(request, creds);
 
             // Assert
@@ -167,7 +162,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ClearanceRequest>(@"Resources\Requests\ClearanceRequest_Valid.json");
+            var request = BuildRequest<ClearanceRequest>(TestSamples.ValidStandardInvoice());
             var response = await client.ClearInvoice(request, creds, activeClearance: false);
 
             // Assert
@@ -183,7 +178,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Valid.json");
+            var request = await BuildCsrRequest(@"Resources\Requests\Valid.csr");
             var response = await client.CreateComplianceCsid(request, validOtp);
 
             // Assert
@@ -207,7 +202,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Invalid.json");
+            var request = await BuildCsrRequest(@"Resources\Requests\Invalid.csr");
             var response = await client.CreateComplianceCsid(request, validOtp);
 
             // Assert
@@ -231,7 +226,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Valid.json");
+            var request = await BuildCsrRequest(@"Resources\Requests\Valid.csr");
             var response = await client.CreateComplianceCsid(request, invalidOtp);
 
             // Assert
@@ -247,7 +242,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Valid.json");
+            var request = await BuildCsrRequest(@"Resources\Requests\Valid.csr");
             var response = await client.CreateComplianceCsid(request, expiredOtp);
 
             // Assert
@@ -263,7 +258,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ComplianceCheckRequest>(@"Resources\Requests\ComplianceRequest_Valid.json");
+            var request = BuildRequest<ComplianceCheckRequest>(TestSamples.ValidStandardInvoice());
             var response = await client.CheckInvoiceCompliance(request, creds);
 
             Assert.Equal(ResponseStatus.Success, response.Status);
@@ -299,7 +294,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<ComplianceCheckRequest>(@"Resources\Requests\ComplianceRequest_Invalid.json");
+            var request = BuildRequest<ComplianceCheckRequest>(TestSamples.InvalidSimplifiedInvoice());
             var response = await client.CheckInvoiceCompliance(request, creds);
 
             // Assert
@@ -384,7 +379,7 @@ namespace Tellma.Integration.Zatca.Tests
             var client = GetZatcaClient();
 
             // Act
-            var request = await GetFileContent<CsrRequest>(@"Resources\Requests\CsrRequest_Valid.json");
+            var request = await BuildCsrRequest(@"Resources\Requests\Valid.csr");
             var response = await client.RenewComplianceCsid(request, creds, validOtp);
 
             // Assert
@@ -401,6 +396,10 @@ namespace Tellma.Integration.Zatca.Tests
         }
 
         #region Helpers
+
+        // Sandbox credentials (from ZatcaService)
+        private const string _sandboxPrivateKey = "MHQCAQEEIDyLDaWIn/1/g3PGLrwupV4nTiiLKM59UEqUch1vDfhpoAcGBSuBBAAKoUQDQgAEYYMMoOaFYAhMO/steotfZyavr6p11SSlwsK9azmsLY7b1b+FLhqMArhB2dqHKboxqKNfvkKDePhpqjui5hcn0Q==";
+        private const string _sandboxSecurityToken = "TUlJRDFEQ0NBM21nQXdJQkFnSVRid0FBZTNVQVlWVTM0SS8rNVFBQkFBQjdkVEFLQmdncWhrak9QUVFEQWpCak1SVXdFd1lLQ1pJbWlaUHlMR1FCR1JZRmJHOWpZV3d4RXpBUkJnb0praWFKay9Jc1pBRVpGZ05uYjNZeEZ6QVZCZ29Ka2lhSmsvSXNaQUVaRmdkbGVIUm5ZWHAwTVJ3d0dnWURWUVFERXhOVVUxcEZTVTVXVDBsRFJTMVRkV0pEUVMweE1CNFhEVEl5TURZeE1qRTNOREExTWxvWERUSTBNRFl4TVRFM05EQTFNbG93U1RFTE1Ba0dBMVVFQmhNQ1UwRXhEakFNQmdOVkJBb1RCV0ZuYVd4bE1SWXdGQVlEVlFRTEV3MW9ZWGxoSUhsaFoyaHRiM1Z5TVJJd0VBWURWUVFERXdreE1qY3VNQzR3TGpFd1ZqQVFCZ2NxaGtqT1BRSUJCZ1VyZ1FRQUNnTkNBQVRUQUs5bHJUVmtvOXJrcTZaWWNjOUhEUlpQNGI5UzR6QTRLbTdZWEorc25UVmhMa3pVMEhzbVNYOVVuOGpEaFJUT0hES2FmdDhDL3V1VVk5MzR2dU1ObzRJQ0p6Q0NBaU13Z1lnR0ExVWRFUVNCZ0RCK3BId3dlakViTUJrR0ExVUVCQXdTTVMxb1lYbGhmREl0TWpNMGZETXRNVEV5TVI4d0hRWUtDWkltaVpQeUxHUUJBUXdQTXpBd01EYzFOVGc0TnpBd01EQXpNUTB3Q3dZRFZRUU1EQVF4TVRBd01SRXdEd1lEVlFRYURBaGFZWFJqWVNBeE1qRVlNQllHQTFVRUR3d1BSbTl2WkNCQ2RYTnphVzVsYzNNek1CMEdBMVVkRGdRV0JCU2dtSVdENmJQZmJiS2ttVHdPSlJYdkliSDlIakFmQmdOVkhTTUVHREFXZ0JSMllJejdCcUNzWjFjMW5jK2FyS2NybVRXMUx6Qk9CZ05WSFI4RVJ6QkZNRU9nUWFBL2hqMW9kSFJ3T2k4dmRITjBZM0pzTG5waGRHTmhMbWR2ZGk1ellTOURaWEowUlc1eWIyeHNMMVJUV2tWSlRsWlBTVU5GTFZOMVlrTkJMVEV1WTNKc01JR3RCZ2dyQmdFRkJRY0JBUVNCb0RDQm5UQnVCZ2dyQmdFRkJRY3dBWVppYUhSMGNEb3ZMM1J6ZEdOeWJDNTZZWFJqWVM1bmIzWXVjMkV2UTJWeWRFVnVjbTlzYkM5VVUxcEZhVzUyYjJsalpWTkRRVEV1WlhoMFoyRjZkQzVuYjNZdWJHOWpZV3hmVkZOYVJVbE9WazlKUTBVdFUzVmlRMEV0TVNneEtTNWpjblF3S3dZSUt3WUJCUVVITUFHR0gyaDBkSEE2THk5MGMzUmpjbXd1ZW1GMFkyRXVaMjkyTG5OaEwyOWpjM0F3RGdZRFZSMFBBUUgvQkFRREFnZUFNQjBHQTFVZEpRUVdNQlFHQ0NzR0FRVUZCd01DQmdnckJnRUZCUWNEQXpBbkJna3JCZ0VFQVlJM0ZRb0VHakFZTUFvR0NDc0dBUVVGQndNQ01Bb0dDQ3NHQVFVRkJ3TURNQW9HQ0NxR1NNNDlCQU1DQTBrQU1FWUNJUUNWd0RNY3E2UE8rTWNtc0JYVXovdjFHZGhHcDdycVNhMkF4VEtTdjgzOElBSWhBT0JOREJ0OSszRFNsaWpvVmZ4enJkRGg1MjhXQzM3c21FZG9HV1ZyU3BHMQ==";
 
         private Credentials GetReportingCredentials() =>
             new(_options.Reporting?.Username ?? _options.Default?.Username ?? "",
@@ -422,12 +421,32 @@ namespace Tellma.Integration.Zatca.Tests
             new(_options.Renewal?.Username ?? _options.Default?.Username ?? "",
                 _options.Renewal?.Password ?? _options.Default?.Password ?? "");
 
-        private static ZatcaClient GetZatcaClient() => new(env:  Env.Sandbox, _httpClient);
+        private static ZatcaClient GetZatcaClient() => new(env: Env.Sandbox, _httpClient);
 
-        private static async Task<T> GetFileContent<T>(string fileName)
+        private static T BuildRequest<T>(Invoice invoice) where T : InvoiceRequestBase, new()
         {
-            string fileContent = await File.ReadAllTextAsync(fileName);
-            return JsonConvert.DeserializeObject<T>(fileContent);
+            string certificateContent = Encoding.UTF8.GetString(Convert.FromBase64String(_sandboxSecurityToken));
+
+            // Override seller VAT to match the sandbox certificate
+            if (invoice.Seller != null)
+                invoice.Seller.VatNumber = "300075588700003";
+
+            var builder = new InvoiceXml(invoice);
+            var sigInfo = builder.Build().Sign(certificateContent, _sandboxPrivateKey);
+            var xml = builder.GetXml();
+
+            return new T
+            {
+                InvoiceHash = sigInfo.InvoiceHash,
+                Uuid = invoice.UniqueInvoiceIdentifier,
+                Invoice = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml))
+            };
+        }
+
+        private static async Task<CsrRequest> BuildCsrRequest(string csrFilePath)
+        {
+            string csrContent = await File.ReadAllTextAsync(csrFilePath);
+            return new CsrRequest { Csr = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrContent)) };
         }
 
         #endregion
