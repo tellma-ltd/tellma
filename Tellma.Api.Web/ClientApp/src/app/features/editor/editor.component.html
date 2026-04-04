@@ -127,6 +127,10 @@
     <t-report-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
     </t-report-definitions-picker>
   }
+  @case ('LineDefinition') {
+    <t-line-definitions-picker [(ngModel)]="value" [showCreate]="showCreate" [filter]="filter">
+    </t-line-definitions-picker>
+  }
   @default {
     <div class="text-danger font-weight-bold">
       TODO: control for '{{ desc.control }}''
