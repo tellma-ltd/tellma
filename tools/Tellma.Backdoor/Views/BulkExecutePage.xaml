@@ -1,0 +1,195 @@
+<UserControl x:Class="Tellma.Backdoor.Views.BulkExecutePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Tellma.Backdoor.ViewModels"
+             xmlns:conv="clr-namespace:Tellma.Backdoor.Converters"
+             d:DataContext="{d:DesignInstance Type=vm:BulkExecuteViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <conv:StatusToBrushConverter x:Key="StatusToBrush"/>
+        <conv:StatusToTextConverter x:Key="StatusToText"/>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <conv:StatusToFailedVisibilityConverter x:Key="FailedToVis"/>
+
+        <!-- Pulsing animation storyboard -->
+        <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever" AutoReverse="True">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="1.0" To="0.3" Duration="0:0:0.6"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="180" MinHeight="80"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" MinHeight="100"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Instance selector -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Instance:" VerticalAlignment="Center" Margin="0,0,8,0"
+                       FontSize="13" Foreground="#555"/>
+            <ComboBox ItemsSource="{Binding Instances}"
+                      SelectedItem="{Binding SelectedInstance}"
+                      DisplayMemberPath="DisplayName"
+                      IsEnabled="{Binding IsExecuting, Converter={StaticResource InverseBool}}"
+                      Padding="8,6" FontSize="13"/>
+        </DockPanel>
+
+        <!-- Row 1: Script label -->
+        <TextBlock Grid.Row="1" Text="SQL Script" FontWeight="SemiBold" FontSize="13"
+                   Foreground="#333" Margin="0,0,0,6"/>
+
+        <!-- Row 2: Script editor -->
+        <Border Grid.Row="2" BorderBrush="#CCC" BorderThickness="1" CornerRadius="3">
+            <TextBox Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
+                     FontFamily="Consolas" FontSize="13"
+                     AcceptsReturn="True" AcceptsTab="True"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Auto"
+                     TextWrapping="NoWrap"
+                     BorderThickness="0" Padding="6,4"/>
+        </Border>
+
+        <!-- Row 3: Execute / Cancel bar (below script) -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Button Content="Execute" Padding="20,8"
+                    Command="{Binding ExecuteScriptCommand}"
+                    Visibility="{Binding IsExecuting, Converter={StaticResource InverseBoolToVis}}"
+                    HorizontalAlignment="Left"
+                    FontWeight="SemiBold" FontSize="13"
+                    Background="#0078D4" Foreground="White"
+                    BorderThickness="0" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Padding="20,8"
+                    Command="{Binding CancelCommand}"
+                    Visibility="{Binding IsExecuting, Converter={StaticResource BoolToVis}}"
+                    HorizontalAlignment="Stretch"
+                    FontWeight="SemiBold" FontSize="13"
+                    Background="#D32F2F" Foreground="White"
+                    BorderThickness="0" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <TextBlock Text="Cancel Execution" FontWeight="SemiBold"/>
+            </Button>
+        </Grid>
+
+        <!-- Row 4: Tenant grid label -->
+        <DockPanel Grid.Row="4" Margin="0,16,0,6">
+            <TextBlock Text="Tenant Databases" FontWeight="SemiBold" FontSize="13" Foreground="#333"/>
+            <TextBlock Text="{Binding TenantLoadError}" Foreground="#D32F2F"
+                       Margin="12,0,0,0" TextTrimming="CharacterEllipsis" FontSize="12"/>
+        </DockPanel>
+
+        <!-- Row 5: Tenant grid with loading overlay -->
+        <Grid Grid.Row="5">
+            <Border BorderBrush="#CCC" BorderThickness="1" CornerRadius="3">
+                <DataGrid ItemsSource="{Binding Tenants}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          SelectionMode="Single"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          VerticalScrollBarVisibility="Auto"
+                          BorderThickness="0"
+                          Background="White"
+                          RowBackground="White"
+                          AlternatingRowBackground="#FAFAFA">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding DatabaseId}" Width="60"/>
+                        <DataGridTextColumn Header="Database" Binding="{Binding DatabaseName}" Width="*"/>
+                        <DataGridTextColumn Header="Server" Binding="{Binding ServerName}" Width="160"/>
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+
+                        <!-- Status column -->
+                        <DataGridTemplateColumn Header="Status" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
+                                        <Ellipse Width="10" Height="10" Margin="0,0,6,0"
+                                                 Fill="{Binding Status, Converter={StaticResource StatusToBrush}}">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Executing">
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard x:Name="Pulse"
+                                                                    Storyboard="{StaticResource PulseAnimation}"/>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <StopStoryboard BeginStoryboardName="Pulse"/>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                        <TextBlock Text="{Binding Status, Converter={StaticResource StatusToText}}"
+                                                   VerticalAlignment="Center" FontSize="12"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Error column -->
+                        <DataGridTemplateColumn Header="" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Error"
+                                            Visibility="{Binding Status, Converter={StaticResource FailedToVis}}"
+                                            Click="ShowError_Click"
+                                            Padding="4,2" FontSize="11" Foreground="#D32F2F"
+                                            Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <TextBlock Text="{TemplateBinding Content}"
+                                                           TextDecorations="Underline"
+                                                           Foreground="{TemplateBinding Foreground}"
+                                                           Cursor="Hand"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Loading overlay -->
+            <Border Background="#60FFFFFF" CornerRadius="3"
+                    Visibility="{Binding IsLoadingTenants, Converter={StaticResource BoolToVis}}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="3"
+                                 Foreground="#0078D4"/>
+                    <TextBlock Text="Loading tenants..." Foreground="#555"
+                               HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

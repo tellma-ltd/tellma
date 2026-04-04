@@ -1,0 +1,116 @@
+<UserControl x:Class="Tellma.Backdoor.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Tellma.Backdoor.ViewModels"
+             d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Instance list -->
+        <DockPanel Grid.Column="0" Margin="0,0,16,0">
+            <TextBlock DockPanel.Dock="Top" Text="Instances" FontWeight="SemiBold"
+                       FontSize="14" Foreground="#333" Margin="0,0,0,8"/>
+
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
+                <Button Content="+ Add" Padding="12,5" Margin="0,0,6,0"
+                        Command="{Binding AddInstanceCommand}" FontSize="12"
+                        Cursor="Hand"/>
+                <Button Content="- Remove" Padding="12,5"
+                        Command="{Binding RemoveInstanceCommand}" FontSize="12"
+                        Cursor="Hand"/>
+            </StackPanel>
+
+            <Border BorderBrush="#CCC" BorderThickness="1" CornerRadius="3">
+                <ListBox ItemsSource="{Binding Instances}"
+                         SelectedItem="{Binding SelectedInstance}"
+                         BorderThickness="0" Padding="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" Padding="8,6" FontSize="13"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Border>
+        </DockPanel>
+
+        <!-- Detail form -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel IsEnabled="{Binding SelectedInstance, Converter={StaticResource NotNullToBool}}"
+                        MaxWidth="600" HorizontalAlignment="Left">
+                <TextBlock Text="Instance Details" FontWeight="SemiBold"
+                           FontSize="14" Foreground="#333" Margin="0,0,0,16"/>
+
+                <TextBlock Text="Name" Margin="0,0,0,4" FontSize="12" Foreground="#555"/>
+                <TextBox Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                         Padding="6,5" FontSize="13" Margin="0,0,0,14"/>
+                <TextBlock Text="Leave blank to use the server name" FontSize="11"
+                           Foreground="#999" Margin="0,-10,0,14"/>
+
+                <TextBlock Text="Admin Connection String" Margin="0,0,0,4" FontSize="12" Foreground="#555"/>
+                <Border BorderBrush="#CCC" BorderThickness="1" CornerRadius="3" Margin="0,0,0,6">
+                    <TextBox Text="{Binding EditAdminConnection, UpdateSourceTrigger=PropertyChanged}"
+                             FontFamily="Consolas" FontSize="12"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             Height="80" VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0" Padding="6,4"/>
+                </Border>
+
+                <Button Content="Test Connection" HorizontalAlignment="Left"
+                        Padding="14,6" Margin="0,0,0,4" FontSize="12"
+                        Command="{Binding TestConnectionActionCommand}"
+                        Cursor="Hand"/>
+
+                <TextBlock Text="{Binding TestConnectionStatus}" Margin="0,0,0,14"
+                           FontSize="12">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#D32F2F"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsTestConnectionSuccess}" Value="True">
+                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <CheckBox Content="Skip Confirmation"
+                          IsChecked="{Binding EditSkipConfirmation}"
+                          Margin="0,0,0,14" FontSize="13"/>
+
+                <TextBlock Text="Batch Size" Margin="0,0,0,4" FontSize="12" Foreground="#555"/>
+                <TextBox Text="{Binding EditBatchSize, UpdateSourceTrigger=PropertyChanged}"
+                         Width="100" HorizontalAlignment="Left"
+                         Padding="6,5" FontSize="13" Margin="0,0,0,20"/>
+
+                <Button HorizontalAlignment="Left"
+                        Padding="24,8" FontWeight="SemiBold" FontSize="13"
+                        Command="{Binding SaveInstanceCommand}"
+                        Background="#0078D4" Foreground="White"
+                        BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <TextBlock Text="Save" FontWeight="SemiBold" Foreground="White"/>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
