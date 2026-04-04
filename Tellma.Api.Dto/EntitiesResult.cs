@@ -277,4 +277,16 @@ namespace Tellma.Api.Dto
         public IReadOnlyList<Reconciliation> Reconciliations { get; }
         public int ReconciledCount { get; }
     }
+
+    public class SaveSettingsResult<TSettings> : Result where TSettings : Entity
+    {
+        public SaveSettingsResult(TSettings settings, Versioned<SettingsForClient> settingsForClient)
+        {
+            Settings = settings;
+            SettingsForClient = settingsForClient;
+        }
+
+        public TSettings Settings { get; }
+        public Versioned<SettingsForClient> SettingsForClient { get; }
+    }
 }

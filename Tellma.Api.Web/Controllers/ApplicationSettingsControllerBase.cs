@@ -50,16 +50,16 @@ namespace Tellma.Controllers
         public async Task<ActionResult<SaveSettingsResponse<TSettings>>> Save([FromBody] TSettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             var _service = GetSettingsService();
-            var (settings, settingsForClient) = await _service.SaveSettings(settingsForSave, args);
+            var saveResult = await _service.SaveSettings(settingsForSave, args);
 
-            var singleton = new TSettings[] { settings };
+            var singleton = new TSettings[] { saveResult.Settings };
             var relatedEntities = ControllerUtilities.Flatten(singleton, cancellation: default);
 
             var result = new SaveSettingsResponse<TSettings>
             {
-                Result = settings,
+                Result = saveResult.Settings,
                 RelatedEntities = relatedEntities,
-                SettingsForClient = settingsForClient
+                SettingsForClient = saveResult.SettingsForClient
             };
 
             return Ok(result);

@@ -265,7 +265,7 @@ namespace Tellma.Client
             msg.SetBearerToken(token);
 
             // Add headers
-            msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+            msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd", ClientUtil.GregorianCulture));
             msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
 
             // Add query parameters
@@ -281,6 +281,17 @@ namespace Tellma.Client
 
             // Return response
             return responseMsg;
+        }
+
+        private GlobalSettingsClient _globalSettings;
+        public GlobalSettingsClient GlobalSettings => _globalSettings ??= new GlobalSettingsClient(this);
+
+        public async Task Ping(CancellationToken cancellation = default)
+        {
+            var url = string.Join('/', GetBaseUrlSteps().Concat(new string[] { "ping" }));
+            using var msg = new HttpRequestMessage(HttpMethod.Get, url);
+            using var httpResponse = await SendAsync(msg).ConfigureAwait(false);
+            await httpResponse.EnsureSuccess(cancellation).ConfigureAwait(false);
         }
 
         public async Task<CompaniesForClient> MyCompanies(CancellationToken cancellation = default)
@@ -343,7 +354,7 @@ namespace Tellma.Client
 
                 // Add headers
                 msg.Headers.Add(RequestHeaders.TenantId, _tenantId.ToString());
-                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd", ClientUtil.GregorianCulture));
                 msg.Headers.Add(RequestHeaders.Calendar, request.Calendar.ToString());
                 msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
 
@@ -365,6 +376,9 @@ namespace Tellma.Client
             }
 
             #region Clients
+
+            private AccountClassificationsClient _accountClassifications;
+            public AccountClassificationsClient AccountClassifications => _accountClassifications ??= new AccountClassificationsClient(this);
 
             private AccountsClient _accounts;
             public AccountsClient Accounts => _accounts ??= new AccountsClient(this);
@@ -456,8 +470,8 @@ namespace Tellma.Client
             private RolesClient _roles;
             public RolesClient Roles => _roles ??= new RolesClient(this);
 
-            private SmsMessagesClient _smsMessages;
-            public SmsMessagesClient SmsMessages => _smsMessages ??= new SmsMessagesClient(this);
+            private MessagesClient _messages;
+            public MessagesClient Messages => _messages ??= new MessagesClient(this);
 
             private UnitsClient _units;
             public UnitsClient Units => _units ??= new UnitsClient(this);
@@ -473,6 +487,30 @@ namespace Tellma.Client
 
             private FinancialSettingsClient _financialSettings;
             public FinancialSettingsClient FinancialSettings => _financialSettings ??= new FinancialSettingsClient(this);
+
+            private PermissionsClient _permissions;
+            public PermissionsClient Permissions => _permissions ??= new PermissionsClient(this);
+
+            private EmailTemplatesClient _emailTemplates;
+            public EmailTemplatesClient EmailTemplates => _emailTemplates ??= new EmailTemplatesClient(this);
+
+            private MessageTemplatesClient _messageTemplates;
+            public MessageTemplatesClient MessageTemplates => _messageTemplates ??= new MessageTemplatesClient(this);
+
+            private EmailCommandsClient _emailCommands;
+            public EmailCommandsClient EmailCommands => _emailCommands ??= new EmailCommandsClient(this);
+
+            private MessageCommandsClient _messageCommands;
+            public MessageCommandsClient MessageCommands => _messageCommands ??= new MessageCommandsClient(this);
+
+            private InboxClient _inbox;
+            public InboxClient Inbox => _inbox ??= new InboxClient(this);
+
+            private ReconciliationClient _reconciliation;
+            public ReconciliationClient Reconciliation => _reconciliation ??= new ReconciliationClient(this);
+
+            private NotificationsClient _notifications;
+            public NotificationsClient Notifications => _notifications ??= new NotificationsClient(this);
 
             #endregion
         }
@@ -499,13 +537,13 @@ namespace Tellma.Client
             }
 
             public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage msg, Request request, CancellationToken cancellation = default)
-            {               
+            {
                 // Add access token
                 string token = await _tokenFactory.GetValidAccessToken(cancellation);
                 msg.SetBearerToken(token);
 
                 // Add headers
-                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd"));
+                msg.Headers.Add(RequestHeaders.Today, DateTime.Today.ToString("yyyy-MM-dd", ClientUtil.GregorianCulture));
                 msg.Headers.Add(RequestHeaders.ApiVersion, "1.0");
 
                 // Add query parameters
@@ -522,6 +560,16 @@ namespace Tellma.Client
                 // Return response
                 return responseMsg;
             }
+
+            #region Clients
+
+            private AdminSettingsClient _adminSettings;
+            public AdminSettingsClient AdminSettings => _adminSettings ??= new AdminSettingsClient(this);
+
+            private AdminPermissionsClient _adminPermissions;
+            public AdminPermissionsClient AdminPermissions => _adminPermissions ??= new AdminPermissionsClient(this);
+
+            #endregion
         }
     }
 

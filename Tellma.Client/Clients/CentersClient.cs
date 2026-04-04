@@ -6,7 +6,7 @@ using Tellma.Model.Application;
 
 namespace Tellma.Client
 {
-    public class CentersClient : CrudClientBase<CenterForSave, Center, int>
+    public class CentersClient : CrudTreeClientBase<CenterForSave, Center, int>
     {
         internal CentersClient(IClientBehavior behavior) : base(behavior)
         {

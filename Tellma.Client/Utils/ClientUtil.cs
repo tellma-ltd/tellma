@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,14 @@ namespace Tellma.Client
 {
     public static class ClientUtil
     {
+        /// <summary>
+        /// A <see cref="CultureInfo"/> that uses the invariant culture with an explicit
+        /// Gregorian calendar. Use this when formatting dates to ensure "yyyy-MM-dd"
+        /// always produces Gregorian dates, even on machines whose default locale uses
+        /// a non-Gregorian calendar (e.g. Hijri, Thai Buddhist).
+        /// </summary>
+        internal static readonly CultureInfo GregorianCulture = CultureInfo.InvariantCulture;
+
         /// <summary>
         /// Extension method that retrieves a single entity for save using its Id.
         /// The function uses <see cref="ExpandForSave{TEntityForSave}"/> to calculate

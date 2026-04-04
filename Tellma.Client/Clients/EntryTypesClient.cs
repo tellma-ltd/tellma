@@ -6,7 +6,7 @@ using Tellma.Model.Application;
 
 namespace Tellma.Client
 {
-    public class EntryTypesClient : CrudClientBase<EntryTypeForSave, EntryType, int>
+    public class EntryTypesClient : CrudTreeClientBase<EntryTypeForSave, EntryType, int>
     {
         internal EntryTypesClient(IClientBehavior behavior) : base(behavior)
         {

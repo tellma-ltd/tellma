@@ -1,8 +1,8 @@
-﻿using Tellma.Model.Application;
+using Tellma.Model.Application;
 
 namespace Tellma.Client
 {
-    public class FinancialSettingsClient : ApplicationSettingsClientBase<GeneralSettings, GeneralSettingsForSave>
+    public class FinancialSettingsClient : ApplicationSettingsClientBase<FinancialSettingsForSave, FinancialSettings>
     {
         protected override string ControllerPath => "financial-settings";
 

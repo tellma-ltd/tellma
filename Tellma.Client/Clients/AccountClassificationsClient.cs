@@ -6,7 +6,7 @@ using Tellma.Model.Application;
 
 namespace Tellma.Client
 {
-    public class AccountClassificationsClient : CrudClientBase<AccountClassificationForSave, AccountClassification, int>
+    public class AccountClassificationsClient : CrudTreeClientBase<AccountClassificationForSave, AccountClassification, int>
     {
         internal AccountClassificationsClient(IClientBehavior behavior) : base(behavior)
         {

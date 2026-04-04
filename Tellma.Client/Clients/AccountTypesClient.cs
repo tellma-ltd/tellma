@@ -6,7 +6,7 @@ using Tellma.Model.Application;
 
 namespace Tellma.Client
 {
-    public class AccountTypesClient : CrudClientBase<AccountTypeForSave, AccountType, int>
+    public class AccountTypesClient : CrudTreeClientBase<AccountTypeForSave, AccountType, int>
     {
         internal AccountTypesClient(IClientBehavior behavior) : base(behavior)
         {

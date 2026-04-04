@@ -51,13 +51,13 @@ namespace Tellma.Api
         }
 
         /// <summary>
-        /// Saves <paramref name="settingsForSave"/> as per the specifications in <paramref name="args"/> 
+        /// Saves <paramref name="settingsForSave"/> as per the specifications in <paramref name="args"/>
         /// after authorization.
         /// </summary>
         /// <param name="settingsForSave">The settings to save.</param>
         /// <param name="args">The specifications of the save operation.</param>
         /// <returns>Optionally returns the new READ settings and the new <see cref="SettingsForClient"/>.</returns>
-        public async Task<(TSettings, Versioned<SettingsForClient>)> SaveSettings(TSettingsForSave settingsForSave, SaveArguments args)
+        public async Task<SaveSettingsResult<TSettings>> SaveSettings(TSettingsForSave settingsForSave, SaveArguments args)
         {
             await Initialize();
 
@@ -100,7 +100,7 @@ namespace Tellma.Api
             }
 
             trx.Complete();
-            return (res, newSettingsForClient);
+            return new SaveSettingsResult<TSettings>(res, newSettingsForClient);
         }
 
         #endregion
