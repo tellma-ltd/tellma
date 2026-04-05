@@ -11,6 +11,21 @@ public partial class BulkExecutePage : UserControl
         InitializeComponent();
     }
 
+    private void ScriptEditor_SelectionChanged(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is BulkExecuteViewModel vm && sender is TextBox textBox)
+        {
+            if (textBox.SelectionLength > 0)
+            {
+                vm.SelectedText = textBox.Text.Substring(textBox.SelectionStart, textBox.SelectionLength);
+            }
+            else
+            {
+                vm.SelectedText = string.Empty;
+            }
+        }
+    }
+
     private void ShowError_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { DataContext: TenantDatabaseRow row } && row.ErrorMessage != null)

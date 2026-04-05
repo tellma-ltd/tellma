@@ -51,6 +51,19 @@ public partial class BulkExecuteViewModel : ObservableObject
     private string _scriptText = string.Empty;
 
     [ObservableProperty]
+    private string _selectedText = string.Empty;
+
+    public bool HasSelectedText => !string.IsNullOrWhiteSpace(SelectedText);
+
+    public string ExecuteButtonLabel => HasSelectedText ? "Execute Highlighted" : "Execute";
+
+    partial void OnSelectedTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSelectedText));
+        OnPropertyChanged(nameof(ExecuteButtonLabel));
+    }
+
+    [ObservableProperty]
     private bool _isExecuting;
 
     [ObservableProperty]
@@ -65,6 +78,11 @@ public partial class BulkExecuteViewModel : ObservableObject
     {
         _saveTimer?.Stop();
         _saveTimer?.Start();
+    }
+
+    partial void OnIsLoadingTenantsChanged(bool value)
+    {
+        ExecuteScriptCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnSelectedInstanceChanged(TellmaInstance? value)
@@ -137,7 +155,8 @@ public partial class BulkExecuteViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanExecute))]
     private async Task ExecuteScriptAsync()
     {
-        if (SelectedInstance == null || Tenants.Count == 0 || string.IsNullOrWhiteSpace(ScriptText))
+        var scriptToExecute = HasSelectedText ? SelectedText : ScriptText;
+        if (SelectedInstance == null || Tenants.Count == 0 || string.IsNullOrWhiteSpace(scriptToExecute))
             return;
 
         // Confirmation
@@ -175,7 +194,7 @@ public partial class BulkExecuteViewModel : ObservableObject
         try
         {
             await _executionService.ExecuteAsync(
-                ScriptText,
+                scriptToExecute,
                 Tenants,
                 SelectedInstance.BatchSize,
                 progress,
@@ -194,7 +213,7 @@ public partial class BulkExecuteViewModel : ObservableObject
         }
     }
 
-    private bool CanExecute() => !IsExecuting;
+    private bool CanExecute() => !IsExecuting && !IsLoadingTenants;
 
     [RelayCommand]
     private void Cancel()

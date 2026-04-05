@@ -26,10 +26,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="180" MinHeight="80"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" MinHeight="100"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="200" MinHeight="80"/>
         </Grid.RowDefinitions>
 
         <!-- Row 0: Instance selector -->
@@ -49,21 +49,30 @@
 
         <!-- Row 2: Script editor -->
         <Border Grid.Row="2" BorderBrush="#CCC" BorderThickness="1" CornerRadius="3">
-            <TextBox Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox x:Name="ScriptEditor"
+                     Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
                      FontFamily="Consolas" FontSize="13"
                      AcceptsReturn="True" AcceptsTab="True"
                      VerticalScrollBarVisibility="Auto"
                      HorizontalScrollBarVisibility="Auto"
                      TextWrapping="NoWrap"
-                     BorderThickness="0" Padding="6,4"/>
+                     BorderThickness="0" Padding="6,4"
+                     IsInactiveSelectionHighlightEnabled="True"
+                     SelectionChanged="ScriptEditor_SelectionChanged">
+                <TextBox.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#660078D4"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+                </TextBox.Resources>
+            </TextBox>
         </Border>
 
         <!-- Row 3: Execute / Cancel bar (below script) -->
         <Grid Grid.Row="3" Margin="0,10,0,0">
-            <Button Content="Execute" Padding="20,8"
+            <Button Content="{Binding ExecuteButtonLabel}" Padding="20,8"
                     Command="{Binding ExecuteScriptCommand}"
                     Visibility="{Binding IsExecuting, Converter={StaticResource InverseBoolToVis}}"
                     HorizontalAlignment="Left"
+                    Focusable="False"
                     FontWeight="SemiBold" FontSize="13"
                     Background="#0078D4" Foreground="White"
                     BorderThickness="0" Cursor="Hand">
@@ -80,7 +89,7 @@
             <Button Padding="20,8"
                     Command="{Binding CancelCommand}"
                     Visibility="{Binding IsExecuting, Converter={StaticResource BoolToVis}}"
-                    HorizontalAlignment="Stretch"
+                    HorizontalAlignment="Left"
                     FontWeight="SemiBold" FontSize="13"
                     Background="#D32F2F" Foreground="White"
                     BorderThickness="0" Cursor="Hand">
