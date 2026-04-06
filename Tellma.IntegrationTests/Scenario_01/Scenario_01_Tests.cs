@@ -17,6 +17,7 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
+    [Trait("Category", "Integration")]
     public class Scenario_01_Tests : Scenario_01
     {
         private readonly ITestOutputHelper _output;

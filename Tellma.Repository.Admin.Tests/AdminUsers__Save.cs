@@ -7,6 +7,7 @@ using Xunit;
 namespace Tellma.Repository.Admin.Tests
 {
     [Collection(nameof(AdminRepositoryCollection))]
+    [Trait("Category", "Integration")]
     public class AdminUsers__Save : IClassFixture<AdminRepositoryFixture>
     {
         private readonly AdminRepository _repo;

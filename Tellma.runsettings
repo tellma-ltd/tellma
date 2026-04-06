@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+  <RunConfiguration>
+    <TestCaseFilter>Category!=Integration</TestCaseFilter>
+  </RunConfiguration>
   <TestRunParameters>
     <Parameter name="TestDatabaseConnectionString" value="Data Source=.;Initial Catalog=Tellma.Database.Tests;Integrated Security=True;" />
     <Parameter name="IncludePath" value="Tests" />

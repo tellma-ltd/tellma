@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace Tellma.Repository.Application.Tests
 {
+    [Trait("Category", "Integration")]
     public class ZatcaTests : TestsBase, IClassFixture<ApplicationRepositoryFixture>
     {
         #region Lifecycle

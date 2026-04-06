@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 namespace Tellma.Integration.Zatca.Tests
 {
+    [Trait("Category", "Integration")]
     public partial class ZatcaClientTests
     {
         private const string _sectionName = "ZatcaSandbox";
