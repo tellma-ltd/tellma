@@ -7,6 +7,7 @@
         public const string Error_Field0IsNotValidEmail = "Error_Field0IsNotValidEmail";
 
         public const string WebClientName = "WebClient";
+        public const string McpClientName = "McpClient";
         public const string ApiResourceName = "tellma";
 
         // Caching

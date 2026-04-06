@@ -25,10 +25,11 @@
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.1" />
-    <PackageReference Include="Azure.Identity" Version="1.19.0" />
+    <PackageReference Include="Azure.Identity" Version="1.20.0" />
     <PackageReference Include="Duende.AccessTokenManagement" Version="4.2.0" />
     <PackageReference Include="Duende.IdentityServer" Version="7.4.7" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.4.7" />
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="7.4.7" />
     <PackageReference Include="GeoJSON.Net" Version="1.4.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.5" />
@@ -85,6 +86,10 @@
     <None Remove="ClientApp\dist\**" />
     <None Remove="Data2\**" />
     <None Remove="Pages\Account\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\EmbeddedIdentityServer\o2e20m3h.xgo~" />
   </ItemGroup>
 
   <ItemGroup>

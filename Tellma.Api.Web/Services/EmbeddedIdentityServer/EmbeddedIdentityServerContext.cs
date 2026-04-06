@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Tellma.Services.EmbeddedIdentityServer
 {
     /// <summary>
-    /// This is the context used by 
+    /// This is the context used by the built-in Identity Server
     /// </summary>
     public class EmbeddedIdentityServerContext : IdentityUserContext<EmbeddedIdentityServerUser>, IDataProtectionKeyContext
     {
         public EmbeddedIdentityServerContext(DbContextOptions<EmbeddedIdentityServerContext> opt) : base(opt) { }
-        
+
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     }
 }

@@ -63,8 +63,8 @@ namespace Microsoft.Extensions.DependencyInjection
             // Register the identity context
             var connString = config.GetConnectionString("AdminConnection");
             services.AddAdminRepository(connString);
-            services.AddDbContext<EmbeddedIdentityServerContext>(opt => 
-                opt.UseSqlServer(connString));
+            services.AddDbContext<EmbeddedIdentityServerContext>(builder => 
+                builder.UseSqlServer(connString));
 
             // Required dependency
             services.AddClientAppAddressResolver(config);
@@ -162,8 +162,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // This one uses the ClientsConfiguration configured earlier
                 .AddClientStore<ClientStore>()
-                .AddPersistedGrantStore<PersistedGrantStore>()
-                .AddAspNetIdentity<EmbeddedIdentityServerUser>();
+                .AddOperationalStore(options =>
+                {
+                    options.ConfigureDbContext = builder =>
+                        builder.UseSqlServer(connString);
+
+                    options.EnableTokenCleanup = true;
+                    options.FuzzTokenCleanupStart = true; // Since the app is multi-instance
+                })
+                // .AddPersistedGrantStore<PersistedGrantStore>()
+                .AddAspNetIdentity<EmbeddedIdentityServerUser>()
+                .AddRedirectUriValidator<McpRedirectUriValidator>();
 
             // CORS for identity server requests
             services.AddSingleton<ICorsPolicyService, EmbeddedIdentityCorsPolicyService>();
