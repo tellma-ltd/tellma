@@ -2137,7 +2137,7 @@
   </div>
 
   <!-- Dynamic Properties -->
-  <div class="small d-flex flex-wrap px-2 pt-1">
+  <div class="small d-flex flex-wrap px-2 pt-1 t-gap">
     <!-- Currency -->
     @if (showCurrency(entry)) {
       <t-form-group-dynamic [label]="'Entry_Currency' | translate"
@@ -2156,7 +2156,6 @@
             (ngModelChange)="update.call(null, pair);" required>
           </t-currencies-picker>
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2187,7 +2186,6 @@
             entry.CurrencyId, 'Name') }}
           </t-restricted>
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2217,7 +2215,6 @@
             </t-restricted>
           }
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2250,7 +2247,6 @@
             </t-restricted>
           }
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2285,7 +2281,6 @@
             </t-restricted>
           }
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2317,7 +2312,6 @@
             </t-restricted>
           }
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
 
@@ -2336,7 +2330,6 @@
             [ngModelOptions]="{ updateOn: 'blur' }" required>
           </t-decimal-editor>
         }
-        &nbsp;&nbsp;
       </t-form-group-dynamic>
     }
     @if (showUnit(entry)) {
@@ -2360,7 +2353,6 @@
           </t-units-picker>
         }
       }
-      &nbsp;&nbsp;
     </t-form-group-dynamic>
   }
 
@@ -2377,7 +2369,6 @@
           (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-date-picker>
       }
-      &nbsp;&nbsp;
     </t-form-group-dynamic>
   }
 
@@ -2396,7 +2387,6 @@
           [ngModelOptions]="{ updateOn: 'blur' }" required>
         </t-decimal-editor>
       }
-      &nbsp;&nbsp;
     </t-form-group-dynamic>
   }
   @if (showDurationUnit(entry, pair.line)) {
@@ -2422,7 +2412,6 @@
         </t-units-picker>
       }
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2439,7 +2428,6 @@
         (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
       </t-date-picker>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2475,7 +2463,6 @@
         </t-restricted>
       }
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2497,7 +2484,6 @@
         (ngModelChange)="update.call(null, pair);">
       </t-text-editor>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2531,7 +2517,6 @@
         </t-restricted>
       }
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2553,7 +2538,6 @@
         (ngModelChange)="update.call(null, pair);">
       </t-text-editor>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2575,7 +2559,6 @@
         (ngModelChange)="update.call(null, pair);">
       </t-text-editor>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2598,7 +2581,6 @@
         (ngModelChange)="update.call(null, pair);">
       </t-decimal-editor>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 
@@ -2620,7 +2602,6 @@
         (ngModelChange)="update.call(null, pair);">
       </t-date-picker>
     }
-    &nbsp;&nbsp;
   </t-form-group-dynamic>
 }
 </div>
