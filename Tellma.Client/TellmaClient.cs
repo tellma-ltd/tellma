@@ -386,9 +386,6 @@ namespace Tellma.Client
             private AccountTypesClient _accountTypes;
             public AccountTypesClient AccountTypes => _accountTypes ??= new AccountTypesClient(this);
 
-            private AdminUsersClient _adminUsers;
-            public AdminUsersClient AdminUsers => _adminUsers ??= new AdminUsersClient(this);
-
             private AgentDefinitionsClient _agentDefinitions;
             public AgentDefinitionsClient AgentDefinitions => _agentDefinitions ??= new AgentDefinitionsClient(this);
 
@@ -427,12 +424,6 @@ namespace Tellma.Client
 
             private ExchangeRatesClient _exchangeRates;
             public ExchangeRatesClient ExchangeRates => _exchangeRates ??= new ExchangeRatesClient(this);
-
-            private IdentityServerClientsClient _identityServerClients;
-            public IdentityServerClientsClient IdentityServerClients => _identityServerClients ??= new IdentityServerClientsClient(this);
-
-            private IdentityServerUsersClient _identityServerUsers;
-            public IdentityServerUsersClient IdentityServerUsers => _identityServerUsers ??= new IdentityServerUsersClient(this);
 
             private IfrsConceptsClient _ifrsConcepts;
             public IfrsConceptsClient IfrsConcepts => _ifrsConcepts ??= new IfrsConceptsClient(this);
@@ -568,6 +559,15 @@ namespace Tellma.Client
 
             private AdminPermissionsClient _adminPermissions;
             public AdminPermissionsClient AdminPermissions => _adminPermissions ??= new AdminPermissionsClient(this);
+
+            private AdminUsersClient _adminUsers;
+            public AdminUsersClient AdminUsers => _adminUsers ??= new AdminUsersClient(this);
+
+            private IdentityServerClientsClient _identityServerClients;
+            public IdentityServerClientsClient IdentityServerClients => _identityServerClients ??= new IdentityServerClientsClient(this);
+
+            private IdentityServerUsersClient _identityServerUsers;
+            public IdentityServerUsersClient IdentityServerUsers => _identityServerUsers ??= new IdentityServerUsersClient(this);
 
             #endregion
         }
