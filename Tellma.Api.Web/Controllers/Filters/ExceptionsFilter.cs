@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web;
 using Tellma.Api.Base;
 using Tellma.Services.Utilities;
@@ -33,10 +30,10 @@ namespace Tellma.Api.Web.Controllers
             var ex = context.Exception;
             IActionResult result;
 
-            if (ex is TaskCanceledException || ex is OperationCanceledException || ex is ConnectionResetException)
+            if (context.HttpContext?.RequestAborted.IsCancellationRequested ?? false)
             {
-                // It doesn't matter what we return here since the client is not interested anymore
-                result = new BadRequestResult();
+                // The client is not interested anymore
+                result = new OkResult();
             }
             else if (ex is ForbiddenException exf)
             {
