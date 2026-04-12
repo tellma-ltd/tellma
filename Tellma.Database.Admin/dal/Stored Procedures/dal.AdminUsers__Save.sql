@@ -100,14 +100,14 @@ SET NOCOUNT ON;
 	-- Sync with Directory Users
 	MERGE INTO [dbo].[DirectoryUsers] As t
 	USING (
-		SELECT [Email] FROM [dbo].[AdminUsers] WHERE [Email] IS NOT NULL
-	) As s ON t.[Email] = s.[Email]
+		SELECT ISNULL([Email], [ClientId]) AS [EmailOrClientId] FROM [dbo].[AdminUsers]
+	) As s ON t.[EmailOrClientId] = s.[EmailOrClientId]
 	WHEN MATCHED AND t.[IsAdmin] <> 1 THEN -- Existing Directory User
-		UPDATE SET 
+		UPDATE SET
 			t.[IsAdmin] = 1
 	WHEN NOT MATCHED THEN -- New Directory User
-		INSERT ([Email], [IsAdmin])
-		VALUES (s.[Email], 1);
+		INSERT ([EmailOrClientId], [IsAdmin])
+		VALUES (s.[EmailOrClientId], 1);
 
 	-- Return the results if needed
 	IF @ReturnIds = 1

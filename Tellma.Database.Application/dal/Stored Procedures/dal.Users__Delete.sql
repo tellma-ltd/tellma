@@ -8,7 +8,7 @@ BEGIN
 	SELECT [ImageId] FROM [dbo].[Users] 
 	WHERE [ImageId] IS NOT NULL AND [Id] IN (SELECT [Id] FROM @Ids);
 
-	DELETE FROM [dbo].[Users] 
-	OUTPUT DELETED.[Email] -- Returns the deleted emails
+	DELETE FROM [dbo].[Users]
+	OUTPUT ISNULL(DELETED.[Email], DELETED.[ClientId]) -- Returns the deleted emails/clientIds
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 END;

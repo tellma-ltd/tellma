@@ -10,9 +10,9 @@ BEGIN
 	VALUES (@FullName, @Email, IDENT_CURRENT('dbo.AdminUsers'), @Now, IDENT_CURRENT('dbo.AdminUsers'), @Now);
 END
 
-IF NOT EXISTS (SELECT * FROM [dbo].[DirectoryUsers] WHERE [Email] = @Email)
+IF NOT EXISTS (SELECT * FROM [dbo].[DirectoryUsers] WHERE [EmailOrClientId] = @Email)
 BEGIN
-	INSERT INTO [dbo].[DirectoryUsers] ([Email], [IsAdmin])
+	INSERT INTO [dbo].[DirectoryUsers] ([EmailOrClientId], [IsAdmin])
 	VALUES (@Email, 1);
 END
 

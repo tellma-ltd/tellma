@@ -641,13 +641,13 @@ namespace Tellma.Api
             // Step (6) Update the directory users in the admin database
             using var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
 
-            var oldEmails = new List<string>(); // Emails are readonly after the first save
-            var newEmails = entities.Where(e => e.Id == 0).Where(e => e.Email != null).Select(e => e.Email);
+            var oldEmailsOrClientIds = new List<string>(); // Emails/ClientIds are readonly after the first save
+            var newEmailsOrClientIds = entities.Where(e => e.Id == 0).Select(e => e.Email ?? e.ClientId).Where(e => e != null);
 
-            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
+            await _adminRepo.DirectoryUsers__Save(newEmailsOrClientIds, oldEmailsOrClientIds, _behavior.TenantId);
 
-            identityTrx.Complete();
             adminTrx.Complete();
+            identityTrx.Complete();
         }
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
@@ -667,8 +667,8 @@ namespace Tellma.Api
 
             #region Delete
 
-            IEnumerable<string> oldEmails;
-            IEnumerable<string> newEmails = new List<string>();
+            IEnumerable<string> oldEmailsOrClientIds;
+            IEnumerable<string> newEmailsOrClientIds = new List<string>();
 
             List<string> blobsToDelete;
 
@@ -680,7 +680,7 @@ namespace Tellma.Api
 
             AddErrorsAndThrowIfInvalid(result.Errors);
 
-            oldEmails = emails.Where(e => e != null);
+            oldEmailsOrClientIds = emails.Where(e => e != null);
             blobsToDelete = result.DeletedImageIds.Select(ImageBlobName).ToList();
 
             #endregion
@@ -690,15 +690,16 @@ namespace Tellma.Api
             // It's unfortunate that EF Core does not support distributed transactions, so there is no
             // guarantee that deletes to both the application and the admin will not complete one without the other
 
-            using var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew);
+            using (var adminTrx = TransactionFactory.ReadCommitted(TransactionScopeOption.RequiresNew))
+            {
+                // Delete from directory
+                await _adminRepo.DirectoryUsers__Save(newEmailsOrClientIds, oldEmailsOrClientIds, _behavior.TenantId);
 
-            // Delete from directory
-            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, _behavior.TenantId);
+                adminTrx.Complete();
+            }
 
             // Delete user images
             await _blobService.DeleteBlobsAsync(_behavior.TenantId, blobsToDelete);
-
-            adminTrx.Complete();
 
             #endregion
         }

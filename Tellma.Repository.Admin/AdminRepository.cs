@@ -468,7 +468,7 @@ namespace Tellma.Repository.Admin
 
         #region Directory
 
-        public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
+        public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string emailOrClientId, CancellationToken cancellation)
         {
             var databaseIds = new List<int>();
             var isAdmin = false;
@@ -489,7 +489,7 @@ namespace Tellma.Repository.Admin
 
                 // Parameters
                 cmd.Parameters.Add("@ExternalId", externalId);
-                cmd.Parameters.Add("@Email", email);
+                cmd.Parameters.Add("@EmailOrClientId", emailOrClientId);
 
                 // Execute and Load
                 // (1) databaseIds
@@ -562,7 +562,7 @@ namespace Tellma.Repository.Admin
             _dbName, nameof(DirectoryUsers__SetExternalIdByEmail));
         }
 
-        public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
+        public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmailsOrClientIds, IEnumerable<string> oldEmailsOrClientIds, int databaseId, bool returnEmailsOrClientIdsForCreation = false)
         {
             List<string> result = null;
             await TransactionalDatabaseOperation(async () =>
@@ -577,29 +577,29 @@ namespace Tellma.Repository.Admin
                 cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
 
                 // Parameters
-                var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
-                var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
+                var newTable = RepositoryUtilities.DataTable(newEmailsOrClientIds.Select(e => new StringListItem { Id = e }));
+                var newTvp = new SqlParameter("@NewEmailsOrClientIds", newTable)
                 {
                     TypeName = $"[dbo].[StringList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
-                var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
+                var oldTable = RepositoryUtilities.DataTable(oldEmailsOrClientIds.Select(e => new StringListItem { Id = e }));
+                var oldTvp = new SqlParameter("@OldEmailsOrClientIds", oldTable)
                 {
                     TypeName = $"[dbo].[StringList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                cmd.Parameters.Add(newEmailsTvp);
-                cmd.Parameters.Add(oldEmailsTvp);
+                cmd.Parameters.Add(newTvp);
+                cmd.Parameters.Add(oldTvp);
                 cmd.Parameters.Add("@DatabaseId", databaseId);
-                cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
+                cmd.Parameters.Add("@ReturnEmailsOrClientIdsForCreation", returnEmailsOrClientIdsForCreation);
 
                 // Execute
                 result = new List<string>();
                 await conn.OpenAsync();
-                if (returnEmailsForCreation)
+                if (returnEmailsOrClientIdsForCreation)
                 {
                     using var reader = await cmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())

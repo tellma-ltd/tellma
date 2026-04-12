@@ -81,6 +81,11 @@ namespace Tellma.Api.Base
         protected string ExternalEmail => _contextAccessor.ExternalEmail;
 
         /// <summary>
+        /// The external client Id from the identity provider.
+        /// <summary/>
+        protected string ExternalClientId => _contextAccessor.ExternalClientId;
+
+        /// <summary>
         /// Whether or not the currently authenticated user is a service account or a human.
         /// <summary/>
         protected bool IsServiceAccount => _contextAccessor.IsServiceAccount;

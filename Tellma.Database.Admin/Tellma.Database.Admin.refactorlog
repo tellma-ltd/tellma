@@ -14,4 +14,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[DirectoryUsers__SetEmailByExternalId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="5470e11d-7391-4667-9561-df1e2d631f3b" ChangeDateTime="04/06/2026 03:51:12">
+    <Property Name="ElementName" Value="[dbo].[DirectoryUsers].[Email]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DirectoryUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EmailOrClientId" />
+  </Operation>
 </Operations>

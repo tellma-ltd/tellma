@@ -41,8 +41,23 @@ namespace Tellma.Api
         {
             await Initialize(cancellation);
 
+            // For service accounts (M2M), use ClientId; for human users, use UserId/Email
+            string externalId;
+            string externalClientId = null;
+            string externalEmail = null;
+            if (IsServiceAccount)
+            {
+                externalId = externalClientId = ExternalClientId;
+            }
+            else
+            {
+                externalId = ExternalUserId;
+                externalEmail = ExternalEmail;
+            }
+
             var companies = new ConcurrentBag<UserCompany>();
-            var (databaseIds, isAdmin) = await _adminRepo.GetAccessibleDatabaseIds(ExternalUserId, ExternalEmail, cancellation);
+            var externalEmailOrClientId = externalEmail ?? externalClientId;
+            var (databaseIds, isAdmin) = await _adminRepo.GetAccessibleDatabaseIds(externalId, externalEmailOrClientId, cancellation);
 
             // Connect all the databases in parallel and make sure the user can access them all
             await Task.WhenAll(databaseIds.Select(async (databaseId) =>
@@ -51,8 +66,8 @@ namespace Tellma.Api
                 {
                     var appRepo = _factory.GetRepository(databaseId);
                     var result = await appRepo.OnConnect(
-                        externalUserId: ExternalUserId,
-                        userEmail: ExternalEmail,
+                        externalUserId: externalId,
+                        userEmail: externalEmail,
                         isServiceAccount: IsServiceAccount,
                         setLastActive: false,
                         cancellation: cancellation);
@@ -74,7 +89,7 @@ namespace Tellma.Api
                 catch (Exception ex)
                 {
                     // If we fail to connect to a company, this company simply isn't added to the result
-                    _logger.LogWarning(ex, $"Exception while connecting to user company: DatabaseId: {databaseId}, User email: {ExternalEmail}.");
+                    _logger.LogWarning(ex, "Exception while connecting to user company: DatabaseId: {databaseId}, User email: {externalEmail}, Client Id: {externalClientId}.", databaseId, externalEmail, externalClientId);
                 }
             }));
 
@@ -82,8 +97,8 @@ namespace Tellma.Api
             if (isAdmin)
             {
                 var result = await _adminRepo.OnConnect(
-                        externalUserId: ExternalUserId,
-                        userEmail: ExternalEmail,
+                        externalUserId: externalId,
+                        userEmail: externalEmail,
                         isServiceAccount: IsServiceAccount,
                         setLastActive: false,
                         cancellation: cancellation);
@@ -94,7 +109,7 @@ namespace Tellma.Api
             return new CompaniesForClient
             {
                 IsAdmin = isAdmin,
-                Companies = companies.OrderBy(e => e.Id).ToList(),
+                Companies = [.. companies.OrderBy(e => e.Id)],
             };
         }
     }
