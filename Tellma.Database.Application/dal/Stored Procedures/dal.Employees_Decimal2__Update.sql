@@ -1,4 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Employees_Decimal2__Update]
+-- IF you change the logic here, make sure you reflect the change in the file AccruedLeaveDays .sql
+-- which is used to calculate the same value for the EmployeeDetails view, and also in the function
+-- fn_Employee_AsOfDate__AccruedLeaveDays which is used to calculate the same value for the EmployeeBenefits view.
 AS
 DECLARE @PostingDate DATE = GETDATE();
 
@@ -67,4 +70,3 @@ FROM dbo.Agents AG
 JOIN @EmployeeIds UP ON UP.[EmployeeId] = AG.[Id]
 LEFT JOIN @TillYearEndDate YE ON YE.[EmployeeId] = UP.[EmployeeId]
 LEFT JOIN @LeaveAdjustments LA ON LA.[EmployeeId] = UP.[EmployeeId];
-
