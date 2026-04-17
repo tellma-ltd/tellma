@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.1" />
-    <PackageReference Include="Azure.Identity" Version="1.19.0" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Duende.AccessTokenManagement" Version="4.2.0" />
     <PackageReference Include="Duende.IdentityServer" Version="7.4.7" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.4.7" />
