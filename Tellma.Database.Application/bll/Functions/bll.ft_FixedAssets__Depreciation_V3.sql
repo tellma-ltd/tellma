@@ -509,6 +509,7 @@ JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R.[DefinitionId]
 JOIN dbo.Lookups        LK4 ON LK4.[Id] = R.[Lookup4Id]
 JOIN @FixedAssetsAccountIds A ON A.[FixedAssetAccountId] = E.[AccountId]
 WHERE L.[State] = 4
+  AND E.[EntryTypeId] NOT IN (SELECT [Id] FROM @AccumulatedDepreciationEntryTypeIds)
   AND R.[Code] <> N'0'
   AND L.[PostingDate] <= DATEADD(DAY, 1, @PostingDate)
   AND LK4.[Code] <> N'NA'
