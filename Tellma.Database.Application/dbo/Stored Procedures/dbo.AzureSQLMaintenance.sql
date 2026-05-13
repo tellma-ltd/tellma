@@ -26,10 +26,10 @@ if object_id('AzureSQLMaintenance') is null
 	exec('create procedure AzureSQLMaintenance as /*dummy procedure body*/ select 1;')	
 GO
 */
-CREATE PROCEDURE [AzureSQLMaintenance]
+CREATE OR ALTER PROCEDURE [AzureSQLMaintenance]
 	(
-		@operation nvarchar(10) = null,
-		@mode nvarchar(10) = 'smart',
+		@operation nvarchar(10) = 'all',-- null,
+		@mode nvarchar(10) = 'dummy', --'smart',
 		@ResumableIndexRebuild bit = 0,
 		@RebuildHeaps bit = 0,
 		@LogToTable bit = 0,

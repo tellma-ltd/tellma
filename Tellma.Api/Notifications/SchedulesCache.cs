@@ -368,7 +368,7 @@ namespace Tellma.Api.Notifications
                 .Split(';')
                 .Where(e => !string.IsNullOrWhiteSpace(e))
                 .Select(e => e.Trim())
-                .Select(CronExpression.Parse);
+                .Select(e => CronExpression.Parse(e));
         }
 
         /// <summary>
