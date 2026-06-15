@@ -29,4 +29,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- A real captured document-details batch (def 46, unrestricted user) used as optimizer test input. -->
+    <EmbeddedResource Include="Queries\DocumentDetails.generated.sql" />
+  </ItemGroup>
+
 </Project>

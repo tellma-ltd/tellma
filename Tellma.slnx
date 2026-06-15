@@ -1,0 +1,68 @@
+<Solution>
+  <Folder Name="/integration/">
+    <Project Path="Tellma.Integration.Zatca.Tests/Tellma.Integration.Zatca.Tests.csproj" />
+    <Project Path="Tellma.Integration.Zatca/Tellma.Integration.Zatca.csproj" />
+  </Folder>
+  <Folder Name="/root/">
+    <File Path=".editorconfig" />
+    <File Path=".filenesting.json" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="CLAUDE.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="SECURITY.md" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Tellma.ApplicationDbCloner/Tellma.ApplicationDbCloner.csproj" />
+    <Project Path="tools/Tellma.ApplicationDbPublisher/Tellma.ApplicationDbPublisher.csproj" />
+    <Project Path="tools/Tellma.BlobsMigrator/Tellma.BlobsMigrator.csproj" />
+    <Project Path="tools/Tellma.DefinitionsComparer/Tellma.DefinitionsComparer.csproj" />
+    <Project Path="tools/Tellma.DefinitionsSynchronizer/Tellma.DefinitionsSynchronizer.csproj" />
+  </Folder>
+  <Project Path="Tellma.Api.Dto/Tellma.Api.Dto.csproj" />
+  <Project Path="Tellma.Api.Instances/Tellma.Api.Instances.csproj" />
+  <Project Path="Tellma.Api.Tests/Tellma.Api.Tests.csproj" />
+  <Project Path="Tellma.Api.Web.Dto/Tellma.Api.Web.Dto.csproj" />
+  <Project Path="Tellma.Api.Web/Tellma.Api.Web.csproj" />
+  <Project Path="Tellma.Api/Tellma.Api.csproj" />
+  <Project Path="Tellma.Client/Tellma.Client.csproj" />
+  <Project Path="Tellma.Database.Admin/Tellma.Database.Admin.sqlproj" Id="7f0b3c51-fa2a-4881-9a62-10571e15d8b7">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Tellma.Database.Application/Tellma.Database.Application.sqlproj" Id="bf2096e3-ed24-4ee1-befc-a67c3ffa38b6">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Tellma.Database.Data/Tellma.Database.Data.sqlproj" Id="8c3d6832-db0b-49c2-a4f7-c1e007394370">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Tellma.Database.Tests/Tellma.Database.Tests.sqlproj" Id="8da518b3-6522-4a1a-90cd-c4cc71d8f42d">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Tellma.IntegrationTests/Tellma.IntegrationTests.csproj" />
+  <Project Path="Tellma.Model.Admin/Tellma.Model.Admin.csproj" />
+  <Project Path="Tellma.Model.Application/Tellma.Model.Application.csproj" />
+  <Project Path="Tellma.Model.Common/Tellma.Model.Common.csproj" />
+  <Project Path="Tellma.Repository.Admin.Tests/Tellma.Repository.Admin.Tests.csproj" />
+  <Project Path="Tellma.Repository.Admin/Tellma.Repository.Admin.csproj" />
+  <Project Path="Tellma.Repository.Application.Tests/Tellma.Repository.Application.Tests.csproj" />
+  <Project Path="Tellma.Repository.Application/Tellma.Repository.Application.csproj" />
+  <Project Path="Tellma.Repository.Common.Tests/Tellma.Repository.Common.Tests.csproj" />
+  <Project Path="Tellma.Repository.Common/Tellma.Repository.Common.csproj" />
+  <Project Path="Tellma.Resources/Tellma.Resources.csproj" />
+  <Project Path="Tellma.Utilities.Blobs/Tellma.Utilities.Blobs.csproj" />
+  <Project Path="Tellma.Utilities.Caching/Tellma.Utilities.Caching.csproj" />
+  <Project Path="Tellma.Utilities.Calendars.Tests/Tellma.Utilities.Calendars.Tests.csproj" />
+  <Project Path="Tellma.Utilities.Calendars/Tellma.Utilities.Calendars.csproj" />
+  <Project Path="Tellma.Utilities.Common/Tellma.Utilities.Common.csproj" />
+  <Project Path="Tellma.Utilities.Email/Tellma.Utilities.Email.csproj" />
+  <Project Path="Tellma.Utilities.Logging/Tellma.Utilities.Logging.csproj" />
+  <Project Path="Tellma.Utilities.SendGrid/Tellma.Utilities.SendGrid.csproj" />
+  <Project Path="Tellma.Utilities.Sharding/Tellma.Utilities.Sharding.csproj" />
+  <Project Path="Tellma.Utilities.Sms/Tellma.Utilities.Sms.csproj" />
+  <Project Path="Tellma.Utilities.Twilio/Tellma.Utilities.Twilio.csproj" />
+</Solution>
