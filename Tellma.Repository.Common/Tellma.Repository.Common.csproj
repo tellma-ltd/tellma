@@ -15,4 +15,10 @@
     <ProjectReference Include="..\Tellma.Utilities.Common\Tellma.Utilities.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Templates consumed by DocumentDetailsSqlOptimizer to swap in the optimized document-details SQL. -->
+    <EmbeddedResource Include="Sql\DocumentDetails.original.sql" />
+    <EmbeddedResource Include="Sql\DocumentDetails.optimized.sql" />
+  </ItemGroup>
+
 </Project>

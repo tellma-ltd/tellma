@@ -192,6 +192,14 @@ namespace Tellma.Repository.Common
                 countSql,
                 statements.Select(e => e.Sql).ToArray());
 
+            // Swap in the hand-optimized SQL for the slow document-details batch. This is a no-op for
+            // every other query (gated on an exact structural match) and preserves the result-set contract
+            // exactly, so the entity hydration below is unaffected. See DocumentDetailsSqlOptimizer.
+            if (DocumentDetailsSqlOptimizer.TryOptimize(sql, out var optimizedSql))
+            {
+                sql = optimizedSql;
+            }
+
             // These will be returned at the end
             EntityOutput<TEntity> result = null;
 
