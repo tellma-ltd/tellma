@@ -28,6 +28,15 @@ namespace Tellma.Controllers
             _service = service;
         }
 
+        // Documents can legitimately be very large (tens of thousands of lines), so we raise the
+        // request body size limit well above the ~28.6 MB default that the hosting layer enforces.
+        // This override only widens the limit for document saves; all other endpoints keep the default.
+        [HttpPost, RequestSizeLimit(200 * 1024 * 1024)] // 200 MB
+        public override Task<ActionResult<EntitiesResponse<Document>>> Save([FromBody] List<DocumentForSave> entities, [FromQuery] SaveArguments args)
+        {
+            return base.Save(entities, args);
+        }
+
         [HttpGet("{id:int}/attachments/{attachmentId:int}")]
         public async Task<ActionResult> GetAttachment(int id, int attachmentId, CancellationToken cancellation)
         {
