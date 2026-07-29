@@ -1051,6 +1051,7 @@
     <Build Include="dbo\Functions\dbo.fn_Employee_Date__IsWeekendOrHoliday.sql" />
     <Build Include="dal\Stored Procedures\dal.Students_AcademicAndPerformance__Update.sql" />
     <Build Include="dal\Stored Procedures\dal.PPE_Custodies__Update.sql" />
+    <Build Include="bll\Functions\bll.ft_Employees_Period_EventFromModel_OffPaysheet__Generate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
