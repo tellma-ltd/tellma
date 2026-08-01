@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
     <PackageReference Include="Microsoft.SqlServer.DacFx" Version="170.4.83" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.25.0" />
   </ItemGroup>
