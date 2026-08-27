@@ -89,7 +89,7 @@ namespace Tellma.Model.Application
         public string InternalReference { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
-        [StringLength(50)]
+        [StringLength(255)]
         public string NotedAgentName { get; set; }
 
         [Display(Name = "Entry_NotedAmount")]
