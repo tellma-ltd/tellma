@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[InventoryEntries_AVCO__Update]
 -- [dal].[InventoryEntries_AVCO__Update] @ArchiveDate = N'2025.08.01', @MinState = 0;
--- Currently only in 110. Needs to be synced to others.
 @ArchiveDate DATE,
 @MinState TINYINT = 4,
 @VerifyLineDefinitions BIT = 0
@@ -36,20 +35,58 @@ AS
     -- ============================================================
 
     -- ============================================================
+    -- WIP accounts, resolved once and reused throughout.
+    -- ============================================================
+    DECLARE @WIPAccountIds TABLE ([Id] INT PRIMARY KEY);
+    INSERT INTO @WIPAccountIds ([Id])
+    SELECT A.[Id]
+    FROM dbo.Accounts A
+    WHERE A.[AccountTypeId] IN (
+        SELECT ATC.[Id]
+        FROM dbo.AccountTypes ATC
+        JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+        WHERE ATP.[Concept] = N'WorkInProgress'
+    );
+
+    -- ============================================================
+    -- @BOMDocuments: DOCUMENT-LEVEL classification.
+    --
+    -- A document is a true "production voucher" (BOM allocation
+    -- applies) ONLY when it contains BOTH:
+    --   * WIP debit entries  (inputs:  raw material + overhead), AND
+    --   * WIP credit entries (outputs: finished goods).
+    -- Example: the PV documents in tenant 110.
+    --
+    -- A WIP credit in a document with NO WIP debits (e.g. an SRV
+    -- "WIP => Output" receipt voucher, where the inputs were posted
+    -- by separate SIV / ECV documents) is NOT a BOM allocation.
+    -- It is an ordinary issue out of the WIP pool, and the AVCO
+    -- loop must price it at the WIP running average cost, which
+    -- naturally absorbs the overhead debits posted to the same
+    -- WIP partition.
+    --
+    -- The line definitions are structurally identical in both
+    -- workflows (credit WIP, debit FG), so the distinction can
+    -- only be made at the document level, not the line definition
+    -- level.
+    -- ============================================================
+    DECLARE @BOMDocuments TABLE ([DocumentId] INT PRIMARY KEY);
+    INSERT INTO @BOMDocuments ([DocumentId])
+    SELECT L.[DocumentId]
+    FROM dbo.Entries E
+    JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+    WHERE E.[AccountId] IN (SELECT [Id] FROM @WIPAccountIds)
+    AND   L.[State] >= @MinState
+    GROUP BY L.[DocumentId]
+    HAVING MIN(E.[Direction]) = -1  -- has WIP credits (outputs)
+       AND MAX(E.[Direction]) = +1; -- has WIP debits  (inputs)
+
+    -- ============================================================
     -- @AffectedLineDefinitionEntries
-    --
-    -- IsBOMTransfer = 1 ONLY for line definitions whose credit side
-    -- is specifically a WorkInProgress account (WIP -> FG transfers).
-    --
-    -- IMPORTANT: A raw-material -> WIP issue also has both sides
-    -- under Inventories, but its credit side is RawMaterials, not
-    -- WorkInProgress.  Using IsBOMTransfer=0 for those ensures the
-    -- AVCO loop still corrects them.
-    --
-    -- Classification:
-    --   Raw material -> WIP  : credit = RawMaterials  -> IsBOMTransfer = 0 (AVCO corrects it)
-    --   WIP -> Finished Goods: credit = WorkInProgress -> IsBOMTransfer = 1 (BOM pass corrects it)
-    --   FG -> Customer       : credit = FinishedGoods  -> IsBOMTransfer = 0 (AVCO corrects it)
+    -- IsBOMTransfer = 1 marks line definitions whose credit side is
+    -- a WorkInProgress account.  This is only a CANDIDATE flag:
+    -- an entry is treated as a BOM transfer at runtime only when
+    -- its document is also in @BOMDocuments.
     -- ============================================================
     DECLARE @AffectedLineDefinitionEntries TABLE (
         [LineDefinitionId]  INT,
@@ -59,8 +96,8 @@ AS
     );
 
     -- ============================================================
-    -- @T carries IsBOMTransfer so the AVCO loop can filter with a
-    -- simple WHERE clause without re-querying map.DetailsEntries().
+    -- @T carries IsBOMTransfer (already combined with the document-
+    -- level test) so the AVCO loop can filter with a plain WHERE.
     -- ============================================================
     DECLARE @T TABLE (
         [Id]                     INT PRIMARY KEY IDENTITY,
@@ -89,16 +126,7 @@ AS
     DECLARE @StartTime1 DATETIME2 = SysUTCDateTime();
 
     -- ============================================================
-    -- Identify affected line definitions and classify each one.
-    --
-    -- IsBOMTransfer = 1 when the inventory credit side of the line
-    -- is specifically a WorkInProgress account.  Every other
-    -- inventory credit (raw materials, finished goods) gets 0.
-    --
-    -- Key distinction:
-    --   Any inventory credit paired with an inventory debit would
-    --   incorrectly mark raw-material->WIP lines as BOM transfers.
-    --   Instead we test whether the credit side IS WorkInProgress.
+    -- Identify affected line definitions and set the candidate flag.
     -- ============================================================
     WITH InventoryAccountTypes AS (
         SELECT ATC.[Id]
@@ -119,8 +147,7 @@ AS
         WHERE [ParentAccountTypeId] IN (SELECT [Id] FROM InventoryAccountTypes)
         AND   [Direction] = -1
     ),
-    -- Line definitions that have a WIP credit entry specifically.
-    -- Only these are true WIP->FG BOM transfers.
+    -- Line definitions that credit a WIP account specifically
     WIPCreditLineDefinitions AS (
         SELECT DISTINCT [LineDefinitionId]
         FROM dbo.LineDefinitionEntries
@@ -150,9 +177,7 @@ AS
 
     -- ============================================================
     -- Verify line definition assumptions (debit before credit).
-    -- Only check simple issue lines (IsBOMTransfer = 0).
-    -- BOM transfer lines balance across the whole document, not
-    -- within a single line pair, so they are excluded here.
+    -- Only check simple issue lines (candidate flag = 0).
     -- ============================================================
     IF @VerifyLineDefinitions = 1
     SELECT @BadLineDefinitionId = LD.[LineDefinitionId]
@@ -179,9 +204,14 @@ AS
 
     -- ============================================================
     -- Populate @T with all inventory entries.
-    -- IsBOMTransfer is resolved once here via a LEFT JOIN so the
-    -- AVCO loop can filter with a plain WHERE clause instead of
-    -- re-calling map.DetailsEntries() on every iteration.
+    --
+    -- An aggregated row is flagged IsBOMTransfer = 1 ONLY when it
+    -- contains an entry that is BOTH:
+    --   * on a WIP-credit line definition (candidate flag), AND
+    --   * inside a document classified in @BOMDocuments.
+    -- WIP credits in single-sided documents (SRV pattern) therefore
+    -- get IsBOMTransfer = 0 and flow through the AVCO loop as
+    -- ordinary issues out of the WIP pool.
     -- ============================================================
     WITH InventoryAccountTypes AS (
         SELECT ATC.[Id]
@@ -202,20 +232,19 @@ AS
             E.[ResourceId],
             L.[PostingDate],
             E.[Direction],
-            -- If any entry in this aggregated row belongs to a BOM-transfer
-            -- line definition, mark the whole row as a BOM transfer.
-            -- Entries with no matching LDE row get ISNULL -> 0.
-            CAST(MAX(CAST(ISNULL(LDE.[IsBOMTransfer], 0) AS INT)) AS BIT) AS [IsBOMTransfer],
+            CAST(MAX(CASE WHEN LDE.[IsBOMTransfer] = 1 AND BD.[DocumentId] IS NOT NULL
+                          THEN 1 ELSE 0 END) AS BIT)  AS [IsBOMTransfer],
             ISNULL(SUM(E.[Direction] * E.[BaseQuantity]),  0) AS [AlgebraicQuantity],
             SUM(E.[Direction] * E.[MonetaryValue])           AS [AlgebraicMonetaryValue],
             SUM(E.[Direction] * E.[Value])                   AS [AlgebraicValue]
         FROM map.DetailsEntries() E
         JOIN dbo.Lines L ON L.[Id] = E.[LineId]
         JOIN @CenterBusinessUnit CBU ON CBU.CenterId = E.[CenterId]
-        -- LEFT JOIN: entries not in @AffectedLineDefinitionEntries default to IsBOMTransfer = 0
         LEFT JOIN @AffectedLineDefinitionEntries LDE
             ON  LDE.[LineDefinitionId] = L.[DefinitionId]
             AND LDE.[Index]            = E.[Index]
+        LEFT JOIN @BOMDocuments BD
+            ON  BD.[DocumentId]        = L.[DocumentId]
         WHERE E.[AccountId] IN (SELECT [Id] FROM InventoryAccounts)
         AND   L.[State] >= @MinState
         GROUP BY E.[AccountId], CBU.BusinessUnitId, E.[AgentId], E.[ResourceId], L.[PostingDate], E.[Direction]
@@ -243,11 +272,10 @@ AS
 
     -- ============================================================
     -- AVCO iterative loop.
-    -- Processes simple inventory issues (IsBOMTransfer = 0) only.
-    -- WIP->FG rows are excluded via the WHERE on @T:
-    --   Without exclusion, WIP->FG credit rows would be zeroed out
-    --   because their ResourceId partition has no matching
-    --   Direction=+1 receipt row, making PriorVPU = 0.
+    -- Processes all ordinary issues (IsBOMTransfer = 0), which now
+    -- includes WIP => Output credits from single-sided documents.
+    -- Only same-document production voucher outputs are excluded
+    -- (they are allocated in Pass 3b instead).
     -- ============================================================
     DECLARE @LoopCounter INT = 0;
     DECLARE @StartTime2 DATETIME2 = SysUTCDateTime();
@@ -292,7 +320,7 @@ AS
         SELECT T.[AccountId], T.[BusinessUnitId], T.[AgentId], T.[ResourceId], MIN(T.[PostingDate])
         FROM @T T
         WHERE T.[Direction]     = -1
-        AND   T.[IsBOMTransfer] = 0    -- Exclude WIP->FG rows only; raw-material->WIP stays here
+        AND   T.[IsBOMTransfer] = 0    -- Exclude only same-document production voucher outputs
         AND   ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon
         GROUP BY T.[AccountId], T.[BusinessUnitId], T.[AgentId], T.[ResourceId];
 
@@ -321,28 +349,42 @@ AS
            OR ABS(T.[AlgebraicValue]         - T.[PriorVPU]  * T.[AlgebraicQuantity]) > @Epsilon)
         GROUP BY T.[AccountId], T.[BusinessUnitId], T.[AgentId], T.[ResourceId];
 
+        -- Update ordinary issues within the batch window.
+        -- AccountId added to both joins, and BOM rows explicitly
+        -- excluded, so a batch can never clobber rows outside its
+        -- own account or production voucher outputs that happen to
+        -- share (BusinessUnit, Agent, Resource).
         UPDATE T
         SET
             T.[AlgebraicMonetaryValue] = T.[AlgebraicQuantity] * BS.[MVPU],
             T.[AlgebraicValue]         = T.[AlgebraicQuantity] * BS.[VPU]
         FROM @T T
-        JOIN @BatchStartAndVPU BS ON T.[AgentId]        = BS.[AgentId]
+        JOIN @BatchStartAndVPU BS ON T.[AccountId]       = BS.[AccountId]
+                                 AND T.[AgentId]         = BS.[AgentId]
                                  AND T.[ResourceId]      = BS.[ResourceId]
                                  AND T.[BusinessUnitId]  = BS.[BusinessUnitId]
-        LEFT JOIN @BatchEnd    BE ON T.[AgentId]         = BE.[AgentId]
+        LEFT JOIN @BatchEnd    BE ON T.[AccountId]       = BE.[AccountId]
+                                 AND T.[AgentId]         = BE.[AgentId]
                                  AND T.[ResourceId]      = BE.[ResourceId]
                                  AND T.[BusinessUnitId]  = BE.[BusinessUnitId]
         WHERE T.[PostingDate] >= BS.[PostingDate]
         AND  (BE.[PostingDate] IS NULL OR T.[PostingDate] < BE.[PostingDate])
         AND   ABS(T.[AlgebraicValue] - T.[PriorVPU] * T.[AlgebraicQuantity]) > @Epsilon
-        AND   T.[Direction] = -1;
+        AND   T.[Direction]     = -1
+        AND   T.[IsBOMTransfer] = 0;
+
+        -- Convergence exit: must come IMMEDIATELY after the UPDATE
+        -- so @@ROWCOUNT still refers to it.  Without this line the
+        -- loop always runs to the iteration limit.
+        IF @@ROWCOUNT = 0 BREAK;
 
         IF @LoopCounter > 366
         BEGIN
-            PRINT 'Warning: AVCO loop reached iteration limit (' + 
+            PRINT 'Warning: AVCO loop reached iteration limit (' +
                   CAST(@LoopCounter AS VARCHAR) + '). Remaining delta is sub-epsilon noise.';
             BREAK;
         END;
+
         -- Recompute running totals after each correction pass
         WITH CumBalances AS (
             SELECT
@@ -367,12 +409,14 @@ AS
     DECLARE @StartTime3 DATETIME2 = SysUTCDateTime();
 
     -- ============================================================
-    -- Pass 3a: Write AVCO-corrected values back to dbo.Entries
-    -- for simple inventory issue lines only (IsBOMTransfer = 0).
-    -- Includes: raw-material -> WIP, FG -> customer, and any other
-    -- inventory credit whose account is NOT WorkInProgress.
+    -- Pass 3a: Write AVCO-corrected values back to dbo.Entries for
+    -- every ordinary issue — including WIP => Output credits from
+    -- single-sided documents (SRV pattern), which are excluded only
+    -- when their document is a true production voucher.
     -- The paired debit entry (Index - 1) is updated in the same
-    -- statement so both sides of the line remain balanced.
+    -- statement so both sides of the line remain balanced; for an
+    -- SRV this is what carries the WIP average cost onto the
+    -- finished goods receipt side.
     -- ============================================================
     WITH NewValues AS (
         SELECT
@@ -390,10 +434,14 @@ AS
                  AND T.[PostingDate]    = L.[PostingDate]
         JOIN @AffectedLineDefinitionEntries LDE
             ON LDE.[LineDefinitionId] = L.[DefinitionId] AND LDE.[Index] = E.[Index]
+        LEFT JOIN @BOMDocuments BD
+            ON BD.[DocumentId] = L.[DocumentId]
         WHERE T.[AlgebraicQuantity] <> 0
         AND   T.[Direction]       = -1
         AND   E.[Direction]       = -1
-        AND   LDE.[IsBOMTransfer] = 0       -- Simple issues only; WIP->FG handled in Pass 3b
+        -- Exclude only entries that are BOTH on a WIP-credit line
+        -- definition AND inside a production voucher document:
+        AND  (LDE.[IsBOMTransfer] = 0 OR BD.[DocumentId] IS NULL)
         AND   L.[PostingDate]     > @ArchiveDate
     )
     UPDATE E
@@ -407,55 +455,29 @@ AS
     PRINT '3a: Time taken was ' + CAST(DATEDIFF(millisecond, @StartTime3, SysUTCDateTime()) AS VARCHAR) + 'ms';
 
     -- ============================================================
-    -- Pass 3b: BOM reallocation for WIP -> Finished Goods transfers.
+    -- Pass 3b: BOM reallocation — production voucher documents ONLY
+    -- (documents containing both WIP debits and WIP credits).
     --
     -- After Pass 3a has updated the raw-material costs feeding WIP,
-    -- we read the corrected total WIP cost per production voucher
-    -- from dbo.Entries and redistribute it across the FG output
+    -- the total WIP debit per production voucher is read back from
+    -- dbo.Entries and redistributed across the document's FG output
     -- lines in proportion to each line's BOM ratio (Decimal1).
-    --
-    -- Detection uses the WorkInProgress concept directly, matching
-    -- the rest of the application and avoiding any dependency on
-    -- the Inventories hierarchy arrangement.
     -- ============================================================
     DECLARE @StartTime4 DATETIME2 = SysUTCDateTime();
 
-    WITH WIPAccountTypes AS (
-        SELECT ATC.[Id]
-        FROM dbo.AccountTypes ATC
-        JOIN dbo.AccountTypes ATP ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
-        WHERE ATP.[Concept] = N'WorkInProgress'
-    ),
-    -- Production voucher documents containing WIP credit entries after @ArchiveDate
-    WIPTransferDocuments AS (
-        SELECT DISTINCT L.[DocumentId]
-        FROM dbo.Entries E
-        JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-        JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-        WHERE A.[AccountTypeId] IN (SELECT [Id] FROM WIPAccountTypes)
-        AND   E.[Direction]   = -1
-        AND   L.[PostingDate] > @ArchiveDate
-        AND   L.[State]       >= @MinState
-    ),
-    -- Updated total cost flowing INTO WIP (raw material + overhead) per voucher.
-    -- Pass 3a has already written corrected raw-material values to dbo.Entries,
-    -- so this read returns the post-AVCO total.
-    WIPTotals AS (
+    WITH WIPTotals AS (
         SELECT
             L.[DocumentId],
             SUM(E.[Value])         AS [TotalWIPCost],
             SUM(E.[MonetaryValue]) AS [TotalWIPMonetary]
         FROM dbo.Entries E
         JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-        JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-        JOIN WIPTransferDocuments D ON D.[DocumentId] = L.[DocumentId]
-        WHERE A.[AccountTypeId] IN (SELECT [Id] FROM WIPAccountTypes)
+        JOIN @BOMDocuments D ON D.[DocumentId] = L.[DocumentId]
+        WHERE E.[AccountId] IN (SELECT [Id] FROM @WIPAccountIds)
         AND   E.[Direction] = +1       -- Debits INTO WIP (raw material + overhead)
         AND   L.[State]     >= @MinState
         GROUP BY L.[DocumentId]
     ),
-    -- One row per FG output line: the WIP credit entry and its
-    -- BOM standard-cost ratio (Decimal1 on the Line record).
     BOMLines AS (
         SELECT
             E.[LineId],
@@ -465,9 +487,8 @@ AS
             SUM(L.[Decimal1]) OVER (PARTITION BY L.[DocumentId]) AS [TotalDecimal1]
         FROM dbo.Entries E
         JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-        JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
-        JOIN WIPTransferDocuments D ON D.[DocumentId] = L.[DocumentId]
-        WHERE A.[AccountTypeId] IN (SELECT [Id] FROM WIPAccountTypes)
+        JOIN @BOMDocuments D ON D.[DocumentId] = L.[DocumentId]
+        WHERE E.[AccountId] IN (SELECT [Id] FROM @WIPAccountIds)
         AND   E.[Direction]   = -1     -- Credits OUT of WIP (one per FG product)
         AND   L.[PostingDate] > @ArchiveDate
         AND   L.[State]       >= @MinState
@@ -481,6 +502,7 @@ AS
         FROM BOMLines BL
         JOIN WIPTotals WT ON WT.[DocumentId] = BL.[DocumentId]
         WHERE BL.[TotalDecimal1] <> 0
+        AND   BL.[Decimal1] IS NOT NULL   -- never write NULL into Entries
     )
     UPDATE E
     SET
