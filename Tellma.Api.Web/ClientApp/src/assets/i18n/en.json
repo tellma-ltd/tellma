@@ -303,6 +303,7 @@
   "Document_MarminAeDocumentId": "E-Invoice Id",
   "Document_MarminAeDocumentNumber": "E-Invoice Number",
   "Document_MarminAeLastEventAt": "E-Invoice Updated At",
+  "Document_MarminAeLastEventId": "E-Invoice Event Id",
   "Document_MarminAeResult": "E-Invoice Result",
   "Document_MarminAeState": "E-Invoice State",
   "Document_MarminAeState_0": "Submitting",

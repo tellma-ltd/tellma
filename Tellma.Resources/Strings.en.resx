@@ -742,6 +742,39 @@
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>States History</value>
   </data>
+  <data name="Document_MarminAeDocumentId" xml:space="preserve">
+    <value>E-Invoice Id</value>
+  </data>
+  <data name="Document_MarminAeDocumentNumber" xml:space="preserve">
+    <value>E-Invoice Number</value>
+  </data>
+  <data name="Document_MarminAeLastEventAt" xml:space="preserve">
+    <value>E-Invoice Updated At</value>
+  </data>
+  <data name="Document_MarminAeLastEventId" xml:space="preserve">
+    <value>E-Invoice Event Id</value>
+  </data>
+  <data name="Document_MarminAeResult" xml:space="preserve">
+    <value>E-Invoice Result</value>
+  </data>
+  <data name="Document_MarminAeState" xml:space="preserve">
+    <value>E-Invoice State</value>
+  </data>
+  <data name="Document_MarminAeState_0" xml:space="preserve">
+    <value>Submitting</value>
+  </data>
+  <data name="Document_MarminAeState_1" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="Document_MarminAeState_10" xml:space="preserve">
+    <value>Delivered</value>
+  </data>
+  <data name="Document_MarminAeState_minus_10" xml:space="preserve">
+    <value>Submission Failed</value>
+  </data>
+  <data name="Document_MarminAeState_minus_20" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
   <data name="Document_ZatcaHash" xml:space="preserve">
     <value>E-Invoice Hash</value>
   </data>
@@ -792,6 +825,18 @@
   </data>
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>Line Definitions</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType" xml:space="preserve">
+    <value>Marmin Document Type</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesCreditNote" xml:space="preserve">
+    <value>Sales Credit Note</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesInvoice" xml:space="preserve">
+    <value>Sales Invoice</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeTypeCode" xml:space="preserve">
+    <value>Marmin Type Code</value>
   </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>Serial Prefix</value>
@@ -1278,6 +1323,9 @@
   </data>
   <data name="Error_MarminAeCustomerHasNoTaxId" xml:space="preserve">
     <value>Customer {0} has no tax identification number, which is required for UAE e-invoicing.</value>
+  </data>
+  <data name="Error_MarminAeDocumentHasNoCustomer" xml:space="preserve">
+    <value>The invoice {0} has no customer account, which is required for UAE e-invoicing.</value>
   </data>
   <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
     <value>The customer address province must be a valid emirate code (AUH, DXB, SHJ, UAQ, FUJ, AJM or RAK), but it was "{0}".</value>

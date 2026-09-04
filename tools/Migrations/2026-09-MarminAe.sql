@@ -810,6 +810,14 @@ BEGIN
 	 * alone, so an administrator can rotate one secret without re-entering the other -- the
 	 * screen never sends a secret back to the browser, so it has nothing to re-send.
 	 *
+	 * CONTRACT: @EncryptionKeyIndex is written unconditionally, and it is the ONE index both
+	 * ciphertexts are read back with. So the caller must pass every secret that should survive
+	 * the save, encrypted under that one key -- a secret it is not replacing has to be decrypted
+	 * with the currently stored index and re-encrypted with the new one, which is what
+	 * GeneralSettingsService.SaveMarminAeSecrets does. Passing NULL here means "there is no such
+	 * secret", not "keep the old ciphertext under its old key": the latter would leave that
+	 * ciphertext undecryptable the moment the index moved.
+	 *
 	 * Bumping SettingsVersion is what makes every web server drop its cached SettingsForClient
 	 * and pick the new credentials up, which is also what invalidates the cached API client.
 	 */
@@ -826,8 +834,8 @@ CREATE OR ALTER PROCEDURE [dal].[MarminAe__ApplyWebhook]
 	@MarminAeDocumentId NVARCHAR (50),
 	@MarminAeState INT,
 	@MarminAeResult NVARCHAR (MAX) = NULL,
-	@WebhookEventId UNIQUEIDENTIFIER,
-	@EventTimestamp DATETIMEOFFSET(7),
+	@WebhookEventId UNIQUEIDENTIFIER = NULL,
+	@EventTimestamp DATETIMEOFFSET(7) = NULL,
 	@RowsAffected INT OUTPUT
 AS
 BEGIN
@@ -847,6 +855,14 @@ BEGIN
 	 *     latest pending delivery per document, so an old redelivery could otherwise overwrite
 	 *     Delivered with Pending.
 	 *
+	 * Both are the WEBHOOK's story, and both are skipped when the caller passes NULL for them,
+	 * which is how the poll identifies itself. A poll has no vendor event id and no vendor
+	 * event instant: it has just read the current state, so it is never stale and never a
+	 * redelivery. Stamping the app server's own clock into MarminAeLastEventAt to satisfy the
+	 * guard would be comparing two different clocks, and would suppress every genuine webhook
+	 * whose vendor-side instant happened to precede the poll. So a poll always applies, and
+	 * leaves both ordering columns exactly as the last real event left them.
+	 *
 	 * @RowsAffected lets the caller tell "already applied" from "no such document". Both are
 	 * answered with HTTP 200: a 4xx/5xx would make the vendor retry-storm on a document that may
 	 * not be ours at all, or that simply has not finished committing yet.
@@ -855,11 +871,22 @@ BEGIN
 	UPDATE [dbo].[Documents]
 	SET [MarminAeState] = @MarminAeState,
 		[MarminAeResult] = @MarminAeResult,
-		[MarminAeLastEventId] = @WebhookEventId,
-		[MarminAeLastEventAt] = @EventTimestamp
+		[MarminAeLastEventId] = ISNULL(@WebhookEventId, [MarminAeLastEventId]),
+		[MarminAeLastEventAt] = ISNULL(@EventTimestamp, [MarminAeLastEventAt])
 	WHERE [MarminAeDocumentId] = @MarminAeDocumentId
-	AND ([MarminAeLastEventId] IS NULL OR [MarminAeLastEventId] <> @WebhookEventId)
-	AND ([MarminAeLastEventAt] IS NULL OR [MarminAeLastEventAt] <= @EventTimestamp);
+	AND (@WebhookEventId IS NULL OR [MarminAeLastEventId] IS NULL OR [MarminAeLastEventId] <> @WebhookEventId)
+	AND (@EventTimestamp IS NULL OR [MarminAeLastEventAt] IS NULL OR [MarminAeLastEventAt] <= @EventTimestamp)
+	-- Never move a document backwards out of a terminal state. 10 (Delivered) and -20
+	-- (PeppolRejected) are the two verdicts Peppol has actually returned; everything else is
+	-- still in flight. MarminAeService maps an absent or unrecognised peppol_status to 1
+	-- (Submitted), which is the right reading for a document in flight but would otherwise
+	-- silently undo a verdict -- and the vendor's status vocabulary is open, so an unrecognised
+	-- value is expected rather than exceptional. Promoting -20 to 1 is the damaging direction:
+	-- it crosses the >= 1 thresholds that bll.Documents_Validate__Open uses to refuse a reopen
+	-- and that bll.Documents_Validate__Close uses to count a credit note's original invoice, so
+	-- a rejected document would become un-reopenable and a credit note could close against an
+	-- invoice that never reached the network. Terminal-to-terminal stays allowed.
+	AND NOT ([MarminAeState] IN (10, -20) AND @MarminAeState NOT IN (10, -20));
 
 	SET @RowsAffected = @@ROWCOUNT;
 END;
@@ -1318,6 +1345,31 @@ BEGIN
 			(SELECT [MarminAeDocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) = N'SalesCreditNote', 1, 0);
 
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		-- The customer party is reached as NotedAgent -> Agent1, and every check below reaches it
+		-- through an INNER JOIN -- as does dal.MarminAe__GetInvoices itself. A NULL at either hop
+		-- therefore produces no rows and so no error, and the document would close cleanly and
+		-- then be dropped from the payload without a word: no error, no log entry, and a legally
+		-- required e-invoice silently never sent. The ZATCA block above guards the first hop for
+		-- exactly this reason; both hops are guarded here.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentHasMissingInvoice',
+			CAST(NULL AS NVARCHAR (255))
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[NotedAgentId] IS NULL
+
+		UNION
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeDocumentHasNoCustomer',
+			SI.[Name]
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		WHERE SI.[Agent1Id] IS NULL
+
+		UNION
 		-- The vendor requires an email on the customer party, and Tellma allows it to be blank.
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

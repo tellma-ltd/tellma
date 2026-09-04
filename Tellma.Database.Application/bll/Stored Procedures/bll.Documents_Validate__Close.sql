@@ -292,6 +292,31 @@ BEGIN
 			(SELECT [MarminAeDocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) = N'SalesCreditNote', 1, 0);
 
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		-- The customer party is reached as NotedAgent -> Agent1, and every check below reaches it
+		-- through an INNER JOIN -- as does dal.MarminAe__GetInvoices itself. A NULL at either hop
+		-- therefore produces no rows and so no error, and the document would close cleanly and
+		-- then be dropped from the payload without a word: no error, no log entry, and a legally
+		-- required e-invoice silently never sent. The ZATCA block above guards the first hop for
+		-- exactly this reason; both hops are guarded here.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentHasMissingInvoice',
+			CAST(NULL AS NVARCHAR (255))
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[NotedAgentId] IS NULL
+
+		UNION
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeDocumentHasNoCustomer',
+			SI.[Name]
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		WHERE SI.[Agent1Id] IS NULL
+
+		UNION
 		-- The vendor requires an email on the customer party, and Tellma allows it to be blank.
 		SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

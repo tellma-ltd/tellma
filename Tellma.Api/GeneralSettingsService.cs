@@ -297,20 +297,44 @@ namespace Tellma.Api
                 throw new ServiceException("Please supply at least one secret to save.");
             }
 
-            // Encrypt with the newest configured key; the index is stored so that rows encrypted
-            // with an older key stay readable after a rotation.
+            // Both ciphertexts share a single MarminAeEncryptionKeyIndex column, so they can only
+            // ever be stored under the same key -- which means a partial save cannot simply
+            // encrypt the supplied secret and stamp the new index: that would leave the other
+            // one, still ciphertext under the old key, permanently undecryptable and would break
+            // every close for the tenant with no way to recover the plaintext.
+            //
+            // So the secret that was NOT supplied is carried forward: decrypted with the index it
+            // was stored under, then re-encrypted with the same new key as its partner. A secret
+            // that was never set stays null, and the stored NULL is left alone by the procedure.
+            var settings = (await _settingsCache.GetSettings(TenantId, _behavior.SettingsVersion)).Data;
+
+            string CarryForward(string storedCipherText) =>
+                string.IsNullOrWhiteSpace(storedCipherText)
+                    ? null
+                    : _marminAeService.Decrypt(storedCipherText, settings.MarminAeEncryptionKeyIndex);
+
+            var plainClientSecret = string.IsNullOrWhiteSpace(clientSecret)
+                ? CarryForward(settings.MarminAeEncryptedClientSecret)
+                : clientSecret.Trim();
+
+            var plainWebhookSecret = string.IsNullOrWhiteSpace(webhookSecret)
+                ? CarryForward(settings.MarminAeEncryptedWebhookSecret)
+                : webhookSecret.Trim();
+
+            // Encrypt with the newest configured key. Every secret that survives this save is
+            // re-encrypted here, so the single stored index describes all of them.
             string encryptedClientSecret = null;
             string encryptedWebhookSecret = null;
             int keyIndex = 0;
 
-            if (!string.IsNullOrWhiteSpace(clientSecret))
+            if (plainClientSecret != null)
             {
-                (encryptedClientSecret, keyIndex) = _marminAeService.Encrypt(clientSecret.Trim());
+                (encryptedClientSecret, keyIndex) = _marminAeService.Encrypt(plainClientSecret);
             }
 
-            if (!string.IsNullOrWhiteSpace(webhookSecret))
+            if (plainWebhookSecret != null)
             {
-                (encryptedWebhookSecret, keyIndex) = _marminAeService.Encrypt(webhookSecret.Trim());
+                (encryptedWebhookSecret, keyIndex) = _marminAeService.Encrypt(plainWebhookSecret);
             }
 
             await Repository.MarminAe__SaveSecrets(

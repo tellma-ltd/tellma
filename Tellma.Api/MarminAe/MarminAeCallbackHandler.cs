@@ -96,8 +96,27 @@ namespace Tellma.Api.MarminAe
             // state has to be read back from the vendor. This is the same call, and the same
             // status mapping, that the "Refresh e-invoice status" action makes.
             var documentType = DocumentTypeOf(webhookEvent.EventType);
-            var status = await _marminAeService.GetStatusAsync(
-                webhookEvent.ResourceId.ToString(), documentType, settings, cancellation);
+
+            MarminAeStatusResult status;
+            try
+            {
+                status = await _marminAeService.GetStatusAsync(
+                    webhookEvent.ResourceId.ToString(), documentType, settings, cancellation);
+            }
+            catch (MarminAeRequestException ex) when (ex.StatusCode == 404)
+            {
+                // DocumentTypeOf can only guess the kind from the event type, and the vendor's
+                // event vocabulary is open and includes purchase-side events, so a guess that
+                // sends the read to the wrong route is expected rather than exceptional. Letting
+                // the 404 escape would reach the middleware's catch-all and answer 500 -- the one
+                // status that makes the vendor redeliver, forever, for an event that will never
+                // resolve. Ignored is answered with 200, which is what the "costs one 404" the
+                // remarks below promise actually requires.
+                //
+                // Deliberately narrow: only 404. A 401, a 429 or a 5xx still escapes, because
+                // those either need a human to see them or genuinely should be retried.
+                return MarminAeCallbackOutcome.Ignored;
+            }
 
             // Its own transaction, and RequiresNew: this runs on a request that owns no other
             // work, and must not enlist in anything ambient.

@@ -266,7 +266,11 @@ namespace Tellma.Api.MarminAe
                 : new Uri(_options.SandboxBaseAddress, UriKind.Absolute);
         }
 
-        private string Decrypt(string cipherText, int keyIndex)
+        /// <summary>
+        /// Decrypts a stored secret with the key it was stored under. Public so that a partial
+        /// secrets save can carry the secret it is not replacing forward onto the new key.
+        /// </summary>
+        public string Decrypt(string cipherText, int keyIndex)
         {
             var keys = EncryptionKeys();
             if (keyIndex < 0 || keyIndex >= keys.Length)

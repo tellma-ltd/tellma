@@ -953,15 +953,19 @@ namespace Tellma.Api
             var status = await _marminAeService.GetStatusAsync(
                 doc.MarminAeDocumentId, def.MarminAeDocumentType, settings, cancellation);
 
-            // A synthetic event id, because a poll is not a delivery and has no vendor event id.
-            // The stored procedure's ordering guard still applies, so a poll can never overwrite a
-            // newer webhook result with an older one.
+            // Nulls for the two ordering columns, because a poll is not a delivery: it has just
+            // read the current state from the vendor, so it is neither stale nor a redelivery,
+            // and it has no vendor-side event id or instant of its own. Passing the app server's
+            // UtcNow instead would write our clock into a column compared against the vendor's,
+            // and would silently suppress every later webhook whose vendor-side instant preceded
+            // this poll. The procedure therefore applies this unconditionally and leaves
+            // MarminAeLastEventId/At as the last real event left them.
             await _behavior.Repository.MarminAe__ApplyWebhook(
                 marminAeDocumentId: doc.MarminAeDocumentId,
                 state: status.State,
                 result: status.ResultJson,
-                webhookEventId: Guid.NewGuid(),
-                eventTimestamp: DateTimeOffset.UtcNow,
+                webhookEventId: null,
+                eventTimestamp: null,
                 cancellation: cancellation);
 
             return status.State;
@@ -1107,7 +1111,18 @@ namespace Tellma.Api
             if (transition == nameof(Close) && !string.IsNullOrWhiteSpace(def.MarminAeDocumentType))
             {
                 var settings = await _behavior.Settings();
-                if (!_marminAeService.IsConfigured(settings))
+
+                // IsConfigured covers the credentials. The two after it are just as hard-required
+                // by MarminAeMapper, but neither has a NOT NULL, a CHECK, or a save-time
+                // validation behind it. They are checked HERE rather than left to the mapper
+                // because of WHERE the mapper runs: its ArgumentException fires from
+                // SubmitToMarminAe, after the close has committed and MarkSubmitting has stamped
+                // MarminAeState = 0, which puts the document permanently beyond
+                // MarminAe__GetInvoices' "IS NULL" filter. Throwing at this point instead rolls
+                // the close back untouched, so the settings can be fixed and the close retried.
+                if (!_marminAeService.IsConfigured(settings)
+                    || string.IsNullOrWhiteSpace(def.MarminAeTypeCode)
+                    || string.IsNullOrWhiteSpace(settings.MarminAeEndpointSchemeId))
                 {
                     throw new ServiceException(_localizer["Error_MarminAeNotConfigured"]);
                 }
@@ -1119,7 +1134,16 @@ namespace Tellma.Api
                     settings.MarminAeDefaultPaymentMeansCode,
                     settings.MarminAeDefaultPaymentTermDays);
 
-                foreach (var invoice in marminAeInvoices.Where(e => e != null))
+                // A repeated Id in the request yields one invoice per occurrence, since the Ids
+                // TVP is keyed on [Index] and nothing upstream de-duplicates. Claiming cannot
+                // catch that on its own -- the second MarkSubmitting is simply a no-op -- so
+                // without this the same document would be transmitted to Peppol twice.
+                marminAeInvoices = marminAeInvoices
+                    .Where(e => e != null)
+                    .DistinctBy(e => e.Id)
+                    .ToList();
+
+                foreach (var invoice in marminAeInvoices)
                 {
                     await _behavior.Repository.MarminAe__MarkSubmitting(invoice.Id);
                 }
@@ -1127,6 +1151,17 @@ namespace Tellma.Api
 
             // Commit and return
             trx.Complete();
+
+            // Disposed HERE rather than at method exit, and the placement is load-bearing:
+            // Complete() only votes, and the commit -- with it the release of the row locks
+            // Documents__Close and MarminAe__MarkSubmitting took on dbo.Documents -- happens on
+            // Dispose. SubmitToMarminAe below calls the vendor and then records the outcome in
+            // its own RequiresNew transaction, which runs on a separate connection and would
+            // block on those locks while this scope sat waiting for it to return -- a self-block
+            // SQL Server cannot resolve, because it sees a blocked session and not a cycle.
+            // The `using` declaration still covers the throw paths above (none of which reach
+            // here, so they roll back as before); disposing an already-disposed scope is a no-op.
+            trx.Dispose();
 
             // Only now, with the accounting durable and the documents claimed, talk to the vendor.
             if (marminAeInvoices != null && marminAeInvoices.Any(e => e != null))

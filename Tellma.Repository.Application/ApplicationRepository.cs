@@ -8792,12 +8792,19 @@ namespace Tellma.Repository.Application
         /// The number of rows changed: 0 means the event was a duplicate, was stale, or named a
         /// document this tenant does not have. All three are non-errors to the caller.
         /// </returns>
+        /// <remarks>
+        /// The poll passes null for <paramref name="webhookEventId"/> and
+        /// <paramref name="eventTimestamp"/>: it has just read the current state, so it is neither
+        /// a redelivery nor stale, and it has no vendor-side instant to record. Nulls tell the
+        /// procedure to skip both ordering guards and to leave both ordering columns untouched,
+        /// so a poll cannot suppress a genuine webhook that follows it.
+        /// </remarks>
         public async Task<int> MarminAe__ApplyWebhook(
             string marminAeDocumentId,
             MarminAeState state,
             string result,
-            Guid webhookEventId,
-            DateTimeOffset eventTimestamp,
+            Guid? webhookEventId,
+            DateTimeOffset? eventTimestamp,
             CancellationToken cancellation = default)
         {
             var connString = await GetConnectionString(cancellation);

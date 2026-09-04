@@ -203,7 +203,23 @@ namespace Tellma.Repository.Application
             {
                 int i = 0;
                 int invoiceIndex = reader.GetInt32(i++);
-                var invoice = result[invoiceIndex];
+
+                // The two result sets are not filtered identically: the header query inner-joins
+                // dbo.Agents twice to reach the customer, the line query joins no Agents at all.
+                // So a document whose NotedAgentId (or whose noted agent's Agent1Id) is NULL
+                // yields lines with no header, and this index is then either past the end of the
+                // list or a null slot the header loop padded. Skipping is right rather than
+                // throwing: the callers already treat a null entry as "not submittable" and
+                // filter it out, and throwing here would roll back the close of every other
+                // document in the batch.
+                var invoice = invoiceIndex >= 0 && invoiceIndex < result.Count
+                    ? result[invoiceIndex]
+                    : null;
+
+                if (invoice == null)
+                {
+                    continue;
+                }
 
                 invoice.Lines.Add(new MarminAeInvoiceLine
                 {
