@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A first-party client for the slice of the Marmin UAE e-invoicing API the platform needs: the signature-for-token exchange, sales document submission and resubmission, the uniform document read surface, Peppol transmission status, legal artifact downloads, and webhook signature verification. No Tellma dependencies.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Deliberately no PackageReference and no ProjectReference. HttpClient, System.Text.Json,
+       System.Net.Http.Json, HMACSHA256, Base64Url and TimeProvider are all in the net10.0 shared
+       framework, and keeping this library dependency-free is what lets any future Marmin UAE
+       adapter, in whatever scoping its owning layers end up needing, consume it unchanged. -->
+
+  <ItemGroup>
+    <!-- The route, signature, timestamp and error-parsing suites exercise those internals directly:
+         they are the parts with no public surface of their own and the most ways to be subtly wrong. -->
+    <InternalsVisibleTo Include="Tellma.Connector.MarminAe.Tests" />
+  </ItemGroup>
+
+</Project>
