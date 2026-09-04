@@ -3,7 +3,6 @@
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 
-using System.Buffers.Text;
 using System.Globalization;
 using System.Text.Json;
 
@@ -123,7 +122,7 @@ namespace Tellma.Connector.MarminAe
             byte[] decoded;
             try
             {
-                decoded = Base64Url.DecodeFromChars(payload);
+                decoded = DecodeBase64Url(payload);
             }
             catch (FormatException)
             {
@@ -146,5 +145,53 @@ namespace Tellma.Connector.MarminAe
                 return null;
             }
         }
+
+        /// <summary>
+        ///     Decodes base64url (RFC 4648 section 5) into bytes.
+        /// </summary>
+        /// <remarks>
+        ///     Stands in for <c>System.Buffers.Text.Base64Url</c>, which is .NET 9+ while this
+        ///     project targets net8.0. Base64url differs from base64 in exactly two ways: it
+        ///     substitutes <c>-</c> for <c>+</c> and <c>_</c> for <c>/</c>, and it drops the
+        ///     trailing <c>=</c> padding. Both are reversed here before handing the result to
+        ///     <see cref="Convert.FromBase64String" />.
+        /// </remarks>
+        /// <param name="value">The base64url text, with or without padding.</param>
+        /// <returns>The decoded bytes.</returns>
+        /// <exception cref="FormatException">The input is not well-formed base64url.</exception>
+        internal static byte[] DecodeBase64Url(ReadOnlySpan<char> value)
+        {
+            // A JWT payload is small, so the copy costs nothing worth optimising away.
+            char[] buffer = new char[value.Length + 3];
+            for (int i = 0; i < value.Length; i++)
+            {
+                buffer[i] = value[i] switch
+                {
+                    '-' => '+',
+                    '_' => '/',
+
+                    // Anything else is passed through so that a stray character fails in
+                    // Convert.FromBase64String as a FormatException, which the caller expects.
+                    char other => other,
+                };
+            }
+
+            // Base64 decodes in 4-character groups, so restore however much padding was stripped.
+            // A remainder of 1 is not reachable from valid base64url; leaving it unpadded makes
+            // Convert.FromBase64String reject it, which is the intended outcome.
+            int length = value.Length;
+            int remainder = length % 4;
+            if (remainder == 2 || remainder == 3)
+            {
+                int padding = 4 - remainder;
+                for (int i = 0; i < padding; i++)
+                {
+                    buffer[length++] = '=';
+                }
+            }
+
+            return Convert.FromBase64String(new string(buffer, 0, length));
+        }
+
     }
 }

@@ -44,6 +44,26 @@ BEGIN
 	JOIN map.Documents() D ON FE.[Id] = D.[Id]
 	WHERE D.[ZatcaState] = 10	
 
+	-- Cannot unpost it if it has been submitted to Marmin (UAE).
+	--
+	-- MarminAeState >= 1 rather than = 10, which is stricter than the ZATCA rule above: once the
+	-- vendor has accepted the document it is on the Peppol network, whether or not Peppol has
+	-- finished validating it. State 0 (Submitting) sits deliberately below the bar, so a document
+	-- that never actually reached the vendor stays reopenable rather than stranded.
+	--
+	-- This single guard also covers delete and cancel: bll.Documents_Validate__Delete refuses a
+	-- closed document, and bll.Documents_Validate__Cancel requires State = 0, so both already
+	-- require reopening first.
+	IF (SELECT [MarminAeEnvironment] FROM dbo.Settings) <> N'Sandbox'
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotOpenAMarminAeDocument',
+		D.[Code]
+	FROM @Ids FE
+	JOIN map.Documents() D ON FE.[Id] = D.[Id]
+	WHERE D.[MarminAeState] >= 1
+
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)

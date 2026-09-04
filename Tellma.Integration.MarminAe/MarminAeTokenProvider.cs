@@ -45,7 +45,10 @@ namespace Tellma.Connector.MarminAe
         private readonly HttpClient _httpClient;
         private readonly MarminAeClientOptions _options;
         private readonly TimeProvider _timeProvider;
-        private readonly Lock _gate = new();
+        // Upstream used System.Threading.Lock, which is .NET 9+. This project targets net8.0
+        // to match Tellma.Api, and `lock (object)` has identical semantics -- the Lock type
+        // only adds a codegen optimisation, not a behavioural difference.
+        private readonly object _gate = new();
 
         private CachedToken? _cached;
         private Task<CachedToken>? _inFlight;

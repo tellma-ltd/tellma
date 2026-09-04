@@ -1168,6 +1168,30 @@
   <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
     <value>لا يمكن فتح الفاتورة إلكترونية حسب توجيهات هيئة الزكاة.</value>
   </data>
+  <data name="Error_CannotOpenAMarminAeDocument" xml:space="preserve">
+    <value>لا يمكن فتح المستند {0} لأنه تم إرساله بالفعل إلى شبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoEmail" xml:space="preserve">
+    <value>العميل {0} ليس له بريد إلكتروني، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoTaxId" xml:space="preserve">
+    <value>العميل {0} ليس له رقم تسجيل ضريبي، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
+    <value>يجب أن تكون إمارة عنوان العميل رمزاً صحيحاً (AZ أو AJ أو FU أو SH أو DU أو RK أو UQ)، ولكنها كانت "{0}".</value>
+  </data>
+  <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
+    <value>المورد {0} ليس له رمز وحدة، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeNoOriginalInvoice" xml:space="preserve">
+    <value>تعذر تحديد فاتورة أصلية واحدة بالضبط لإشعار الدائن {0}.</value>
+  </data>
+  <data name="Error_MarminAeNotConfigured" xml:space="preserve">
+    <value>لم يتم إعداد تكامل الفوترة الإلكترونية الإماراتية، يرجى التواصل مع مسؤول النظام.</value>
+  </data>
+  <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
+    <value>ضريبة القيمة المضافة المحسوبة من بنود الفاتورة الإلكترونية للمستند {0} لا تطابق إجمالي المستند. يرجى مراجعة البنود قبل الإقفال.</value>
+  </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>لا يمكن توقيع مستند في حالة {1}.</value>
   </data>

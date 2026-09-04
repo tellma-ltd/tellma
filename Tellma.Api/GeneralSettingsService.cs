@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Tellma.Api.Behaviors;
 using Tellma.Api.Dto;
 using Tellma.Api.Metadata;
+using Tellma.Api.MarminAe;
 using Tellma.Integration.Zatca;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
@@ -20,6 +21,7 @@ namespace Tellma.Api
     {
         private readonly IStringLocalizer _localizer;
         private readonly ZatcaService _zatcaService;
+        private readonly MarminAeService _marminAeService;
         private readonly ISettingsCache _settingsCache;
         private readonly ApplicationServiceBehavior _behavior;
         private static readonly EmailAddressAttribute emailAtt = new();
@@ -28,10 +30,12 @@ namespace Tellma.Api
             ApplicationSettingsServiceDependencies deps,
             IStringLocalizer<Strings> localizer,
             ZatcaService zatcaService,
+            MarminAeService marminAeService,
             ISettingsCache settingsCache) : base(deps)
         {
             _localizer = localizer;
             _zatcaService = zatcaService;
+            _marminAeService = marminAeService;
             _settingsCache = settingsCache;
             _behavior = deps.Behavior;
         }
@@ -260,6 +264,59 @@ namespace Tellma.Api
                 encryptedSecurityToken: secrets.EncryptedSecurityToken,
                 encryptedSecret: secrets.EncryptedSecret,
                 encryptionKeyIndex: secrets.EncryptionKeyIndex);
+        }
+
+        /// <summary>
+        /// Stores this tenant's Marmin (UAE) API credentials, encrypted.
+        /// </summary>
+        /// <remarks>
+        /// Kept off the General Settings save payload deliberately, following the ZATCA
+        /// precedent: the secrets are never sent to the browser, so the settings form has nothing
+        /// to send back and could only ever blank them. Either argument may be left empty to
+        /// rotate one secret without re-entering the other.
+        /// </remarks>
+        /// <param name="clientSecret">The vendor's client secret, or empty to leave it unchanged.</param>
+        /// <param name="webhookSecret">
+        /// The webhook signing secret, or empty to leave it unchanged. During a rotation this may
+        /// be two secrets separated by a semicolon ("new;old"), and deliveries signed with either
+        /// are accepted until the vendor has switched over.
+        /// </param>
+        public async Task SaveMarminAeSecrets(string clientSecret, string webhookSecret)
+        {
+            await Initialize();
+
+            // Authorization: the same permission that guards editing general settings.
+            var updatePermissions = await UserPermissions(PermissionActions.Update, cancellation: default);
+            if (!updatePermissions.Any())
+            {
+                throw new ForbiddenException();
+            }
+
+            if (string.IsNullOrWhiteSpace(clientSecret) && string.IsNullOrWhiteSpace(webhookSecret))
+            {
+                throw new ServiceException("Please supply at least one secret to save.");
+            }
+
+            // Encrypt with the newest configured key; the index is stored so that rows encrypted
+            // with an older key stay readable after a rotation.
+            string encryptedClientSecret = null;
+            string encryptedWebhookSecret = null;
+            int keyIndex = 0;
+
+            if (!string.IsNullOrWhiteSpace(clientSecret))
+            {
+                (encryptedClientSecret, keyIndex) = _marminAeService.Encrypt(clientSecret.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(webhookSecret))
+            {
+                (encryptedWebhookSecret, keyIndex) = _marminAeService.Encrypt(webhookSecret.Trim());
+            }
+
+            await Repository.MarminAe__SaveSecrets(
+                encryptedClientSecret: encryptedClientSecret,
+                encryptedWebhookSecret: encryptedWebhookSecret,
+                encryptionKeyIndex: keyIndex);
         }
     }
 }

@@ -1270,6 +1270,30 @@
   <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
     <value>Cannot open an e-invoice as per ZATCA policy.</value>
   </data>
+  <data name="Error_CannotOpenAMarminAeDocument" xml:space="preserve">
+    <value>Cannot open document {0} because it has already been submitted to the UAE e-invoicing network.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoEmail" xml:space="preserve">
+    <value>Customer {0} has no contact email, which is required for UAE e-invoicing.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoTaxId" xml:space="preserve">
+    <value>Customer {0} has no tax identification number, which is required for UAE e-invoicing.</value>
+  </data>
+  <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
+    <value>The customer address province must be a valid emirate code (AZ, AJ, FU, SH, DU, RK or UQ), but it was "{0}".</value>
+  </data>
+  <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
+    <value>Resource {0} has no unit code, which is required for UAE e-invoicing.</value>
+  </data>
+  <data name="Error_MarminAeNoOriginalInvoice" xml:space="preserve">
+    <value>Could not identify exactly one original invoice for credit note {0}.</value>
+  </data>
+  <data name="Error_MarminAeNotConfigured" xml:space="preserve">
+    <value>The UAE e-invoicing integration is not configured, please contact your system administrator.</value>
+  </data>
+  <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
+    <value>The VAT computed from the e-invoice lines of document {0} does not match the document total. Please review the lines before closing.</value>
+  </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>Cannot sign a {0} document.</value>
   </data>
