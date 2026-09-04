@@ -38,6 +38,11 @@ TVP_DEPENDENTS = [
 # Everything else the feature adds or changes, in dependency order.
 PROGRAMMABLE = [
     "map/map.Documents.sql",
+
+    # Load-bearing, and easy to miss: dal.Definitions__Load does
+    # SELECT * FROM [map].[DocumentDefinitions](), so if this view does not expose
+    # MarminAeDocumentType the DefinitionsCache reads it as null and nothing is ever submitted.
+    "map/map.DocumentDefinitions.sql",
     "dal/Stored Procedures/dal.MarminAe__GetInvoices.sql",
     "dal/Stored Procedures/dal.MarminAe__MarkSubmitting.sql",
     "dal/Stored Procedures/dal.MarminAe__UpdateDocumentInfo.sql",
@@ -91,7 +96,44 @@ def creatable(rel):
     return body
 
 
+def verify_coverage():
+    """
+    Fails if a file in the database project mentions MarminAe but this script does not ship it.
+
+    The first version of this migration silently omitted map.DocumentDefinitions.sql, which would
+    have applied cleanly and then never submitted a document. A missing object is invisible at
+    migration time, so it is worth checking mechanically rather than by eye.
+    """
+    covered = set(PROGRAMMABLE) | {rel for _, _, rel in TVP_DEPENDENTS}
+    covered.add("dbo/User Defined Types/dbo.DocumentDefinitionList.sql")
+
+    # Tables are handled by the ALTER TABLE guards in COLUMNS, not by shipping their definitions.
+    tables = {f"dbo/Tables/dbo.{t.split('.')[1]}.sql" for t, _, _ in COLUMNS}
+
+    missing = []
+    for root, _, names in os.walk(DB):
+        for name in names:
+            if not name.endswith(".sql"):
+                continue
+
+            full = os.path.join(root, name)
+            rel = os.path.relpath(full, DB).replace(os.sep, "/")
+            if rel in covered or rel in tables:
+                continue
+
+            with io.open(full, encoding="utf-8-sig", errors="replace") as f:
+                if "MarminAe" in f.read():
+                    missing.append(rel)
+
+    if missing:
+        raise SystemExit(
+            "These files reference MarminAe but are not in the migration:\n  "
+            + "\n  ".join(sorted(missing)))
+
+
 def main():
+    verify_coverage()
+
     out = []
     w = out.append
 
