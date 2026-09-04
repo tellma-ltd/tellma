@@ -17,7 +17,7 @@ namespace Tellma.Integration.MarminAe.Tests
             {
                 StreetName = "Sheikh Zayed Road",
                 CityName = "Dubai",
-                CountrySubentity = "DU",
+                CountrySubentity = "DXB",
                 Country = "United Arab Emirates",
                 CountryCode = "AE",
             },

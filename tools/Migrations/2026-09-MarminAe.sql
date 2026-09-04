@@ -1283,7 +1283,10 @@ BEGIN
 		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
 		JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]
 		WHERE dal.fn_Lookup__Code(CA.[AddressCountryId]) = N'AE'
-		AND ISNULL(CA.[AddressProvince], N'') NOT IN (N'AZ', N'AJ', N'FU', N'SH', N'DU', N'RK', N'UQ')
+		-- The vendor's own Schematron asserts exactly this set, and it is what
+		-- GET /api/codelist/uae-subdivisions returns. They are three-letter codes
+		-- (DXB, AUH, ...), not the two-letter ISO 3166-2:AE subdivisions.
+		AND ISNULL(CA.[AddressProvince], N'') NOT IN (N'AUH', N'DXB', N'SHJ', N'UAQ', N'FUJ', N'AJM', N'RAK')
 
 		UNION
 		-- unit_code must be a UN/ECE Recommendation 20 code. It is free text in Tellma, so the

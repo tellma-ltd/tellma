@@ -32,7 +32,7 @@ namespace Tellma.Integration.MarminAe.Tests
 
             Assert.Equal(
                 """
-                {"invoice_type_code":"380","due_date":"2026-10-03","issue_date":"2026-09-03","profile_execution_id":"01000000","document_currency_code":"AED","accounting_customer_party":{"name":"Al Noor Trading LLC","postal_address":{"street_name":"Sheikh Zayed Road","city_name":"Dubai","country_subentity":"DU","country":"United Arab Emirates","country_code":"AE"},"email":"ap@alnoor.example","endpoint_id":"100123456700003","endpoint_scheme_id":"0235","tin":"100123456700003"},"document_lines":[{"name":"Consulting","description":"Implementation consulting, October","quantity":3,"unit_code":"HUR","price":{"base_amount":500,"base_quantity":1},"classified_tax_category":{"id":"S","percent":5,"tax_scheme":"VAT"}}],"document_number":"INV-1042"}
+                {"invoice_type_code":"380","due_date":"2026-10-03","issue_date":"2026-09-03","profile_execution_id":"01000000","document_currency_code":"AED","accounting_customer_party":{"name":"Al Noor Trading LLC","postal_address":{"street_name":"Sheikh Zayed Road","city_name":"Dubai","country_subentity":"DXB","country":"United Arab Emirates","country_code":"AE"},"email":"ap@alnoor.example","endpoint_id":"100123456700003","endpoint_scheme_id":"0235","tin":"100123456700003"},"document_lines":[{"name":"Consulting","description":"Implementation consulting, October","quantity":3,"unit_code":"HUR","price":{"base_amount":500,"base_quantity":1},"classified_tax_category":{"id":"S","percent":5,"tax_scheme":"VAT"}}],"document_number":"INV-1042"}
                 """,
                 json);
         }
@@ -44,7 +44,7 @@ namespace Tellma.Integration.MarminAe.Tests
 
             Assert.Equal(
                 """
-                {"credit_note_type_code":"381","discrepancy_response":"1","billing_reference":[{"id":"INV-1042","issue_date":"2026-09-03"}],"issue_date":"2026-09-10","profile_execution_id":"01000000","document_currency_code":"AED","accounting_customer_party":{"name":"Al Noor Trading LLC","postal_address":{"street_name":"Sheikh Zayed Road","city_name":"Dubai","country_subentity":"DU","country":"United Arab Emirates","country_code":"AE"},"email":"ap@alnoor.example","endpoint_id":"100123456700003","endpoint_scheme_id":"0235","tin":"100123456700003"},"document_lines":[{"name":"Consulting","description":"Implementation consulting, October","quantity":3,"unit_code":"HUR","price":{"base_amount":500,"base_quantity":1},"classified_tax_category":{"id":"S","percent":5,"tax_scheme":"VAT"}}],"document_number":"CRN-77"}
+                {"credit_note_type_code":"381","discrepancy_response":"1","billing_reference":[{"id":"INV-1042","issue_date":"2026-09-03"}],"issue_date":"2026-09-10","profile_execution_id":"01000000","document_currency_code":"AED","accounting_customer_party":{"name":"Al Noor Trading LLC","postal_address":{"street_name":"Sheikh Zayed Road","city_name":"Dubai","country_subentity":"DXB","country":"United Arab Emirates","country_code":"AE"},"email":"ap@alnoor.example","endpoint_id":"100123456700003","endpoint_scheme_id":"0235","tin":"100123456700003"},"document_lines":[{"name":"Consulting","description":"Implementation consulting, October","quantity":3,"unit_code":"HUR","price":{"base_amount":500,"base_quantity":1},"classified_tax_category":{"id":"S","percent":5,"tax_scheme":"VAT"}}],"document_number":"CRN-77"}
                 """,
                 json);
         }

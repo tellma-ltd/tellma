@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -1280,7 +1280,7 @@
     <value>Customer {0} has no tax identification number, which is required for UAE e-invoicing.</value>
   </data>
   <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
-    <value>The customer address province must be a valid emirate code (AZ, AJ, FU, SH, DU, RK or UQ), but it was "{0}".</value>
+    <value>The customer address province must be a valid emirate code (AUH, DXB, SHJ, UAQ, FUJ, AJM or RAK), but it was "{0}".</value>
   </data>
   <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
     <value>Resource {0} has no unit code, which is required for UAE e-invoicing.</value>

@@ -51,7 +51,7 @@ namespace Tellma.Api.Tests.MarminAe
             CustomerEndpointSchemeId = "0235",
             CustomerTin = "100123456700003",
             CustomerCityName = "Dubai",
-            CustomerCountrySubentity = "DU",
+            CustomerCountrySubentity = "DXB",
             CustomerCountryCode = "AE",
             DiscrepancyResponse = type == "SalesCreditNote" ? "1" : null,
             BillingReferenceId = type == "SalesCreditNote" ? "INV-1042" : null,
@@ -76,7 +76,7 @@ namespace Tellma.Api.Tests.MarminAe
             Assert.Equal("ap@alnoor.example", party.Email);
             Assert.Equal("100123456700003", party.EndpointId);
             Assert.Equal("0235", party.EndpointSchemeId);
-            Assert.Equal("DU", party.PostalAddress.CountrySubentity);
+            Assert.Equal("DXB", party.PostalAddress.CountrySubentity);
         }
 
         [Fact]

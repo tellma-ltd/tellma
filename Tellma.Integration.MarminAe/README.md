@@ -79,13 +79,13 @@ ZATCA**, since that setup is already familiar.
 
 | Topic | ZATCA | Marmin (UAE) |
 |---|---|---|
-| Definition fields | one: `ZatcaDocumentType` = `381`/`383`/`386`/`388`/`389` | **two**: `MarminAeDocumentType` = `SalesInvoice`/`SalesCreditNote`, plus `MarminAeTypeCode`, the literal wire code the authority expects |
+| Definition fields | one: `ZatcaDocumentType` = `381`/`383`/`386`/`388`/`389` | **two**: `MarminAeDocumentType` = `SalesInvoice`/`SalesCreditNote` (picks the route), plus `MarminAeTypeCode` (the wire code) — see [Code values](#code-values) |
 | Required lookup definitions | `Lookup1DefinitionId` (ITT) **and** `Lookup2DefinitionId` | the same two, except `Lookup1DefinitionId` may be skipped when `MarminAeDefaultProfileExecutionId` is set in General Settings, and `Lookup2DefinitionId` is needed only on credit notes |
 | Scenario flags | `Documents.Lookup1Id` → an `ITT…` lookup encoding **7** flags | same slot, but **8** flags and a **different vocabulary** — populate the Lookup Definition from Marmin's docs, never by copying the KSA `ITT…` codes |
 | `Lookup2Id` codes | KSA reason-for-issuance text | the **UAE `discrepancy_response` codes**, and **required** on every credit note |
 | Customer email | not required | **Required.** `Agents.ContactEmail` on the customer account or the customer; close is blocked without it |
 | Customer tax id | `TaxIdentificationNumber`, falling back to `Text1` (CRN) | **`TaxIdentificationNumber` only** — it *is* the Peppol `endpoint_id`. No CRN fallback |
-| Address province | free text | `Agents.AddressProvince` must be an **emirate code** (`AZ`, `AJ`, `FU`, `SH`, `DU`, `RK`, `UQ`); close is blocked otherwise |
+| Address province | free text | `Agents.AddressProvince` must be a three-letter **emirate code** (`AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`) — not the two-letter ISO subdivisions; close is blocked otherwise |
 | Item description | not sent | **Required.** `Resources.Description` (falls back to `Name`) |
 | Unit codes | sent, lenient in practice | `Units.Code` must be **UN/ECE Rec 20** (`PCE`, `KGM`, `HUR`, …); close is blocked if empty |
 | Names / language | `Name2` (Arabic mandate) | **`Name`** (Latin) |
@@ -210,6 +210,83 @@ sqlcmd -S . -E -d "Tellma.101" -i tools/Migrations/2026-09-MarminAe.sql -b
 and secrets live in that tenant's own `dbo.Settings` row, exactly as ZATCA does it.
 
 ---
+
+## Code values
+
+Confirmed against <https://docs.ae.marmin.ai/docs/2026-05-07> and the live sandbox code-list
+endpoints (`GET https://api-sandbox.ae.marmin.ai/api/codelist/{list}`, unauthenticated), which are
+the authority — prefer them over this table if the two ever disagree.
+
+### `MarminAeTypeCode` (the definition field)
+
+| Kind | Code | Meaning | Line-item rule the vendor enforces |
+|---|---|---|---|
+| Sales invoice | `380` | Commercial / tax invoice. Use when the business profile is VAT registered and the supply is a standard taxable supply. | At least one line must use a standard-rate category (`S`, `AE`) — not only `E`/`O`/`Z`/`N` (Peppol IBR-151-AE) |
+| Sales invoice | `480` | Invoice out of scope of tax. Use when the profile is **not** VAT registered, or the supply is outside UAE VAT scope. | Lines, charges and allowances must use `E`, `Z` or `O` only (Peppol IBR-122-AE) |
+| Sales credit note | `381` or `81` | Credit note. | — |
+
+So the choice of `380` vs `480` is a property of the **supplier's VAT position**, which is why it
+belongs on the definition rather than being derived per document.
+
+### `profile_execution_id` (`Documents.Lookup1Id`)
+
+Exactly 8 characters, each `0` or `1` — the vendor validates `^[0-1]{8}$`. Each position is one
+supply scenario (`GET /api/codelist/transaction-type-codes`):
+
+| Position | Scenario | Also makes required |
+|---|---|---|
+| 1 | Free Trade Zone | `buyer_customer_party` (beneficiary id) |
+| 2 | Deemed Supply | — (and `payment_means` becomes optional) |
+| 3 | Profit Margin Scheme | |
+| 4 | Summary Invoice | `invoice_period` |
+| 5 | Continuous Supply | |
+| 6 | Agent Billing | `seller_supplier_party` (principal id) |
+| 7 | Supply Through E-commerce | |
+| 8 | Exports | `delivery`, with a non-`AE` country code |
+
+A plain domestic taxable supply is therefore `00000000`. Populate the tenant's Lookup Definition
+with the combinations they actually issue, or set one `MarminAeDefaultProfileExecutionId`.
+
+> The conditional fields in the right-hand column are **not** modelled in v1. A tenant issuing
+> exports, free-zone, agent-billing or summary invoices needs that work first.
+
+### `discrepancy_response` (`Documents.Lookup2Id`, credit notes)
+
+Per UAE FTA DL8.61.1 (`GET /api/codelist/credit-note-reason-codes`):
+
+| Code | Reason |
+|---|---|
+| `DL8.61.1.A` | The supply was cancelled |
+| `DL8.61.1.B` | The tax treatment changed because the nature of the supply changed |
+| `DL8.61.1.C` | The previously agreed consideration was altered (e.g. bad debt relief) |
+| `DL8.61.1.D` | Goods or services were returned in full or in part and consideration was returned |
+| `DL8.61.1.E` | Tax was charged, or a tax treatment applied, in error |
+| `VD` | Volume discount |
+
+### Other lists worth knowing
+
+- **Tax categories** (`Resources.Lookup3Id`): `S` 5% standard, `Z` zero rated, `E` exempt,
+  `O` not subject to tax, `AE` VAT reverse charge, `N` standard rate additional VAT.
+- **Emirates** (`Agents.AddressProvince`): `AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`.
+- **Payment means** (sales-invoice agent `Lookup1Id`): `1` not defined, `10` in cash, `20` cheque,
+  `21` banker's draft, `30` credit transfer, `49` direct debit, `54` credit card, `55` debit card,
+  `68` online payment service.
+- **Endpoint / TIN**: `endpoint_scheme_id` is `0235` for UAE, and `endpoint_id` is the party's
+  **10-digit TIN** (starts with `1`). This is *not* the 15-digit VAT/TRN (starts with `1`, ends
+  with `03`), which belongs in `party_tax_scheme.company_id` — a field v1 does not send. See the
+  open question below.
+
+## Open question: which number is in `Agents.TaxIdentificationNumber`?
+
+Marmin distinguishes two identifiers that Tellma stores in one column:
+
+- the **10-character TIN**, which is what `endpoint_id` and `tin` must carry, and
+- the **15-digit VAT/TRN**, which belongs in `party_tax_scheme.company_id`.
+
+v1 maps `Agents.TaxIdentificationNumber` to `endpoint_id` and `tin`, which is correct only if the
+tenants store the 10-digit TIN there. Confirm with both customers before go-live. If they hold the
+TRN instead, either the customer records need a second field or the mapping needs to derive one
+from the other, and `party_tax_scheme` should be sent as well.
 
 ## Out of scope in v1
 

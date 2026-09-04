@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -1178,7 +1178,7 @@
     <value>العميل {0} ليس له رقم تسجيل ضريبي، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
   </data>
   <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
-    <value>يجب أن تكون إمارة عنوان العميل رمزاً صحيحاً (AZ أو AJ أو FU أو SH أو DU أو RK أو UQ)، ولكنها كانت "{0}".</value>
+    <value>يجب أن تكون إمارة عنوان العميل رمزاً صحيحاً (AUH أو DXB أو SHJ أو UAQ أو FUJ أو AJM أو RAK)، ولكنها كانت "{0}".</value>
   </data>
   <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
     <value>المورد {0} ليس له رمز وحدة، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
