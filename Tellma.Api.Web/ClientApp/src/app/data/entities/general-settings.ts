@@ -57,4 +57,16 @@ export interface Custom {
     BannerText?: string;
     BannerText2?: string;
     BannerText3?: string;
+
+    // Marmin (UAE e-invoicing over Peppol).
+    // NOTE: every one of these must be bound by general-settings.component.html. The server
+    // serializes whatever the client sends, so a field the form omits is wiped on save.
+
+    MarminAeClientId?: string;
+    MarminAeBusinessProfileId?: string;
+    MarminAeOrgId?: string;
+    MarminAeEndpointSchemeId?: string;
+    MarminAeDefaultProfileExecutionId?: string;
+    MarminAeDefaultPaymentMeansCode?: string;
+    MarminAeDefaultPaymentTermDays?: number;
 }

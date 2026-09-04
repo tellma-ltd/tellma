@@ -933,6 +933,52 @@ namespace Tellma.Api.Behaviors
             }
             catch { }
         }
+
+        /// <summary>
+        /// Alerts the tenant's administrators that a document did not make it onto the Peppol
+        /// network, or made it with warnings. Mirrors <see cref="LogZatcaErrorOrWarning"/>.
+        /// </summary>
+        /// <remarks>
+        /// Swallows everything, deliberately: this runs after the close has already committed, and
+        /// a failure to send an alert must never turn into a failure of the operation that
+        /// triggered it.
+        /// </remarks>
+        public async Task LogMarminAeErrorOrWarning(
+            int docDefId,
+            string docDefName,
+            int docId,
+            string docNumber,
+            string responseBody,
+            TenantLogLevel level)
+        {
+            try
+            {
+                using var _ = TransactionFactory.Suppress();
+                var settings = await Settings();
+                var user = await UserSettings();
+
+                var supportEmailsConcatenated = settings.SupportEmails ?? "";
+                var supportEmails = supportEmailsConcatenated
+                    .Split(";")
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim());
+
+                _tenantLogger.Log(new MarminAeErrorLogEntry(level)
+                {
+                    TenantId = TenantId,
+                    TenantName = settings.ShortCompanyName,
+                    TenantSupportEmails = supportEmails,
+                    DocumentDefinitionId = docDefId,
+                    DefinitionName = docDefName,
+                    DocumentId = docId,
+                    DocumentNumber = docNumber,
+                    MarminAeResponseBody = responseBody,
+                    UserEmail = user.Email,
+                    UserName = user.Name,
+                });
+            }
+            catch { }
+        }
     }
 
     public class ApplicationBehaviorHelper

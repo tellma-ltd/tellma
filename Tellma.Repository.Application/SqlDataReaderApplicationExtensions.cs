@@ -142,6 +142,106 @@ namespace Tellma.Repository.Application
             return new InboxStatusOutput(errors, inboxStatuses);
         }
 
+        /// <summary>
+        /// Reads the two result sets of <c>[dal].[MarminAe__GetInvoices]</c>: invoice headers,
+        /// then invoice lines.
+        /// </summary>
+        /// <remarks>
+        /// Positional, like <see cref="LoadZatcaInvoices"/>, so the column order in the stored
+        /// procedure and the read order here must stay in lockstep. Both are commented to say so.
+        /// </remarks>
+        public static async Task<List<MarminAeInvoice>> LoadMarminAeInvoices(this SqlDataReader reader, CancellationToken cancellation = default)
+        {
+            var result = new List<MarminAeInvoice>();
+
+            // 1 - Load the invoice headers
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int index = reader.GetInt32(i++);
+                while (result.Count <= index) result.Add(null);
+
+                result[index] = new MarminAeInvoice
+                {
+                    Id = reader.GetInt32(i++),
+                    DocumentType = reader.String(i++),
+                    TypeCode = reader.String(i++),
+                    DocumentNumber = reader.String(i++),
+                    IssueDate = reader.DateTime(i++) ?? default,
+                    DueDate = reader.DateTime(i++),
+                    ProfileExecutionId = reader.String(i++),
+                    DocumentCurrencyCode = reader.String(i++),
+                    Note = reader.String(i++),
+                    BuyerReference = reader.String(i++),
+                    DiscrepancyResponse = reader.String(i++),
+                    Reason = reader.String(i++),
+
+                    CustomerName = reader.String(i++),
+                    CustomerEmail = reader.String(i++),
+                    CustomerEndpointId = reader.String(i++),
+                    CustomerEndpointSchemeId = reader.String(i++),
+                    CustomerTin = reader.String(i++),
+                    CustomerStreetName = reader.String(i++),
+                    CustomerAdditionalStreetName = reader.String(i++),
+                    CustomerCityName = reader.String(i++),
+                    CustomerPostalZone = reader.String(i++),
+                    CustomerCountrySubentity = reader.String(i++),
+                    CustomerCountry = reader.String(i++),
+                    CustomerCountryCode = reader.String(i++),
+
+                    PaymentMeansCode = reader.String(i++),
+                    PayeeFinancialAccountId = reader.String(i++),
+                    PayableRoundingAmount = reader.Decimal(i++),
+                    BillingReferenceId = reader.String(i++),
+                    BillingReferenceIssueDate = reader.DateTime(i++),
+                };
+            }
+
+            // 2 - Load the invoice lines
+            await reader.NextResultAsync(cancellation);
+            while (await reader.ReadAsync(cancellation))
+            {
+                int i = 0;
+                int invoiceIndex = reader.GetInt32(i++);
+
+                // The two result sets are not filtered identically: the header query inner-joins
+                // dbo.Agents twice to reach the customer, the line query joins no Agents at all.
+                // So a document whose NotedAgentId (or whose noted agent's Agent1Id) is NULL
+                // yields lines with no header, and this index is then either past the end of the
+                // list or a null slot the header loop padded. Skipping is right rather than
+                // throwing: the callers already treat a null entry as "not submittable" and
+                // filter it out, and throwing here would roll back the close of every other
+                // document in the batch.
+                var invoice = invoiceIndex >= 0 && invoiceIndex < result.Count
+                    ? result[invoiceIndex]
+                    : null;
+
+                if (invoice == null)
+                {
+                    continue;
+                }
+
+                invoice.Lines.Add(new MarminAeInvoiceLine
+                {
+                    LineNumber = reader.GetInt32(i++),
+                    Name = reader.String(i++),
+                    Description = reader.String(i++),
+                    Quantity = reader.Decimal(i++) ?? 0m,
+                    UnitCode = reader.String(i++),
+                    PriceBaseAmount = reader.Decimal(i++) ?? 0m,
+                    PriceBaseQuantity = reader.Decimal(i++) ?? 1m,
+                    TaxCategoryId = reader.String(i++),
+                    TaxPercent = reader.Decimal(i++) ?? 0m,
+                    TaxExemptionReasonCode = reader.String(i++),
+                    TaxExemptionReason = reader.String(i++),
+                    SellerItemIdentification = reader.String(i++),
+                    StandardItemIdentification = reader.String(i++),
+                });
+            }
+
+            return result;
+        }
+
         public static async Task<List<ZatcaInvoice>> LoadZatcaInvoices(this SqlDataReader reader, CancellationToken cancellation = default)
         {
             var result = new List<ZatcaInvoice>();

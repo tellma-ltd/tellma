@@ -37,6 +37,41 @@ namespace Tellma.Controllers
         }
 
 
+        /// <summary>
+        /// Stores this tenant's Marmin (UAE) API credentials, encrypted.
+        /// </summary>
+        /// <remarks>
+        /// A dedicated action rather than fields on the settings form, mirroring onboard-zatca:
+        /// the secrets are never returned to the browser, so they cannot round-trip through a
+        /// normal save. Authorized on the general-settings Update permission inside the service.
+        /// </remarks>
+        [HttpPut("marmin-ae-secrets")]
+        public async Task<ActionResult> SaveMarminAeSecrets([FromBody] MarminAeSecretsArguments args)
+        {
+            await _service.SaveMarminAeSecrets(args?.ClientSecret, args?.WebhookSecret);
+            return Ok();
+        }
+
+        /// <summary>
+        /// The credentials posted to <c>marmin-ae-secrets</c>.
+        /// </summary>
+        /// <remarks>
+        /// A body rather than query parameters, unlike the older onboard-zatca action: query
+        /// strings are recorded in web server logs, reverse proxy logs and browser history, which
+        /// is no place for an API credential.
+        /// </remarks>
+        public class MarminAeSecretsArguments
+        {
+            /// <summary>The vendor's client secret. Leave empty to keep the stored one.</summary>
+            public string ClientSecret { get; set; }
+
+            /// <summary>
+            /// The webhook signing secret. Leave empty to keep the stored one. During a rotation
+            /// this may be two secrets separated by a semicolon ("new;old").
+            /// </summary>
+            public string WebhookSecret { get; set; }
+        }
+
         [HttpPut("onboard-zatca")]
         public async Task<ActionResult> OnboardWithZatca(
             [FromQuery] string otp,

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A first-party client for the slice of the Marmin UAE e-invoicing API the platform needs: the signature-for-token exchange, sales document submission and resubmission, the uniform document read surface, Peppol transmission status, legal artifact downloads, and webhook signature verification. No Tellma dependencies.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Upstream (tellma-platform) supplied these from a Directory.Build.props that does not exist
+         in this repo, so they are pinned here explicitly.
+         - net8.0 matches Tellma.Api, the consumer. The only two APIs in this project that needed
+           net9.0 (System.Threading.Lock and System.Buffers.Text.Base64Url) have been replaced with
+           net8.0-compatible equivalents; see MarminAeTokenProvider and MarminAeTimestamps.
+         - ImplicitUsings is MANDATORY: most files here omit `using System;` and friends and rely on
+           the SDK's generated global usings.
+         - RootNamespace keeps the original namespace so the 29 source files stay byte-identical to
+           upstream and future diffs against it remain clean, even though the assembly was renamed
+           to Tellma.Integration.* to match Tellma.Integration.Zatca. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tellma.Connector.MarminAe</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Deliberately no PackageReference and no ProjectReference. HttpClient, System.Text.Json,
+       System.Net.Http.Json and HMACSHA256 are all in the net8.0 shared framework, and keeping this
+       library dependency-free is what lets it be consumed unchanged. -->
+
+  <ItemGroup>
+    <!-- The route, signature, timestamp and error-parsing suites exercise those internals directly:
+         they are the parts with no public surface of their own and the most ways to be subtly wrong. -->
+    <InternalsVisibleTo Include="Tellma.Integration.MarminAe.Tests" />
+  </ItemGroup>
+
+</Project>

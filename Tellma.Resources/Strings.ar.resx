@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -676,6 +676,39 @@
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
   </data>
+  <data name="Document_MarminAeDocumentId" xml:space="preserve">
+    <value>معرف الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeDocumentNumber" xml:space="preserve">
+    <value>رقم الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeLastEventAt" xml:space="preserve">
+    <value>تاريخ تحديث الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeLastEventId" xml:space="preserve">
+    <value>معرف حدث الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeResult" xml:space="preserve">
+    <value>نتيجة الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeState" xml:space="preserve">
+    <value>حالة الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeState_0" xml:space="preserve">
+    <value>قيد الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_1" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_10" xml:space="preserve">
+    <value>تم التسليم</value>
+  </data>
+  <data name="Document_MarminAeState_minus_10" xml:space="preserve">
+    <value>فشل الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_minus_20" xml:space="preserve">
+    <value>مرفوضة</value>
+  </data>
   <data name="Document_ZatcaHash" xml:space="preserve">
     <value>هاش الفاتورة</value>
   </data>
@@ -726,6 +759,18 @@
   </data>
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>تعريفات الأسطر</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType" xml:space="preserve">
+    <value>نوع مستند Marmin</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesCreditNote" xml:space="preserve">
+    <value>إشعار دائن للمبيعات</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesInvoice" xml:space="preserve">
+    <value>فاتورة مبيعات</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeTypeCode" xml:space="preserve">
+    <value>رمز نوع Marmin</value>
   </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>بادئة الرقم المتسلسل</value>
@@ -1167,6 +1212,33 @@
   </data>
   <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
     <value>لا يمكن فتح الفاتورة إلكترونية حسب توجيهات هيئة الزكاة.</value>
+  </data>
+  <data name="Error_CannotOpenAMarminAeDocument" xml:space="preserve">
+    <value>لا يمكن فتح المستند {0} لأنه تم إرساله بالفعل إلى شبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoEmail" xml:space="preserve">
+    <value>العميل {0} ليس له بريد إلكتروني، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoTaxId" xml:space="preserve">
+    <value>العميل {0} ليس له رقم تسجيل ضريبي، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeDocumentHasNoCustomer" xml:space="preserve">
+    <value>الفاتورة {0} ليس لها حساب عميل، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
+    <value>يجب أن تكون إمارة عنوان العميل رمزاً صحيحاً (AUH أو DXB أو SHJ أو UAQ أو FUJ أو AJM أو RAK)، ولكنها كانت "{0}".</value>
+  </data>
+  <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
+    <value>المورد {0} ليس له رمز وحدة، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeNoOriginalInvoice" xml:space="preserve">
+    <value>تعذر تحديد فاتورة أصلية واحدة بالضبط لإشعار الدائن {0}.</value>
+  </data>
+  <data name="Error_MarminAeNotConfigured" xml:space="preserve">
+    <value>لم يتم إعداد تكامل الفوترة الإلكترونية الإماراتية، يرجى التواصل مع مسؤول النظام.</value>
+  </data>
+  <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
+    <value>ضريبة القيمة المضافة المحسوبة من بنود الفاتورة الإلكترونية للمستند {0} لا تطابق إجمالي المستند. يرجى مراجعة البنود قبل الإقفال.</value>
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>لا يمكن توقيع مستند في حالة {1}.</value>

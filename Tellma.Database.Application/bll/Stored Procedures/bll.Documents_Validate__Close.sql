@@ -282,6 +282,159 @@ BEGIN
 		WHERE D.[PostingDate] <> CAST(GETDATE() AS DATE) 
 	END
 	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
+
+	-- If this is a Marmin (UAE) document definition, assert everything the vendor requires is
+	-- present BEFORE the close, because a close is the point of no return: after it the document
+	-- is on the Peppol network and cannot be reopened.
+	IF (SELECT [MarminAeDocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) IS NOT NULL
+	BEGIN
+		DECLARE @MarminAeIsCreditNote BIT = IIF(
+			(SELECT [MarminAeDocumentType] FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId) = N'SalesCreditNote', 1, 0);
+
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		-- The customer party is reached as NotedAgent -> Agent1, and every check below reaches it
+		-- through an INNER JOIN -- as does dal.MarminAe__GetInvoices itself. A NULL at either hop
+		-- therefore produces no rows and so no error, and the document would close cleanly and
+		-- then be dropped from the payload without a word: no error, no log entry, and a legally
+		-- required e-invoice silently never sent. The ZATCA block above guards the first hop for
+		-- exactly this reason; both hops are guarded here.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_TheDocumentHasMissingInvoice',
+			CAST(NULL AS NVARCHAR (255))
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE D.[NotedAgentId] IS NULL
+
+		UNION
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeDocumentHasNoCustomer',
+			SI.[Name]
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		WHERE SI.[Agent1Id] IS NULL
+
+		UNION
+		-- The vendor requires an email on the customer party, and Tellma allows it to be blank.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeCustomerHasNoEmail',
+			CA.[Name]
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]
+		LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id]
+		WHERE ISNULL(CA.[ContactEmail], CG.[ContactEmail]) IS NULL
+
+		UNION
+		-- The tax registration number IS the Peppol routing address, so without it the document
+		-- cannot be addressed at all. Unlike ZATCA there is no commercial-registration fallback.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeCustomerHasNoTaxId',
+			CA.[Name]
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]
+		LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id]
+		WHERE ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]) IS NULL
+
+		UNION
+		-- country_subentity must be an emirate CODE. Tellma stores AddressProvince as free text,
+		-- so a city or a spelled-out emirate name would be rejected by the vendor at submission.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeInvalidEmirateCode',
+			ISNULL(CA.[AddressProvince], N'')
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
+		JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]
+		WHERE dal.fn_Lookup__Code(CA.[AddressCountryId]) = N'AE'
+		-- The vendor's own Schematron asserts exactly this set, and it is what
+		-- GET /api/codelist/uae-subdivisions returns. They are three-letter codes
+		-- (DXB, AUH, ...), not the two-letter ISO 3166-2:AE subdivisions.
+		AND ISNULL(CA.[AddressProvince], N'') NOT IN (N'AUH', N'DXB', N'SHJ', N'UAQ', N'FUJ', N'AJM', N'RAK')
+
+		UNION
+		-- unit_code must be a UN/ECE Recommendation 20 code. It is free text in Tellma, so the
+		-- most we can assert here is that there is one at all.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeInvalidUnitCode',
+			NR.[Name]
+		FROM @Ids FE
+		JOIN [map].[Lines]() L ON L.[DocumentId] = FE.[Id]
+		JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+		JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+		JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+		LEFT JOIN dbo.Units U ON U.[Id] = E.[UnitId]
+		WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
+		AND ISNULL(U.[Code], N'') = N''
+
+		UNION
+		-- A credit note must name exactly one original invoice. Zero leaves billing_reference
+		-- empty, which the vendor rejects; more than one means the NotedAgentId heuristic cannot
+		-- tell which invoice is being adjusted, and guessing would attach the credit to the wrong
+		-- one. Either way this is a data problem to fix before the note goes out.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeNoOriginalInvoice',
+			CAST(D.[Id] AS NVARCHAR (255))
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		WHERE @MarminAeIsCreditNote = 1
+		AND (
+			SELECT COUNT(*)
+			FROM dbo.Documents O
+			JOIN dbo.DocumentDefinitions ODD ON ODD.[Id] = O.[DefinitionId]
+			WHERE ODD.[MarminAeDocumentType] = N'SalesInvoice'
+			AND O.[State] = 1
+			AND O.[MarminAeState] >= 1
+			AND O.[NotedAgentId] = D.[NotedAgentId]
+		) <> 1
+
+		UNION
+		-- The reconciliation check, and the highest-value assertion here.
+		--
+		-- Marmin computes every total server-side from the lines we send, so a line-mapping error
+		-- does not fail loudly: it produces a legally transmitted invoice whose total differs from
+		-- the ledger, discovered later by the customer's counterparty. Recomputing the VAT exactly
+		-- the way dal.MarminAe__GetInvoices will emit it, and comparing against what the ledger
+		-- says, catches that here -- while the close can still be refused.
+		--
+		-- The tolerance absorbs per-line rounding only; a real mapping error (an unmodelled
+		-- discount, a missed line) is far larger than a cent.
+		SELECT DISTINCT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_MarminAeTotalsMismatch',
+			CAST(D.[Id] AS NVARCHAR (255))
+		FROM @Ids FE
+		JOIN dbo.Documents D ON D.[Id] = FE.[Id]
+		CROSS APPLY (
+			SELECT SUM(ROUND(
+				(IIF(@MarminAeIsCreditNote = 1, +1, -1) * E.[Direction] * E.[Quantity])
+					* L.[Decimal1] * ISNULL(NR.[VatRate], 0.05), 2)) AS [Vat]
+			FROM [map].[Lines]() L
+			JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+			JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
+			JOIN dbo.ResourceDefinitions NRD ON NRD.[Id] = NR.[DefinitionId]
+			JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
+			JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
+			WHERE L.[DocumentId] = D.[Id]
+			AND AC.[Concept] = N'CurrentValueAddedTaxPayables'
+			AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer'
+				OR NRD.[Code] LIKE N'Prepayments%' AND E.[Direction] = 1)
+		) MAPPED
+		WHERE ABS(ISNULL(MAPPED.[Vat], 0)
+			- ABS(dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency(D.[Id]))) > 0.02
+	END
+	IF EXISTS(SELECT * FROM @ValidationErrors) GOTO DONE;
 	-- Verify that workflow-less lines in Documents can be in their final state
 	INSERT INTO @Documents ([Index], [Id], [SerialNumber], [Clearance], [PostingDate], [PostingDateIsCommon], [Memo], [MemoIsCommon],
 		[CurrencyId], [CurrencyIsCommon], [CenterId], [CenterIsCommon], [AgentId], [AgentIsCommon], [NotedAgentId], [NotedAgentIsCommon], 
