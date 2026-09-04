@@ -334,7 +334,7 @@ namespace Tellma
                 if (_opt.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
-                    app.UseEmbeddedIdentityServer(_env.IsDevelopment());
+                    app.UseEmbeddedIdentityServer(_env.IsDevelopment(), !_opt.EmbeddedClientApplicationEnabled);
                 }
                 else
                 {
