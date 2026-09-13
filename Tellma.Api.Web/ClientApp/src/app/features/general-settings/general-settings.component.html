@@ -519,5 +519,171 @@
 
     </div>
 
+    <h5 class="col-12 bg-light t-settings-header">
+      {{ 'Settings_MarminAe' | translate }}
+    </h5>
+
+    <div class="row col-12 t-settings-section">
+
+      <!--
+        Every field in this section is bound, deliberately: the server serializes whatever the
+        client posts into CustomFieldsJson, so a field left unbound here would be wiped on save.
+        The environment is not editable, and the two secrets are write-only (see below).
+      -->
+
+      <!-- Environment (read-only, DBA-set) -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeEnvironment' | translate">
+        <div>{{ marminAeEnvironment || '-' }}</div>
+      </t-form-group-settings>
+
+      <!-- ClientId -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeClientId' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeClientId || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeClientId"
+            (ngModelChange)="customFields(model).MarminAeClientId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- BusinessProfileId -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeBusinessProfileId' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeBusinessProfileId || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeBusinessProfileId"
+            (ngModelChange)="customFields(model).MarminAeBusinessProfileId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- OrgId -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeOrgId' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeOrgId || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeOrgId"
+            (ngModelChange)="customFields(model).MarminAeOrgId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- EndpointSchemeId -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeEndpointSchemeId' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeEndpointSchemeId || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeEndpointSchemeId"
+            (ngModelChange)="customFields(model).MarminAeEndpointSchemeId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- DefaultProfileExecutionId -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultProfileExecutionId' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeDefaultProfileExecutionId || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeDefaultProfileExecutionId"
+            (ngModelChange)="customFields(model).MarminAeDefaultProfileExecutionId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- DefaultPaymentMeansCode -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultPaymentMeansCode' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeDefaultPaymentMeansCode || '-' }}</div>
+        }
+        @if (isEdit) {
+          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeDefaultPaymentMeansCode"
+            (ngModelChange)="customFields(model).MarminAeDefaultPaymentMeansCode = $event" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-text-editor>
+        }
+      </t-form-group-settings>
+
+      <!-- DefaultPaymentTermDays -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultPaymentTermDays' | translate"
+        [serverErrors]="model.serverErrors?.CustomFields">
+        @if (!isEdit) {
+          <div>{{ model?.CustomFields?.MarminAeDefaultPaymentTermDays || 0 }}</div>
+        }
+        @if (isEdit) {
+          <t-decimal-editor [ngModel]="model?.CustomFields?.MarminAeDefaultPaymentTermDays"
+            (ngModelChange)="customFields(model).MarminAeDefaultPaymentTermDays = $event"
+            [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [ngModelOptions]="{ updateOn: 'blur' }">
+          </t-decimal-editor>
+        }
+      </t-form-group-settings>
+
+      <!--
+        The two secrets are never sent to the browser, so they cannot be edited in this form: it
+        has nothing to round-trip and could only ever blank them. They go through a dedicated
+        endpoint instead, following the same shape as the reset-secret flow on the
+        identity-server-clients screen.
+      -->
+      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeSecrets' | translate">
+        <div class="d-flex align-items-center">
+          <span class="t-tinted-color mr-2 ml-2">••••••••••</span>
+          <button class="btn btn-sm btn-light" type="button" (click)="onSetMarminAeSecrets(setSecretsModal)">
+            {{ 'Settings_MarminAeSetSecrets' | translate }}
+          </button>
+        </div>
+      </t-form-group-settings>
+
+    </div>
+
+    <!-- Set-secrets modal -->
+    <ng-template #setSecretsModal let-modal>
+
+      <!-- header -->
+      <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Settings_MarminAeSetSecrets' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- body -->
+      <div class="modal-body">
+        <p class="small t-tinted-color">{{ 'Settings_MarminAeSetSecretsDescription' | translate }}</p>
+
+        <div class="form-group">
+          <label>{{ 'Settings_MarminAeClientSecret' | translate }}</label>
+          <input type="password" class="form-control" autocomplete="new-password" [(ngModel)]="marminAeClientSecret">
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'Settings_MarminAeWebhookSecret' | translate }}</label>
+          <input type="password" class="form-control" autocomplete="new-password" [(ngModel)]="marminAeWebhookSecret">
+        </div>
+
+        @if (marminAeSecretsError) {
+          <div class="text-danger small">{{ marminAeSecretsError }}</div>
+        }
+      </div>
+
+      <!-- footer -->
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="button" [disabled]="marminAeSaving || !marminAeSecretsValid"
+          (click)="onSaveMarminAeSecrets(modal)">
+          {{ 'Save' | translate }}
+        </button>
+        <button class="btn btn-light" type="button" (click)="modal.dismiss()">{{ 'Cancel' | translate }}</button>
+      </div>
+    </ng-template>
+
   </div>
 </ng-template>

@@ -117,5 +117,32 @@ namespace Tellma.Api.Dto
         public int ZatcaEncryptionKeyIndex { get; set; }
 
         public string ZatcaEnvironment { get; set; }
+
+        // Marmin (UAE). The two secrets are [JsonIgnore] for the same reason the ZATCA ones are:
+        // SettingsForClient is serialized straight to the browser, and these must never leave the
+        // server. They are still carried on this type because it is the per-tenant settings cache
+        // that DocumentsService and the webhook handler both read from.
+
+        [JsonIgnore]
+        public string MarminAeEncryptedClientSecret { get; set; }
+
+        [JsonIgnore]
+        public string MarminAeEncryptedWebhookSecret { get; set; }
+
+        [JsonIgnore]
+        public int MarminAeEncryptionKeyIndex { get; set; }
+
+        /// <summary>Sandbox or Production. Safe to expose; the client uses it to warn on sandbox.</summary>
+        public string MarminAeEnvironment { get; set; }
+
+        // The non-secret Marmin configuration, flattened out of GeneralSettings.CustomFields the
+        // same way the address and banner fields above are. None of it is sensitive.
+        public string MarminAeClientId { get; set; }
+        public string MarminAeBusinessProfileId { get; set; }
+        public string MarminAeOrgId { get; set; }
+        public string MarminAeEndpointSchemeId { get; set; }
+        public string MarminAeDefaultProfileExecutionId { get; set; }
+        public string MarminAeDefaultPaymentMeansCode { get; set; }
+        public int MarminAeDefaultPaymentTermDays { get; set; }
     }
 }

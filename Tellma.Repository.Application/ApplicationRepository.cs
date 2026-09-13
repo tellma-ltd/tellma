@@ -382,6 +382,7 @@ namespace Tellma.Repository.Application
                 GeneralSettings gSettings = new();
                 FinancialSettings fSettings = new();
                 ZatcaSettings zSettings = new();
+                MarminAeSettings mSettings = new();
                 Dictionary<string, bool> featureFlags = new();
 
                 // Connection
@@ -437,6 +438,16 @@ namespace Tellma.Repository.Application
                         zSettings.ZatcaEncryptionKeyIndex = reader.GetInt32(nameof(zSettings.ZatcaEncryptionKeyIndex));
                         zSettings.ZatcaEnvironment = reader.GetString(nameof(zSettings.ZatcaEnvironment));
                     }
+
+                    // Marmin (UAE). Read by name like the ZATCA block above, and for the same
+                    // reason: these columns have no corresponding property on GeneralSettings, so
+                    // the reflective loop over its SimpleProperties never sees them.
+                    {
+                        mSettings.MarminAeEncryptedClientSecret = reader.String(reader.GetOrdinal(nameof(mSettings.MarminAeEncryptedClientSecret)));
+                        mSettings.MarminAeEncryptedWebhookSecret = reader.String(reader.GetOrdinal(nameof(mSettings.MarminAeEncryptedWebhookSecret)));
+                        mSettings.MarminAeEncryptionKeyIndex = reader.GetInt32(nameof(mSettings.MarminAeEncryptionKeyIndex));
+                        mSettings.MarminAeEnvironment = reader.GetString(nameof(mSettings.MarminAeEnvironment));
+                    }
                 }
                 else
                 {
@@ -475,7 +486,7 @@ namespace Tellma.Repository.Application
                     }
                 }
 
-                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings, zSettings, featureFlags);
+                result = new SettingsOutput(gSettings.SettingsVersion, singleBusinessUnitId, gSettings, fSettings, zSettings, mSettings, featureFlags);
             },
             DatabaseName(connString), nameof(Settings__Load), cancellation);
 
@@ -8648,6 +8659,220 @@ namespace Tellma.Repository.Application
 
             return result;
         }
+
+        #region Marmin (UAE)
+
+        /// <summary>
+        /// Maps the given documents to the shape needed to build a Marmin UAE e-invoice.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately a standalone call rather than extra result sets bolted onto
+        /// <see cref="Documents__Close"/> the way ZATCA does it: the close path runs for every
+        /// tenant, and this feature serves two. Documents that already carry a MarminAe state are
+        /// filtered out inside the SP, so this can never return an already-submitted document.
+        /// </remarks>
+        public async Task<List<MarminAeInvoice>> MarminAe__GetInvoices(
+            List<int> ids,
+            string defaultProfileExecutionId,
+            string endpointSchemeId,
+            string defaultPaymentMeansCode,
+            int defaultPaymentTermDays,
+            CancellationToken cancellation = default)
+        {
+            var connString = await GetConnectionString(cancellation);
+            List<MarminAeInvoice> result = null;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarminAe__GetInvoices)}]";
+
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@DefaultProfileExecutionId", defaultProfileExecutionId);
+                cmd.Parameters.Add("@EndpointSchemeId", endpointSchemeId);
+                cmd.Parameters.Add("@DefaultPaymentMeansCode", defaultPaymentMeansCode);
+                cmd.Parameters.Add("@DefaultPaymentTermDays", defaultPaymentTermDays);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                result = await reader.LoadMarminAeInvoices(cancellation);
+            },
+            DatabaseName(connString), nameof(MarminAe__GetInvoices), cancellation);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Claims a document for submission by stamping MarminAeState = 0 (Submitting).
+        /// Runs inside the close transaction, before any call to the vendor.
+        /// </summary>
+        public async Task MarminAe__MarkSubmitting(int id)
+        {
+            var connString = await GetConnectionString();
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarminAe__MarkSubmitting)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Id", id);
+
+                // Execute
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(MarminAe__MarkSubmitting));
+        }
+
+        /// <summary>
+        /// Records the outcome of a submission. Mirrors <see cref="Zatca__UpdateDocumentInfo"/>,
+        /// but runs after the close has committed rather than inside it.
+        /// </summary>
+        public async Task MarminAe__UpdateDocumentInfo(
+            int id,
+            MarminAeState state,
+            string documentId,
+            string documentNumber,
+            string result,
+            DateTimeOffset? lastEventAt)
+        {
+            var connString = await GetConnectionString();
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarminAe__UpdateDocumentInfo)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@Id", id);
+                cmd.Parameters.Add("@MarminAeState", (int)state);
+                cmd.Parameters.Add("@MarminAeDocumentId", documentId);
+                cmd.Parameters.Add("@MarminAeDocumentNumber", documentNumber);
+                cmd.Parameters.Add("@MarminAeResult", result);
+                cmd.Parameters.Add("@MarminAeLastEventAt", lastEventAt);
+
+                // Execute
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(MarminAe__UpdateDocumentInfo));
+        }
+
+        /// <summary>
+        /// Applies an asynchronous status update identified by the vendor's document id.
+        /// Shared by the webhook and by the "Refresh e-invoice status" poll.
+        /// </summary>
+        /// <returns>
+        /// The number of rows changed: 0 means the event was a duplicate, was stale, or named a
+        /// document this tenant does not have. All three are non-errors to the caller.
+        /// </returns>
+        /// <remarks>
+        /// The poll passes null for <paramref name="webhookEventId"/> and
+        /// <paramref name="eventTimestamp"/>: it has just read the current state, so it is neither
+        /// a redelivery nor stale, and it has no vendor-side instant to record. Nulls tell the
+        /// procedure to skip both ordering guards and to leave both ordering columns untouched,
+        /// so a poll cannot suppress a genuine webhook that follows it.
+        /// </remarks>
+        public async Task<int> MarminAe__ApplyWebhook(
+            string marminAeDocumentId,
+            MarminAeState state,
+            string result,
+            Guid? webhookEventId,
+            DateTimeOffset? eventTimestamp,
+            CancellationToken cancellation = default)
+        {
+            var connString = await GetConnectionString(cancellation);
+            int rowsAffected = 0;
+
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarminAe__ApplyWebhook)}]";
+
+                // Parameters
+                var rowsAffectedParam = new SqlParameter("@RowsAffected", SqlDbType.Int) { Direction = ParameterDirection.Output };
+
+                cmd.Parameters.Add("@MarminAeDocumentId", marminAeDocumentId);
+                cmd.Parameters.Add("@MarminAeState", (int)state);
+                cmd.Parameters.Add("@MarminAeResult", result);
+                cmd.Parameters.Add("@WebhookEventId", webhookEventId);
+                cmd.Parameters.Add("@EventTimestamp", eventTimestamp);
+                cmd.Parameters.Add(rowsAffectedParam);
+
+                // Execute
+                await conn.OpenAsync(cancellation);
+                await cmd.ExecuteNonQueryAsync(cancellation);
+
+                rowsAffected = rowsAffectedParam.Value as int? ?? 0;
+            },
+            DatabaseName(connString), nameof(MarminAe__ApplyWebhook), cancellation);
+
+            return rowsAffected;
+        }
+
+        /// <summary>
+        /// Stores the tenant's (already encrypted) Marmin credentials.
+        /// Mirrors <see cref="Zatca__SaveSecrets"/>.
+        /// </summary>
+        public async Task MarminAe__SaveSecrets(string encryptedClientSecret, string encryptedWebhookSecret, int encryptionKeyIndex)
+        {
+            var connString = await GetConnectionString();
+            await TransactionalDatabaseOperation(async () =>
+            {
+                // Connection
+                using var conn = new SqlConnection(connString);
+
+                // Command
+                using var cmd = conn.CreateCommand();
+                cmd.CommandTimeout = TimeoutInSeconds;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarminAe__SaveSecrets)}]";
+
+                // Parameters
+                cmd.Parameters.Add("@EncryptedClientSecret", encryptedClientSecret);
+                cmd.Parameters.Add("@EncryptedWebhookSecret", encryptedWebhookSecret);
+                cmd.Parameters.Add("@EncryptionKeyIndex", encryptionKeyIndex);
+
+                // Execute
+                await conn.OpenAsync();
+                await cmd.ExecuteNonQueryAsync();
+            },
+            DatabaseName(connString), nameof(MarminAe__SaveSecrets));
+        }
+
+        #endregion
 
         public async Task Zatca__UpdateDocumentInfo(int id, ZatcaState zatcaState, string zatcaResult, int zatcaSerialNumber, string zatcaHash, Guid zatcaUuid)
         {

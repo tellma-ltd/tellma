@@ -135,6 +135,53 @@ namespace Tellma.Model.Application
             public string BannerText2 { get; set; }
             public string BannerText3 { get; set; }
             public int BannerHeight { get; set; }
+
+            // Marmin (UAE e-invoicing over Peppol).
+            //
+            // These live in the CustomFields bag rather than as real Settings columns because the
+            // bag is already plumbed end to end (map.GeneralSettings, api/dal.GeneralSettings__Save
+            // all pass CustomFieldsJson as one NVARCHAR(MAX) parameter), so adding a field here
+            // costs no SQL change at all. Only the secrets need real columns, because they must be
+            // withheld from the browser.
+            //
+            // NOTE: GeneralSettingsService.SavePreprocess serializes whatever the client sent, so
+            // every one of these MUST be bound by the General Settings screen or a save will wipe
+            // the ones it left out.
+
+            /// <summary>The organisation client id Marmin issued, e.g. "org_...". Not a secret.</summary>
+            public string MarminAeClientId { get; set; }
+
+            /// <summary>The business profile documents are issued from, e.g. "MBP-...".</summary>
+            public string MarminAeBusinessProfileId { get; set; }
+
+            /// <summary>
+            /// The vendor org id, used only to sanity-check inbound webhooks: it catches one
+            /// tenant being handed the other tenant callback URL.
+            /// </summary>
+            public string MarminAeOrgId { get; set; }
+
+            /// <summary>
+            /// The Peppol scheme the customer tax registration number is an identifier in, e.g.
+            /// "0235". Tenant-wide, since both customers are UAE-registered.
+            /// </summary>
+            public string MarminAeEndpointSchemeId { get; set; }
+
+            /// <summary>
+            /// Fallback for profile_execution_id, the eight supply-scenario flags. The real value
+            /// is per-document, from Documents.Lookup1Id (the same slot ZATCA uses for its
+            /// InvoiceTypeTransactions code); this is only used when that lookup is not set,
+            /// which is the common case for a tenant issuing a single supply scenario.
+            /// </summary>
+            public string MarminAeDefaultProfileExecutionId { get; set; }
+
+            /// <summary>Fallback payment_means code when the sales invoice does not name one.</summary>
+            public string MarminAeDefaultPaymentMeansCode { get; set; }
+
+            /// <summary>
+            /// Days added to the issue date to derive a due date when the document has no
+            /// NotedDate. Zero means the invoice is due on issue.
+            /// </summary>
+            public int MarminAeDefaultPaymentTermDays { get; set; }
         }
 
         #endregion

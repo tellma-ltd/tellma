@@ -215,6 +215,34 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 ZatcaHash: { datatype: 'string', control: 'text', label: () => trx.instant('Document_ZatcaHash') },
                 ZatcaUuid: { datatype: 'string', control: 'text', label: () => trx.instant('Document_ZatcaUuid') },
 
+                MarminAeState: {
+                    datatype: 'numeric',
+                    control: 'choice',
+                    label: () => trx.instant('Document_MarminAeState'),
+                    choices: [0, 1, 10, -10, -20],
+                    format: (state: number) => {
+                        if (state >= 0) {
+                            return trx.instant('Document_MarminAeState_' + state);
+                        } else {
+                            return trx.instant('Document_MarminAeState_minus_' + (-state));
+                        }
+                    },
+                    color: (c: number) => {
+                        switch (c) {
+                            case 0: return '#6c757d';   // Submitting: in flight
+                            case 1: return '#17a2b8';   // Submitted: accepted, Peppol still working
+                            case 10: return '#28a745';  // Delivered
+                            case -10: return '#dc3545'; // SubmitFailed
+                            case -20: return '#dc3545'; // PeppolRejected
+                            default: return null;
+                        }
+                    }
+                },
+                MarminAeDocumentId: { datatype: 'string', control: 'text', label: () => trx.instant('Document_MarminAeDocumentId') },
+                MarminAeDocumentNumber: { datatype: 'string', control: 'text', label: () => trx.instant('Document_MarminAeDocumentNumber') },
+                MarminAeResult: { datatype: 'string', control: 'text', label: () => trx.instant('Document_MarminAeResult') },
+                MarminAeLastEventAt: { datatype: 'datetimeoffset', control: 'datetime', label: () => trx.instant('Document_MarminAeLastEventAt'), granularity: TimeGranularity.minutes },
+
                 SerialNumber: {
                     datatype: 'numeric',
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
@@ -376,6 +404,14 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 delete props.ZatcaSerialNumber;
                 delete props.ZatcaHash;
                 delete props.ZatcaUuid;
+            }
+
+            if (!definition.MarminAeDocumentType) {
+                delete props.MarminAeState;
+                delete props.MarminAeDocumentId;
+                delete props.MarminAeDocumentNumber;
+                delete props.MarminAeResult;
+                delete props.MarminAeLastEventAt;
             }
         }
 

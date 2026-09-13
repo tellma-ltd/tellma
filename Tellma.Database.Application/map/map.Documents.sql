@@ -55,6 +55,13 @@ RETURN (
 		D.[ZatcaHash],
 		D.[ZatcaUuid],
 
+		D.[MarminAeState],
+		D.[MarminAeDocumentId],
+		D.[MarminAeDocumentNumber],
+		D.[MarminAeResult],
+		D.[MarminAeLastEventId],
+		D.[MarminAeLastEventAt],
+
 		D.[CreatedAt],
 		D.[CreatedById],
 		D.[ModifiedAt],

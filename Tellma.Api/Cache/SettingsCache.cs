@@ -37,6 +37,7 @@ namespace Tellma.Api
             var generalSettings = settingsResult.GeneralSettings;
             var financialSettings = settingsResult.FinancialSettings;
             var zatcaSettings = settingsResult.ZatcaSettings;
+            var marminAeSettings = settingsResult.MarminAeSettings;
             var singleBusinessUnitId = settingsResult.SingleBusinessUnitId;
             var featureFlags = settingsResult.FeatureFlags;
 
@@ -107,6 +108,21 @@ namespace Tellma.Api
             forClient.ZatcaEncryptedSecurityToken = zatcaSettings.ZatcaEncryptedSecurityToken;
             forClient.ZatcaEncryptionKeyIndex = zatcaSettings.ZatcaEncryptionKeyIndex;
             forClient.ZatcaEnvironment = zatcaSettings.ZatcaEnvironment;
+
+            // Marmin (UAE) fields. Copied by hand for the same reason as the ZATCA ones: they
+            // have no counterpart on GeneralSettings, so the reflective copy above misses them.
+            forClient.MarminAeEncryptedClientSecret = marminAeSettings.MarminAeEncryptedClientSecret;
+            forClient.MarminAeEncryptedWebhookSecret = marminAeSettings.MarminAeEncryptedWebhookSecret;
+            forClient.MarminAeEncryptionKeyIndex = marminAeSettings.MarminAeEncryptionKeyIndex;
+            forClient.MarminAeEnvironment = marminAeSettings.MarminAeEnvironment;
+
+            forClient.MarminAeClientId = fields.MarminAeClientId;
+            forClient.MarminAeBusinessProfileId = fields.MarminAeBusinessProfileId;
+            forClient.MarminAeOrgId = fields.MarminAeOrgId;
+            forClient.MarminAeEndpointSchemeId = fields.MarminAeEndpointSchemeId;
+            forClient.MarminAeDefaultProfileExecutionId = fields.MarminAeDefaultProfileExecutionId;
+            forClient.MarminAeDefaultPaymentMeansCode = fields.MarminAeDefaultPaymentMeansCode;
+            forClient.MarminAeDefaultPaymentTermDays = fields.MarminAeDefaultPaymentTermDays;
 
             return (forClient, version);
         }

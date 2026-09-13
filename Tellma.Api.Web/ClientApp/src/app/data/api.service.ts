@@ -1865,6 +1865,24 @@ export class ApiService {
 
         return obs$;
       },
+
+      /**
+       * Stores the tenant's Marmin (UAE) API credentials.
+       * A body rather than query parameters: query strings end up in web server logs,
+       * reverse proxy logs and browser history, which is no place for an API credential.
+       */
+      saveMarminAeSecrets: (args: { ClientSecret?: string, WebhookSecret?: string }) => {
+        const url = appsettings.apiAddress + `api/general-settings/marmin-ae-secrets`;
+        const obs$ = this.http.put(url, args).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
     };
   }
 

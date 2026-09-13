@@ -65,6 +65,15 @@
 	[ZatcaEncryptionKeyIndex]				INT					NOT NULL DEFAULT 0,
 	[ZatcaEnvironment]						NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox', -- Sandbox, Simulation, Production
 
+	-- Marmin (UAE e-invoicing over the Peppol network).
+	-- Only the secrets live here; the non-secret configuration (client id, business profile id,
+	-- Peppol endpoint scheme, default profile execution id, ...) lives in [CustomFieldsJson],
+	-- which needs no schema change to extend. See GeneralSettings.Custom in C#.
+	[MarminAeEnvironment]					NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox', -- Sandbox, Production. DBA-set, like ZatcaEnvironment.
+	[MarminAeEncryptedClientSecret]			NVARCHAR(MAX),		-- AES-encrypted; the key is chosen by [MarminAeEncryptionKeyIndex]
+	[MarminAeEncryptedWebhookSecret]		NVARCHAR(MAX),		-- AES-encrypted. Semicolon-separated to allow "new;old" during a rotation
+	[MarminAeEncryptionKeyIndex]			INT					NOT NULL DEFAULT 0, -- Index into the MarminAe:EncryptionKeys app setting
+
 	-- Login Policies
 	[Enforce2faOnLocalAccounts]				BIT					NOT NULL DEFAULT 0,
 	[EnforceNoExternalAccounts]				BIT					NOT NULL DEFAULT 0,
