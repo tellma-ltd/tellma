@@ -120,6 +120,7 @@ BEGIN
 
 
 	IF @DefinitionId <> dal.fn_AgentDefinitionCode__Id(N'Employee')
+	AND @DefinitionId <> dal.fn_AgentDefinitionCode__Id(N'TradeReceivableAccount')
 	BEGIN
 		-- Name must be unique
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
