@@ -1052,6 +1052,7 @@
     <Build Include="dal\Stored Procedures\dal.Students_AcademicAndPerformance__Update.sql" />
     <Build Include="dal\Stored Procedures\dal.PPE_Custodies__Update.sql" />
     <Build Include="bll\Functions\bll.ft_Employees_Period_EventFromModel_OffPaysheet__Generate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Employees_PayGrade__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dbo\User Defined Types\Readme.txt" />
