@@ -45,11 +45,24 @@ PROGRAMMABLE = [
     "map/map.DocumentDefinitions.sql",
     "dal/Stored Procedures/dal.MarminAe__GetInvoices.sql",
     "dal/Stored Procedures/dal.MarminAe__MarkSubmitting.sql",
+    "dal/Stored Procedures/dal.MarminAe__MarkSent.sql",
+    "dal/Stored Procedures/dal.MarminAe__ReleaseUnsent.sql",
     "dal/Stored Procedures/dal.MarminAe__UpdateDocumentInfo.sql",
+    "dal/Stored Procedures/dal.MarminAe__ResetOnOpen.sql",
     "dal/Stored Procedures/dal.MarminAe__SaveSecrets.sql",
     "dal/Stored Procedures/dal.MarminAe__ApplyWebhook.sql",
     "bll/Stored Procedures/bll.Documents_Validate__Open.sql",
     "bll/Stored Procedures/bll.Documents_Validate__Close.sql",
+]
+
+# Table-level constraints added after the columns exist. (name, table, definition). Each is
+# guarded on the constraint's existence, so the script stays re-runnable, and each mirrors a
+# constraint declared inline in the canonical table file.
+CONSTRAINTS = [
+    # Mirrors dbo.Settings.sql. Without it a value such as ZATCA's 'Simulation' would turn the
+    # Marmin reopen guard on while the C# still routed to the sandbox host.
+    ("CK_Settings__MarminAeEnvironment", "dbo.Settings",
+     "CHECK ([MarminAeEnvironment] IN (N'Sandbox', N'Production'))"),
 ]
 
 # (table, column, the exact type/constraint clause to add)
@@ -175,6 +188,13 @@ GO
 GO
 """)
 
+    for name, table, definition in CONSTRAINTS:
+        schema, tbl = table.split('.')
+        w(f"""IF OBJECT_ID(N'[{schema}].[{name}]') IS NULL
+    ALTER TABLE [{schema}].[{tbl}] ADD CONSTRAINT [{name}] {definition};
+GO
+""")
+
     w("""IF INDEXPROPERTY(OBJECT_ID('dbo.Documents'), 'IX_Documents__MarminAeDocumentId', 'IndexID') IS NULL
     CREATE NONCLUSTERED INDEX [IX_Documents__MarminAeDocumentId]
       ON [dbo].[Documents]([MarminAeDocumentId]) WHERE [MarminAeDocumentId] IS NOT NULL;
@@ -205,12 +225,18 @@ GO
 PRINT '--- 4. Verification ---------------------------------------------------------';
 GO
 
--- Expected: 4 Settings columns, 6 Documents columns, 2 DocumentDefinitions columns,
--- 2 TypeColumns, 1 Index, and 9 Objects.
+-- Expected: 14 Columns (4 Settings, 6 Documents, 2 DocumentDefinitions, and the same 2 again on
+-- DocumentDefinitionsHistory, which SQL Server adds itself because DocumentDefinitions is a
+-- system-versioned temporal table), 1 Constraint, 2 TypeColumns, 1 Index, and 15 Objects
+-- (8 MarminAe procedures, 2 map functions, 5 changed procedures).
 SELECT 'Column' AS [Kind], OBJECT_NAME(c.[object_id]) AS [Parent], c.[name] AS [Name]
 FROM sys.columns c
 JOIN sys.tables t ON t.[object_id] = c.[object_id]   -- real tables only: sys.columns also
 WHERE c.[name] LIKE 'MarminAe%'                      -- carries table types and function results
+UNION ALL
+SELECT 'Constraint', OBJECT_NAME([parent_object_id]), [name]
+FROM sys.check_constraints
+WHERE [name] = 'CK_Settings__MarminAeEnvironment'
 UNION ALL
 SELECT 'TypeColumn', 'DocumentDefinitionList', c.[name]
 FROM sys.table_types tt
@@ -223,12 +249,13 @@ WHERE [name] = 'IX_Documents__MarminAeDocumentId'
 UNION ALL
 -- The parentheses matter: AND binds tighter than OR, so without them the type filter would
 -- apply only to the second half and the MarminAe procedures would be reported unfiltered.
--- map.Documents is an inline table-valued function ('IF'), not a view.
+-- map.Documents and map.DocumentDefinitions are inline table-valued functions ('IF'), not views.
 SELECT 'Object', SCHEMA_NAME([schema_id]), [name]
 FROM sys.objects
 WHERE ([name] LIKE 'MarminAe%'
-       OR [name] IN ('Documents', 'DocumentDefinitions__Save', 'DocumentDefinitions_Validate__Save',
-                     'Documents_Validate__Open', 'Documents_Validate__Close'))
+       OR [name] IN ('Documents', 'DocumentDefinitions', 'DocumentDefinitions__Save',
+                     'DocumentDefinitions_Validate__Save', 'Documents_Validate__Open',
+                     'Documents_Validate__Close'))
   AND [type] IN ('P', 'V', 'IF', 'TF')
 ORDER BY [Kind], [Parent], [Name];
 GO

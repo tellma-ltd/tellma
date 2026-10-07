@@ -44,10 +44,6 @@ export interface SettingsForClient {
     MarminAeClientId: string;
     MarminAeBusinessProfileId: string;
     MarminAeOrgId: string;
-    MarminAeEndpointSchemeId: string;
-    MarminAeDefaultProfileExecutionId: string;
-    MarminAeDefaultPaymentMeansCode: string;
-    MarminAeDefaultPaymentTermDays: number;
 
     // Banner
 

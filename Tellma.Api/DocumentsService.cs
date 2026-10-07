@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -18,6 +19,7 @@ using Tellma.Api.ImportExport;
 using Tellma.Api.Metadata;
 using Tellma.Api.Notifications;
 using Tellma.Api.MarminAe;
+using Tellma.Connector.MarminAe;
 using Tellma.Integration.Zatca;
 using Tellma.Model.Application;
 using Tellma.Model.Common;
@@ -835,141 +837,500 @@ namespace Tellma.Api
         #region Marmin (UAE)
 
         /// <summary>
-        /// Submits the documents just closed to the Marmin UAE e-invoicing API, and records what
-        /// came back.
+        /// Attempts for each small bookkeeping write made after the close has committed. Each one
+        /// is idempotent, so retrying it is safe; a deadlock, which SQL Server never retries for
+        /// us, is the case this is for.
+        /// </summary>
+        private const int MarminAeWriteAttempts = 3;
+
+        /// <summary>
+        /// Submits documents that have been claimed (MarminAeState = 0) to the Marmin UAE
+        /// e-invoicing API, and records what came back.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Called <em>after</em> the close transaction has committed, which is the one place this
-        /// deliberately departs from the ZATCA integration. ZATCA holds a transaction open across
-        /// the HTTP call and rolls back on failure, and carries a standing TODO about the window
-        /// where a crash after a successful call leaves the document reopenable and therefore
-        /// re-submittable. A duplicate ZATCA report is a compliance annoyance; a duplicate Peppol
-        /// transmission lands in a real counterparty's accounts payable, so it is worth the extra
-        /// step to make that impossible.
+        /// Called <em>after</em> the claim has committed, which is the one place this deliberately
+        /// departs from the ZATCA integration. ZATCA holds a transaction open across the HTTP call
+        /// and rolls back on failure, and carries a standing TODO about the window where a crash
+        /// after a successful call leaves the document reopenable and therefore re-submittable. A
+        /// duplicate ZATCA report is a compliance annoyance; a duplicate Peppol transmission lands
+        /// in a real counterparty's accounts payable.
         /// </para>
         /// <para>
-        /// The sequence is therefore: the close (with MarminAeState stamped to Submitting) commits
-        /// first, so the accounting is durable whatever the vendor does; then the HTTP call
-        /// happens outside any transaction; then the outcome is written in its own transaction.
-        /// A failure anywhere after the first step leaves the document at Submitting, which the
-        /// "Resubmit to Marmin" action recovers -- asking the vendor first whether the original
-        /// actually landed.
+        /// Each document then goes through three steps, each in its own transaction:
+        /// <list type="number">
+        /// <item>0 -> 2 (SentAwaitingOutcome), immediately before the HTTP call. From here on the
+        /// document is treated as possibly on the network: it cannot be reopened, and nothing
+        /// re-sends it without first asking the vendor whether it already has it.</item>
+        /// <item>The HTTP call, outside any transaction.</item>
+        /// <item>The outcome, recorded with retries.</item>
+        /// </list>
+        /// A failure at any step leaves the document in a state that says exactly what is known
+        /// -- 0 if nothing was sent, 2 if the outcome is unknown -- and "Refresh e-invoice status"
+        /// or "Resubmit to e-invoicing" settles it.
+        /// </para>
+        /// <para>
+        /// Nothing escapes this method. The close has already committed by the time it runs, so
+        /// an exception here would report a failure for a close that succeeded, and would abandon
+        /// the rest of the batch with the remaining documents claimed but never sent.
         /// </para>
         /// </remarks>
         private async Task SubmitToMarminAe(List<MarminAeInvoice> invoices, DocumentDefinitionForClient def)
         {
-            var settings = await _behavior.Settings();
+            SettingsForClient settings;
+            try
+            {
+                settings = await _behavior.Settings();
+            }
+            catch (Exception ex)
+            {
+                // Nothing has been sent, so every document is still accurately at 0.
+                foreach (var invoice in invoices.Where(e => e != null))
+                {
+                    await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                        $"Not submitted, because the tenant settings could not be loaded: {ex.Message}", TenantLogLevel.Error);
+                }
+
+                return;
+            }
 
             foreach (var invoice in invoices.Where(e => e != null))
             {
-                MarminAeSubmissionResult result;
                 try
                 {
-                    result = await _marminAeService.SubmitAsync(invoice, settings, cancellation: default);
+                    await SubmitOneToMarminAe(invoice, settings, def);
                 }
                 catch (Exception ex)
                 {
-                    // Mapping or configuration problems land here. The document stays at
-                    // Submitting, so nothing is lost and a resubmit can pick it up.
-                    await _behavior.LogMarminAeErrorOrWarning(
-                        DefinitionId, def.TitleSingular, invoice.Id, invoice.DocumentNumber,
-                        ex.Message, TenantLogLevel.Error);
-
-                    continue;
-                }
-
-                if (result.State is null)
-                {
-                    // Inconclusive: a timeout or a transport failure, so we do not know whether the
-                    // vendor received it. Recording SubmitFailed here would invite a resubmit that
-                    // duplicates a live invoice, so the document is left claimed instead.
-                    await _behavior.LogMarminAeErrorOrWarning(
-                        DefinitionId, def.TitleSingular, invoice.Id, invoice.DocumentNumber,
-                        result.ErrorMessage, TenantLogLevel.Error);
-
-                    continue;
-                }
-
-                // A separate transaction: the close has already committed, and this must not be
-                // able to unwind it. Same shape the notification callback handlers use.
-                using (var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew))
-                {
-                    await _behavior.Repository.MarminAe__UpdateDocumentInfo(
-                        id: invoice.Id,
-                        state: result.State.Value,
-                        documentId: result.DocumentId,
-                        documentNumber: result.DocumentNumber,
-                        result: result.ResultJson,
-                        lastEventAt: null);
-
-                    trx.Complete();
-                }
-
-                if (!result.IsSuccess)
-                {
-                    await _behavior.LogMarminAeErrorOrWarning(
-                        DefinitionId, def.TitleSingular, invoice.Id, invoice.DocumentNumber,
-                        result.ErrorMessage, TenantLogLevel.Error);
+                    // The last line of defence; every expected failure is handled inside.
+                    await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                        $"Unexpected error while submitting: {ex.Message}", TenantLogLevel.Error);
                 }
             }
         }
 
         /// <summary>
-        /// Re-reads the Peppol outcome for a document from the vendor and records it.
+        /// Takes one claimed document through mark-sent, send and record. See
+        /// <see cref="SubmitToMarminAe"/>.
+        /// </summary>
+        private async Task SubmitOneToMarminAe(MarminAeInvoice invoice, SettingsForClient settings, DocumentDefinitionForClient def)
+        {
+            // 1 - Map. This already ran as a dry run before the claim, so it can only fail here on
+            // a gap between the two. The document stays at 0, which is accurate: nothing was sent.
+            MarminAePreparedSubmission prepared;
+            try
+            {
+                prepared = MarminAeMapper.Prepare(invoice);
+            }
+            catch (ArgumentException ex)
+            {
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    $"Not submitted: {ex.Message}", TenantLogLevel.Error);
+                return;
+            }
+
+            // 2 - Mark it as sent, before sending it. If this cannot be recorded, nothing is sent.
+            bool sending;
+            try
+            {
+                sending = await MarminAeWrite(() => _behavior.Repository.MarminAe__MarkSent(invoice.Id));
+            }
+            catch (Exception ex)
+            {
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    $"Not submitted, because it could not be marked as sent: {ex.Message}", TenantLogLevel.Error);
+                return;
+            }
+
+            if (!sending)
+            {
+                // Reopened (Sandbox) or picked up by a concurrent resubmit since it was claimed.
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    "Not submitted, because the document changed after it was claimed for submission.", TenantLogLevel.Warning);
+                return;
+            }
+
+            // 3 - Send. Never throws for a vendor outcome.
+            var result = await _marminAeService.SubmitAsync(prepared, settings, cancellation: default);
+            if (result.State is null)
+            {
+                // Unknown: the request may have landed. The document stays at 2, which keeps it
+                // closed, and Refresh settles it by asking the vendor for this document's number.
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    $"The outcome of the submission is unknown ({result.ErrorMessage}). Use \"Refresh e-invoice status\" to settle it.",
+                    TenantLogLevel.Error);
+                return;
+            }
+
+            // 4 - Record the outcome. If this fails, the vendor's answer exists only in the log
+            // entry below until Refresh finds the document by its number and records it.
+            int rowsAffected;
+            try
+            {
+                rowsAffected = await MarminAeWrite(() => _behavior.Repository.MarminAe__UpdateDocumentInfo(
+                    id: invoice.Id,
+                    state: result.State.Value,
+                    documentId: result.DocumentId,
+                    documentNumber: result.DocumentNumber,
+                    result: result.ResultJson,
+                    lastEventAt: null));
+            }
+            catch (Exception ex)
+            {
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    $"The vendor answered {result.State} (vendor id {result.DocumentId ?? "none"}, number {result.DocumentNumber ?? invoice.DocumentNumber}), " +
+                    $"but recording that failed: {ex.Message}. Use \"Refresh e-invoice status\" to record it.",
+                    TenantLogLevel.Error);
+                return;
+            }
+
+            if (rowsAffected == 0)
+            {
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    $"The document was reopened while it was being submitted, so the vendor's answer ({result.State}, vendor id {result.DocumentId ?? "none"}) was not recorded on it.",
+                    TenantLogLevel.Warning);
+            }
+
+            if (!result.IsSuccess)
+            {
+                await LogMarminAe(def, invoice.Id, invoice.DocumentNumber,
+                    result.ErrorMessage ?? $"The vendor reported {result.State}.", TenantLogLevel.Error);
+            }
+        }
+
+        /// <summary>
+        /// Re-reads a document's Peppol outcome from the vendor and records it.
         /// </summary>
         /// <remarks>
-        /// Until the webhook has been tested against the vendor this is how a document ever leaves
-        /// the Submitted state. It applies the result through the very same stored procedure and
-        /// the very same status mapping the webhook handler uses, so exercising this path
+        /// <para>
+        /// With a vendor id, this reads the status and applies it through the very same stored
+        /// procedure and status mapping the webhook handler uses, so exercising this path
         /// exercises most of the webhook's logic too.
+        /// </para>
+        /// <para>
+        /// Without one, it settles a document whose outcome was lost. For 2 (SentAwaitingOutcome)
+        /// or -10 (SubmitFailed) it asks the vendor whether it holds a document with this
+        /// document's number: if so, that is recorded; if not, a document at 2 never landed and
+        /// drops back to 0, from where it can be resubmitted.
+        /// </para>
         /// </remarks>
         /// <returns>The state now recorded on the document.</returns>
-        public async Task<MarminAeState> RefreshMarminAeStatus(int id, CancellationToken cancellation)
+        public async Task<MarminAeState?> RefreshMarminAeStatus(int id, CancellationToken cancellation)
         {
             await Initialize(cancellation);
 
-            var settings = await _behavior.Settings(cancellation);
             var def = await Definition(cancellation);
-
             if (string.IsNullOrWhiteSpace(def.MarminAeDocumentType))
             {
                 throw new ServiceException(_localizer["Error_MarminAeNotConfigured"]);
             }
 
-            // GetById is what enforces read permissions on this document.
-            var doc = (await GetById(id, new GetByIdArguments
-            {
-                Select = $"{nameof(Document.MarminAeDocumentId)},{nameof(Document.MarminAeState)}"
-            },
-            cancellation)).Entity;
+            var settings = await _behavior.Settings(cancellation);
+            ValidateMarminAeConfiguration(settings);
 
-            if (string.IsNullOrWhiteSpace(doc?.MarminAeDocumentId))
+            // GetById is what enforces read permissions on this document.
+            var doc = await GetMarminAeDocument(id, cancellation);
+            var state = (MarminAeState?)doc.MarminAeState;
+
+            if (!string.IsNullOrWhiteSpace(doc.MarminAeDocumentId))
             {
-                // Nothing to ask about: the vendor never acknowledged this document.
-                return doc?.MarminAeState is int state ? (MarminAeState)state : MarminAeState.Submitting;
+                var status = await CallMarminAe(() => _marminAeService.GetStatusAsync(
+                    doc.MarminAeDocumentId, def.MarminAeDocumentType, settings, cancellation));
+
+                // Nulls for the two ordering columns, because a poll is not a delivery: it has just
+                // read the current state from the vendor, so it is neither stale nor a redelivery,
+                // and it has no vendor-side event id or instant of its own. Passing the app
+                // server's UtcNow instead would write our clock into a column compared against the
+                // vendor's, and would silently suppress every later webhook whose vendor-side
+                // instant preceded this poll.
+                await MarminAeWrite(() => _behavior.Repository.MarminAe__ApplyWebhook(
+                    marminAeDocumentId: doc.MarminAeDocumentId,
+                    state: status.State,
+                    result: status.ResultJson,
+                    webhookEventId: null,
+                    eventTimestamp: null,
+                    cancellation: cancellation));
+            }
+            else if (state is MarminAeState.SentAwaitingOutcome or MarminAeState.SubmitFailed)
+            {
+                var existingId = await CallMarminAe(() => _marminAeService.FindExistingDocumentIdAsync(
+                    doc.Code, def.MarminAeDocumentType, settings, cancellation));
+
+                if (existingId != null)
+                {
+                    await RecordExistingMarminAeDocument(id, existingId, doc.Code, def, settings, cancellation);
+                }
+                else if (state == MarminAeState.SentAwaitingOutcome)
+                {
+                    await MarminAeWrite(() => _behavior.Repository.MarminAe__ReleaseUnsent(id));
+                }
             }
 
-            var status = await _marminAeService.GetStatusAsync(
-                doc.MarminAeDocumentId, def.MarminAeDocumentType, settings, cancellation);
+            // Read back what the row now says, rather than reporting what was asked for: the
+            // stored procedures can decline an update (a stale event, a document reopened meanwhile).
+            return (MarminAeState?)(await GetMarminAeDocument(id, cancellation)).MarminAeState;
+        }
 
-            // Nulls for the two ordering columns, because a poll is not a delivery: it has just
-            // read the current state from the vendor, so it is neither stale nor a redelivery,
-            // and it has no vendor-side event id or instant of its own. Passing the app server's
-            // UtcNow instead would write our clock into a column compared against the vendor's,
-            // and would silently suppress every later webhook whose vendor-side instant preceded
-            // this poll. The procedure therefore applies this unconditionally and leaves
-            // MarminAeLastEventId/At as the last real event left them.
-            await _behavior.Repository.MarminAe__ApplyWebhook(
-                marminAeDocumentId: doc.MarminAeDocumentId,
-                state: status.State,
-                result: status.ResultJson,
-                webhookEventId: null,
-                eventTimestamp: null,
-                cancellation: cancellation);
+        /// <summary>
+        /// Sends a closed document to the vendor again, after a submission that was refused, that
+        /// failed Peppol validation, or whose outcome was lost.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Never re-sends blind. If the vendor already holds this document, which is exactly what
+        /// a lost outcome leaves uncertain, it is recorded rather than sent again:
+        /// <list type="bullet">
+        /// <item>With a vendor id, the vendor's status decides. It accepts a resubmission (a PUT
+        /// to the same id) only while the document is VALIDATION_FAILED; anything else is recorded
+        /// as it stands.</item>
+        /// <item>Without one, the vendor is asked for a document with this document's number. If
+        /// it has one, that is recorded; otherwise a new document is sent.</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// A send goes through exactly the claim and submission pipeline a close does, so it is
+        /// subject to the same dry run and the same three-step bookkeeping.
+        /// </para>
+        /// </remarks>
+        /// <returns>The state now recorded on the document.</returns>
+        public async Task<MarminAeState?> ResubmitMarminAe(int id, CancellationToken cancellation)
+        {
+            await Initialize(cancellation);
+
+            // The same permission as closing the document, since this is the half of a close that
+            // did not complete.
+            var actionFilter = await UserPermissionsFilter("State", cancellation);
+            await CheckActionPermissionsBefore(actionFilter, [id]);
+
+            var def = await Definition(cancellation);
+            if (string.IsNullOrWhiteSpace(def.MarminAeDocumentType))
+            {
+                throw new ServiceException(_localizer["Error_MarminAeNotConfigured"]);
+            }
+
+            var settings = await _behavior.Settings(cancellation);
+            ValidateMarminAeConfiguration(settings);
+
+            var doc = await GetMarminAeDocument(id, cancellation);
+            if (doc.State != 1)
+            {
+                throw new ServiceException(_localizer["Error_DocumentIsNotInState0", _localizer["Document_State_1"]]);
+            }
+
+            var state = (MarminAeState?)doc.MarminAeState;
+            switch (state)
+            {
+                case MarminAeState.PeppolRejected:
+                    throw new ServiceException(_localizer["Error_MarminAeRejectedNeedsCreditNote"]);
+
+                case MarminAeState.Submitting:
+                case MarminAeState.SentAwaitingOutcome:
+                case MarminAeState.SubmitFailed:
+                case MarminAeState.PeppolValidationFailed:
+                    break;
+
+                default: // Never submitted, or on the network (Submitted, Delivered)
+                    throw new ServiceException(_localizer["Error_MarminAeCannotResubmit"]);
+            }
+
+            if (!string.IsNullOrWhiteSpace(doc.MarminAeDocumentId))
+            {
+                var status = await CallMarminAe(() => _marminAeService.GetStatusAsync(
+                    doc.MarminAeDocumentId, def.MarminAeDocumentType, settings, cancellation));
+
+                if (status.State != MarminAeState.PeppolValidationFailed)
+                {
+                    // The vendor will not accept a resubmission in this status. Record it as it
+                    // stands instead, which is also the most useful thing to show the user.
+                    await MarminAeWrite(() => _behavior.Repository.MarminAe__UpdateDocumentInfo(
+                        id, status.State, doc.MarminAeDocumentId, null, status.ResultJson, null));
+
+                    return status.State;
+                }
+            }
+            else if (state != MarminAeState.Submitting) // 0 is certainly unsent; the rest may not be
+            {
+                var existingId = await CallMarminAe(() => _marminAeService.FindExistingDocumentIdAsync(
+                    doc.Code, def.MarminAeDocumentType, settings, cancellation));
+
+                if (existingId != null)
+                {
+                    // It did land. Record it; if the vendor reports VALIDATION_FAILED, the next
+                    // resubmit will find the id and send a PUT.
+                    return await RecordExistingMarminAeDocument(id, existingId, doc.Code, def, settings, cancellation);
+                }
+            }
+
+            // Safe to send. dal.MarminAe__GetInvoices only picks up submittable states, so a
+            // document left at 2 goes back to 0 first, now that the vendor has settled it.
+            if (state == MarminAeState.SentAwaitingOutcome)
+            {
+                await MarminAeWrite(() => _behavior.Repository.MarminAe__ReleaseUnsent(id));
+            }
+
+            // Claim exactly as a close does, in a transaction disposed before the vendor call (see
+            // UpdateDocumentState for why the disposal must precede it).
+            List<MarminAeInvoice> invoices;
+            using (var trx = TransactionFactory.ReadCommitted())
+            {
+                invoices = await ClaimForMarminAe([id]);
+                trx.Complete();
+            }
+
+            if (invoices.Count == 0)
+            {
+                // The document changed state between the checks above and the claim.
+                throw new ServiceException(_localizer["Error_MarminAeCannotResubmit"]);
+            }
+
+            await SubmitToMarminAe(invoices, def);
+
+            return (MarminAeState?)(await GetMarminAeDocument(id, cancellation)).MarminAeState;
+        }
+
+        /// <summary>
+        /// Reads the documents to submit, dry-runs their mapping, and claims them
+        /// (MarminAeState = 0). Must run inside the caller's transaction.
+        /// </summary>
+        /// <remarks>
+        /// The dry run is what turns a mapping failure into a refused close rather than a
+        /// committed one: the mapper's <see cref="ArgumentException"/> becomes a
+        /// <see cref="ServiceException"/> here, which rolls the caller's transaction back.
+        /// </remarks>
+        private async Task<List<MarminAeInvoice>> ClaimForMarminAe(List<int> ids)
+        {
+            // A repeated Id in the request yields one invoice per occurrence, since the Ids TVP is
+            // keyed on [Index] and nothing upstream de-duplicates. Claiming cannot catch that on
+            // its own -- the second MarkSubmitting is simply a no-op -- so without this the same
+            // document would be transmitted to Peppol twice.
+            var invoices = (await _behavior.Repository.MarminAe__GetInvoices(ids))
+                .Where(e => e != null)
+                .DistinctBy(e => e.Id)
+                .ToList();
+
+            foreach (var invoice in invoices)
+            {
+                try
+                {
+                    MarminAeMapper.Prepare(invoice);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ServiceException(_localizer["Error_MarminAeCannotBeSubmitted", invoice.DocumentNumber, ex.Message]);
+                }
+            }
+
+            foreach (var invoice in invoices)
+            {
+                await _behavior.Repository.MarminAe__MarkSubmitting(invoice.Id);
+            }
+
+            return invoices;
+        }
+
+        /// <summary>
+        /// Records a document the vendor turned out to hold already, with its current status.
+        /// </summary>
+        private async Task<MarminAeState> RecordExistingMarminAeDocument(
+            int id, string existingId, string documentNumber, DocumentDefinitionForClient def,
+            SettingsForClient settings, CancellationToken cancellation)
+        {
+            var status = await CallMarminAe(() => _marminAeService.GetStatusAsync(
+                existingId, def.MarminAeDocumentType, settings, cancellation));
+
+            await MarminAeWrite(() => _behavior.Repository.MarminAe__UpdateDocumentInfo(
+                id, status.State, existingId, documentNumber, status.ResultJson, null));
 
             return status.State;
         }
+
+        /// <summary>
+        /// Proves the tenant's Marmin configuration works, before anything is claimed.
+        /// </summary>
+        private void ValidateMarminAeConfiguration(SettingsForClient settings)
+        {
+            try
+            {
+                _marminAeService.Validate(settings);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new ServiceException($"{_localizer["Error_MarminAeNotConfigured"]} {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Loads the fields the Refresh and Resubmit actions need. GetById also enforces read
+        /// permissions on the document.
+        /// </summary>
+        private async Task<Document> GetMarminAeDocument(int id, CancellationToken cancellation)
+        {
+            var result = await GetById(id, new GetByIdArguments
+            {
+                Select = string.Join(",",
+                    nameof(Document.Code),
+                    nameof(Document.State),
+                    nameof(Document.MarminAeState),
+                    nameof(Document.MarminAeDocumentId))
+            },
+            cancellation);
+
+            return result.Entity;
+        }
+
+        /// <summary>
+        /// Calls the vendor on behalf of a user action, turning a vendor or transport failure into
+        /// a message the user can read rather than an unhandled error.
+        /// </summary>
+        private static async Task<T> CallMarminAe<T>(Func<Task<T>> call)
+        {
+            try
+            {
+                return await call();
+            }
+            catch (MarminAeRequestException ex)
+            {
+                throw new ServiceException($"The UAE e-invoicing service refused the request: {ex.Detail?.Describe() ?? ex.Message}");
+            }
+            catch (Exception ex) when (ex is TimeoutException or HttpRequestException)
+            {
+                throw new ServiceException($"The UAE e-invoicing service could not be reached: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Raised by the duplicate guard when the vendor's answer is ambiguous.
+                throw new ServiceException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Runs one small, idempotent bookkeeping write in its own transaction, retrying it with a
+        /// fresh transaction each time.
+        /// </summary>
+        private static async Task<T> MarminAeWrite<T>(Func<Task<T>> write)
+        {
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    using var trx = TransactionFactory.Serializable(TransactionScopeOption.RequiresNew);
+                    var result = await write();
+                    trx.Complete();
+                    return result;
+                }
+                catch (Exception) when (attempt < MarminAeWriteAttempts)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt));
+                }
+            }
+        }
+
+        /// <inheritdoc cref="MarminAeWrite{T}(Func{Task{T}})"/>
+        private static Task MarminAeWrite(Func<Task> write) =>
+            MarminAeWrite(async () => { await write(); return true; });
+
+        private Task LogMarminAe(DocumentDefinitionForClient def, int documentId, string documentNumber, string message, TenantLogLevel level) =>
+            _behavior.LogMarminAeErrorOrWarning(DefinitionId, def.TitleSingular, documentId, documentNumber, message, level);
 
         #endregion
 
@@ -1010,6 +1371,15 @@ namespace Tellma.Api
 
             // Validation
             AddErrorsAndThrowIfInvalid(output.Errors);
+
+            // Marmin (UAE): Sandbox lets a submitted document be reopened, so that the integration
+            // can be exercised repeatedly. Forget its Marmin state when that happens, or a stale
+            // vendor id and verdict would outlive the content they described. A no-op in
+            // Production, where bll.Documents_Validate__Open refuses to reopen a submitted document.
+            if (transition == nameof(Open) && !string.IsNullOrWhiteSpace(def.MarminAeDocumentType))
+            {
+                await _behavior.Repository.MarminAe__ResetOnOpen(ids);
+            }
 
             var result = args.ReturnEntities ?? false ?
                 await GetByIds(ids, args, action, cancellation: default) :
@@ -1103,50 +1473,17 @@ namespace Tellma.Api
                 }
             }
 
-            // Marmin (UAE) integration: read the invoices and CLAIM them, both still inside the
-            // close transaction. Claiming (MarminAeState = 0) is what makes a second close unable
-            // to pick the same document up, because dal.MarminAe__GetInvoices only ever returns
-            // documents whose MarminAeState is still NULL. The vendor is not called from here --
-            // see SubmitToMarminAe for why that waits until after the commit.
+            // Marmin (UAE) integration: read the invoices, dry-run their mapping and CLAIM them
+            // (MarminAeState = 0), all still inside the close transaction, so that anything which
+            // would stop a document being sent refuses the close instead of surfacing after it has
+            // committed. The vendor is not called from here -- see SubmitToMarminAe for why that
+            // waits until after the commit.
             if (transition == nameof(Close) && !string.IsNullOrWhiteSpace(def.MarminAeDocumentType))
             {
                 var settings = await _behavior.Settings();
+                ValidateMarminAeConfiguration(settings);
 
-                // IsConfigured covers the credentials. The two after it are just as hard-required
-                // by MarminAeMapper, but neither has a NOT NULL, a CHECK, or a save-time
-                // validation behind it. They are checked HERE rather than left to the mapper
-                // because of WHERE the mapper runs: its ArgumentException fires from
-                // SubmitToMarminAe, after the close has committed and MarkSubmitting has stamped
-                // MarminAeState = 0, which puts the document permanently beyond
-                // MarminAe__GetInvoices' "IS NULL" filter. Throwing at this point instead rolls
-                // the close back untouched, so the settings can be fixed and the close retried.
-                if (!_marminAeService.IsConfigured(settings)
-                    || string.IsNullOrWhiteSpace(def.MarminAeTypeCode)
-                    || string.IsNullOrWhiteSpace(settings.MarminAeEndpointSchemeId))
-                {
-                    throw new ServiceException(_localizer["Error_MarminAeNotConfigured"]);
-                }
-
-                marminAeInvoices = await _behavior.Repository.MarminAe__GetInvoices(
-                    ids,
-                    settings.MarminAeDefaultProfileExecutionId,
-                    settings.MarminAeEndpointSchemeId,
-                    settings.MarminAeDefaultPaymentMeansCode,
-                    settings.MarminAeDefaultPaymentTermDays);
-
-                // A repeated Id in the request yields one invoice per occurrence, since the Ids
-                // TVP is keyed on [Index] and nothing upstream de-duplicates. Claiming cannot
-                // catch that on its own -- the second MarkSubmitting is simply a no-op -- so
-                // without this the same document would be transmitted to Peppol twice.
-                marminAeInvoices = marminAeInvoices
-                    .Where(e => e != null)
-                    .DistinctBy(e => e.Id)
-                    .ToList();
-
-                foreach (var invoice in marminAeInvoices)
-                {
-                    await _behavior.Repository.MarminAe__MarkSubmitting(invoice.Id);
-                }
+                marminAeInvoices = await ClaimForMarminAe(ids);
             }
 
             // Commit and return
@@ -1167,6 +1504,14 @@ namespace Tellma.Api
             if (marminAeInvoices != null && marminAeInvoices.Any(e => e != null))
             {
                 await SubmitToMarminAe(marminAeInvoices, def);
+
+                // The entities above were read before the claim and the submission, so they would
+                // show the e-invoice state the documents had before this close. Read them again so
+                // that what the user sees is what actually happened.
+                if (args.ReturnEntities ?? false)
+                {
+                    result = await GetByIds(ids, args, action, cancellation: default);
+                }
             }
 
             return result;

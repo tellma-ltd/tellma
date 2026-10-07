@@ -1156,6 +1156,22 @@ export class ApiService {
       open: this.updateStateFactory(definitionId, 'open', cancellationToken$),
       cancel: this.updateStateFactory(definitionId, 'cancel', cancellationToken$),
       uncancel: this.updateStateFactory(definitionId, 'uncancel', cancellationToken$),
+
+      /**
+       * Marmin (UAE e-invoicing): re-reads the document's status from the vendor and records it.
+       * Also settles a document whose submission outcome was lost. Returns the state now recorded.
+       */
+      refreshMarminAeStatus: (docId: number | string) =>
+        this.marminAeActionFactory(definitionId, docId, 'refresh-marmin-ae-status', cancellationToken$),
+
+      /**
+       * Marmin (UAE e-invoicing): sends a closed document again after a refused, failed or lost
+       * submission. The server never re-sends blind: if the vendor already holds the document it
+       * is recorded instead. Returns the state now recorded.
+       */
+      resubmitMarminAe: (docId: number | string) =>
+        this.marminAeActionFactory(definitionId, docId, 'resubmit-marmin-ae', cancellationToken$),
+
       getAttachment: (docId: string | number, attachmentId: string | number) => {
         const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/attachments/${attachmentId}`;
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
@@ -2577,6 +2593,26 @@ export class ApiService {
 
       return obs$;
     };
+  }
+
+  /**
+   * A Marmin (UAE e-invoicing) action on one document: a PUT with no body that returns the
+   * e-invoice state now recorded on it, as the name of the server's MarminAeState value.
+   */
+  private marminAeActionFactory(definitionId: number, docId: number | string, action: string, cancellationToken$: Observable<void>) {
+    const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/${action}`;
+
+    this.showRotator = true;
+    return this.http.put<string>(url, null).pipe(
+      tap(() => this.showRotator = false),
+      catchError(error => {
+        this.showRotator = false;
+        const friendlyError = friendlify(error, this.trx);
+        return throwError(friendlyError);
+      }),
+      takeUntil(cancellationToken$),
+      finalize(() => this.showRotator = false)
+    );
   }
 
   private updateDefinitionStateFactory<TDefinition>(endpoint: string, cancellationToken$: Observable<void>) {

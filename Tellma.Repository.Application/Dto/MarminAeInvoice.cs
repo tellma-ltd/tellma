@@ -62,14 +62,27 @@ namespace Tellma.Repository.Application
         /// <summary>Vendor-required. Validated at close, because it is often blank in Tellma.</summary>
         public string CustomerEmail { get; set; }
 
-        /// <summary>The Peppol routing address: the customer's tax registration number.</summary>
+        /// <summary>
+        /// The Peppol routing address. The customer's 10-digit TIN when the customer is registered
+        /// on Peppol (Agents.Lookup4 = YesNo/Y); otherwise the FTA placeholder 9900000098 for a
+        /// UAE customer or 9900000099 for one outside the UAE.
+        /// </summary>
         public string CustomerEndpointId { get; set; }
 
-        /// <summary>Tenant-wide, from General Settings.</summary>
+        /// <summary>Always 0235, the UAE Peppol participant scheme.</summary>
         public string CustomerEndpointSchemeId { get; set; }
 
-        /// <summary>Only populated for a UAE customer; the vendor rejects it on a foreign party.</summary>
+        /// <summary>
+        /// The 10-digit TIN: the stored number itself, or the first ten digits of a stored 15-digit
+        /// TRN. Only populated for a UAE customer; the vendor rejects it on a foreign party.
+        /// </summary>
         public string CustomerTin { get; set; }
+
+        /// <summary>
+        /// The 15-digit VAT registration number (TRN), sent as <c>party_tax_scheme.company_id</c>.
+        /// Only populated for a UAE customer whose stored number is a full TRN.
+        /// </summary>
+        public string CustomerTrn { get; set; }
 
         public string CustomerStreetName { get; set; }
         public string CustomerAdditionalStreetName { get; set; }
@@ -95,6 +108,13 @@ namespace Tellma.Repository.Application
 
         /// <summary>Credit notes only: the issue date of the invoice being adjusted.</summary>
         public DateTime? BillingReferenceIssueDate { get; set; }
+
+        /// <summary>
+        /// The vendor's id when it already holds this document, which happens only once a
+        /// submission has been accepted. Its presence makes the submission a PUT resubmission of
+        /// that document rather than a POST of a new one.
+        /// </summary>
+        public string MarminAeDocumentId { get; set; }
 
         /// <summary>The invoice lines, in document order.</summary>
         public List<MarminAeInvoiceLine> Lines { get; set; } = new();
@@ -137,6 +157,7 @@ namespace Tellma.Repository.Application
 
         public string SellerItemIdentification { get; set; }
 
-        public string StandardItemIdentification { get; set; }
+        // There is deliberately no StandardItemIdentification. Resources.Identifier is free text
+        // with no scheme, and PINT-AE IBR-064 rejects an identifier sent without one.
     }
 }

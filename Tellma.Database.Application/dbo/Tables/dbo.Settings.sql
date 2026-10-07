@@ -69,7 +69,12 @@
 	-- Only the secrets live here; the non-secret configuration (client id, business profile id,
 	-- Peppol endpoint scheme, default profile execution id, ...) lives in [CustomFieldsJson],
 	-- which needs no schema change to extend. See GeneralSettings.Custom in C#.
-	[MarminAeEnvironment]					NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox', -- Sandbox, Production. DBA-set, like ZatcaEnvironment.
+	-- Sandbox or Production. DBA-set, like ZatcaEnvironment. The CHECK matters because the SQL
+	-- guards test this column for equality with one value and the C# picks the API host from it:
+	-- a third value such as ZATCA's 'Simulation' would turn the reopen guard on while still
+	-- routing to the sandbox host, so it is refused here rather than interpreted.
+	[MarminAeEnvironment]					NVARCHAR(10)		NOT NULL DEFAULT N'Sandbox'
+		CONSTRAINT [CK_Settings__MarminAeEnvironment] CHECK ([MarminAeEnvironment] IN (N'Sandbox', N'Production')),
 	[MarminAeEncryptedClientSecret]			NVARCHAR(MAX),		-- AES-encrypted; the key is chosen by [MarminAeEncryptionKeyIndex]
 	[MarminAeEncryptedWebhookSecret]		NVARCHAR(MAX),		-- AES-encrypted. Semicolon-separated to allow "new;old" during a rotation
 	[MarminAeEncryptionKeyIndex]			INT					NOT NULL DEFAULT 0, -- Index into the MarminAe:EncryptionKeys app setting

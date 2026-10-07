@@ -140,9 +140,5 @@ namespace Tellma.Api.Dto
         public string MarminAeClientId { get; set; }
         public string MarminAeBusinessProfileId { get; set; }
         public string MarminAeOrgId { get; set; }
-        public string MarminAeEndpointSchemeId { get; set; }
-        public string MarminAeDefaultProfileExecutionId { get; set; }
-        public string MarminAeDefaultPaymentMeansCode { get; set; }
-        public int MarminAeDefaultPaymentTermDays { get; set; }
     }
 }

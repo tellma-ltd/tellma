@@ -4423,6 +4423,78 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
+  ////////////// Marmin (UAE e-invoicing)
+
+  /** True when documents of this definition are submitted to Marmin on close. */
+  public get isMarminAe(): boolean {
+    const def = this.definition;
+    return !!def && !!def.MarminAeDocumentType;
+  }
+
+  /** The e-invoice state is shown on every saved document of a Marmin definition. */
+  public showMarminAeState(doc: Document): boolean {
+    return this.isMarminAe && !!doc && !!doc.Id;
+  }
+
+  public marminAeStateDisplay(state: number): string {
+    if (state === null || state === undefined) {
+      return '-';
+    }
+
+    const desc = metadata_Document(this.workspace, this.translate, null).properties.MarminAeState as ChoicePropDescriptor;
+    return desc.format(state);
+  }
+
+  public marminAeStateColor(state: number): string {
+    if (state === null || state === undefined) {
+      return null;
+    }
+
+    const desc = metadata_Document(this.workspace, this.translate, null).properties.MarminAeState as ChoicePropDescriptor;
+    return desc.color(state);
+  }
+
+  /**
+   * Refresh is offered on a closed Marmin document, and on a reopened one that still carries an
+   * e-invoice state. It never changes the document, only what is recorded about it.
+   */
+  public showRefreshMarminAeStatus(doc: Document): boolean {
+    return this.isMarminAe && !!doc && !!doc.Id &&
+      (doc.State === 1 || (doc.MarminAeState !== null && doc.MarminAeState !== undefined));
+  }
+
+  /**
+   * Resubmit is offered on a closed Marmin document whose submission did not complete:
+   * 0 claimed but never sent, 2 outcome unknown, -10 refused by the vendor, -20 failed Peppol
+   * validation. Not on -30 (rejected), whose remedy is a credit note, nor on anything already
+   * on the network. The server enforces the same rule.
+   */
+  public showResubmitMarminAe(doc: Document): boolean {
+    return this.isMarminAe && !!doc && !!doc.Id && doc.State === 1 &&
+      [0, 2, -10, -20].includes(doc.MarminAeState);
+  }
+
+  public onRefreshMarminAeStatus(doc: Document): void {
+    this.onMarminAeAction(doc, this.documentsApi.refreshMarminAeStatus);
+  }
+
+  public onResubmitMarminAe(doc: Document): void {
+    this.onMarminAeAction(doc, this.documentsApi.resubmitMarminAe);
+  }
+
+  private onMarminAeAction(doc: Document, fn: (docId: number | string) => Observable<string>): void {
+    if (!this.details || this.details.state.detailsStatus !== DetailsStatus.loaded) {
+      return; // Don't do anything unless the doc is loaded
+    }
+
+    // Both actions change what is recorded on the server, so reload the document afterwards
+    // rather than patching the cached copy: what the user then sees is what the server holds.
+    fn(doc.Id).subscribe({
+      next: () => this.details.onRefresh(),
+      error: this.details.handleActionError
+    });
+  }
+
   public entriesCount(doc: DocumentForSave) {
     return this.smartEntries(doc).length + this.manualEntries(doc).length;
   }
@@ -5406,6 +5478,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       let result = this.selectBase;
       for (const s of Object.keys(tracker)) {
         result += ',' + s;
+      }
+
+      // Marmin (UAE e-invoicing): the server's $Details shorthand leaves the e-invoice columns
+      // out, so ask for the state explicitly on the definitions whose screen shows it.
+      if (!!def.MarminAeDocumentType) {
+        result += ',MarminAeState';
       }
 
       this.selectResult = result;

@@ -17,18 +17,26 @@ which was copied in from `tellma-platform` and is kept diffable against its upst
 | Vendor client (no Tellma dependencies) | `Tellma.Integration.MarminAe/` |
 | Service, mapper, options, webhook handler | `Tellma.Api/MarminAe/` |
 | Webhook endpoint (middleware) | `Tellma.Api.Web/Services/MarminAeCallbackExtensions.cs` |
-| Submission trigger | `Tellma.Api/DocumentsService.cs` → `UpdateDocumentState` |
+| Submission trigger, Refresh, Resubmit | `Tellma.Api/DocumentsService.cs` |
 | Read path | `dal.MarminAe__GetInvoices` |
-| Writes | `dal.MarminAe__MarkSubmitting`, `dal.MarminAe__UpdateDocumentInfo`, `dal.MarminAe__ApplyWebhook`, `dal.MarminAe__SaveSecrets` |
+| Writes | `dal.MarminAe__MarkSubmitting`, `dal.MarminAe__MarkSent`, `dal.MarminAe__ReleaseUnsent`, `dal.MarminAe__UpdateDocumentInfo`, `dal.MarminAe__ApplyWebhook`, `dal.MarminAe__ResetOnOpen`, `dal.MarminAe__SaveSecrets` |
 | Guards | `bll.Documents_Validate__Close`, `bll.Documents_Validate__Open`, `bll.DocumentDefinitions_Validate__Save` |
 | Migration | `tools/Migrations/2026-09-MarminAe.sql` (generated) |
 
 ### What happens on close
 
-1. **Inside the close transaction** — the document closes, `dal.MarminAe__GetInvoices` maps it,
-   and `dal.MarminAe__MarkSubmitting` stamps `MarminAeState = 0`. The transaction commits.
-2. **Outside any transaction** — the vendor call.
-3. **In its own transaction** — the outcome is written.
+1. **Inside the close transaction** — the document closes, `dal.MarminAe__GetInvoices` reads it,
+   the mapper builds the request as a dry run (anything it would refuse fails the close, so nothing
+   is half-claimed), and `dal.MarminAe__MarkSubmitting` stamps `MarminAeState = 0`. The
+   transaction commits.
+2. **In its own transaction** — `dal.MarminAe__MarkSent` moves the document from `0` to `2`. From
+   here on, Tellma no longer knows for certain that the vendor does not hold it.
+3. **Outside any transaction** — the vendor call.
+4. **In its own transaction** — the outcome is written by `dal.MarminAe__UpdateDocumentInfo`.
+
+Steps 2 and 4 are retried (three attempts, short back-off) and every failure is logged to the
+application log as well as the tenant's error log. A failure in one document never stops the
+others in the same close, and never fails the close itself — the accounting is already committed.
 
 This differs from ZATCA deliberately. ZATCA holds a transaction open across the HTTP call and
 rolls back on failure, and carries a standing TODO about the window where a crash *after* a
@@ -37,23 +45,49 @@ report is a compliance annoyance; a duplicate Peppol transmission lands in a rea
 accounts payable. Splitting the work means the accounting is durable before anything is sent, and
 a document can never be picked up for submission twice.
 
-A failure in step 2 or 3 leaves the document at `Submitting`. **Refresh e-invoice status**
-recovers it, and asks the vendor whether the original landed before anything is re-sent.
-
 ### Document states
 
-`MarminAeState` on `dbo.Documents`:
+`MarminAeState` on `dbo.Documents` — shown on the document screen as **E-Invoice State**:
 
-| Value | Meaning |
-|---|---|
-| `0` Submitting | Claimed, not yet acknowledged. Still reopenable. |
-| `1` Submitted | The vendor accepted it. Peppol validation is in progress. |
-| `10` Delivered | Peppol confirmed delivery. |
-| `-10` SubmitFailed | The vendor refused it; it never reached the network. |
-| `-20` PeppolRejected | Accepted, then rejected by Peppol validation or delivery. |
+| Value | Meaning | Reopenable? | What to do |
+|---|---|---|---|
+| *(empty)* | Not a Marmin document, or closed before the definition became Marmin-typed | yes | — |
+| `0` Submitting | Claimed, certainly not sent | yes | **Resubmit** |
+| `2` Awaiting Outcome | Sent, but the vendor's answer never arrived (timeout, crash) | yes | **Refresh** (asks the vendor whether it landed) or **Resubmit** (which asks first) |
+| `1` Submitted | The vendor accepted it; Peppol validation is in progress | **no** | **Refresh** until it settles |
+| `10` Delivered | Peppol confirmed delivery | **no** | — |
+| `-10` Submit Failed | The vendor refused it; it never reached the network | yes | fix the data, then **Resubmit** (or reopen, fix, close) |
+| `-20` Validation Failed | Accepted, then failed Peppol validation (`VALIDATION_FAILED`) | yes | fix the data, then **Resubmit** — sent as a `PUT` to the same vendor document |
+| `-30` Rejected | Peppol rejected it (`REJECTED`) — terminal at the vendor | **no** | issue a **credit note** against it |
 
-Reopening is blocked from `1` upward (`bll.Documents_Validate__Open`). That single guard also
-covers delete and cancel, which already require the document to be open first.
+Reopening is blocked at `1`, `10` and `-30` (`bll.Documents_Validate__Open`). That single guard also
+covers delete and cancel, which already require the document to be open first. A credit note may
+reference an original that is `1`, `10`, `-30`, or empty (a pre-Marmin invoice).
+
+**Sandbox tenants are exempt** from the reopen guard so test documents can be reworked, and
+reopening one clears all its Marmin columns (`dal.MarminAe__ResetOnOpen`) so the next close
+submits it afresh. The vendor refuses a second document with the same number, so give a reworked
+sandbox document a new code (or delete the old one in the Marmin portal) before closing it again.
+
+### Refresh and Resubmit
+
+Both appear in the document screen's toolbar on Marmin-typed definitions, and both reload the
+document afterwards.
+
+- **Refresh E-Invoice Status** (`PUT api/documents/{definitionId}/{id}/refresh-marmin-ae-status`) —
+  with a vendor id, reads the vendor's status and applies it (the same guarded write the webhook
+  uses, so it can never move a document backwards). Without one, at `2` or `-10`, it searches the
+  vendor for a document with this number: if found it is recorded; if not, a `2` is released back
+  to `0`.
+- **Resubmit E-Invoice** (`PUT api/documents/{definitionId}/{id}/resubmit-marmin-ae`) — needs the
+  same State permission as closing, and the document must be closed. Offered at `0`, `2`, `-10`
+  and `-20`. It **never re-sends blind**: if the vendor already holds the document (by id, or by a
+  search on its number) and it is not in `VALIDATION_FAILED`, it records the vendor's status
+  instead of sending. A `-20` is resent as a `PUT` to the existing vendor document, which is the
+  only correction the vendor allows.
+
+The number search matches the document number exactly (ordinal) within this tenant's business
+profile, and refuses to guess if it finds more than one distinct document.
 
 ---
 
@@ -67,8 +101,9 @@ ZATCA**, since that setup is already familiar.
 - The document's `NotedAgentId` points at the **Sales Invoice** agent, whose `Agent1Id` is the
   **Customer Account**, whose `Agent1Id` is the **Customer**. The whole mapping hangs off this chain.
 - Invoice lines are the entries hitting an account whose type `Concept` is
-  `CurrentValueAddedTaxPayables`, with the item in `NotedResourceId`.
-- Resource `Lookup3Id` → VAT category (`S`/`Z`/`E`/`O`); `Lookup4Id` → VAT exemption reason.
+  `CurrentValueAddedTaxPayables`, with the item in `NotedResourceId`. Lines in a rejected or
+  voided workflow state are excluded.
+- Resource `Lookup3Id` → VAT category (`S`/`Z`/`E`/`O`/`AE`/`N`); `Lookup4Id` → VAT exemption reason.
 - Sales-invoice agent `Lookup1Id` → payment means; `BankAccountNumber` → payee account.
 - `Documents.Lookup1Id` → the supply-scenario flag code (ZATCA's `InvoiceTypeTransactions`;
   Marmin's `profile_execution_id`). Same slot, same idea, **different code vocabulary**.
@@ -79,22 +114,26 @@ ZATCA**, since that setup is already familiar.
 
 | Topic | ZATCA | Marmin (UAE) |
 |---|---|---|
-| Definition fields | one: `ZatcaDocumentType` = `381`/`383`/`386`/`388`/`389` | **two**: `MarminAeDocumentType` = `SalesInvoice`/`SalesCreditNote` (picks the route), plus `MarminAeTypeCode` (the wire code) — see [Code values](#code-values) |
-| Required lookup definitions | `Lookup1DefinitionId` (ITT) **and** `Lookup2DefinitionId` | the same two, except `Lookup1DefinitionId` may be skipped when `MarminAeDefaultProfileExecutionId` is set in General Settings, and `Lookup2DefinitionId` is needed only on credit notes |
+| Definition fields | one: `ZatcaDocumentType` = `381`/`383`/`386`/`388`/`389` | **two**: `MarminAeDocumentType` = `SalesInvoice`/`SalesCreditNote` (picks the route), plus `MarminAeTypeCode` (the wire code, `380`/`480` or `381`/`81`, checked on save) — see [Code values](#code-values) |
+| Required lookup definitions | `Lookup1DefinitionId` (ITT) **and** `Lookup2DefinitionId` | `Lookup1DefinitionId` is **optional** (an empty `Documents.Lookup1Id` sends `00000000`); `Lookup2DefinitionId` is required on credit notes only |
 | Scenario flags | `Documents.Lookup1Id` → an `ITT…` lookup encoding **7** flags | same slot, but **8** flags and a **different vocabulary** — populate the Lookup Definition from Marmin's docs, never by copying the KSA `ITT…` codes |
-| `Lookup2Id` codes | KSA reason-for-issuance text | the **UAE `discrepancy_response` codes**, and **required** on every credit note |
-| Customer email | not required | **Required.** `Agents.ContactEmail` on the customer account or the customer; close is blocked without it |
-| Customer tax id | `TaxIdentificationNumber`, falling back to `Text1` (CRN) | **`TaxIdentificationNumber` only** — it *is* the Peppol `endpoint_id`. No CRN fallback |
-| Address province | free text | `Agents.AddressProvince` must be a three-letter **emirate code** (`AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`) — not the two-letter ISO subdivisions; close is blocked otherwise |
+| `Lookup2Id` codes | KSA reason-for-issuance text | the **UAE `discrepancy_response` codes** (`DL8.61.1.A`…`E`, `VD`), **required** on every credit note |
+| Customer email | not required | **Required.** `Agents.ContactEmail` on the customer account, falling back to the customer |
+| Peppol registration | n/a | **New: customer `Lookup4Id`** — see [The customer's Peppol endpoint](#the-customers-peppol-endpoint) |
+| Customer tax id | `TaxIdentificationNumber`, falling back to `Text1` (CRN) | `TaxIdentificationNumber` (account, falling back to customer), as the 10-digit TIN **or** the 15-digit TRN. No CRN fallback. Required for UAE customers and Peppol-registered ones |
+| Address | free text, partially optional | Street, city, province and country are **all required** on the customer account, UAE or not. For a UAE address, `AddressProvince` must be a three-letter **emirate code** (`AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`) — not the two-letter ISO subdivisions. The country lookup's code must be the ISO alpha-2 code (`AE`) |
 | Item description | not sent | **Required.** `Resources.Description` (falls back to `Name`) |
 | Unit codes | sent, lenient in practice | `Units.Code` must be **UN/ECE Rec 20** (`PCE`, `KGM`, `HUR`, …); close is blocked if empty |
+| Item identifier | `Resources.Identifier` sent | **not sent** — Tellma's identifier has no ISO 6523 scheme, which PINT-AE requires |
 | Names / language | `Name2` (Arabic mandate) | **`Name`** (Latin) |
 | VAT rate | default 15%, sent as a 0–1 fraction | default **5%**, sent as a **percentage** (the SP multiplies by 100) |
-| Due date | n/a | `Documents.NotedDate` — **relabel it "Due Date"** on the definition, or it falls back to issue date + `MarminAeDefaultPaymentTermDays` |
-| Credit note linkage | `fn_Document__BillingReferenceId` | the original is found via the same `NotedAgentId`; **exactly one** posted Marmin invoice must match, else close is blocked |
+| Due date | n/a | `Documents.NotedDate` — **relabel it "Due Date"** on the definition, or it falls back to issue date + 30 days |
+| Payment means | `Lookup1Id` on the sales-invoice agent | same, but Marmin's code list (`30` if empty) — ZATCA's `42`/`48` are refused. **Credit transfer (`30`, the default) requires the IBAN in the sales-invoice agent's `BankAccountNumber`** |
+| Foreign customers | invoiced like any other | invoiced **only as exports** — see [Customers outside the UAE](#customers-outside-the-uae) |
+| Credit note linkage | `fn_Document__BillingReferenceId` | the original is found via the same `NotedAgentId`; **exactly one** closed Marmin invoice must match, else close is blocked |
 | Numbering | ZATCA assigns a serial + hash chain | Tellma's `Documents.Code` is sent as `document_number` — **turn auto-numbering OFF in the Marmin organisation** |
-| Reopen / delete / cancel | blocked once reported | blocked once **submitted**, which is stricter |
-| Outcome timing | synchronous at close | close returns *Submitted*; delivery lands later, via the webhook or **Refresh e-invoice status** |
+| Reopen / delete / cancel | blocked once reported | blocked once **submitted** (`1`, `10`, `-30`); Sandbox tenants exempt |
+| Outcome timing | synchronous at close | close returns *Submitted*; delivery lands later, via the webhook or **Refresh E-Invoice Status** |
 
 > **Totals are computed by the vendor, not by Tellma.** That makes a line-mapping error silent: a
 > legally transmitted invoice whose total differs from the ledger. `bll.Documents_Validate__Close`
@@ -102,21 +141,100 @@ ZATCA**, since that setup is already familiar.
 > tenant uses the `Discounts` resource definition, document-level allowances must be modelled
 > before that tenant goes live — the check will fail the close until they are.
 
+### The customer's Peppol endpoint
+
+Every document is addressed to a Peppol `endpoint_id` under scheme `0235`. Which one is decided by
+whether the customer is itself on Peppol:
+
+| Customer | `endpoint_id` |
+|---|---|
+| Registered on Peppol | the first 10 digits of its tax number — e.g. `0235:1415002605` |
+| Not registered, address in the UAE | `9900000098` (the FTA's placeholder) |
+| Not registered, address abroad | `9900000099` (the FTA's placeholder for an export) |
+
+"Registered" is **`Lookup4Id` on the customer account (falling back to the customer) whose code is
+`Y`** — the same Yes/No lookup convention Tellma uses elsewhere. So:
+
+1. Make sure the tenant has a Yes/No lookup definition with codes `Y` and `N`.
+2. On the customer and/or customer-account agent definitions, show `Lookup4` with that lookup
+   definition, labelled e.g. "Registered on Peppol".
+3. Set it to Yes for every customer that receives e-invoices through Peppol. Anything else —
+   empty, `N` — means "not registered" and routes to a placeholder.
+
+The UAE tax number goes in two more places, each only for a UAE customer (the vendor rejects
+both on a foreign one):
+
+- `tin` — the 10-digit TIN, derived from the stored number.
+- `party_tax_scheme.company_id` — the 15-digit TRN, sent only when the stored number *is* a TRN.
+
+`Agents.TaxIdentificationNumber` may therefore hold either the 10-digit TIN (`1` + 9 digits) or the
+15-digit TRN (`1` + 12 digits + `03`); the TIN is the TRN's first ten digits. Anything else is
+blocked at close for UAE and Peppol-registered customers.
+
+### Customers outside the UAE
+
+Peppol accepts a buyer at a placeholder endpoint only if it carries a `tin` or a TRN (ibr-135-ae),
+and the vendor forbids both on a foreign party — so a customer outside the UAE can be invoiced
+**only as an export** (scenario flag 8). Tellma handles this automatically:
+
+- with no `Documents.Lookup1Id`, a foreign customer's document is sent as `00000001` (export);
+- every export carries a `delivery` block whose address is the customer account's address,
+  which the vendor requires (it refuses an export without one);
+- the close refuses a foreign customer on a non-export scenario, and an export to a UAE customer.
+
+A zero-rated (`Z`) export is a normal `380`. All of this was confirmed against the sandbox.
+
+### What close checks
+
+`bll.Documents_Validate__Close` refuses the close, with a message naming the offending record, when:
+
+- the document has no customer, or the customer has no email;
+- a UAE or Peppol-registered customer has no tax number, or one that is neither a TIN nor a TRN;
+- the customer account's address is incomplete, or a UAE province is not an emirate code;
+- the document has no currency;
+- the definition's `MarminAeTypeCode` is not valid for its `MarminAeDocumentType`, or is `480`
+  (not supported yet — see [Code values](#code-values));
+- the `Documents.Lookup1Id` code is not eight `0`/`1` flags;
+- a `480` invoice flags deemed supply, profit margin scheme or summary invoice (positions 2–4,
+  Peppol IBR-157-AE);
+- the payment means code is not on Marmin's list, or it is a credit transfer (`30`) and the
+  sales-invoice agent has no `BankAccountNumber`;
+- a foreign customer's document is not flagged as an export, or an export goes to a UAE customer;
+- a credit note has no valid `DL8.61.1` / `VD` reason, or does not resolve to exactly one original;
+- there are no invoice lines, or a line has a non-positive quantity, no price, no unit code, or is
+  exempt (`E`) with no exemption reason;
+- a `380` invoice has only exempt (`E`) or out-of-scope (`O`) lines;
+- a `480` invoice has a line that is not `E`, `Z` or `O` (Peppol IBR-122-AE);
+- the VAT recomputed from the payload differs from the ledger.
+
+### Fixed values
+
+These are the same for both tenants, so they are fixed in `dal.MarminAe__GetInvoices` rather than
+configurable:
+
+| Field | Value | Overridden by |
+|---|---|---|
+| `endpoint_scheme_id` | `0235` | — |
+| `profile_execution_id` | `00000000` (domestic), or `00000001` (export) for a customer outside the UAE | `Documents.Lookup1Id` |
+| `due_date` | issue date + 30 days | `Documents.NotedDate` |
+| `payment_means_code` | `30` (credit transfer) | sales-invoice agent `Lookup1Id` |
+
 ---
 
 ## Tenant setup
 
-1. **Environment.** `dbo.Settings.MarminAeEnvironment` is DBA-set (`Sandbox` or `Production`),
-   deliberately not editable in the browser, so a tenant cannot be flipped to Production from a form.
-2. **General Settings → UAE E-Invoicing (Marmin)** — fill in Client Id, Business Profile Id,
-   Organization Id, Peppol Endpoint Scheme (`0235` for a UAE TRN), and optionally the default
-   profile execution id, payment means code and payment term.
+1. **Environment.** `dbo.Settings.MarminAeEnvironment` is DBA-set (`Sandbox` or `Production`, enforced
+   by a CHECK constraint), deliberately not editable in the browser, so a tenant cannot be flipped to
+   Production from a form.
+2. **General Settings → UAE E-Invoicing (Marmin)** — fill in Client Id, Business Profile Id and
+   Organization Id.
 3. **Set Secrets** on that same screen — the client secret, and the webhook signing secret if the
    webhook is in use. Neither is ever sent back to the browser; leave a field empty to keep the
    stored value.
 4. **Document definitions** — set `MarminAeDocumentType` and `MarminAeTypeCode` on the sales
    invoice and credit note definitions.
-5. **Master data** — see the author guide above.
+5. **Agent definitions** — the Peppol-registration `Lookup4` above.
+6. **Master data** — see the author guide above.
 
 ---
 
@@ -142,17 +260,23 @@ cd Tellma.Api.Web/ClientApp && ng serve -o
 ```
 
 Sign in as `admin@tellma.com` / `Admin@123`, configure the tenant as above, close an invoice, and
-watch `MarminAeState`. Confirm the document appears in the Marmin sandbox portal.
+watch **E-Invoice State** on the document. Confirm the document appears in the Marmin sandbox portal.
 
 Then exercise the rest:
 
-- **Refresh e-invoice status** (`PUT api/documents/{id}/refresh-marmin-ae-status`) — the state
-  should advance as the sandbox works through Peppol validation. Invoke it twice: the second call
-  must be a no-op, which is the dedup/ordering guard in `dal.MarminAe__ApplyWebhook` working.
-- **Reopen, delete and cancel** the submitted document — all three must be refused.
+- **Refresh E-Invoice Status** — the state should advance as the sandbox works through Peppol
+  validation. Invoke it twice: the second call must be a no-op, which is the dedup/ordering guard
+  in `dal.MarminAe__ApplyWebhook` working.
+- **Resubmit** — on a document the vendor has accepted, set `MarminAeState = 2` and
+  `MarminAeDocumentId = NULL` by hand (simulating a lost response) and press Resubmit: it must find
+  the vendor document by its number and record it, not send a duplicate.
+- **The reopen guard** — Sandbox tenants are exempt from it, so flip the test tenant to
+  `Production` in `dbo.Settings` (no vendor call is made by reopening), confirm that reopen,
+  delete and cancel are all refused on a submitted document, and flip it back.
 - **A credit note** against it — `billing_reference` must resolve to the original.
-- **Negative paths** — a customer with no `ContactEmail`, a resource with no unit code, and a
-  deliberately mismatched total must each be blocked at close with a clear message.
+- **Negative paths** — a customer with no `ContactEmail`, a resource with no unit code, a `380`
+  invoice with only exempt lines, a sales invoice with no IBAN, and a deliberately mismatched
+  total must each be blocked at close with a clear message.
 
 ### The webhook
 
@@ -178,10 +302,12 @@ accepted during a rotation.
 `tools/Migrations/2026-09-MarminAe.sql` is **generated** — run
 `python tools/Migrations/generate-marmin-ae-migration.py` rather than editing it. The generator
 copies every object body verbatim out of `Tellma.Database.Application`, rewriting only
-`CREATE …` to `CREATE OR ALTER …`, so the migration and the database project cannot drift apart.
+`CREATE …` to `CREATE OR ALTER …`, so the migration and the database project cannot drift apart,
+and it refuses to generate if a SQL file mentioning `MarminAe` is not shipped.
 
 It exists because a full SSDT publish is too slow and too fragile across the production databases.
-It is safe to re-run: the column additions are guarded and every object is `CREATE OR ALTER`.
+It is safe to re-run: the column and constraint additions are guarded and every object is
+`CREATE OR ALTER`. It ends with a verification query listing what it expects to find.
 
 **Take a backup first, and run it in a maintenance window.** Section 2 drops and recreates the
 `dbo.DocumentDefinitionList` table type — a table type cannot be `ALTER`ed, and SQL Server refuses
@@ -191,7 +317,7 @@ so a failure part-way through leaves those three procedures missing. Saving a do
 fails for the duration.
 
 ```bash
-sqlcmd -S . -E -d "Tellma.101" -i tools/Migrations/2026-09-MarminAe.sql -b
+sqlcmd -S . -E -d "Tellma.101" -i tools/Migrations/2026-09-MarminAe.sql -b -f 65001
 ```
 
 ---
@@ -201,7 +327,7 @@ sqlcmd -S . -E -d "Tellma.101" -i tools/Migrations/2026-09-MarminAe.sql -b
 | Key | Value | Notes |
 |---|---|---|
 | `MarminAe__EncryptionKeys` | comma-separated AES keys | **Key Vault reference.** Each key exactly 16/24/32 ASCII characters. Kept separate from `Zatca__EncryptionKeys` so the two integrations have independent blast radius. |
-| `MarminAe__ProductionBaseAddress` | *obtain from Marmin* | The client hardcodes only the sandbox host. The vendor publishes one host per country per environment — it is **not** per account — so one value serves both tenants. Confirm the hostname with Marmin rather than guessing it. |
+| `MarminAe__ProductionBaseAddress` | *obtain from Marmin* | The client hardcodes only the sandbox host. The vendor publishes one host per country per environment — it is **not** per account — so one value serves both tenants. Confirm the hostname with Marmin rather than guessing it. A Production tenant with this unset fails the close with a configuration error, before anything is claimed. |
 | `MarminAe__SandboxBaseAddress` | optional | Defaults to `MarminAeClientOptions.SandboxBaseAddress`. |
 | `MarminAe__CallbacksEnabled` | `false` for now | Gates the webhook middleware. Turn on once it has been live-tested. |
 | `MarminAe__TimeoutSeconds` | optional, `30` | |
@@ -219,10 +345,10 @@ the authority — prefer them over this table if the two ever disagree.
 
 ### `MarminAeTypeCode` (the definition field)
 
-| Kind | Code | Meaning | Line-item rule the vendor enforces |
+| Kind | Code | Meaning | Line-item rule (enforced at close) |
 |---|---|---|---|
-| Sales invoice | `380` | Commercial / tax invoice. Use when the business profile is VAT registered and the supply is a standard taxable supply. | At least one line must use a standard-rate category (`S`, `AE`) — not only `E`/`O`/`Z`/`N` (Peppol IBR-151-AE) |
-| Sales invoice | `480` | Invoice out of scope of tax. Use when the profile is **not** VAT registered, or the supply is outside UAE VAT scope. | Lines, charges and allowances must use `E`, `Z` or `O` only (Peppol IBR-122-AE) |
+| Sales invoice | `380` | Commercial / tax invoice. Use when the business profile is VAT registered — including zero-rated supplies and exports. | Cannot contain **only** exempt (`E`) or out-of-scope (`O`) lines (the vendor's own check; confirmed in the sandbox that an all-`Z` invoice passes) |
+| Sales invoice | `480` | Invoice out of scope of tax. Use when the profile is **not** VAT registered, or the supply is outside UAE VAT scope. **Not supported yet:** the vendor requires the buyer's legal registration (`scheme_agency_id` + `company_id`) on every `480`, which Tellma does not model, so the close refuses it. | Lines must use `E`, `Z` or `O` only (Peppol IBR-122-AE), and the scenario may not flag positions 2, 3 or 4 (IBR-157-AE) — also checked, so every problem is reported at once |
 | Sales credit note | `381` or `81` | Credit note. | — |
 
 So the choice of `380` vs `480` is a property of the **supplier's VAT position**, which is why it
@@ -242,13 +368,14 @@ supply scenario (`GET /api/codelist/transaction-type-codes`):
 | 5 | Continuous Supply | |
 | 6 | Agent Billing | `seller_supplier_party` (principal id) |
 | 7 | Supply Through E-commerce | |
-| 8 | Exports | `delivery`, with a non-`AE` country code |
+| 8 | Exports | `delivery`, with a non-`AE` country code — **sent automatically** (the customer's address) |
 
-A plain domestic taxable supply is therefore `00000000`. Populate the tenant's Lookup Definition
-with the combinations they actually issue, or set one `MarminAeDefaultProfileExecutionId`.
+A plain domestic taxable supply is therefore `00000000`, which is what an empty `Lookup1Id` sends
+for a UAE customer (and `00000001`, an export, for a foreign one). Populate the tenant's Lookup
+Definition only with the other combinations they actually issue.
 
-> The conditional fields in the right-hand column are **not** modelled in v1. A tenant issuing
-> exports, free-zone, agent-billing or summary invoices needs that work first.
+> Apart from exports, the conditional fields in the right-hand column are **not** modelled in v1.
+> A tenant issuing free-zone, agent-billing or summary invoices needs that work first.
 
 ### `discrepancy_response` (`Documents.Lookup2Id`, credit notes)
 
@@ -271,28 +398,15 @@ Per UAE FTA DL8.61.1 (`GET /api/codelist/credit-note-reason-codes`):
 - **Payment means** (sales-invoice agent `Lookup1Id`): `1` not defined, `10` in cash, `20` cheque,
   `21` banker's draft, `30` credit transfer, `49` direct debit, `54` credit card, `55` debit card,
   `68` online payment service.
-- **Endpoint / TIN**: `endpoint_scheme_id` is `0235` for UAE, and `endpoint_id` is the party's
-  **10-digit TIN** (starts with `1`). This is *not* the 15-digit VAT/TRN (starts with `1`, ends
-  with `03`), which belongs in `party_tax_scheme.company_id` — a field v1 does not send. See the
-  open question below.
-
-## Open question: which number is in `Agents.TaxIdentificationNumber`?
-
-Marmin distinguishes two identifiers that Tellma stores in one column:
-
-- the **10-character TIN**, which is what `endpoint_id` and `tin` must carry, and
-- the **15-digit VAT/TRN**, which belongs in `party_tax_scheme.company_id`.
-
-v1 maps `Agents.TaxIdentificationNumber` to `endpoint_id` and `tin`, which is correct only if the
-tenants store the 10-digit TIN there. Confirm with both customers before go-live. If they hold the
-TRN instead, either the customer records need a second field or the mapping needs to derive one
-from the other, and `party_tax_scheme` should be sent as well.
 
 ## Out of scope in v1
 
 Document-level and line-level allowances and charges, prepayments, purchase-side documents,
-proforma invoices, and downloading or storing the vendor's XML/PDF renderings (they are available
-in the vendor portal, and skipping them removes an entire blob-storage code path).
+proforma invoices, out-of-scope (`480`) invoices, the conditional parties and periods that some
+supply scenarios other than exports require (above),
+a background poller for documents left at `1` or `2` (Refresh is manual until the webhook is
+live), and downloading or storing the vendor's XML/PDF renderings (they are available in the
+vendor portal, and skipping them removes an entire blob-storage code path).
 
 ---
 ---

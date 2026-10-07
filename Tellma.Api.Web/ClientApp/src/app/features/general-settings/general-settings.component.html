@@ -575,58 +575,9 @@
         }
       </t-form-group-settings>
 
-      <!-- EndpointSchemeId -->
-      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeEndpointSchemeId' | translate"
-        [serverErrors]="model.serverErrors?.CustomFields">
-        @if (!isEdit) {
-          <div>{{ model?.CustomFields?.MarminAeEndpointSchemeId || '-' }}</div>
-        }
-        @if (isEdit) {
-          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeEndpointSchemeId"
-            (ngModelChange)="customFields(model).MarminAeEndpointSchemeId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-          </t-text-editor>
-        }
-      </t-form-group-settings>
 
-      <!-- DefaultProfileExecutionId -->
-      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultProfileExecutionId' | translate"
-        [serverErrors]="model.serverErrors?.CustomFields">
-        @if (!isEdit) {
-          <div>{{ model?.CustomFields?.MarminAeDefaultProfileExecutionId || '-' }}</div>
-        }
-        @if (isEdit) {
-          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeDefaultProfileExecutionId"
-            (ngModelChange)="customFields(model).MarminAeDefaultProfileExecutionId = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-          </t-text-editor>
-        }
-      </t-form-group-settings>
 
-      <!-- DefaultPaymentMeansCode -->
-      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultPaymentMeansCode' | translate"
-        [serverErrors]="model.serverErrors?.CustomFields">
-        @if (!isEdit) {
-          <div>{{ model?.CustomFields?.MarminAeDefaultPaymentMeansCode || '-' }}</div>
-        }
-        @if (isEdit) {
-          <t-text-editor [ngModel]="model?.CustomFields?.MarminAeDefaultPaymentMeansCode"
-            (ngModelChange)="customFields(model).MarminAeDefaultPaymentMeansCode = $event" [ngModelOptions]="{ updateOn: 'blur' }">
-          </t-text-editor>
-        }
-      </t-form-group-settings>
 
-      <!-- DefaultPaymentTermDays -->
-      <t-form-group-settings class="t-form-group" [label]="'Settings_MarminAeDefaultPaymentTermDays' | translate"
-        [serverErrors]="model.serverErrors?.CustomFields">
-        @if (!isEdit) {
-          <div>{{ model?.CustomFields?.MarminAeDefaultPaymentTermDays || 0 }}</div>
-        }
-        @if (isEdit) {
-          <t-decimal-editor [ngModel]="model?.CustomFields?.MarminAeDefaultPaymentTermDays"
-            (ngModelChange)="customFields(model).MarminAeDefaultPaymentTermDays = $event"
-            [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [ngModelOptions]="{ updateOn: 'blur' }">
-          </t-decimal-editor>
-        }
-      </t-form-group-settings>
 
       <!--
         The two secrets are never sent to the browser, so they cannot be edited in this form: it

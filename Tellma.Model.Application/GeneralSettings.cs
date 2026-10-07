@@ -160,28 +160,11 @@ namespace Tellma.Model.Application
             /// </summary>
             public string MarminAeOrgId { get; set; }
 
-            /// <summary>
-            /// The Peppol scheme the customer tax registration number is an identifier in, e.g.
-            /// "0235". Tenant-wide, since both customers are UAE-registered.
-            /// </summary>
-            public string MarminAeEndpointSchemeId { get; set; }
-
-            /// <summary>
-            /// Fallback for profile_execution_id, the eight supply-scenario flags. The real value
-            /// is per-document, from Documents.Lookup1Id (the same slot ZATCA uses for its
-            /// InvoiceTypeTransactions code); this is only used when that lookup is not set,
-            /// which is the common case for a tenant issuing a single supply scenario.
-            /// </summary>
-            public string MarminAeDefaultProfileExecutionId { get; set; }
-
-            /// <summary>Fallback payment_means code when the sales invoice does not name one.</summary>
-            public string MarminAeDefaultPaymentMeansCode { get; set; }
-
-            /// <summary>
-            /// Days added to the issue date to derive a due date when the document has no
-            /// NotedDate. Zero means the invoice is due on issue.
-            /// </summary>
-            public int MarminAeDefaultPaymentTermDays { get; set; }
+            // There are deliberately no settings for the Peppol endpoint scheme, the default
+            // profile_execution_id, the default payment means or the default payment term. Both
+            // tenants use the same values, so dal.MarminAe__GetInvoices fixes them (0235,
+            // 00000000, 30 and 30 days), and a blank setting could only ever have produced a
+            // document the vendor refused after it had closed.
         }
 
         #endregion

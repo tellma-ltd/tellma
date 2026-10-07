@@ -1,9 +1,5 @@
 CREATE PROCEDURE [dal].[MarminAe__GetInvoices]
-	@Ids [dbo].[IndexedIdList] READONLY,
-	@DefaultProfileExecutionId NVARCHAR (50) = NULL,
-	@EndpointSchemeId NVARCHAR (50) = NULL,
-	@DefaultPaymentMeansCode NVARCHAR (10) = NULL,
-	@DefaultPaymentTermDays INT = 0
+	@Ids [dbo].[IndexedIdList] READONLY
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -18,8 +14,16 @@ BEGIN
 	 * also compute -- that is exactly the class of mismatch this integration must avoid.
 	 *
 	 * Unlike ZATCA this is NOT called from [dal].[Documents__Close]. It is a standalone call made
-	 * from DocumentsService right after the close commits, so that a feature used by two tenants
-	 * adds no result sets to the close path every tenant runs.
+	 * from DocumentsService right after the close, so that a feature used by two tenants adds no
+	 * result sets to the close path every tenant runs.
+	 *
+	 * Constants. These used to be tenant settings and are now fixed, because both tenants use the
+	 * same values and a blank setting could only ever produce a vendor rejection:
+	 *   endpoint_scheme_id     0235      the UAE Peppol participant scheme
+	 *   profile_execution_id   00000000  a plain domestic supply, used when Documents.Lookup1 is unset
+	 *   payment_means          30        credit transfer, used when the sales-invoice agent's Lookup1 is unset
+	 *   due date               +30 days  after the issue date, used when Documents.NotedDate is unset
+	 * bll.Documents_Validate__Close applies the same defaults, so it checks what is actually sent.
 	 *
 	 * NOTE: the column ordering is important, don't change it. LoadMarminAeInvoices in
 	 * SqlDataReaderApplicationExtensions reads these positionally.
@@ -55,13 +59,18 @@ BEGIN
 		ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) AS [IssueDate],
 
 		-- Due date: NotedDate is a free, per-document date with a definition-configurable label,
-		-- so tenants relabel it "Due Date". Falling back keeps a close from failing over it.
-		ISNULL(D.[NotedDate], DATEADD(DAY, ISNULL(@DefaultPaymentTermDays, 0),
+		-- so tenants relabel it "Due Date". Otherwise 30 days after issue.
+		ISNULL(D.[NotedDate], DATEADD(DAY, 30,
 			ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)))) AS [DueDate],
 
 		-- The eight supply-scenario flags. Same slot ZATCA uses for InvoiceTypeTransactions, but a
 		-- different code vocabulary, so the tenant's Lookup Definition must hold the UAE codes.
-		ISNULL(dal.fn_Lookup__Code(D.[Lookup1Id]), @DefaultProfileExecutionId) AS [ProfileExecutionId],
+		-- With none chosen: a plain domestic supply, or an export (position 8) for a customer
+		-- outside the UAE. Peppol accepts a buyer outside the UAE only on an export (ibr-135-ae:
+		-- otherwise it needs a tin or TRN, which the vendor forbids on a foreign party), and the
+		-- mapper sends the delivery block an export requires.
+		ISNULL(dal.fn_Lookup__Code(D.[Lookup1Id]),
+			IIF(ISNULL(CUST.[CountryCode], N'AE') = N'AE', N'00000000', N'00000001')) AS [ProfileExecutionId],
 
 		ISNULL(SI.[CurrencyId], D.[CurrencyId])		AS [DocumentCurrencyCode],
 		D.[Memo]									AS [Note],
@@ -78,25 +87,40 @@ BEGIN
 		ISNULL(CG.[Name], CA.[Name])				AS [CustomerName],
 		ISNULL(CA.[ContactEmail], CG.[ContactEmail]) AS [CustomerEmail],
 
-		-- The Peppol routing address. The TRN is the endpoint id; the scheme is tenant-wide.
-		ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]) AS [CustomerEndpointId],
-		@EndpointSchemeId							AS [CustomerEndpointSchemeId],
+		-- The Peppol routing address. Whether the customer is reachable on Peppol at all is
+		-- recorded on the customer agent's Lookup4, which points at the YesNo lookup definition
+		-- (code Y = registered), the same convention bll.ft_Employees__Deductions_SD uses:
+		--   registered           -> their 10-digit TIN
+		--   not registered, UAE  -> 9900000098, the FTA's placeholder for a UAE buyer not on Peppol
+		--   not registered, else -> 9900000099, the FTA's placeholder for an export to a buyer
+		--                           outside the UAE
+		-- Since 2026-07-07 the vendor no longer defaults to 9900000098 when the endpoint is
+		-- omitted, so one of these must always be sent.
+		CASE
+			WHEN CUST.[IsPeppolRegistered] = 1 THEN TAXID.[Tin]
+			WHEN CUST.[CountryCode] = N'AE' THEN N'9900000098'
+			ELSE N'9900000099'
+		END											AS [CustomerEndpointId],
+		N'0235'										AS [CustomerEndpointSchemeId],
 
-		-- tin is rejected by the vendor on a foreign party, so only send it for a UAE customer.
-		IIF(dal.fn_Lookup__Code(CA.[AddressCountryId]) = N'AE',
-			ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]), NULL) AS [CustomerTin],
+		-- tin is the 10-digit TIN and the vendor rejects it on a foreign party. The 15-digit
+		-- TRN is a different identifier and travels separately, in party_tax_scheme, which the
+		-- vendor forbids for a non-UAE buyer too.
+		IIF(CUST.[CountryCode] = N'AE', TAXID.[Tin], NULL) AS [CustomerTin],
+		IIF(CUST.[CountryCode] = N'AE', TAXID.[Trn], NULL) AS [CustomerTrn],
 
 		CA.[AddressStreet]							AS [CustomerStreetName],
 		CA.[AddressAdditionalStreet]				AS [CustomerAdditionalStreetName],
 		CA.[AddressCity]							AS [CustomerCityName],
 		CA.[AddressPostalCode]						AS [CustomerPostalZone],
-		-- Must be an emirate CODE, not a name. bll.Documents_Validate__Close checks it.
+		-- Must be an emirate CODE for a UAE address. bll.Documents_Validate__Close checks it.
 		CA.[AddressProvince]						AS [CustomerCountrySubentity],
 		dal.fn_Lookup__Name(CA.[AddressCountryId])	AS [CustomerCountry],
-		dal.fn_Lookup__Code(CA.[AddressCountryId])	AS [CustomerCountryCode],
+		CUST.[CountryCode]							AS [CustomerCountryCode],
 
-		-- Payment. Same slots ZATCA reads.
-		ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), @DefaultPaymentMeansCode) AS [PaymentMeansCode],
+		-- Payment. Same slot ZATCA reads, defaulting to 30 (credit transfer), which requires the
+		-- payee account (IBR-192-AE); bll.Documents_Validate__Close asserts it is there.
+		ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30') AS [PaymentMeansCode],
 		SI.[BankAccountNumber]						AS [PayeeFinancialAccountId],
 
 		-- Rounding is modelled as a zero-VAT resource called Rounding; reused from ZATCA as-is.
@@ -107,27 +131,62 @@ BEGIN
 		-- RETURNS NVARCHAR with no length, i.e. NVARCHAR(1), so it truncates every code to one
 		-- character. bll.Documents_Validate__Close asserts exactly one match before we get here.
 		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[Code], NULL)			AS [BillingReferenceId],
-		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[PostingDate], NULL)	AS [BillingReferenceIssueDate]
+		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[PostingDate], NULL)	AS [BillingReferenceIssueDate],
+
+		-- The vendor's id when it already holds this document. Set only once the vendor has
+		-- accepted a submission, so its presence is what decides between a PUT (resubmit the
+		-- document it holds, which the vendor allows only while it is VALIDATION_FAILED) and a
+		-- POST (create a new one).
+		D.[MarminAeDocumentId]						AS [MarminAeDocumentId]
 	FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	INNER JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]	-- Sales Invoice
 	INNER JOIN dbo.Agents CA ON CA.[Id] = SI.[Agent1Id]		-- Customer Account
 	LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id]		-- Customer
+	CROSS APPLY (
+		SELECT
+			dal.fn_Lookup__Code(CA.[AddressCountryId]) AS [CountryCode],
+			LTRIM(RTRIM(ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]))) AS [TaxId],
+			IIF(dal.fn_Lookup__Code(ISNULL(CA.[Lookup4Id], CG.[Lookup4Id])) = N'Y', 1, 0) AS [IsPeppolRegistered]
+	) CUST
+	CROSS APPLY (
+		-- A UAE tax number is held either as the 10-digit TIN (starts with 1) or as the 15-digit
+		-- TRN (starts with 1, ends with 03), whose first ten digits are the TIN. Anything else
+		-- yields NULL here, and bll.Documents_Validate__Close refuses the close for it.
+		SELECT
+			CASE
+				WHEN LEN(CUST.[TaxId]) = 10 AND CUST.[TaxId] LIKE N'1%' AND CUST.[TaxId] NOT LIKE N'%[^0-9]%'
+					THEN CUST.[TaxId]
+				WHEN LEN(CUST.[TaxId]) = 15 AND CUST.[TaxId] LIKE N'1%03' AND CUST.[TaxId] NOT LIKE N'%[^0-9]%'
+					THEN LEFT(CUST.[TaxId], 10)
+			END AS [Tin],
+			CASE
+				WHEN LEN(CUST.[TaxId]) = 15 AND CUST.[TaxId] LIKE N'1%03' AND CUST.[TaxId] NOT LIKE N'%[^0-9]%'
+					THEN CUST.[TaxId]
+			END AS [Trn]
+	) TAXID
 	OUTER APPLY (
+		-- An original closed before the definition became Marmin-typed has a NULL MarminAeState
+		-- forever, and must still be referencable, since the UAE does not require the original
+		-- to have been an e-invoice. NULL is unambiguous: a Marmin-typed close always stamps a
+		-- state, so NULL can only mean "closed before go-live" or a clone reset. A rejected
+		-- invoice (-30) is included because the vendor's remedy for one is a credit note.
 		SELECT TOP 1 O.[Code], O.[PostingDate]
 		FROM [map].[Documents]() O
 		JOIN dbo.DocumentDefinitions ODD ON ODD.[Id] = O.[DefinitionId]
 		WHERE ODD.[MarminAeDocumentType] = N'SalesInvoice'
 		AND O.[State] = 1							-- closed
-		AND O.[MarminAeState] >= 1					-- and actually submitted to the vendor
+		AND (O.[MarminAeState] IS NULL OR O.[MarminAeState] >= 1 OR O.[MarminAeState] = -30)
 		AND O.[NotedAgentId] = D.[NotedAgentId]
 		ORDER BY O.[Id] DESC
 	) OI
 	WHERE DD.[MarminAeDocumentType] IS NOT NULL
-	-- Never submit the same document twice. DocumentsService stamps MarminAeState = 0 the moment
-	-- it decides to submit, so a second close cannot pick the document up again.
-	AND D.[MarminAeState] IS NULL;
+	-- Only documents that may be (re)submitted: never claimed (NULL), claimed but never sent (0),
+	-- refused by the vendor (-10), or failing Peppol validation (-20, resubmitted with a PUT).
+	-- Everything else is on the network (1, 2, 10) or needs a credit note (-30), and the reopen
+	-- guard keeps those closed, so a re-close never reaches them.
+	AND (D.[MarminAeState] IS NULL OR D.[MarminAeState] IN (0, -10, -20));
 
 	--=-=-= 2 - Invoice lines =-=-=--
 	SELECT
@@ -158,8 +217,11 @@ BEGIN
 		LK4.[Code]									AS [TaxExemptionReasonCode],
 		LK4.[Name]									AS [TaxExemptionReason],
 
-		NR.[Code]									AS [SellerItemIdentification],
-		NR.[Identifier]								AS [StandardItemIdentification]
+		-- standard_item_identification is deliberately NOT sent. Resources.Identifier is free
+		-- text (a barcode, a serial, whatever the definition labels it), and PINT-AE IBR-064
+		-- rejects an identifier without an ISO 6523 scheme. The vendor's API does not check it,
+		-- so the rejection would only surface at Peppol, after the close.
+		NR.[Code]									AS [SellerItemIdentification]
 	FROM [map].[Lines]() L
 	INNER JOIN dbo.Entries E ON E.[LineId] = L.[Id]
 	INNER JOIN dbo.Resources NR ON NR.[Id] = E.[NotedResourceId]
@@ -174,10 +236,13 @@ BEGIN
 	INNER JOIN @Ids AS I ON I.[Id] = D.[Id]
 	WHERE AC.[Concept] = N'CurrentValueAddedTaxPayables'
 	AND DD.[MarminAeDocumentType] IS NOT NULL
-	AND D.[MarminAeState] IS NULL
+	AND (D.[MarminAeState] IS NULL OR D.[MarminAeState] IN (0, -10, -20))
+	-- A workflow line that was rejected or voided (negative state) is not part of the ledger, so
+	-- it must not be part of the invoice either. bll.Documents_Validate__Close lets a document
+	-- close with such lines present.
+	AND L.[State] >= 0
 	-- Discounts, retentions and prepayments are document-level allowances/charges, which are out
-	-- of scope for v1. bll.Documents_Validate__Close blocks a close whose totals would not
-	-- reconcile because of them, so they cannot silently skew an invoice.
+	-- of scope for v1.
 	AND NOT (NRD.[Code] = N'Discounts' OR NR.[Code] = N'RetentionByCustomer'
 		OR NRD.[Code] LIKE N'Prepayments%' AND E.[Direction] = 1)
 	ORDER BY I.[Index], L.[Index];

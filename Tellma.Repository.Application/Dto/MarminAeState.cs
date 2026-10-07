@@ -2,33 +2,60 @@ namespace Tellma.Repository.Application
 {
     /// <summary>
     /// The lifecycle of a document on the Marmin UAE / Peppol network, stored in
-    /// <c>dbo.Documents.MarminAeState</c>.
+    /// <c>dbo.Documents.MarminAeState</c>. NULL means the document was never submitted.
     /// </summary>
     /// <remarks>
-    /// The ordering matters as much as the values. <c>bll.Documents_Validate__Open</c> blocks
-    /// reopening at <c>MarminAeState &gt;= 1</c>, which is why <see cref="Submitting"/> is 0: a
-    /// document that never reached the vendor must stay reopenable, or a failed submission would
-    /// strand it permanently. Everything from <see cref="Submitted"/> up is on the network and
-    /// must not be edited, even though Peppol has not necessarily answered yet.
+    /// <para>
+    /// Two thresholds read these values, so the numbers matter as much as the names.
+    /// </para>
+    /// <para>
+    /// <b>Reopening</b> (<c>bll.Documents_Validate__Open</c>, Production only) is refused for
+    /// anything that is, or may be, on the network: 1, 2, 10 and -30. Everything else is
+    /// reopenable, because each has a remedy that starts with fixing the document.
+    /// </para>
+    /// <para>
+    /// <b>Submitting</b> (<c>dal.MarminAe__GetInvoices</c>) picks up NULL, 0, -10 and -20 only,
+    /// so a re-close or a resubmit never re-sends a document that is on the network.
+    /// </para>
     /// </remarks>
     public enum MarminAeState
     {
         /// <summary>
-        /// Claimed for submission, but the vendor has not confirmed receipt. Set inside the close
-        /// transaction so the document can never be picked up for submission twice.
+        /// Claimed for submission, and certainly not sent. Set inside the close transaction; the
+        /// document moves to <see cref="SentAwaitingOutcome"/> immediately before the HTTP call.
         /// </summary>
         Submitting = 0,
 
-        /// <summary>The vendor accepted the document. Peppol validation is still in progress.</summary>
+        /// <summary>The vendor accepted the document. Peppol is still processing it.</summary>
         Submitted = 1,
 
-        /// <summary>Peppol confirmed delivery. The terminal success state.</summary>
+        /// <summary>
+        /// The request to the vendor left, and its outcome is unknown: a timeout, a lost
+        /// connection, or a crash before the outcome was recorded. It may be on the network, so
+        /// it is treated as if it were. Refresh and Resubmit settle it by asking the vendor
+        /// whether it holds a document with this document's number.
+        /// </summary>
+        SentAwaitingOutcome = 2,
+
+        /// <summary>Peppol confirmed delivery (APPROVED). Final.</summary>
         Delivered = 10,
 
-        /// <summary>The vendor refused the submission. The document never reached the network.</summary>
+        /// <summary>
+        /// The vendor refused the submission outright, so the document never reached the
+        /// network. Fix it and resubmit.
+        /// </summary>
         SubmitFailed = -10,
 
-        /// <summary>The vendor accepted it but Peppol validation or delivery then failed.</summary>
-        PeppolRejected = -20,
+        /// <summary>
+        /// The vendor accepted the document but Peppol validation failed (VALIDATION_FAILED).
+        /// The vendor allows exactly this status to be resubmitted, with a PUT to the same id.
+        /// </summary>
+        PeppolValidationFailed = -20,
+
+        /// <summary>
+        /// Delivered and then rejected (REJECTED). Final, and not resubmittable: the vendor's
+        /// remedy is a credit note against it and a new invoice.
+        /// </summary>
+        PeppolRejected = -30,
     }
 }

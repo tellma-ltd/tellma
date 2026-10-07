@@ -68,7 +68,14 @@ namespace Tellma.Api.Behaviors
             _behaviorHelper = behaviorHelper;
             _localizer = localizer;
             _tenantLogger = tenantLogger;
+            _log = logger;
         }
+
+        /// <summary>
+        /// The base class keeps its logger private. Marmin alerts are also written here, so that
+        /// they are never lost when the tenant has no support emails configured.
+        /// </summary>
+        private readonly ILogger _log;
 
         public IQueryFactory QueryFactory<TEntity>() where TEntity : Entity
         {
@@ -951,6 +958,18 @@ namespace Tellma.Api.Behaviors
             string responseBody,
             TenantLogLevel level)
         {
+            // Unconditionally, and before anything that can fail: the tenant email below is
+            // skipped entirely when the tenant has no support emails, and a submission failure that
+            // nobody hears about is the one outcome this integration must not have.
+            try
+            {
+                _log?.Log(
+                    level == TenantLogLevel.Error ? LogLevel.Error : LogLevel.Warning,
+                    "Marmin e-invoicing {Level} in tenant {TenantId}, document {DocumentId} ({DocumentNumber}): {Message}",
+                    level, TenantId, docId, docNumber, responseBody);
+            }
+            catch { }
+
             try
             {
                 using var _ = TransactionFactory.Suppress();

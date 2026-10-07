@@ -715,6 +715,12 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
+  <data name="Document_MarminAeState_2" xml:space="preserve">
+    <value>Awaiting Outcome</value>
+  </data>
+  <data name="Document_MarminAeState_minus_30" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
   </data>
@@ -773,7 +779,7 @@
     <value>Submission Failed</value>
   </data>
   <data name="Document_MarminAeState_minus_20" xml:space="preserve">
-    <value>Rejected</value>
+    <value>Validation Failed</value>
   </data>
   <data name="Document_ZatcaHash" xml:space="preserve">
     <value>E-Invoice Hash</value>
@@ -1318,6 +1324,27 @@
   <data name="Error_CannotOpenAMarminAeDocument" xml:space="preserve">
     <value>Cannot open document {0} because it has already been submitted to the UAE e-invoicing network.</value>
   </data>
+  <data name="Error_MarminAe380RequiresTaxableLine" xml:space="preserve">
+    <value>Tax invoice {0} (type 380) cannot contain only exempt (E) or out-of-scope (O) lines. It needs at least one standard-rated, zero-rated or reverse-charge line.</value>
+  </data>
+  <data name="Error_MarminAe480IncompatibleScenario" xml:space="preserve">
+    <value>An out-of-scope invoice (type 480) cannot be a deemed supply, profit margin scheme or summary invoice, but its supply scenario code is "{0}".</value>
+  </data>
+  <data name="Error_MarminAe480NotSupported" xml:space="preserve">
+    <value>Document {0} is an out-of-scope invoice (type 480), which is not supported yet: the UAE e-invoicing network requires the customer's legal registration on it, which Tellma does not send.</value>
+  </data>
+  <data name="Error_MarminAe480RequiresOutOfScopeLines" xml:space="preserve">
+    <value>Resource {0} is on an out-of-scope invoice (type 480), so its tax category must be E, Z or O.</value>
+  </data>
+  <data name="Error_MarminAeCannotBeSubmitted" xml:space="preserve">
+    <value>Document {0} cannot be submitted to the UAE e-invoicing network: {1}</value>
+  </data>
+  <data name="Error_MarminAeCannotResubmit" xml:space="preserve">
+    <value>This document cannot be resubmitted to the UAE e-invoicing network in its current e-invoice state.</value>
+  </data>
+  <data name="Error_MarminAeCustomerAddressIncomplete" xml:space="preserve">
+    <value>Customer {0} must have a street, city, province and country for UAE e-invoicing.</value>
+  </data>
   <data name="Error_MarminAeCustomerHasNoEmail" xml:space="preserve">
     <value>Customer {0} has no contact email, which is required for UAE e-invoicing.</value>
   </data>
@@ -1327,17 +1354,56 @@
   <data name="Error_MarminAeDocumentHasNoCustomer" xml:space="preserve">
     <value>The invoice {0} has no customer account, which is required for UAE e-invoicing.</value>
   </data>
+  <data name="Error_MarminAeExportRequiresForeignCustomer" xml:space="preserve">
+    <value>The invoice is flagged as an export, but customer {0} is in the UAE. An export must go to a customer outside the UAE.</value>
+  </data>
+  <data name="Error_MarminAeForeignCustomerRequiresExport" xml:space="preserve">
+    <value>Customer {0} is outside the UAE, so the invoice must be flagged as an export (the eighth supply scenario flag set to 1).</value>
+  </data>
+  <data name="Error_MarminAeInvalidCreditNoteReason" xml:space="preserve">
+    <value>The credit note reason "{0}" is not a UAE FTA reason code (DL8.61.1.A to DL8.61.1.E, or VD).</value>
+  </data>
   <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
     <value>The customer address province must be a valid emirate code (AUH, DXB, SHJ, UAQ, FUJ, AJM or RAK), but it was "{0}".</value>
   </data>
+  <data name="Error_MarminAeInvalidPaymentMeans" xml:space="preserve">
+    <value>Payment means "{0}" is not accepted by the UAE e-invoicing network.</value>
+  </data>
+  <data name="Error_MarminAeInvalidProfileExecutionId" xml:space="preserve">
+    <value>The supply scenario code "{0}" must be exactly 8 characters, each 0 or 1.</value>
+  </data>
+  <data name="Error_MarminAeInvalidQuantity" xml:space="preserve">
+    <value>Resource {0} has a quantity that is not positive.</value>
+  </data>
+  <data name="Error_MarminAeInvalidTaxId" xml:space="preserve">
+    <value>Customer {0} has the tax number "{1}", which is neither a 10-digit TIN nor a 15-digit TRN. Both start with 1, and a TRN ends with 03.</value>
+  </data>
+  <data name="Error_MarminAeInvalidTypeCode" xml:space="preserve">
+    <value>The Marmin type code must be 380 or 480 for a sales invoice, or 381 or 81 for a sales credit note.</value>
+  </data>
   <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
     <value>Resource {0} has no unit code, which is required for UAE e-invoicing.</value>
+  </data>
+  <data name="Error_MarminAeMissingExemptionReason" xml:space="preserve">
+    <value>Resource {0} is VAT exempt but has no exemption reason.</value>
+  </data>
+  <data name="Error_MarminAeMissingPayeeAccount" xml:space="preserve">
+    <value>Sales invoice {0} is paid by credit transfer, so it must have a bank account number (IBAN) for the UAE e-invoicing network.</value>
+  </data>
+  <data name="Error_MarminAeMissingPrice" xml:space="preserve">
+    <value>Resource {0} has no unit price.</value>
+  </data>
+  <data name="Error_MarminAeNoInvoiceLines" xml:space="preserve">
+    <value>Document {0} has no VAT lines to send to the UAE e-invoicing network.</value>
   </data>
   <data name="Error_MarminAeNoOriginalInvoice" xml:space="preserve">
     <value>Could not identify exactly one original invoice for credit note {0}.</value>
   </data>
   <data name="Error_MarminAeNotConfigured" xml:space="preserve">
     <value>The UAE e-invoicing integration is not configured, please contact your system administrator.</value>
+  </data>
+  <data name="Error_MarminAeRejectedNeedsCreditNote" xml:space="preserve">
+    <value>This invoice was rejected on the UAE e-invoicing network and cannot be resubmitted. Issue a credit note against it and a new invoice instead.</value>
   </data>
   <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
     <value>The VAT computed from the e-invoice lines of document {0} does not match the document total. Please review the lines before closing.</value>

@@ -44,17 +44,21 @@ BEGIN
 	WHERE [MarminAeDocumentId] = @MarminAeDocumentId
 	AND (@WebhookEventId IS NULL OR [MarminAeLastEventId] IS NULL OR [MarminAeLastEventId] <> @WebhookEventId)
 	AND (@EventTimestamp IS NULL OR [MarminAeLastEventAt] IS NULL OR [MarminAeLastEventAt] <= @EventTimestamp)
-	-- Never move a document backwards out of a terminal state. 10 (Delivered) and -20
-	-- (PeppolRejected) are the two verdicts Peppol has actually returned; everything else is
-	-- still in flight. MarminAeService maps an absent or unrecognised peppol_status to 1
-	-- (Submitted), which is the right reading for a document in flight but would otherwise
-	-- silently undo a verdict -- and the vendor's status vocabulary is open, so an unrecognised
-	-- value is expected rather than exceptional. Promoting -20 to 1 is the damaging direction:
-	-- it crosses the >= 1 thresholds that bll.Documents_Validate__Open uses to refuse a reopen
-	-- and that bll.Documents_Validate__Close uses to count a credit note's original invoice, so
-	-- a rejected document would become un-reopenable and a credit note could close against an
-	-- invoice that never reached the network. Terminal-to-terminal stays allowed.
-	AND NOT ([MarminAeState] IN (10, -20) AND @MarminAeState NOT IN (10, -20));
+	-- Never move a document backwards out of a verdict. MarminAeService maps an absent or
+	-- unrecognised peppol_status to 1 (Submitted), which is the right reading for a document in
+	-- flight but would otherwise silently undo a verdict -- and the vendor's status vocabulary is
+	-- open, so an unrecognised value is expected rather than exceptional.
+	--
+	-- 10 (Delivered, APPROVED) and -30 (PeppolRejected, REJECTED) are final: only another final
+	-- verdict may replace them.
+	AND NOT ([MarminAeState] IN (10, -30) AND @MarminAeState NOT IN (10, -30))
+	-- -20 (PeppolValidationFailed) is not final, because the vendor lets it be resubmitted, after
+	-- which it may legitimately reach either verdict. But it must not be pushed back to 1 by an
+	-- in-flight status: that crosses the >= 1 thresholds bll.Documents_Validate__Open uses to
+	-- refuse a reopen, stranding a document whose remedy is precisely to be reopened, fixed and
+	-- resubmitted. Our own resubmission records its outcome through
+	-- dal.MarminAe__UpdateDocumentInfo, which this guard does not apply to.
+	AND NOT ([MarminAeState] = -20 AND @MarminAeState NOT IN (10, -20, -30));
 
 	SET @RowsAffected = @@ROWCOUNT;
 END;

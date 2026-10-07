@@ -65,8 +65,7 @@ export interface Custom {
     MarminAeClientId?: string;
     MarminAeBusinessProfileId?: string;
     MarminAeOrgId?: string;
-    MarminAeEndpointSchemeId?: string;
-    MarminAeDefaultProfileExecutionId?: string;
-    MarminAeDefaultPaymentMeansCode?: string;
-    MarminAeDefaultPaymentTermDays?: number;
+    // The Peppol endpoint scheme (0235), the default supply scenario (00000000), the default
+    // payment means (30) and the default payment term (30 days) are fixed on the server rather
+    // than settings: both tenants use the same values.
 }

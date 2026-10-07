@@ -311,17 +311,21 @@ namespace Tellma.Model.Application
         [Display(Name = "Document_MarminAeState")]
         [ChoiceList(new object[] {
             0,
+            2,
             1,
             10,
             -10,
             -20,
+            -30,
         },
         new string[] {
             "Document_MarminAeState_0",
+            "Document_MarminAeState_2",
             "Document_MarminAeState_1",
             "Document_MarminAeState_10",
             "Document_MarminAeState_minus_10",
             "Document_MarminAeState_minus_20",
+            "Document_MarminAeState_minus_30",
         })]
         public int? MarminAeState { get; set; }
 

@@ -83,6 +83,13 @@ export interface Document extends DocumentForSave<Line, DocumentLineDefinitionEn
     ModifiedById?: number;
     AssignmentsHistory?: DocumentAssignment[];
     StatesHistory?: DocumentStateChange[];
+
+    /**
+     * Marmin (UAE e-invoicing) state. Null when never submitted; otherwise one of
+     * 0 Submitting, 2 Awaiting Outcome, 1 Submitted, 10 Delivered, -10 Submission Failed,
+     * -20 Validation Failed, -30 Rejected. See MarminAeState on the server.
+     */
+    MarminAeState?: number;
 }
 
 const _select = ['SerialNumber'];
@@ -219,7 +226,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     datatype: 'numeric',
                     control: 'choice',
                     label: () => trx.instant('Document_MarminAeState'),
-                    choices: [0, 1, 10, -10, -20],
+                    choices: [0, 2, 1, 10, -10, -20, -30],
                     format: (state: number) => {
                         if (state >= 0) {
                             return trx.instant('Document_MarminAeState_' + state);
@@ -229,11 +236,13 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     },
                     color: (c: number) => {
                         switch (c) {
-                            case 0: return '#6c757d';   // Submitting: in flight
+                            case 0: return '#6c757d';   // Submitting: claimed, not yet sent
+                            case 2: return '#fd7e14';   // SentAwaitingOutcome: outcome unknown, needs a refresh
                             case 1: return '#17a2b8';   // Submitted: accepted, Peppol still working
                             case 10: return '#28a745';  // Delivered
-                            case -10: return '#dc3545'; // SubmitFailed
-                            case -20: return '#dc3545'; // PeppolRejected
+                            case -10: return '#dc3545'; // SubmitFailed: refused by the vendor
+                            case -20: return '#dc3545'; // PeppolValidationFailed: fix and resubmit
+                            case -30: return '#dc3545'; // PeppolRejected: needs a credit note
                             default: return null;
                         }
                     }

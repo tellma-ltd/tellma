@@ -119,10 +119,6 @@ namespace Tellma.Api
             forClient.MarminAeClientId = fields.MarminAeClientId;
             forClient.MarminAeBusinessProfileId = fields.MarminAeBusinessProfileId;
             forClient.MarminAeOrgId = fields.MarminAeOrgId;
-            forClient.MarminAeEndpointSchemeId = fields.MarminAeEndpointSchemeId;
-            forClient.MarminAeDefaultProfileExecutionId = fields.MarminAeDefaultProfileExecutionId;
-            forClient.MarminAeDefaultPaymentMeansCode = fields.MarminAeDefaultPaymentMeansCode;
-            forClient.MarminAeDefaultPaymentTermDays = fields.MarminAeDefaultPaymentTermDays;
 
             return (forClient, version);
         }

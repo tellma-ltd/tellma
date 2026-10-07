@@ -108,6 +108,27 @@
       </button>
     </div>
   }
+  <!-- Refresh E-Invoice Status (Marmin, UAE) -->
+  @if (!isEdit && showRefreshMarminAeStatus(model)) {
+    <div class="d-inline-block">
+      <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
+        (click)="onRefreshMarminAeStatus(model)">
+        <fa-icon icon="sync-alt"></fa-icon>
+        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Document_RefreshMarminAeStatus" | translate }}</span>
+      </button>
+    </div>
+  }
+  <!-- Resubmit to E-Invoicing (Marmin, UAE): needs the same permission as closing -->
+  @if (!isEdit && showResubmitMarminAe(model)) {
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
+      container="body">
+      <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
+        (click)="onResubmitMarminAe(model)" [disabled]="!hasPermissionToUpdateState(model)">
+        <fa-icon icon="share"></fa-icon>
+        <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Document_ResubmitMarminAe" | translate }}</span>
+      </button>
+    </div>
+  }
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
@@ -247,6 +268,21 @@
         <t-selector [(ngModel)]="model.Clearance" [choices]="clearanceChoices">
         </t-selector>
       }
+    </t-form-group>
+  }
+
+  <!-- E-Invoice State (Marmin, UAE): read-only, set by the server -->
+  @if (showMarminAeState(model)) {
+    <t-form-group class="t-form-group" [label]="'Document_MarminAeState' | translate">
+      <div>
+        @if (!!marminAeStateColor(model?.MarminAeState)) {
+          <span class="text-white px-2" [style.background-color]="marminAeStateColor(model?.MarminAeState)">
+            {{ marminAeStateDisplay(model?.MarminAeState) }}
+          </span>
+        } @else {
+          <span>{{ marminAeStateDisplay(model?.MarminAeState) }}</span>
+        }
+      </div>
     </t-form-group>
   }
 

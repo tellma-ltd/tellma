@@ -181,6 +181,7 @@ namespace Tellma.Repository.Application
                     CustomerEndpointId = reader.String(i++),
                     CustomerEndpointSchemeId = reader.String(i++),
                     CustomerTin = reader.String(i++),
+                    CustomerTrn = reader.String(i++),
                     CustomerStreetName = reader.String(i++),
                     CustomerAdditionalStreetName = reader.String(i++),
                     CustomerCityName = reader.String(i++),
@@ -194,6 +195,7 @@ namespace Tellma.Repository.Application
                     PayableRoundingAmount = reader.Decimal(i++),
                     BillingReferenceId = reader.String(i++),
                     BillingReferenceIssueDate = reader.DateTime(i++),
+                    MarminAeDocumentId = reader.String(i++),
                 };
             }
 
@@ -235,7 +237,6 @@ namespace Tellma.Repository.Application
                     TaxExemptionReasonCode = reader.String(i++),
                     TaxExemptionReason = reader.String(i++),
                     SellerItemIdentification = reader.String(i++),
-                    StandardItemIdentification = reader.String(i++),
                 });
             }
 
