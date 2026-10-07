@@ -795,6 +795,11 @@ export class DocumentDefinitionsDetailsComponent extends DetailsBaseComponent {
     return getChoices(desc);
   }
 
+  public get marminAeDocumentTypeChoices(): SelectorChoice[] {
+    const desc = metadata_DocumentDefinition(this.workspace, this.translate).properties.MarminAeDocumentType as ChoicePropDescriptor;
+    return getChoices(desc);
+  }
+
   private _visibilityChoices: SelectorChoice[];
   public get visibilityChoices(): SelectorChoice[] {
     if (!this._visibilityChoices) {

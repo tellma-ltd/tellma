@@ -818,6 +818,8 @@ namespace Tellma.Api
                 Lookup2DefinitionId = def.Lookup2DefinitionId,
 
                 ZatcaDocumentType = def.ZatcaDocumentType,
+                MarminAeDocumentType = def.MarminAeDocumentType,
+                MarminAeTypeCode = def.MarminAeTypeCode,
 
                 MemoVisibility = MapVisibility(def.MemoVisibility),
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),

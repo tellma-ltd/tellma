@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -649,6 +649,12 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
+  <data name="Document_MarminAeState_2" xml:space="preserve">
+    <value>بانتظار النتيجة</value>
+  </data>
+  <data name="Document_MarminAeState_minus_30" xml:space="preserve">
+    <value>مرفوضة</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
   </data>
@@ -675,6 +681,39 @@
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
+  </data>
+  <data name="Document_MarminAeDocumentId" xml:space="preserve">
+    <value>معرف الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeDocumentNumber" xml:space="preserve">
+    <value>رقم الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeLastEventAt" xml:space="preserve">
+    <value>تاريخ تحديث الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeLastEventId" xml:space="preserve">
+    <value>معرف حدث الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeResult" xml:space="preserve">
+    <value>نتيجة الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeState" xml:space="preserve">
+    <value>حالة الفاتورة الإلكترونية</value>
+  </data>
+  <data name="Document_MarminAeState_0" xml:space="preserve">
+    <value>قيد الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_1" xml:space="preserve">
+    <value>تم الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_10" xml:space="preserve">
+    <value>تم التسليم</value>
+  </data>
+  <data name="Document_MarminAeState_minus_10" xml:space="preserve">
+    <value>فشل الإرسال</value>
+  </data>
+  <data name="Document_MarminAeState_minus_20" xml:space="preserve">
+    <value>فشل التحقق</value>
   </data>
   <data name="Document_ZatcaHash" xml:space="preserve">
     <value>هاش الفاتورة</value>
@@ -726,6 +765,18 @@
   </data>
   <data name="DocumentDefinition_LineDefinitions" xml:space="preserve">
     <value>تعريفات الأسطر</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType" xml:space="preserve">
+    <value>نوع مستند Marmin</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesCreditNote" xml:space="preserve">
+    <value>إشعار دائن للمبيعات</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeDocumentType_SalesInvoice" xml:space="preserve">
+    <value>فاتورة مبيعات</value>
+  </data>
+  <data name="DocumentDefinition_MarminAeTypeCode" xml:space="preserve">
+    <value>رمز نوع Marmin</value>
   </data>
   <data name="DocumentDefinition_Prefix" xml:space="preserve">
     <value>بادئة الرقم المتسلسل</value>
@@ -1167,6 +1218,93 @@
   </data>
   <data name="Error_CannotOpenAZatcaDocument" xml:space="preserve">
     <value>لا يمكن فتح الفاتورة إلكترونية حسب توجيهات هيئة الزكاة.</value>
+  </data>
+  <data name="Error_CannotOpenAMarminAeDocument" xml:space="preserve">
+    <value>لا يمكن فتح المستند {0} لأنه تم إرساله بالفعل إلى شبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAe380RequiresTaxableLine" xml:space="preserve">
+    <value>لا يمكن أن تحتوي الفاتورة الضريبية {0} (النوع 380) على بنود معفاة (E) أو خارج النطاق (O) فقط. يجب أن تحتوي على بند واحد على الأقل خاضع للنسبة الأساسية أو بنسبة صفر أو خاضع للاحتساب العكسي.</value>
+  </data>
+  <data name="Error_MarminAe480IncompatibleScenario" xml:space="preserve">
+    <value>لا يمكن أن تكون الفاتورة خارج نطاق الضريبة (النوع 480) توريداً مفترضاً أو ضمن نظام هامش الربح أو فاتورة ملخصة، لكن رمز سيناريو التوريد هو "{0}".</value>
+  </data>
+  <data name="Error_MarminAe480NotSupported" xml:space="preserve">
+    <value>المستند {0} فاتورة خارج نطاق الضريبة (النوع 480)، وهذا النوع غير مدعوم بعد: تتطلب شبكة الفوترة الإلكترونية الإماراتية بيانات السجل القانوني للعميل، ولا يرسلها تلما.</value>
+  </data>
+  <data name="Error_MarminAe480RequiresOutOfScopeLines" xml:space="preserve">
+    <value>المورد {0} مدرج في فاتورة خارج نطاق الضريبة (النوع 480)، لذا يجب أن تكون فئته الضريبية E أو Z أو O.</value>
+  </data>
+  <data name="Error_MarminAeCannotBeSubmitted" xml:space="preserve">
+    <value>لا يمكن إرسال المستند {0} إلى شبكة الفوترة الإلكترونية الإماراتية: {1}</value>
+  </data>
+  <data name="Error_MarminAeCannotResubmit" xml:space="preserve">
+    <value>لا يمكن إعادة إرسال هذا المستند إلى شبكة الفوترة الإلكترونية الإماراتية في حالته الحالية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerAddressIncomplete" xml:space="preserve">
+    <value>يجب أن يكون للعميل {0} شارع ومدينة وإمارة أو منطقة ودولة للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoEmail" xml:space="preserve">
+    <value>العميل {0} ليس له بريد إلكتروني، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeCustomerHasNoTaxId" xml:space="preserve">
+    <value>العميل {0} ليس له رقم تسجيل ضريبي، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeDocumentHasNoCustomer" xml:space="preserve">
+    <value>الفاتورة {0} ليس لها حساب عميل، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeExportRequiresForeignCustomer" xml:space="preserve">
+    <value>الفاتورة مصنفة كتصدير، لكن العميل {0} داخل الإمارات. يجب أن يكون التصدير لعميل خارج الإمارات.</value>
+  </data>
+  <data name="Error_MarminAeForeignCustomerRequiresExport" xml:space="preserve">
+    <value>العميل {0} خارج الإمارات، لذا يجب تصنيف الفاتورة كتصدير (بتعيين علامة سيناريو التوريد الثامنة إلى 1).</value>
+  </data>
+  <data name="Error_MarminAeInvalidCreditNoteReason" xml:space="preserve">
+    <value>سبب إشعار الدائن "{0}" ليس من رموز الهيئة الاتحادية للضرائب (DL8.61.1.A إلى DL8.61.1.E، أو VD).</value>
+  </data>
+  <data name="Error_MarminAeInvalidEmirateCode" xml:space="preserve">
+    <value>يجب أن تكون إمارة عنوان العميل رمزاً صحيحاً (AUH أو DXB أو SHJ أو UAQ أو FUJ أو AJM أو RAK)، ولكنها كانت "{0}".</value>
+  </data>
+  <data name="Error_MarminAeInvalidPaymentMeans" xml:space="preserve">
+    <value>وسيلة الدفع "{0}" غير مقبولة في شبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeInvalidProfileExecutionId" xml:space="preserve">
+    <value>يجب أن يتكون رمز سيناريو التوريد "{0}" من 8 أحرف بالضبط، كل منها 0 أو 1.</value>
+  </data>
+  <data name="Error_MarminAeInvalidQuantity" xml:space="preserve">
+    <value>المورد {0} له كمية غير موجبة.</value>
+  </data>
+  <data name="Error_MarminAeInvalidTaxId" xml:space="preserve">
+    <value>الرقم الضريبي للعميل {0} هو "{1}"، وهو ليس رقم تعريف ضريبي من 10 أرقام ولا رقم تسجيل ضريبي من 15 رقماً. كلاهما يبدأ بالرقم 1، ورقم التسجيل الضريبي ينتهي بـ 03.</value>
+  </data>
+  <data name="Error_MarminAeInvalidTypeCode" xml:space="preserve">
+    <value>يجب أن يكون رمز نوع Marmin هو 380 أو 480 لفاتورة المبيعات، أو 381 أو 81 لإشعار الدائن.</value>
+  </data>
+  <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
+    <value>المورد {0} ليس له رمز وحدة، وهو مطلوب للفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeMissingExemptionReason" xml:space="preserve">
+    <value>المورد {0} معفى من ضريبة القيمة المضافة لكن ليس له سبب إعفاء.</value>
+  </data>
+  <data name="Error_MarminAeMissingPayeeAccount" xml:space="preserve">
+    <value>تُسدد فاتورة المبيعات {0} بالتحويل الدائن، لذا يجب أن تحتوي على رقم حساب بنكي (IBAN) لشبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeMissingPrice" xml:space="preserve">
+    <value>المورد {0} ليس له سعر وحدة.</value>
+  </data>
+  <data name="Error_MarminAeNoInvoiceLines" xml:space="preserve">
+    <value>المستند {0} لا يحتوي على بنود ضريبة قيمة مضافة لإرسالها إلى شبكة الفوترة الإلكترونية الإماراتية.</value>
+  </data>
+  <data name="Error_MarminAeNoOriginalInvoice" xml:space="preserve">
+    <value>تعذر تحديد فاتورة أصلية واحدة بالضبط لإشعار الدائن {0}.</value>
+  </data>
+  <data name="Error_MarminAeNotConfigured" xml:space="preserve">
+    <value>لم يتم إعداد تكامل الفوترة الإلكترونية الإماراتية، يرجى التواصل مع مسؤول النظام.</value>
+  </data>
+  <data name="Error_MarminAeRejectedNeedsCreditNote" xml:space="preserve">
+    <value>تم رفض هذه الفاتورة في شبكة الفوترة الإلكترونية الإماراتية ولا يمكن إعادة إرسالها. أصدر إشعار دائن مقابلها وفاتورة جديدة بدلاً من ذلك.</value>
+  </data>
+  <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
+    <value>ضريبة القيمة المضافة المحسوبة من بنود الفاتورة الإلكترونية للمستند {0} لا تطابق إجمالي المستند. يرجى مراجعة البنود قبل الإقفال.</value>
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>لا يمكن توقيع مستند في حالة {1}.</value>

@@ -33,6 +33,9 @@
 
 	[ZatcaDocumentType]			NVARCHAR (3), -- 381, 383, 388, 389
 
+	[MarminAeDocumentType]		NVARCHAR (20), -- SalesInvoice, SalesCreditNote
+	[MarminAeTypeCode]			NVARCHAR (10), -- The literal invoice_type_code / credit_note_type_code
+
 	[ClearanceVisibility]		NVARCHAR (50),
 	[MemoVisibility]			NVARCHAR (50),
 

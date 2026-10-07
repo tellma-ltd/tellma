@@ -272,6 +272,19 @@ namespace Tellma.Api.Dto
         // ZATCA
         public string ZatcaDocumentType { get; set; }
 
+        /// <summary>
+        /// Which Marmin (UAE) endpoint documents of this definition are submitted to:
+        /// <c>SalesInvoice</c> or <c>SalesCreditNote</c>. Null means this definition is not an
+        /// e-invoice and is never sent to the vendor.
+        /// </summary>
+        public string MarminAeDocumentType { get; set; }
+
+        /// <summary>
+        /// The literal <c>invoice_type_code</c> / <c>credit_note_type_code</c> the authority
+        /// expects, passed through to the vendor untouched.
+        /// </summary>
+        public string MarminAeTypeCode { get; set; }
+
         // Memo
         public string MemoVisibility { get; set; }
         public bool MemoIsCommonVisibility { get; set; }

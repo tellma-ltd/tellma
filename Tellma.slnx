@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/integration/">
+    <Project Path="Tellma.Integration.MarminAe.Tests/Tellma.Integration.MarminAe.Tests.csproj" />
+    <Project Path="Tellma.Integration.MarminAe/Tellma.Integration.MarminAe.csproj" />
     <Project Path="Tellma.Integration.Zatca.Tests/Tellma.Integration.Zatca.Tests.csproj" />
     <Project Path="Tellma.Integration.Zatca/Tellma.Integration.Zatca.csproj" />
   </Folder>

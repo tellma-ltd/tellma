@@ -35,6 +35,14 @@
 
 	[ZatcaDocumentType]			NVARCHAR (3)  CONSTRAINT [CK_DocumentDefinitions__ZatcaDocumentType] CHECK ([ZatcaDocumentType] IN (N'381', N'383', N'386', N'388', N'389')),
 
+	-- Marmin (UAE). Two columns rather than ZATCA's one:
+	--   MarminAeDocumentType selects which vendor endpoint to submit to. The values match the
+	--     MarminAeDocumentKind enum member names exactly, so C# parses them with Enum.Parse.
+	--   MarminAeTypeCode is the literal invoice_type_code / credit_note_type_code the authority
+	--     expects, passed through untouched, so correcting it is a settings edit not a deploy.
+	[MarminAeDocumentType]		NVARCHAR (20) CONSTRAINT [CK_DocumentDefinitions__MarminAeDocumentType] CHECK ([MarminAeDocumentType] IN (N'SalesInvoice', N'SalesCreditNote')),
+	[MarminAeTypeCode]			NVARCHAR (10),
+
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__ClearanceVisibility] CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CONSTRAINT [CK_DocumentDefinitions__MemoVisibility] CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 	

@@ -35,6 +35,8 @@ RETURN (
 		DD.[Lookup2Label3],
 
 		DD.[ZatcaDocumentType],
+		DD.[MarminAeDocumentType],
+		DD.[MarminAeTypeCode],
 
 		DD.[ClearanceVisibility],
 		DD.[MemoVisibility],

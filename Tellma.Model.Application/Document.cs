@@ -308,6 +308,44 @@ namespace Tellma.Model.Application
         [Display(Name = "Document_ZatcaUuid")]
         public Guid? ZatcaUuid { get; set; }
 
+        [Display(Name = "Document_MarminAeState")]
+        [ChoiceList(new object[] {
+            0,
+            2,
+            1,
+            10,
+            -10,
+            -20,
+            -30,
+        },
+        new string[] {
+            "Document_MarminAeState_0",
+            "Document_MarminAeState_2",
+            "Document_MarminAeState_1",
+            "Document_MarminAeState_10",
+            "Document_MarminAeState_minus_10",
+            "Document_MarminAeState_minus_20",
+            "Document_MarminAeState_minus_30",
+        })]
+        public int? MarminAeState { get; set; }
+
+        [Display(Name = "Document_MarminAeDocumentId")]
+        [StringLength(50)]
+        public string MarminAeDocumentId { get; set; }
+
+        [Display(Name = "Document_MarminAeDocumentNumber")]
+        [StringLength(50)]
+        public string MarminAeDocumentNumber { get; set; }
+
+        [Display(Name = "Document_MarminAeResult")]
+        public string MarminAeResult { get; set; }
+
+        [Display(Name = "Document_MarminAeLastEventId")]
+        public Guid? MarminAeLastEventId { get; set; }
+
+        [Display(Name = "Document_MarminAeLastEventAt")]
+        public DateTimeOffset? MarminAeLastEventAt { get; set; }
+
         [Display(Name = "Definition")]
         [ForeignKey(nameof(DefinitionId))]
         public DocumentDefinition Definition { get; set; }

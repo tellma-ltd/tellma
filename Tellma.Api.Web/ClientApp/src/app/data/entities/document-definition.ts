@@ -41,6 +41,8 @@ export interface DocumentDefinitionForSave<TLineDefinition = DocumentDefinitionL
     Lookup2DefinitionId?: number;
 
     ZatcaDocumentType?: string;
+    MarminAeDocumentType?: string;
+    MarminAeTypeCode?: string;
 
     ClearanceVisibility?: Visibility;
     MemoVisibility?: Visibility;
@@ -130,6 +132,19 @@ export function metadata_DocumentDefinition(wss: WorkspaceService, trx: Translat
                     label: () => trx.instant('DocumentDefinition_ZatcaDocumentType'),
                     choices: ['381', '383', '388', '386'],
                     format: (choice: number) => !!choice ? trx.instant('DocumentDefinition_ZatcaDocumentType_' + choice) : '' 
+                },
+
+                MarminAeDocumentType: {
+                    datatype: 'string',
+                    control: 'choice',
+                    label: () => trx.instant('DocumentDefinition_MarminAeDocumentType'),
+                    choices: ['SalesInvoice', 'SalesCreditNote'],
+                    format: (choice: string) => !!choice ? trx.instant('DocumentDefinition_MarminAeDocumentType_' + choice) : ''
+                },
+                MarminAeTypeCode: {
+                    datatype: 'string',
+                    control: 'text',
+                    label: () => trx.instant('DocumentDefinition_MarminAeTypeCode')
                 },
                 
                 ClearanceVisibility: visibilityPropDescriptor('Document_Clearance', trx),

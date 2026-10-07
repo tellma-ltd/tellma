@@ -261,6 +261,45 @@ namespace Tellma.Services.ClientProxy
                 result.Body = bldr.ToString();
 
             }
+            else if (le is MarminAeErrorLogEntry mle)
+            {
+                // Without this branch the entry falls through to the generic case below and the
+                // tenant's administrators receive an email with an empty body.
+                result.Subject = $@"{mle.TenantName}: Marmin UAE API {mle.Level} ({mle.DocumentId})";
+
+                StringBuilder bldr = new($@"<span>Encountered a Marmin UAE API {mle.Level.ToString().ToLower()} in Tenant {HtmlEncode(mle.TenantName)}.</span><br/><br/>
+<span style=""font-weight: bold"">Log Entry Id:</span><span> {mle.Id}</span><br/>
+<span style=""font-weight: bold"">Tenant Id:</span><span> {mle.TenantId}</span><br/>
+<span style=""font-weight: bold"">Tenant:</span><span> {HtmlEncode(mle.TenantName)}</span><br/>
+<span style=""font-weight: bold"">Document Definition Id:</span><span> {mle.DocumentDefinitionId}</span><br/>
+<span style=""font-weight: bold"">Document Definition:</span><span> <a href=""{DefinitionUrl(mle)}"">{HtmlEncode(mle.DefinitionName)}</a></span><br/>
+<span style=""font-weight: bold"">Document Id:</span><span> <a href=""{DocumentUrl(mle.TenantId, mle.DocumentDefinitionId, mle.DocumentId)}"">{mle.DocumentId}</a></span><br/>
+<span style=""font-weight: bold"">Document Number:</span><span> {HtmlEncode(mle.DocumentNumber)}</span><br/>
+<span style=""font-weight: bold"">User Email:</span><span> {HtmlEncode(mle.UserEmail)}</span><br/>
+<span style=""font-weight: bold"">User Name:</span><span> {HtmlEncode(mle.UserName)}</span><br/>");
+
+                bldr.AppendLine(@"<br/>");
+                bldr.AppendLine(@"<span style=""font-weight: bold"">Marmin Response:</span><br/>");
+                bldr.AppendLine(@$"<span style=""font-family: 'Courrier New', monospace; "">");
+                foreach (var line in (mle.MarminAeResponseBody ?? "").Split(Environment.NewLine))
+                {
+                    int i = 0;
+                    while (i < line.Length && char.IsWhiteSpace(line[i]))
+                    {
+                        bldr.Append("&nbsp;");
+                        i++;
+                    }
+
+                    bldr.Append($"{HtmlEncode(line.Trim())}<br/>");
+                }
+                bldr.AppendLine(@$"</span><br/>");
+
+                // Deliberately no "document sent" section, unlike the ZATCA branch: Tellma sends
+                // JSON the vendor client builds, and never renders the UBL itself, so there is no
+                // document of ours to reproduce here. The Document Number above is what an
+                // administrator searches for in the Marmin portal.
+                result.Body = bldr.ToString();
+            }
             else
             {
                 // Generic email
@@ -516,6 +555,8 @@ namespace Tellma.Services.ClientProxy
         private string DefinitionUrl(CustomScriptErrorLogEntry entry) =>
             DefinitionUrl(entry.TenantId, entry.Collection, entry.DefinitionId);
         private string DefinitionUrl(ZatcaErrorLogEntry entry) =>
+            DefinitionUrl(entry.TenantId, nameof(Document), entry.DocumentDefinitionId);
+        private string DefinitionUrl(MarminAeErrorLogEntry entry) =>
             DefinitionUrl(entry.TenantId, nameof(Document), entry.DocumentDefinitionId);
 
         private string DefinitionUrl(int tenantId, string collection, int? defId)

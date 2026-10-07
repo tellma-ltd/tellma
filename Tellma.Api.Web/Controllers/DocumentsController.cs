@@ -146,6 +146,39 @@ namespace Tellma.Controllers
             }
         }
 
+        /// <summary>
+        /// Re-reads a document's Peppol status from Marmin and records it.
+        /// </summary>
+        /// <remarks>
+        /// Until the inbound webhook has been tested against the vendor, this is how a document
+        /// leaves the Submitted state. It applies the result through the same stored procedure and
+        /// the same status mapping the webhook uses, so it is not a parallel implementation. It
+        /// also settles a document whose submission outcome was lost, by asking the vendor
+        /// whether it holds a document with this document's number.
+        /// </remarks>
+        [HttpPut("{id:int}/refresh-marmin-ae-status")]
+        public async Task<ActionResult<string>> RefreshMarminAeStatus(int id, CancellationToken cancellation)
+        {
+            var state = await GetService().RefreshMarminAeStatus(id, cancellation);
+            return Ok(state?.ToString());
+        }
+
+        /// <summary>
+        /// Sends a closed document to Marmin again, after a submission that was refused, that
+        /// failed Peppol validation, or whose outcome was lost.
+        /// </summary>
+        /// <remarks>
+        /// Requires the same State permission as closing. Never re-sends blind: if the vendor
+        /// already holds the document it is recorded rather than sent again. Thin by design; the
+        /// rules live in <c>DocumentsService.ResubmitMarminAe</c>.
+        /// </remarks>
+        [HttpPut("{id:int}/resubmit-marmin-ae")]
+        public async Task<ActionResult<string>> ResubmitMarminAe(int id, CancellationToken cancellation)
+        {
+            var state = await GetService().ResubmitMarminAe(id, cancellation);
+            return Ok(state?.ToString());
+        }
+
         [HttpPut("open")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Open([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
