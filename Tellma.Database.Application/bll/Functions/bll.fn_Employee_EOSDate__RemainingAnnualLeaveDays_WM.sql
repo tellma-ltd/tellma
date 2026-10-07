@@ -13,6 +13,7 @@ BEGIN
   DECLARE @AnnualLeavesSaleDefinitionId INT =  dal.fn_LineDefinitionCode__Id(N'ToCurrentProvisionsForEmployeeBenefitsWithOtherShorttermEmployeeBenefitsFromEmployeeBenefitsAccruals');
 
   DECLARE @JoiningDate DATE = dal.fn_Agent__FromDate(@EmployeeId);
+  DECLARE @Citizenship INT= (SELECT Lookup2Id FROM dbo.Agents Where [Id] = @EmployeeId);
 
   DECLARE @AnnualLeaveRS INT = dal.fn_ResourceDefinition_Code__Id(N'EmployeeBenefits', N'AnnualLeave');
   DECLARE @TotalProvisioned DECIMAL (19, 6), @TotalAccruedLeaveDays DECIMAL (19, 6),  @AdditionalDays DECIMAL (19, 6)
@@ -29,8 +30,8 @@ BEGIN
   AND E.[ResourceId] = @AnnualLeaveRS
   AND LD.[Id] <> @AnnualLeavesSaleDefinitionId; -- AK: 20260306 to exclude LD of leave sale on the EOS document
 
-  SELECT @YearlyAccrual = [Int2] FROM dbo.Agents WHERE [Id] = @EmployeeId;
-  SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays(@JoiningDate, @EndOfServiceDate, @YearlyAccrual, @InactiveDays);
+  --SELECT @YearlyAccrual = [Int2] FROM dbo.Agents WHERE [Id] = @EmployeeId; --
+  SELECT @TotalAccruedLeaveDays = dbo.fn_ActiveDates__AccruedLeaveDays_SA_WM(@JoiningDate, @EndOfServiceDate, @YearlyAccrual, @InactiveDays, @Citizenship);
   SELECT @AdditionalDays = ISNULL(@TotalAccruedLeaveDays, 0) - ISNULL(@TotalProvisioned, 0)
   
   RETURN @AdditionalDays;
