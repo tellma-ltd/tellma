@@ -128,7 +128,11 @@ namespace Tellma.Api
         // Simple properties to include on the level of each entity type
         // -------------------------------------------------------------
 
-        public static IEnumerable<string> DocumentProps => TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name).Where(name => !name.StartsWith("Zatca") && !name.StartsWith("MarminAe"));
+        // MarminAeState is the one e-invoicing column the details screen shows; the rest are internal.
+        // Adding a column here changes the generated SQL, so DocumentDetails.original.sql and
+        // DocumentDetails.optimized.sql (Tellma.Repository.Common/Sql) must change with it.
+        public static IEnumerable<string> DocumentProps => TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name)
+            .Where(name => !name.StartsWith("Zatca") && (!name.StartsWith("MarminAe") || name == nameof(Document.MarminAeState)));
         public static IEnumerable<string> LineDefinitionEntryProps => TypeDescriptor.Get<DocumentLineDefinitionEntry>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> LineProps => TypeDescriptor.Get<Line>().SimpleProperties.Select(p => p.Name);
         public static IEnumerable<string> EntryProps => TypeDescriptor.Get<Entry>().SimpleProperties.Select(p => p.Name);

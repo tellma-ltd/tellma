@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [dbo].[fn_UnitCode__UneceRec20] (
     @Code NVARCHAR (50)
 )
-RETURNS NVARCHAR (3)
+RETURNS NVARCHAR (50)
 AS
 BEGIN
     RETURN CASE @Code

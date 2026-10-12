@@ -4454,14 +4454,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return desc.color(state);
   }
 
+  // The Marmin actions live in the Actions menu of <t-details>, which calls these unbound, hence
+  // the arrow functions.
+
   /**
    * Refresh is offered on a closed Marmin document, and on a reopened one that still carries an
    * e-invoice state. It never changes the document, only what is recorded about it.
    */
-  public showRefreshMarminAeStatus(doc: Document): boolean {
-    return this.isMarminAe && !!doc && !!doc.Id &&
-      (doc.State === 1 || (doc.MarminAeState !== null && doc.MarminAeState !== undefined));
-  }
+  public showRefreshMarminAeStatus = (doc: Document): boolean =>
+    this.isMarminAe && !!doc && !!doc.Id &&
+    (doc.State === 1 || (doc.MarminAeState !== null && doc.MarminAeState !== undefined));
 
   /**
    * Resubmit is offered on a closed Marmin document whose submission did not complete:
@@ -4469,18 +4471,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
    * validation. Not on -30 (rejected), whose remedy is a credit note, nor on anything already
    * on the network. The server enforces the same rule.
    */
-  public showResubmitMarminAe(doc: Document): boolean {
-    return this.isMarminAe && !!doc && !!doc.Id && doc.State === 1 &&
-      [0, 2, -10, -20].includes(doc.MarminAeState);
-  }
+  public showResubmitMarminAe = (doc: Document): boolean =>
+    this.isMarminAe && !!doc && !!doc.Id && doc.State === 1 &&
+    [0, 2, -10, -20].includes(doc.MarminAeState);
 
-  public onRefreshMarminAeStatus(doc: Document): void {
+  /** Resubmitting needs the same permission as closing. */
+  public canResubmitMarminAe = (doc: Document): boolean => this.hasPermissionToUpdateState(doc);
+
+  public resubmitMarminAeTooltip = (doc: Document): string => this.updateStateTooltip(doc);
+
+  public onRefreshMarminAeStatus = (doc: Document): void =>
     this.onMarminAeAction(doc, this.documentsApi.refreshMarminAeStatus);
-  }
 
-  public onResubmitMarminAe(doc: Document): void {
+  public onResubmitMarminAe = (doc: Document): void =>
     this.onMarminAeAction(doc, this.documentsApi.resubmitMarminAe);
-  }
 
   private onMarminAeAction(doc: Document, fn: (docId: number | string) => Observable<string>): void {
     if (!this.details || this.details.state.detailsStatus !== DetailsStatus.loaded) {
@@ -5478,12 +5482,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       let result = this.selectBase;
       for (const s of Object.keys(tracker)) {
         result += ',' + s;
-      }
-
-      // Marmin (UAE e-invoicing): the server's $Details shorthand leaves the e-invoice columns
-      // out, so ask for the state explicitly on the definitions whose screen shows it.
-      if (!!def.MarminAeDocumentType) {
-        result += ',MarminAeState';
       }
 
       this.selectResult = result;
