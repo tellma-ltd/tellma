@@ -132,6 +132,35 @@ namespace Tellma.Api.Tests.MarminAe
             Assert.Equal(0.01m, MarminAeMapper.ToSalesInvoice(invoice).PayableRoundingAmount);
         }
 
+        [Theory]
+        [InlineData("Invoice 12 for July", "Invoice 12 for July")]
+        [InlineData("INV-12/2026", "INV 12 2026")]
+        [InlineData("Line one\nLine two", "Line one Line two")]
+        [InlineData("(Paid in full.)", "Paid in full")]       // only the ends are trimmed
+        [InlineData("فاتورة ١٢ لشهر يوليو", "فاتورة ١٢ لشهر يوليو")] // letters and digits of any script stay
+        [InlineData("Café déjà", "Café déjà")]
+        [InlineData("مُحَمَّد", "محمد")]                 // diacritics are dropped, not spaced out
+        [InlineData("#!?", null)]
+        [InlineData("   ", null)]
+        [InlineData(null, null)]
+        public void TheNote_KeepsOnlyLettersDigitsAndSpaces(string memo, string expected)
+        {
+            // The vendor refuses a note with any other character, so each one becomes a space.
+            Assert.Equal(expected, MarminAeMapper.ToNote(memo));
+        }
+
+        [Fact]
+        public void TheNote_IsCleanedOnInvoicesAndCreditNotes()
+        {
+            var invoice = Invoice();
+            invoice.Note = "Ref: PO#77";
+            var creditNote = Invoice("SalesCreditNote");
+            creditNote.Note = "Ref: PO#77";
+
+            Assert.Equal("Ref  PO 77", MarminAeMapper.ToSalesInvoice(invoice).Note);
+            Assert.Equal("Ref  PO 77", MarminAeMapper.ToSalesCreditNote(creditNote).Note);
+        }
+
         [Fact]
         public void PaymentMeans_AreAlwaysSent()
         {

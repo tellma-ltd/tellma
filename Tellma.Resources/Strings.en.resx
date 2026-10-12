@@ -1388,7 +1388,7 @@
     <value>Resource {0} is VAT exempt but has no exemption reason.</value>
   </data>
   <data name="Error_MarminAeMissingPayeeAccount" xml:space="preserve">
-    <value>Sales invoice {0} is paid by credit transfer, so it must have a bank account number (IBAN) for the UAE e-invoicing network.</value>
+    <value>Customer account {0} is paid by credit transfer, so it must have a bank account number (IBAN) for the UAE e-invoicing network.</value>
   </data>
   <data name="Error_MarminAeMissingPrice" xml:space="preserve">
     <value>Resource {0} has no unit price.</value>

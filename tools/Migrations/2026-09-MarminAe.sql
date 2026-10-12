@@ -559,6 +559,47 @@ RETURN (
 );
 GO
 
+CREATE OR ALTER FUNCTION [dbo].[fn_UnitCode__UneceRec20] (
+    @Code NVARCHAR (50)
+)
+RETURNS NVARCHAR (3)
+AS
+BEGIN
+    RETURN CASE @Code
+        -- Pure / Count
+        WHEN N'pure'     THEN N'C62' -- one (dimensionless)
+        WHEN N'ea'       THEN N'EA'  -- each
+        WHEN N'pcs'      THEN N'H87' -- piece
+        WHEN N'share'    THEN N'E21' -- share
+        WHEN N'trip'     THEN N'E54' -- trip
+        WHEN N'manmonth' THEN N'3C'  -- manmonth
+        -- Time
+        WHEN N's'        THEN N'SEC' -- second
+        WHEN N'min'      THEN N'MIN' -- minute
+        WHEN N'hr'       THEN N'HUR' -- hour
+        WHEN N'd'        THEN N'DAY' -- day
+        WHEN N'wk'       THEN N'WEE' -- week
+        WHEN N'mo'       THEN N'MON' -- month
+        WHEN N'yr'       THEN N'ANN' -- year
+        WHEN N'wd'       THEN N'E49' -- working day
+        WHEN N'wmo'      THEN N'WM'  -- working month
+        -- Mass
+        WHEN N'g'        THEN N'GRM' -- gram
+        WHEN N'kg'       THEN N'KGM' -- kilogram
+        WHEN N'qn100'    THEN N'DTN' -- decitonne (metric quintal, 100 kg)
+        WHEN N'mt'       THEN N'TNE' -- tonne (metric ton)
+        -- Volume
+        WHEN N'ltr'      THEN N'LTR' -- litre
+        -- Distance
+        WHEN N'cm'       THEN N'CMT' -- centimetre
+        WHEN N'm'        THEN N'MTR' -- metre
+        WHEN N'km'       THEN N'KMT' -- kilometre
+        -- No Rec 20 equivalent: emo, wwk, wyr, qn50, uq-yr, hmo, manhour
+        ELSE @Code
+    END;
+END;
+GO
+
 CREATE OR ALTER PROCEDURE [dal].[MarminAe__GetInvoices]
 	@Ids [dbo].[IndexedIdList] READONLY
 AS
@@ -619,9 +660,8 @@ BEGIN
 		-- issue date, and it must stay the same if the document is ever resubmitted.
 		ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) AS [IssueDate],
 
-		-- Due date: NotedDate is a free, per-document date with a definition-configurable label,
-		-- so tenants relabel it "Due Date". Otherwise 30 days after issue.
-		ISNULL(D.[NotedDate], DATEADD(DAY, 30,
+		-- Due date: the sales invoice agent's ToDate. Otherwise 30 days after issue.
+		ISNULL(SI.[ToDate], DATEADD(DAY, 30,
 			ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)))) AS [DueDate],
 
 		-- The eight supply-scenario flags. Same slot ZATCA uses for InvoiceTypeTransactions, but a
@@ -682,7 +722,7 @@ BEGIN
 		-- Payment. Same slot ZATCA reads, defaulting to 30 (credit transfer), which requires the
 		-- payee account (IBR-192-AE); bll.Documents_Validate__Close asserts it is there.
 		ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30') AS [PaymentMeansCode],
-		SI.[BankAccountNumber]						AS [PayeeFinancialAccountId],
+		CA.[BankAccountNumber]						AS [PayeeFinancialAccountId],
 
 		-- Rounding is modelled as a zero-VAT resource called Rounding; reused from ZATCA as-is.
 		dal.fn_Document__RoundingAmount(D.[Id])		AS [PayableRoundingAmount],
@@ -761,8 +801,10 @@ BEGIN
 		-- Sign convention copied from ZATCA's 388 / 381 split.
 		IIF(DD.[MarminAeDocumentType] = N'SalesInvoice', -1, +1) * E.[Direction] * E.[Quantity] AS [Quantity],
 
-		-- Must be a UN/ECE Rec 20 code. Free text in Tellma, so validated at close.
-		U.[Code]									AS [UnitCode],
+		-- Must be a UN/ECE Rec 20 code. Tellma's unit codes are free text, so the standard ones
+		-- (kg, hr, pcs, ...) are translated by dbo.fn_UnitCode__UneceRec20, and anything it does
+		-- not know passes through unchanged.
+		dbo.fn_UnitCode__UneceRec20(U.[Code])		AS [UnitCode],
 
 		L.[Decimal1]								AS [PriceBaseAmount],
 		1.00										AS [PriceBaseQuantity],
@@ -1590,7 +1632,7 @@ BEGIN
 			[ProfileExecutionId]	NVARCHAR (255),
 			[DiscrepancyResponse]	NVARCHAR (255),
 			[PaymentMeansCode]		NVARCHAR (255),
-			[SalesInvoiceName]		NVARCHAR (255),
+			[CustomerAccountName]	NVARCHAR (255),
 			[PayeeAccount]			NVARCHAR (255)
 		);
 
@@ -1619,8 +1661,8 @@ BEGIN
 				IIF(ISNULL(dal.fn_Lookup__Code(CA.[AddressCountryId]), N'AE') = N'AE', N'00000000', N'00000001')),
 			dal.fn_Lookup__Code(D.[Lookup2Id]),
 			ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30'),
-			SI.[Name],
-			NULLIF(LTRIM(RTRIM(SI.[BankAccountNumber])), N'')
+			CA.[Name],
+			NULLIF(LTRIM(RTRIM(CA.[BankAccountNumber])), N'')
 		FROM @Ids FE
 		JOIN [map].[Documents]() D ON D.[Id] = FE.[Id]
 		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
@@ -1768,9 +1810,9 @@ BEGIN
 		FROM @MarminAeDocs
 		WHERE [PaymentMeansCode] NOT IN (N'1', N'10', N'20', N'21', N'30', N'49', N'54', N'55', N'68');
 
-		-- A credit transfer must say where to pay (IBR-192-AE): the sales invoice's bank account.
+		-- A credit transfer must say where to pay (IBR-192-AE): the customer account's bank account.
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingPayeeAccount', [SalesInvoiceName]
+		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingPayeeAccount', [CustomerAccountName]
 		FROM @MarminAeDocs
 		WHERE [PaymentMeansCode] = N'30' AND [PayeeAccount] IS NULL;
 
@@ -2068,8 +2110,8 @@ GO
 
 -- Expected: 14 Columns (4 Settings, 6 Documents, 2 DocumentDefinitions, and the same 2 again on
 -- DocumentDefinitionsHistory, which SQL Server adds itself because DocumentDefinitions is a
--- system-versioned temporal table), 1 Constraint, 2 TypeColumns, 1 Index, and 15 Objects
--- (8 MarminAe procedures, 2 map functions, 5 changed procedures).
+-- system-versioned temporal table), 1 Constraint, 2 TypeColumns, 1 Index, and 16 Objects
+-- (8 MarminAe procedures, 2 map functions, the unit code function, 5 changed procedures).
 SELECT 'Column' AS [Kind], OBJECT_NAME(c.[object_id]) AS [Parent], c.[name] AS [Name]
 FROM sys.columns c
 JOIN sys.tables t ON t.[object_id] = c.[object_id]   -- real tables only: sys.columns also
@@ -2094,9 +2136,9 @@ UNION ALL
 SELECT 'Object', SCHEMA_NAME([schema_id]), [name]
 FROM sys.objects
 WHERE ([name] LIKE 'MarminAe%'
-       OR [name] IN ('Documents', 'DocumentDefinitions', 'DocumentDefinitions__Save',
+       OR [name] IN ('Documents', 'DocumentDefinitions', 'DocumentDefinitions__Save', 'fn_UnitCode__UneceRec20',
                      'DocumentDefinitions_Validate__Save', 'Documents_Validate__Open',
                      'Documents_Validate__Close'))
-  AND [type] IN ('P', 'V', 'IF', 'TF')
+  AND [type] IN ('P', 'V', 'IF', 'TF', 'FN')
 ORDER BY [Kind], [Parent], [Name];
 GO

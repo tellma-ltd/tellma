@@ -36,7 +36,10 @@ namespace Tellma.Repository.Application
         /// <summary>The accounting date, not the moment of closing.</summary>
         public DateTime IssueDate { get; set; }
 
-        /// <summary>Required on an invoice; optional on a credit note.</summary>
+        /// <summary>
+        /// The sales invoice agent's ToDate, else 30 days after the issue date. Required on an
+        /// invoice; optional on a credit note.
+        /// </summary>
         public DateTime? DueDate { get; set; }
 
         /// <summary>The eight supply-scenario flags (the UAE analogue of ZATCA's ITT code).</summary>
@@ -45,6 +48,10 @@ namespace Tellma.Repository.Application
         /// <summary>ISO 4217.</summary>
         public string DocumentCurrencyCode { get; set; }
 
+        /// <summary>
+        /// Documents.Memo as stored. The mapper turns everything but letters, digits and spaces
+        /// into spaces, which is all the vendor accepts.
+        /// </summary>
         public string Note { get; set; }
 
         public string BuyerReference { get; set; }
@@ -99,6 +106,9 @@ namespace Tellma.Repository.Application
 
         public string PaymentMeansCode { get; set; }
 
+        /// <summary>
+        /// The customer account's BankAccountNumber. Required when paying by credit transfer (30).
+        /// </summary>
         public string PayeeFinancialAccountId { get; set; }
 
         public decimal? PayableRoundingAmount { get; set; }
@@ -132,7 +142,10 @@ namespace Tellma.Repository.Application
 
         public decimal Quantity { get; set; }
 
-        /// <summary>UN/ECE Recommendation 20. Free text in Tellma, so validated at close.</summary>
+        /// <summary>
+        /// UN/ECE Recommendation 20, translated from Tellma's free-text unit code by
+        /// dbo.fn_UnitCode__UneceRec20. Its presence is validated at close.
+        /// </summary>
         public string UnitCode { get; set; }
 
         /// <summary>The net unit price.</summary>

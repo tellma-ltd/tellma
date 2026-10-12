@@ -1286,7 +1286,7 @@
     <value>المورد {0} معفى من ضريبة القيمة المضافة لكن ليس له سبب إعفاء.</value>
   </data>
   <data name="Error_MarminAeMissingPayeeAccount" xml:space="preserve">
-    <value>تُسدد فاتورة المبيعات {0} بالتحويل الدائن، لذا يجب أن تحتوي على رقم حساب بنكي (IBAN) لشبكة الفوترة الإلكترونية الإماراتية.</value>
+    <value>يُسدد حساب العميل {0} بالتحويل الدائن، لذا يجب أن يحتوي على رقم حساب بنكي (IBAN) لشبكة الفوترة الإلكترونية الإماراتية.</value>
   </data>
   <data name="Error_MarminAeMissingPrice" xml:space="preserve">
     <value>المورد {0} ليس له سعر وحدة.</value>

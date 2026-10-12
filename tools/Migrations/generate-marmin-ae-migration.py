@@ -43,6 +43,9 @@ PROGRAMMABLE = [
     # SELECT * FROM [map].[DocumentDefinitions](), so if this view does not expose
     # MarminAeDocumentType the DefinitionsCache reads it as null and nothing is ever submitted.
     "map/map.DocumentDefinitions.sql",
+
+    # Translates Tellma unit codes to UN/ECE Rec 20; dal.MarminAe__GetInvoices calls it.
+    "dbo/Functions/dbo.fn_UnitCode__UneceRec20.sql",
     "dal/Stored Procedures/dal.MarminAe__GetInvoices.sql",
     "dal/Stored Procedures/dal.MarminAe__MarkSubmitting.sql",
     "dal/Stored Procedures/dal.MarminAe__MarkSent.sql",
@@ -227,8 +230,8 @@ GO
 
 -- Expected: 14 Columns (4 Settings, 6 Documents, 2 DocumentDefinitions, and the same 2 again on
 -- DocumentDefinitionsHistory, which SQL Server adds itself because DocumentDefinitions is a
--- system-versioned temporal table), 1 Constraint, 2 TypeColumns, 1 Index, and 15 Objects
--- (8 MarminAe procedures, 2 map functions, 5 changed procedures).
+-- system-versioned temporal table), 1 Constraint, 2 TypeColumns, 1 Index, and 16 Objects
+-- (8 MarminAe procedures, 2 map functions, the unit code function, 5 changed procedures).
 SELECT 'Column' AS [Kind], OBJECT_NAME(c.[object_id]) AS [Parent], c.[name] AS [Name]
 FROM sys.columns c
 JOIN sys.tables t ON t.[object_id] = c.[object_id]   -- real tables only: sys.columns also
@@ -253,10 +256,10 @@ UNION ALL
 SELECT 'Object', SCHEMA_NAME([schema_id]), [name]
 FROM sys.objects
 WHERE ([name] LIKE 'MarminAe%'
-       OR [name] IN ('Documents', 'DocumentDefinitions', 'DocumentDefinitions__Save',
+       OR [name] IN ('Documents', 'DocumentDefinitions', 'DocumentDefinitions__Save', 'fn_UnitCode__UneceRec20',
                      'DocumentDefinitions_Validate__Save', 'Documents_Validate__Open',
                      'Documents_Validate__Close'))
-  AND [type] IN ('P', 'V', 'IF', 'TF')
+  AND [type] IN ('P', 'V', 'IF', 'TF', 'FN')
 ORDER BY [Kind], [Parent], [Name];
 GO
 """)

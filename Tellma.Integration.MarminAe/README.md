@@ -104,7 +104,7 @@ ZATCA**, since that setup is already familiar.
   `CurrentValueAddedTaxPayables`, with the item in `NotedResourceId`. Lines in a rejected or
   voided workflow state are excluded.
 - Resource `Lookup3Id` → VAT category (`S`/`Z`/`E`/`O`/`AE`/`N`); `Lookup4Id` → VAT exemption reason.
-- Sales-invoice agent `Lookup1Id` → payment means; `BankAccountNumber` → payee account.
+- Sales-invoice agent `Lookup1Id` → payment means.
 - `Documents.Lookup1Id` → the supply-scenario flag code (ZATCA's `InvoiceTypeTransactions`;
   Marmin's `profile_execution_id`). Same slot, same idea, **different code vocabulary**.
 - `Documents.Lookup2Id` → reason for issuance on credit notes.
@@ -123,12 +123,13 @@ ZATCA**, since that setup is already familiar.
 | Customer tax id | `TaxIdentificationNumber`, falling back to `Text1` (CRN) | `TaxIdentificationNumber` (account, falling back to customer), as the 10-digit TIN **or** the 15-digit TRN. No CRN fallback. Required for UAE customers and Peppol-registered ones |
 | Address | free text, partially optional | Street, city, province and country are **all required** on the customer account, UAE or not. For a UAE address, `AddressProvince` must be a three-letter **emirate code** (`AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`) — not the two-letter ISO subdivisions. The country lookup's code must be the ISO alpha-2 code (`AE`) |
 | Item description | not sent | **Required.** `Resources.Description` (falls back to `Name`) |
-| Unit codes | sent, lenient in practice | `Units.Code` must be **UN/ECE Rec 20** (`PCE`, `KGM`, `HUR`, …); close is blocked if empty |
+| Unit codes | sent, lenient in practice | sent as **UN/ECE Rec 20**: `dbo.fn_UnitCode__UneceRec20` translates Tellma's standard codes (`kg`→`KGM`, `hr`→`HUR`, `pcs`→`H87`, `manmonth`→`3C`, …), and any other `Units.Code` is sent as-is, so it must already be a Rec 20 code; close is blocked if empty |
 | Item identifier | `Resources.Identifier` sent | **not sent** — Tellma's identifier has no ISO 6523 scheme, which PINT-AE requires |
 | Names / language | `Name2` (Arabic mandate) | **`Name`** (Latin) |
 | VAT rate | default 15%, sent as a 0–1 fraction | default **5%**, sent as a **percentage** (the SP multiplies by 100) |
-| Due date | n/a | `Documents.NotedDate` — **relabel it "Due Date"** on the definition, or it falls back to issue date + 30 days |
-| Payment means | `Lookup1Id` on the sales-invoice agent | same, but Marmin's code list (`30` if empty) — ZATCA's `42`/`48` are refused. **Credit transfer (`30`, the default) requires the IBAN in the sales-invoice agent's `BankAccountNumber`** |
+| Due date | n/a | the sales-invoice agent's **`ToDate`**, or issue date + 30 days |
+| Note | n/a | `Documents.Memo`, with every character other than letters, digits and spaces replaced by a space — the vendor refuses anything else |
+| Payment means | `Lookup1Id` on the sales-invoice agent | same, but Marmin's code list (`30` if empty) — ZATCA's `42`/`48` are refused. **Credit transfer (`30`, the default) requires the IBAN in the customer account's `BankAccountNumber`** |
 | Foreign customers | invoiced like any other | invoiced **only as exports** — see [Customers outside the UAE](#customers-outside-the-uae) |
 | Credit note linkage | `fn_Document__BillingReferenceId` | the original is found via the same `NotedAgentId`; **exactly one** closed Marmin invoice must match, else close is blocked |
 | Numbering | ZATCA assigns a serial + hash chain | Tellma's `Documents.Code` is sent as `document_number` — **turn auto-numbering OFF in the Marmin organisation** |
@@ -198,7 +199,7 @@ A zero-rated (`Z`) export is a normal `380`. All of this was confirmed against t
 - a `480` invoice flags deemed supply, profit margin scheme or summary invoice (positions 2–4,
   Peppol IBR-157-AE);
 - the payment means code is not on Marmin's list, or it is a credit transfer (`30`) and the
-  sales-invoice agent has no `BankAccountNumber`;
+  customer account has no `BankAccountNumber`;
 - a foreign customer's document is not flagged as an export, or an export goes to a UAE customer;
 - a credit note has no valid `DL8.61.1` / `VD` reason, or does not resolve to exactly one original;
 - there are no invoice lines, or a line has a non-positive quantity, no price, no unit code, or is
@@ -216,7 +217,7 @@ configurable:
 |---|---|---|
 | `endpoint_scheme_id` | `0235` | — |
 | `profile_execution_id` | `00000000` (domestic), or `00000001` (export) for a customer outside the UAE | `Documents.Lookup1Id` |
-| `due_date` | issue date + 30 days | `Documents.NotedDate` |
+| `due_date` | issue date + 30 days | the sales-invoice agent's `ToDate` |
 | `payment_means_code` | `30` (credit transfer) | sales-invoice agent `Lookup1Id` |
 
 ---
@@ -275,7 +276,7 @@ Then exercise the rest:
   delete and cancel are all refused on a submitted document, and flip it back.
 - **A credit note** against it — `billing_reference` must resolve to the original.
 - **Negative paths** — a customer with no `ContactEmail`, a resource with no unit code, a `380`
-  invoice with only exempt lines, a sales invoice with no IBAN, and a deliberately mismatched
+  invoice with only exempt lines, a customer account with no IBAN, and a deliberately mismatched
   total must each be blocked at close with a clear message.
 
 ### The webhook

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using Tellma.Connector.MarminAe;
 using Tellma.Repository.Application;
 
@@ -77,7 +79,7 @@ namespace Tellma.Api.MarminAe
                 DocumentNumber = inv.DocumentNumber,
                 ProfileExecutionId = Required(inv.ProfileExecutionId, nameof(inv.ProfileExecutionId)),
                 DocumentCurrencyCode = Required(inv.DocumentCurrencyCode, nameof(inv.DocumentCurrencyCode)),
-                Note = inv.Note,
+                Note = ToNote(inv.Note),
                 BuyerReference = inv.BuyerReference,
                 PayableRoundingAmount = NullIfZero(inv.PayableRoundingAmount),
                 AccountingCustomerParty = ToParty(inv),
@@ -117,7 +119,7 @@ namespace Tellma.Api.MarminAe
                 DocumentNumber = inv.DocumentNumber,
                 ProfileExecutionId = Required(inv.ProfileExecutionId, nameof(inv.ProfileExecutionId)),
                 DocumentCurrencyCode = Required(inv.DocumentCurrencyCode, nameof(inv.DocumentCurrencyCode)),
-                Note = inv.Note,
+                Note = ToNote(inv.Note),
                 BuyerReference = inv.BuyerReference,
                 PayableRoundingAmount = NullIfZero(inv.PayableRoundingAmount),
                 AccountingCustomerParty = ToParty(inv),
@@ -125,6 +127,40 @@ namespace Tellma.Api.MarminAe
                 PaymentMeans = ToPaymentMeans(inv),
                 DocumentLines = ToLines(inv),
             };
+        }
+
+        /// <summary>
+        /// The document's memo, in the only form the vendor accepts.
+        /// </summary>
+        /// <remarks>
+        /// The vendor refuses a note holding anything but letters, digits and spaces, so every other
+        /// character (punctuation, symbols, line breaks) becomes a space. Letters and digits of any
+        /// script are kept, so an Arabic memo survives. Diacritics (combining marks such as the
+        /// Arabic harakat) are refused too, but they sit on a letter, so they are dropped rather
+        /// than spaced out, which would split the word they belong to.
+        /// </remarks>
+        public static string ToNote(string memo)
+        {
+            if (string.IsNullOrWhiteSpace(memo))
+            {
+                return null;
+            }
+
+            var result = new StringBuilder(memo.Length);
+            foreach (var c in memo)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    result.Append(c);
+                }
+                else if (CharUnicodeInfo.GetUnicodeCategory(c) is not
+                    (UnicodeCategory.NonSpacingMark or UnicodeCategory.SpacingCombiningMark or UnicodeCategory.EnclosingMark))
+                {
+                    result.Append(' ');
+                }
+            }
+
+            return NullIfBlank(result.ToString().Trim());
         }
 
         /// <summary>

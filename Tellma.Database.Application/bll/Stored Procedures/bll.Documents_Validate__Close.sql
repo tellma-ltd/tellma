@@ -338,7 +338,7 @@ BEGIN
 			[ProfileExecutionId]	NVARCHAR (255),
 			[DiscrepancyResponse]	NVARCHAR (255),
 			[PaymentMeansCode]		NVARCHAR (255),
-			[SalesInvoiceName]		NVARCHAR (255),
+			[CustomerAccountName]	NVARCHAR (255),
 			[PayeeAccount]			NVARCHAR (255)
 		);
 
@@ -367,8 +367,8 @@ BEGIN
 				IIF(ISNULL(dal.fn_Lookup__Code(CA.[AddressCountryId]), N'AE') = N'AE', N'00000000', N'00000001')),
 			dal.fn_Lookup__Code(D.[Lookup2Id]),
 			ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30'),
-			SI.[Name],
-			NULLIF(LTRIM(RTRIM(SI.[BankAccountNumber])), N'')
+			CA.[Name],
+			NULLIF(LTRIM(RTRIM(CA.[BankAccountNumber])), N'')
 		FROM @Ids FE
 		JOIN [map].[Documents]() D ON D.[Id] = FE.[Id]
 		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
@@ -516,9 +516,9 @@ BEGIN
 		FROM @MarminAeDocs
 		WHERE [PaymentMeansCode] NOT IN (N'1', N'10', N'20', N'21', N'30', N'49', N'54', N'55', N'68');
 
-		-- A credit transfer must say where to pay (IBR-192-AE): the sales invoice's bank account.
+		-- A credit transfer must say where to pay (IBR-192-AE): the customer account's bank account.
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingPayeeAccount', [SalesInvoiceName]
+		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingPayeeAccount', [CustomerAccountName]
 		FROM @MarminAeDocs
 		WHERE [PaymentMeansCode] = N'30' AND [PayeeAccount] IS NULL;
 

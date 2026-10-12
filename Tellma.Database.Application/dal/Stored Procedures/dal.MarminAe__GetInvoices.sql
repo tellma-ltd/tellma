@@ -58,9 +58,8 @@ BEGIN
 		-- issue date, and it must stay the same if the document is ever resubmitted.
 		ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) AS [IssueDate],
 
-		-- Due date: NotedDate is a free, per-document date with a definition-configurable label,
-		-- so tenants relabel it "Due Date". Otherwise 30 days after issue.
-		ISNULL(D.[NotedDate], DATEADD(DAY, 30,
+		-- Due date: the sales invoice agent's ToDate. Otherwise 30 days after issue.
+		ISNULL(SI.[ToDate], DATEADD(DAY, 30,
 			ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)))) AS [DueDate],
 
 		-- The eight supply-scenario flags. Same slot ZATCA uses for InvoiceTypeTransactions, but a
@@ -121,7 +120,7 @@ BEGIN
 		-- Payment. Same slot ZATCA reads, defaulting to 30 (credit transfer), which requires the
 		-- payee account (IBR-192-AE); bll.Documents_Validate__Close asserts it is there.
 		ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30') AS [PaymentMeansCode],
-		SI.[BankAccountNumber]						AS [PayeeFinancialAccountId],
+		CA.[BankAccountNumber]						AS [PayeeFinancialAccountId],
 
 		-- Rounding is modelled as a zero-VAT resource called Rounding; reused from ZATCA as-is.
 		dal.fn_Document__RoundingAmount(D.[Id])		AS [PayableRoundingAmount],
@@ -200,8 +199,10 @@ BEGIN
 		-- Sign convention copied from ZATCA's 388 / 381 split.
 		IIF(DD.[MarminAeDocumentType] = N'SalesInvoice', -1, +1) * E.[Direction] * E.[Quantity] AS [Quantity],
 
-		-- Must be a UN/ECE Rec 20 code. Free text in Tellma, so validated at close.
-		U.[Code]									AS [UnitCode],
+		-- Must be a UN/ECE Rec 20 code. Tellma's unit codes are free text, so the standard ones
+		-- (kg, hr, pcs, ...) are translated by dbo.fn_UnitCode__UneceRec20, and anything it does
+		-- not know passes through unchanged.
+		dbo.fn_UnitCode__UneceRec20(U.[Code])		AS [UnitCode],
 
 		L.[Decimal1]								AS [PriceBaseAmount],
 		1.00										AS [PriceBaseQuantity],
