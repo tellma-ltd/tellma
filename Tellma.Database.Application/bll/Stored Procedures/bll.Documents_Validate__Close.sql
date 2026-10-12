@@ -357,7 +357,7 @@ BEGIN
 				WHEN LEN(CUST.[TaxId]) = 15 AND CUST.[TaxId] LIKE N'1%03' AND CUST.[TaxId] NOT LIKE N'%[^0-9]%'
 					THEN LEFT(CUST.[TaxId], 10)
 			END,
-			IIF(dal.fn_Lookup__Code(ISNULL(CA.[Lookup4Id], CG.[Lookup4Id])) = N'Y', 1, 0),
+			IIF(dal.fn_Lookup__Code(ISNULL(CA.[Lookup8Id], CG.[Lookup8Id])) = N'Y', 1, 0), -- Peppol registration, as in dal.MarminAe__GetInvoices
 			dal.fn_Lookup__Code(CA.[AddressCountryId]),
 			CA.[AddressStreet],
 			CA.[AddressCity],

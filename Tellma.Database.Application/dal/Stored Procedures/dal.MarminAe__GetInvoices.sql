@@ -88,7 +88,7 @@ BEGIN
 		ISNULL(CA.[ContactEmail], CG.[ContactEmail]) AS [CustomerEmail],
 
 		-- The Peppol routing address. Whether the customer is reachable on Peppol at all is
-		-- recorded on the customer agent's Lookup4, which points at the YesNo lookup definition
+		-- recorded on the customer agent's Lookup8, which points at the YesNo lookup definition
 		-- (code Y = registered), the same convention bll.ft_Employees__Deductions_SD uses:
 		--   registered           -> their 10-digit TIN
 		--   not registered, UAE  -> 9900000098, the FTA's placeholder for a UAE buyer not on Peppol
@@ -148,7 +148,7 @@ BEGIN
 		SELECT
 			dal.fn_Lookup__Code(CA.[AddressCountryId]) AS [CountryCode],
 			LTRIM(RTRIM(ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]))) AS [TaxId],
-			IIF(dal.fn_Lookup__Code(ISNULL(CA.[Lookup4Id], CG.[Lookup4Id])) = N'Y', 1, 0) AS [IsPeppolRegistered]
+			IIF(dal.fn_Lookup__Code(ISNULL(CA.[Lookup8Id], CG.[Lookup8Id])) = N'Y', 1, 0) AS [IsPeppolRegistered]
 	) CUST
 	CROSS APPLY (
 		-- A UAE tax number is held either as the 10-digit TIN (starts with 1) or as the 15-digit

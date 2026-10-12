@@ -119,7 +119,7 @@ ZATCA**, since that setup is already familiar.
 | Scenario flags | `Documents.Lookup1Id` → an `ITT…` lookup encoding **7** flags | same slot, but **8** flags and a **different vocabulary** — populate the Lookup Definition from Marmin's docs, never by copying the KSA `ITT…` codes |
 | `Lookup2Id` codes | KSA reason-for-issuance text | the **UAE `discrepancy_response` codes** (`DL8.61.1.A`…`E`, `VD`), **required** on every credit note |
 | Customer email | not required | **Required.** `Agents.ContactEmail` on the customer account, falling back to the customer |
-| Peppol registration | n/a | **New: customer `Lookup4Id`** — see [The customer's Peppol endpoint](#the-customers-peppol-endpoint) |
+| Peppol registration | n/a | **New: customer `Lookup8Id`** — see [The customer's Peppol endpoint](#the-customers-peppol-endpoint) |
 | Customer tax id | `TaxIdentificationNumber`, falling back to `Text1` (CRN) | `TaxIdentificationNumber` (account, falling back to customer), as the 10-digit TIN **or** the 15-digit TRN. No CRN fallback. Required for UAE customers and Peppol-registered ones |
 | Address | free text, partially optional | Street, city, province and country are **all required** on the customer account, UAE or not. For a UAE address, `AddressProvince` must be a three-letter **emirate code** (`AUH`, `DXB`, `SHJ`, `UAQ`, `FUJ`, `AJM`, `RAK`) — not the two-letter ISO subdivisions. The country lookup's code must be the ISO alpha-2 code (`AE`) |
 | Item description | not sent | **Required.** `Resources.Description` (falls back to `Name`) |
@@ -152,11 +152,11 @@ whether the customer is itself on Peppol:
 | Not registered, address in the UAE | `9900000098` (the FTA's placeholder) |
 | Not registered, address abroad | `9900000099` (the FTA's placeholder for an export) |
 
-"Registered" is **`Lookup4Id` on the customer account (falling back to the customer) whose code is
+"Registered" is **`Lookup8Id` on the customer account (falling back to the customer) whose code is
 `Y`** — the same Yes/No lookup convention Tellma uses elsewhere. So:
 
 1. Make sure the tenant has a Yes/No lookup definition with codes `Y` and `N`.
-2. On the customer and/or customer-account agent definitions, show `Lookup4` with that lookup
+2. On the customer and/or customer-account agent definitions, show `Lookup8` with that lookup
    definition, labelled e.g. "Registered on Peppol".
 3. Set it to Yes for every customer that receives e-invoices through Peppol. Anything else —
    empty, `N` — means "not registered" and routes to a placeholder.
@@ -233,7 +233,7 @@ configurable:
    stored value.
 4. **Document definitions** — set `MarminAeDocumentType` and `MarminAeTypeCode` on the sales
    invoice and credit note definitions.
-5. **Agent definitions** — the Peppol-registration `Lookup4` above.
+5. **Agent definitions** — the Peppol-registration `Lookup8` above.
 6. **Master data** — see the author guide above.
 
 ---

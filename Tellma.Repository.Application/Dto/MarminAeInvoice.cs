@@ -64,7 +64,7 @@ namespace Tellma.Repository.Application
 
         /// <summary>
         /// The Peppol routing address. The customer's 10-digit TIN when the customer is registered
-        /// on Peppol (Agents.Lookup4 = YesNo/Y); otherwise the FTA placeholder 9900000098 for a
+        /// on Peppol (Agents.Lookup8 = YesNo/Y); otherwise the FTA placeholder 9900000098 for a
         /// UAE customer or 9900000099 for one outside the UAE.
         /// </summary>
         public string CustomerEndpointId { get; set; }
