@@ -55,14 +55,18 @@ INSERT INTO @LeaveAdjustments
 	WHERE AC.[Concept] = N'CurrentProvisionsForEmployeeBenefits' 
 	AND E.[ResourceId] = @EmpBenAnnualLeaveRS
 	AND LD.[Code] IN (N'ToHRFromCurrentProvisions',
-			N'ToCurrentProvisionsForEmployeeBenefitsWithOtherShorttermEmployeeBenefitsFromEmployeeBenefitsAccruals')
+			N'ToCurrentProvisionsForEmployeeBenefitsWithOtherShorttermEmployeeBenefitsFromEmployeeBenefitsAccruals',
+			N'ToCurrentProvisionsForEmployeeBenefitsFromShorttermEmployeeBenefitsAccruals' -- to sel. Ensure it is everywhere
+			)
 	AND L.[State] = 4
 	GROUP BY E.[AgentId]
 --Select * From @LeaveAdjustments
 
-UPDATE Agents
-SET	[Decimal2] = dbo.fn_ActiveDates__AccruedLeaveDays(AG.[FromDate], @CurrentYearEnd, AG.[Int2],
+UPDATE AG
+SET	[Decimal2] = dbo.fn_ActiveDates__AccruedLeaveDays(AG.[FromDate], @CurrentYearEnd,
+	AG.[Int2], -- comment out in new version
 	[bll].[fn_Employee_AsOfDate__InactiveDays](UP.[EmployeeId], @CurrentYearEnd)
+--	CONCAT(N'[{"Key":"ContractAnnualLeaveDays","Value":"', ISNULL(AG.[Int2], 0), N'"}]') -- Add this in new version in AE
 )
 			- ISNULL(YE.RequestedLeaveDays, 0)
 			- ISNULL(LA.AdjustedLeaveDays, 0)
