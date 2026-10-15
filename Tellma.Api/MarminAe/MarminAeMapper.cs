@@ -351,6 +351,32 @@ namespace Tellma.Api.MarminAe
             return [.. inv.Lines.Select(ToLine)];
         }
 
+        /// <summary>
+        /// The line's VAT rate, refusing one that disagrees with its category.
+        /// </summary>
+        /// <remarks>
+        /// The vendor refuses a standard-rated (S) line at any rate but 5% ("Standard rated VAT rate
+        /// must be 5.00 percent"), and zero-rated, exempt and out-of-scope lines carry 0%. The usual
+        /// cause is a 0% resource with no VAT category, which SQL sends as S. The same rule is in
+        /// bll.Documents_Validate__Close; it is repeated here because resubmitting a closed document
+        /// runs only this mapping as its dry run, not the close validation.
+        /// </remarks>
+        private static decimal ToTaxPercent(MarminAeInvoiceLine line)
+        {
+            var category = Required(line.TaxCategoryId, nameof(line.TaxCategoryId));
+            var percent = line.TaxPercent;
+
+            if ((category == "S" && percent != 5m) || (category is "Z" or "E" or "O" && percent != 0m))
+            {
+                throw new ArgumentException(
+                    $"Line '{line.Name}' has VAT category {category} at {percent:0.##}%, but Marmin requires 5% for S and 0% for Z, E and O. " +
+                    "Set the resource's VAT category (a resource with none is sent as S) or its VAT rate.",
+                    nameof(line));
+            }
+
+            return percent;
+        }
+
         private static MarminAeDocumentLineRequest ToLine(MarminAeInvoiceLine line) => new()
         {
             Name = Required(line.Name, nameof(line.Name)),
@@ -378,7 +404,7 @@ namespace Tellma.Api.MarminAe
                 Id = Required(line.TaxCategoryId, nameof(line.TaxCategoryId)),
 
                 // Already converted from Tellma's 0..1 fraction to a percentage in SQL.
-                Percent = line.TaxPercent,
+                Percent = ToTaxPercent(line),
                 TaxScheme = "VAT",
 
                 // The vendor requires both of these when the category is exempt, and rejects the

@@ -418,6 +418,42 @@ namespace Tellma.Api.Tests.MarminAe
             Assert.Equal("Exempt financial service", category.TaxExemptionReason);
         }
 
+        [Theory]
+        [InlineData("S", 0)]    // the usual case: a 0% resource with no VAT category, sent as S
+        [InlineData("S", 15)]
+        [InlineData("Z", 5)]
+        [InlineData("E", 5)]
+        [InlineData("O", 5)]
+        public void AVatRateThatDisagreesWithItsCategory_IsRejected(string category, int percent)
+        {
+            // Confirmed against the sandbox for S ("Standard rated VAT rate must be 5.00 percent").
+            // Rejecting it here matters for Resubmit, whose only dry run is this mapping.
+            var invoice = Invoice();
+            invoice.Lines[0].TaxCategoryId = category;
+            invoice.Lines[0].TaxPercent = percent;
+            invoice.Lines[0].TaxExemptionReasonCode = "VATEX-AE-EXEMPT";
+            invoice.Lines[0].TaxExemptionReason = "Exempt";
+
+            var ex = Assert.Throws<ArgumentException>(() => MarminAeMapper.ToSalesInvoice(invoice));
+            Assert.Contains("VAT category", ex.Message);
+        }
+
+        [Theory]
+        [InlineData("S", 5)]
+        [InlineData("Z", 0)]
+        [InlineData("O", 0)]
+        public void AVatRateThatMatchesItsCategory_IsSent(string category, int percent)
+        {
+            var invoice = Invoice();
+            invoice.Lines[0].TaxCategoryId = category;
+            invoice.Lines[0].TaxPercent = percent;
+
+            var line = MarminAeMapper.ToSalesInvoice(invoice).DocumentLines.Single();
+
+            Assert.Equal(category, line.ClassifiedTaxCategory.Id);
+            Assert.Equal(percent, line.ClassifiedTaxCategory.Percent);
+        }
+
         [Fact]
         public void StandardItemIdentification_IsNeverSent()
         {
