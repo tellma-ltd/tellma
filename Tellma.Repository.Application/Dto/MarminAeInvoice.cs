@@ -126,6 +126,12 @@ namespace Tellma.Repository.Application
         /// </summary>
         public string MarminAeDocumentId { get; set; }
 
+        /// <summary>
+        /// The rate from <see cref="DocumentCurrencyCode"/> to AED on the issue date, from Tellma's
+        /// exchange rates. Null for a document in AED, which needs none.
+        /// </summary>
+        public decimal? TaxExchangeRate { get; set; }
+
         /// <summary>The invoice lines, in document order.</summary>
         public List<MarminAeInvoiceLine> Lines { get; set; } = new();
     }

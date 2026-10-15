@@ -1384,6 +1384,9 @@
   <data name="Error_MarminAeInvalidUnitCode" xml:space="preserve">
     <value>Resource {0} has no unit code, which is required for UAE e-invoicing.</value>
   </data>
+  <data name="Error_MarminAeMissingExchangeRate" xml:space="preserve">
+    <value>There is no exchange rate from {0} to AED on {1}. The UAE e-invoicing network requires one for an invoice that is not in AED.</value>
+  </data>
   <data name="Error_MarminAeMissingExemptionReason" xml:space="preserve">
     <value>Resource {0} is VAT exempt but has no exemption reason.</value>
   </data>
@@ -1405,8 +1408,17 @@
   <data name="Error_MarminAeRejectedNeedsCreditNote" xml:space="preserve">
     <value>This invoice was rejected on the UAE e-invoicing network and cannot be resubmitted. Issue a credit note against it and a new invoice instead.</value>
   </data>
+  <data name="Error_MarminAeSalesInvoiceAlreadyUsed" xml:space="preserve">
+    <value>Sales invoice {0} is already on another e-invoice. Each e-invoice needs its own sales invoice, because its code is the e-invoice number.</value>
+  </data>
+  <data name="Error_MarminAeSalesInvoiceHasNoCode" xml:space="preserve">
+    <value>Sales invoice {0} has no code. Its code is sent as the e-invoice number.</value>
+  </data>
   <data name="Error_MarminAeTotalsMismatch" xml:space="preserve">
     <value>The VAT computed from the e-invoice lines of document {0} does not match the document total. Please review the lines before closing.</value>
+  </data>
+  <data name="Error_MarminAeVatRateDoesNotMatchCategory" xml:space="preserve">
+    <value>Resource {0} has VAT category {1} but a VAT rate of {2}%. The UAE e-invoicing network requires 5% for S, and 0% for Z, E and O. Set the resource's VAT category (a resource with none is treated as S) or its VAT rate.</value>
   </data>
   <data name="Error_CannotSignDocumentInState0" xml:space="preserve">
     <value>Cannot sign a {0} document.</value>

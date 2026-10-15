@@ -49,10 +49,13 @@ BEGIN
 		DD.[MarminAeDocumentType]					AS [DocumentType],
 		DD.[MarminAeTypeCode]						AS [TypeCode],
 
-		-- Tellma's own document number becomes the vendor's document_number. Auto-numbering must
-		-- be OFF in the Marmin organisation. It is also the key the resubmit path queries the
-		-- vendor by, to find out whether a submission that appeared to fail actually landed.
-		D.[Code]									AS [DocumentNumber],
+		-- The vendor's document_number: the sales invoice's own serial (its agent code, SI-...)
+		-- for an invoice, and the document's serial (the credit memo's) for a credit note.
+		-- Auto-numbering must be OFF in the Marmin organisation. It must stay the same across
+		-- resubmissions, and is the key the refresh and resubmit paths query the vendor by, to
+		-- find out whether a submission that appeared to fail actually landed; the same rule is
+		-- in DocumentsService.MarminAeDocumentNumber.
+		IIF(DD.[MarminAeDocumentType] = N'SalesInvoice', SI.[Code], D.[Code]) AS [DocumentNumber],
 
 		-- The accounting date, NOT StateAt. ZATCA stamps the clearance moment; Peppol wants the
 		-- issue date, and it must stay the same if the document is ever resubmitted.
@@ -129,14 +132,24 @@ BEGIN
 		-- heuristic ZATCA uses, but written inline: dal.fn_Document__BillingReferenceId declares
 		-- RETURNS NVARCHAR with no length, i.e. NVARCHAR(1), so it truncates every code to one
 		-- character. bll.Documents_Validate__Close asserts exactly one match before we get here.
-		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[Code], NULL)			AS [BillingReferenceId],
+		-- Its number is the one the vendor recorded for it, or, for an original never sent (closed
+		-- before go-live), the sales invoice serial it would have been sent under, which is the
+		-- credit note's own sales invoice, since that is how the original was found.
+		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', ISNULL(OI.[MarminAeDocumentNumber], SI.[Code]), NULL) AS [BillingReferenceId],
 		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[PostingDate], NULL)	AS [BillingReferenceIssueDate],
 
 		-- The vendor's id when it already holds this document. Set only once the vendor has
 		-- accepted a submission, so its presence is what decides between a PUT (resubmit the
 		-- document it holds, which the vendor allows only while it is VALIDATION_FAILED) and a
 		-- POST (create a new one).
-		D.[MarminAeDocumentId]						AS [MarminAeDocumentId]
+		D.[MarminAeDocumentId]						AS [MarminAeDocumentId],
+
+		-- A document not in AED must also report its tax in AED, at a rate the vendor requires
+		-- ("Tax exchange rate is required for non AED document"). This is the rate Tellma books it
+		-- at: the one in force on the issue date, as bll.fn_ConvertToFunctional looks it up. Those
+		-- rates convert to the functional currency, so they are AED rates only when that is AED;
+		-- otherwise this is NULL and bll.Documents_Validate__Close refuses the close.
+		IIF(ISNULL(SI.[CurrencyId], D.[CurrencyId]) = N'AED', NULL, FX.[Rate]) AS [TaxExchangeRate]
 	FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
@@ -171,7 +184,7 @@ BEGIN
 		-- to have been an e-invoice. NULL is unambiguous: a Marmin-typed close always stamps a
 		-- state, so NULL can only mean "closed before go-live" or a clone reset. A rejected
 		-- invoice (-30) is included because the vendor's remedy for one is a credit note.
-		SELECT TOP 1 O.[Code], O.[PostingDate]
+		SELECT TOP 1 O.[Code], O.[PostingDate], O.[MarminAeDocumentNumber]
 		FROM [map].[Documents]() O
 		JOIN dbo.DocumentDefinitions ODD ON ODD.[Id] = O.[DefinitionId]
 		WHERE ODD.[MarminAeDocumentType] = N'SalesInvoice'
@@ -180,6 +193,14 @@ BEGIN
 		AND O.[NotedAgentId] = D.[NotedAgentId]
 		ORDER BY O.[Id] DESC
 	) OI
+	OUTER APPLY (
+		SELECT XR.[Rate]
+		FROM [map].[ExchangeRates]() XR
+		WHERE dal.fn_FunctionalCurrencyId() = N'AED'
+		AND XR.[CurrencyId] = ISNULL(SI.[CurrencyId], D.[CurrencyId])
+		AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) >= XR.[ValidAsOf]
+		AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) < XR.[ValidTill]
+	) FX
 	WHERE DD.[MarminAeDocumentType] IS NOT NULL
 	-- Only documents that may be (re)submitted: never claimed (NULL), claimed but never sent (0),
 	-- refused by the vendor (-10), or failing Peppol validation (-20, resubmitted with a PUT).

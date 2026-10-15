@@ -651,10 +651,13 @@ BEGIN
 		DD.[MarminAeDocumentType]					AS [DocumentType],
 		DD.[MarminAeTypeCode]						AS [TypeCode],
 
-		-- Tellma's own document number becomes the vendor's document_number. Auto-numbering must
-		-- be OFF in the Marmin organisation. It is also the key the resubmit path queries the
-		-- vendor by, to find out whether a submission that appeared to fail actually landed.
-		D.[Code]									AS [DocumentNumber],
+		-- The vendor's document_number: the sales invoice's own serial (its agent code, SI-...)
+		-- for an invoice, and the document's serial (the credit memo's) for a credit note.
+		-- Auto-numbering must be OFF in the Marmin organisation. It must stay the same across
+		-- resubmissions, and is the key the refresh and resubmit paths query the vendor by, to
+		-- find out whether a submission that appeared to fail actually landed; the same rule is
+		-- in DocumentsService.MarminAeDocumentNumber.
+		IIF(DD.[MarminAeDocumentType] = N'SalesInvoice', SI.[Code], D.[Code]) AS [DocumentNumber],
 
 		-- The accounting date, NOT StateAt. ZATCA stamps the clearance moment; Peppol wants the
 		-- issue date, and it must stay the same if the document is ever resubmitted.
@@ -731,14 +734,24 @@ BEGIN
 		-- heuristic ZATCA uses, but written inline: dal.fn_Document__BillingReferenceId declares
 		-- RETURNS NVARCHAR with no length, i.e. NVARCHAR(1), so it truncates every code to one
 		-- character. bll.Documents_Validate__Close asserts exactly one match before we get here.
-		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[Code], NULL)			AS [BillingReferenceId],
+		-- Its number is the one the vendor recorded for it, or, for an original never sent (closed
+		-- before go-live), the sales invoice serial it would have been sent under, which is the
+		-- credit note's own sales invoice, since that is how the original was found.
+		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', ISNULL(OI.[MarminAeDocumentNumber], SI.[Code]), NULL) AS [BillingReferenceId],
 		IIF(DD.[MarminAeDocumentType] = N'SalesCreditNote', OI.[PostingDate], NULL)	AS [BillingReferenceIssueDate],
 
 		-- The vendor's id when it already holds this document. Set only once the vendor has
 		-- accepted a submission, so its presence is what decides between a PUT (resubmit the
 		-- document it holds, which the vendor allows only while it is VALIDATION_FAILED) and a
 		-- POST (create a new one).
-		D.[MarminAeDocumentId]						AS [MarminAeDocumentId]
+		D.[MarminAeDocumentId]						AS [MarminAeDocumentId],
+
+		-- A document not in AED must also report its tax in AED, at a rate the vendor requires
+		-- ("Tax exchange rate is required for non AED document"). This is the rate Tellma books it
+		-- at: the one in force on the issue date, as bll.fn_ConvertToFunctional looks it up. Those
+		-- rates convert to the functional currency, so they are AED rates only when that is AED;
+		-- otherwise this is NULL and bll.Documents_Validate__Close refuses the close.
+		IIF(ISNULL(SI.[CurrencyId], D.[CurrencyId]) = N'AED', NULL, FX.[Rate]) AS [TaxExchangeRate]
 	FROM [map].[Documents]() D
 	INNER JOIN @Ids I ON I.[Id] = D.[Id]
 	INNER JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
@@ -773,7 +786,7 @@ BEGIN
 		-- to have been an e-invoice. NULL is unambiguous: a Marmin-typed close always stamps a
 		-- state, so NULL can only mean "closed before go-live" or a clone reset. A rejected
 		-- invoice (-30) is included because the vendor's remedy for one is a credit note.
-		SELECT TOP 1 O.[Code], O.[PostingDate]
+		SELECT TOP 1 O.[Code], O.[PostingDate], O.[MarminAeDocumentNumber]
 		FROM [map].[Documents]() O
 		JOIN dbo.DocumentDefinitions ODD ON ODD.[Id] = O.[DefinitionId]
 		WHERE ODD.[MarminAeDocumentType] = N'SalesInvoice'
@@ -782,6 +795,14 @@ BEGIN
 		AND O.[NotedAgentId] = D.[NotedAgentId]
 		ORDER BY O.[Id] DESC
 	) OI
+	OUTER APPLY (
+		SELECT XR.[Rate]
+		FROM [map].[ExchangeRates]() XR
+		WHERE dal.fn_FunctionalCurrencyId() = N'AED'
+		AND XR.[CurrencyId] = ISNULL(SI.[CurrencyId], D.[CurrencyId])
+		AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) >= XR.[ValidAsOf]
+		AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) < XR.[ValidTill]
+	) FX
 	WHERE DD.[MarminAeDocumentType] IS NOT NULL
 	-- Only documents that may be (re)submitted: never claimed (NULL), claimed but never sent (0),
 	-- refused by the vendor (-10), or failing Peppol validation (-20, resubmitted with a PUT).
@@ -1633,7 +1654,11 @@ BEGIN
 			[DiscrepancyResponse]	NVARCHAR (255),
 			[PaymentMeansCode]		NVARCHAR (255),
 			[CustomerAccountName]	NVARCHAR (255),
-			[PayeeAccount]			NVARCHAR (255)
+			[PayeeAccount]			NVARCHAR (255),
+			[SalesInvoiceCode]		NVARCHAR (255),
+			[SalesInvoiceName]		NVARCHAR (255),
+			[IssueDate]				DATE,
+			[ExchangeRate]			DECIMAL (38, 19)
 		);
 
 		INSERT INTO @MarminAeDocs
@@ -1662,7 +1687,11 @@ BEGIN
 			dal.fn_Lookup__Code(D.[Lookup2Id]),
 			ISNULL(dal.fn_Lookup__Code(SI.[Lookup1Id]), N'30'),
 			CA.[Name],
-			NULLIF(LTRIM(RTRIM(CA.[BankAccountNumber])), N'')
+			NULLIF(LTRIM(RTRIM(CA.[BankAccountNumber])), N''),
+			NULLIF(LTRIM(RTRIM(SI.[Code])), N''),
+			SI.[Name],
+			ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)),
+			FX.[Rate]
 		FROM @Ids FE
 		JOIN [map].[Documents]() D ON D.[Id] = FE.[Id]
 		JOIN dbo.Agents SI ON SI.[Id] = D.[NotedAgentId]
@@ -1670,7 +1699,16 @@ BEGIN
 		LEFT JOIN dbo.Agents CG ON CG.[Id] = CA.[Agent1Id]
 		CROSS APPLY (
 			SELECT NULLIF(LTRIM(RTRIM(ISNULL(CA.[TaxIdentificationNumber], CG.[TaxIdentificationNumber]))), N'') AS [TaxId]
-		) CUST;
+		) CUST
+		OUTER APPLY (
+			-- The AED rate on the issue date, exactly as dal.MarminAe__GetInvoices looks it up.
+			SELECT XR.[Rate]
+			FROM [map].[ExchangeRates]() XR
+			WHERE dal.fn_FunctionalCurrencyId() = N'AED'
+			AND XR.[CurrencyId] = ISNULL(SI.[CurrencyId], D.[CurrencyId])
+			AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) >= XR.[ValidAsOf]
+			AND ISNULL(D.[PostingDate], CAST(D.[StateAt] AS DATE)) < XR.[ValidTill]
+		) FX;
 
 		-- One row per invoice line, exactly as dal.MarminAe__GetInvoices selects them: VAT-payable
 		-- entries, not discounts/retentions/prepayment applications, and not on a rejected or
@@ -1684,6 +1722,7 @@ BEGIN
 			[UnitCode]				NVARCHAR (255),
 			[TaxCategory]			NVARCHAR (255),
 			[HasExemptionReason]	BIT,
+			[VatPercent]			DECIMAL (19, 6),
 			[Vat]					DECIMAL (19, 6)
 		);
 
@@ -1697,6 +1736,7 @@ BEGIN
 			U.[Code],
 			ISNULL(LK3.[Code], N'S'),
 			IIF(NR.[Lookup4Id] IS NULL, 0, 1),
+			ISNULL(NR.[VatRate], 0.05) * 100,	-- as dal.MarminAe__GetInvoices sends it
 			ROUND((IIF(@MarminAeIsCreditNote = 1, +1, -1) * E.[Direction] * E.[Quantity])
 				* L.[Decimal1] * ISNULL(NR.[VatRate], 0.05), 2)
 		FROM @Ids FE
@@ -1754,6 +1794,37 @@ BEGIN
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_TheInvoiceHasMissingCurrency', CAST(NULL AS NVARCHAR (255))
 		FROM @MarminAeDocs WHERE [CurrencyId] IS NULL;
+
+		-- A document not in AED is sent with its exchange rate to AED, which the vendor requires.
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingExchangeRate',
+			[CurrencyId], CONVERT(NVARCHAR (255), [IssueDate], 23)
+		FROM @MarminAeDocs WHERE [CurrencyId] <> N'AED' AND [ExchangeRate] IS NULL;
+
+		-- An invoice is sent under its sales invoice's serial (dal.MarminAe__GetInvoices), so that
+		-- serial must exist, and must not already be on another submitted invoice: the vendor
+		-- refuses a duplicate number, and the refresh and resubmit paths, which look a document up
+		-- at the vendor by its number, would otherwise attach the other invoice's record to this one.
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeSalesInvoiceHasNoCode', [SalesInvoiceName]
+		FROM @MarminAeDocs
+		WHERE @MarminAeDocumentType = N'SalesInvoice' AND [SalesInvoiceCode] IS NULL;
+
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+		SELECT DISTINCT TOP (@Top) '[' + CAST(MD.[Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeSalesInvoiceAlreadyUsed', MD.[SalesInvoiceCode]
+		FROM @MarminAeDocs MD
+		WHERE @MarminAeDocumentType = N'SalesInvoice' AND MD.[SalesInvoiceCode] IS NOT NULL
+		AND (
+			EXISTS (
+				SELECT * FROM dbo.Documents O
+				JOIN dbo.DocumentDefinitions ODD ON ODD.[Id] = O.[DefinitionId]
+				WHERE ODD.[MarminAeDocumentType] = N'SalesInvoice'
+				AND O.[MarminAeState] IS NOT NULL
+				AND O.[NotedAgentId] = MD.[NotedAgentId]
+				AND O.[Id] <> MD.[Id]
+			)
+			OR (SELECT COUNT(*) FROM @MarminAeDocs MD2 WHERE MD2.[NotedAgentId] = MD.[NotedAgentId]) > 1
+		);
 
 		-- MarminAeTypeCode is also checked when the definition is saved, but a definition saved
 		-- before that rule existed would otherwise only be refused by the vendor.
@@ -1872,6 +1943,17 @@ BEGIN
 		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeMissingExemptionReason', [ResourceName]
 		FROM @MarminAeLines WHERE [TaxCategory] = N'E' AND [HasExemptionReason] = 0;
 
+		-- The category and the rate must agree: the vendor refuses a standard-rated (S) line at any
+		-- rate but 5% ("Standard rated VAT rate must be 5.00 percent"), and zero-rated, exempt and
+		-- out-of-scope lines carry 0%. The usual cause is a 0% resource with no VAT category, which
+		-- is sent as S; only the tenant can say whether it is Z, E or O.
+		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+		SELECT DISTINCT TOP (@Top) '[' + CAST([Index] AS NVARCHAR (255)) + ']', N'Error_MarminAeVatRateDoesNotMatchCategory',
+			[ResourceName], [TaxCategory], FORMAT([VatPercent], N'0.##')
+		FROM @MarminAeLines
+		WHERE ([TaxCategory] = N'S' AND [VatPercent] <> 5)
+		OR ([TaxCategory] IN (N'Z', N'E', N'O') AND [VatPercent] <> 0);
+
 		-- A tax invoice (380) cannot consist only of exempt (E) or out-of-scope (O) lines. The
 		-- vendor refuses it ("Commercial invoice cannot contain only exempt or out of scope
 		-- lines"); a zero-rated (Z) line is enough, which is what makes a zero-rated export a 380.
@@ -1898,8 +1980,11 @@ BEGIN
 		-- says, catches that here -- while the close can still be refused.
 		--
 		-- The ledger side is the logic of dal.fn_Document__InvoiceTotalVatAmountInAccountingCurrency
-		-- inlined, with one addition: rejected and voided workflow lines are excluded, as they are
-		-- from the payload. The shared function is left alone because ZATCA's BT-111 uses it.
+		-- inlined, with two differences: rejected and voided workflow lines are excluded, as they
+		-- are from the payload, and it sums MonetaryValue, the document's currency, which is what
+		-- the lines are priced in, rather than Value, the functional currency, which differs from
+		-- it on any document not in AED. The shared function is left alone because ZATCA's BT-111
+		-- uses it.
 		--
 		-- The tolerance absorbs per-line rounding only; a real mapping error (an unmodelled
 		-- discount, a missed line) is far larger than a cent.
@@ -1910,7 +1995,7 @@ BEGIN
 			SELECT SUM(ML.[Vat]) AS [Vat] FROM @MarminAeLines ML WHERE ML.[DocumentId] = MD.[Id]
 		) MAPPED
 		CROSS APPLY (
-			SELECT ISNULL(-SUM(E.[Direction] * E.[Value]), 0) AS [Vat]
+			SELECT ISNULL(-SUM(E.[Direction] * E.[MonetaryValue]), 0) AS [Vat]
 			FROM dbo.Entries E
 			JOIN dbo.Accounts A ON A.[Id] = E.[AccountId]
 			JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]

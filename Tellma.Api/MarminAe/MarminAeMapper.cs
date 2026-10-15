@@ -79,6 +79,8 @@ namespace Tellma.Api.MarminAe
                 DocumentNumber = inv.DocumentNumber,
                 ProfileExecutionId = Required(inv.ProfileExecutionId, nameof(inv.ProfileExecutionId)),
                 DocumentCurrencyCode = Required(inv.DocumentCurrencyCode, nameof(inv.DocumentCurrencyCode)),
+                TaxCurrencyCode = ToTaxCurrencyCode(inv),
+                TaxExchangeRate = ToTaxExchangeRate(inv),
                 Note = ToNote(inv.Note),
                 BuyerReference = inv.BuyerReference,
                 PayableRoundingAmount = NullIfZero(inv.PayableRoundingAmount),
@@ -119,6 +121,8 @@ namespace Tellma.Api.MarminAe
                 DocumentNumber = inv.DocumentNumber,
                 ProfileExecutionId = Required(inv.ProfileExecutionId, nameof(inv.ProfileExecutionId)),
                 DocumentCurrencyCode = Required(inv.DocumentCurrencyCode, nameof(inv.DocumentCurrencyCode)),
+                TaxCurrencyCode = ToTaxCurrencyCode(inv),
+                TaxExchangeRate = ToTaxExchangeRate(inv),
                 Note = ToNote(inv.Note),
                 BuyerReference = inv.BuyerReference,
                 PayableRoundingAmount = NullIfZero(inv.PayableRoundingAmount),
@@ -252,6 +256,46 @@ namespace Tellma.Api.MarminAe
             Country = Required(inv.CustomerCountry, nameof(inv.CustomerCountry)),
             CountryCode = Required(inv.CustomerCountryCode, nameof(inv.CustomerCountryCode)),
         };
+
+        /// <summary>The local currency, in which the vendor reports the tax of every document.</summary>
+        private const string Aed = "AED";
+
+        /// <summary>
+        /// A document not in AED must report its tax in AED as well; the vendor refuses it otherwise
+        /// ("Tax currency code is required for non AED documents").
+        /// </summary>
+        private static string ToTaxCurrencyCode(MarminAeInvoice inv) =>
+            inv.DocumentCurrencyCode == Aed ? null : Aed;
+
+        /// <summary>
+        /// The rate the vendor converts the tax into AED with, which it also requires of a document
+        /// not in AED. It is the rate Tellma booked the document at, so the AED tax the vendor
+        /// reports matches the ledger.
+        /// </summary>
+        private static MarminAeTaxExchangeRate ToTaxExchangeRate(MarminAeInvoice inv)
+        {
+            if (inv.DocumentCurrencyCode == Aed)
+            {
+                return null;
+            }
+
+            var rate = inv.TaxExchangeRate ?? throw new ArgumentException(
+                $"Marmin requires {nameof(inv.TaxExchangeRate)}, which was empty.", nameof(inv.TaxExchangeRate));
+
+            return new MarminAeTaxExchangeRate
+            {
+                SourceCurrencyCode = inv.DocumentCurrencyCode,
+                TargetCurrencyCode = Aed,
+
+                // The vendor refuses more than 6 decimal places ("Currency exchange rate must have at
+                // most 6 decimal places"), and Tellma's rate is a quotient carrying 19, so it is
+                // rounded; the AED tax moves by far less than a fils. A decimal is serialized with
+                // all its trailing zeros, so it is then round-tripped through G29, which drops them.
+                CalculationRate = decimal.Parse(
+                    Math.Round(rate, 6, MidpointRounding.AwayFromZero).ToString("G29", CultureInfo.InvariantCulture),
+                    CultureInfo.InvariantCulture),
+            };
+        }
 
         /// <summary>
         /// The delivery block, which the vendor requires on an export (profile_execution_id

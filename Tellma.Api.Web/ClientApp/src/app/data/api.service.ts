@@ -2602,8 +2602,10 @@ export class ApiService {
   private marminAeActionFactory(definitionId: number, docId: number | string, action: string, cancellationToken$: Observable<void>) {
     const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/${action}`;
 
+    // The server answers with the new state as plain text (an ActionResult<string>), which the
+    // default JSON response type would fail to parse and report as a server error.
     this.showRotator = true;
-    return this.http.put<string>(url, null).pipe(
+    return this.http.put(url, null, { responseType: 'text' }).pipe(
       tap(() => this.showRotator = false),
       catchError(error => {
         this.showRotator = false;

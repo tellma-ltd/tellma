@@ -126,13 +126,14 @@ ZATCA**, since that setup is already familiar.
 | Unit codes | sent, lenient in practice | sent as **UN/ECE Rec 20**: `dbo.fn_UnitCode__UneceRec20` translates Tellma's standard codes (`kg`→`KGM`, `hr`→`HUR`, `pcs`→`H87`, `manmonth`→`3C`, …), and any other `Units.Code` is sent as-is, so it must already be a Rec 20 code; close is blocked if empty |
 | Item identifier | `Resources.Identifier` sent | **not sent** — Tellma's identifier has no ISO 6523 scheme, which PINT-AE requires |
 | Names / language | `Name2` (Arabic mandate) | **`Name`** (Latin) |
-| VAT rate | default 15%, sent as a 0–1 fraction | default **5%**, sent as a **percentage** (the SP multiplies by 100) |
+| VAT rate | default 15%, sent as a 0–1 fraction | default **5%**, sent as a **percentage** (the SP multiplies by 100). The resource's category and rate must agree: `S` is 5%, `Z`/`E`/`O` are 0%. A resource with **no** category is sent as `S`, so a 0% resource needs its category set |
+| Currency | sent as-is | a document not in AED is also sent with `tax_currency_code` AED and the rate from Tellma's exchange rates on the issue date (rounded to the 6 decimals the vendor allows); close is blocked if there is no rate. The functional currency must be AED |
 | Due date | n/a | the sales-invoice agent's **`ToDate`**, or issue date + 30 days |
 | Note | n/a | `Documents.Memo`, with every character other than letters, digits and spaces replaced by a space — the vendor refuses anything else |
 | Payment means | `Lookup1Id` on the sales-invoice agent | same, but Marmin's code list (`30` if empty) — ZATCA's `42`/`48` are refused. **Credit transfer (`30`, the default) requires the IBAN in the customer account's `BankAccountNumber`** |
 | Foreign customers | invoiced like any other | invoiced **only as exports** — see [Customers outside the UAE](#customers-outside-the-uae) |
-| Credit note linkage | `fn_Document__BillingReferenceId` | the original is found via the same `NotedAgentId`; **exactly one** closed Marmin invoice must match, else close is blocked |
-| Numbering | ZATCA assigns a serial + hash chain | Tellma's `Documents.Code` is sent as `document_number` — **turn auto-numbering OFF in the Marmin organisation** |
+| Credit note linkage | `fn_Document__BillingReferenceId` | the original is found via the same `NotedAgentId`; **exactly one** closed Marmin invoice must match, else close is blocked. The reference is the number the vendor recorded for the original (or, if it was never sent, the sales invoice's code) |
+| Numbering | ZATCA assigns a serial + hash chain | an invoice is sent under its **sales invoice's code** (the `SI-…` serial, not the voucher's `SIV…`); a credit note under its own `Documents.Code` (the credit memo serial). Each sales invoice can be on one e-invoice only. **Turn auto-numbering OFF in the Marmin organisation** |
 | Reopen / delete / cancel | blocked once reported | blocked once **submitted** (`1`, `10`, `-30`); Sandbox tenants exempt |
 | Outcome timing | synchronous at close | close returns *Submitted*; delivery lands later, via the webhook or **Refresh E-Invoice Status** |
 
@@ -192,7 +193,8 @@ A zero-rated (`Z`) export is a normal `380`. All of this was confirmed against t
 - the document has no customer, or the customer has no email;
 - a UAE or Peppol-registered customer has no tax number, or one that is neither a TIN nor a TRN;
 - the customer account's address is incomplete, or a UAE province is not an emirate code;
-- the document has no currency;
+- the document has no currency, or is not in AED and has no exchange rate on its issue date;
+- an invoice's sales invoice has no code, or is already on another submitted invoice;
 - the definition's `MarminAeTypeCode` is not valid for its `MarminAeDocumentType`, or is `480`
   (not supported yet — see [Code values](#code-values));
 - the `Documents.Lookup1Id` code is not eight `0`/`1` flags;
@@ -202,11 +204,12 @@ A zero-rated (`Z`) export is a normal `380`. All of this was confirmed against t
   customer account has no `BankAccountNumber`;
 - a foreign customer's document is not flagged as an export, or an export goes to a UAE customer;
 - a credit note has no valid `DL8.61.1` / `VD` reason, or does not resolve to exactly one original;
-- there are no invoice lines, or a line has a non-positive quantity, no price, no unit code, or is
-  exempt (`E`) with no exemption reason;
+- there are no invoice lines, or a line has a non-positive quantity, no price, no unit code, is
+  exempt (`E`) with no exemption reason, or has a VAT rate that does not match its category;
 - a `380` invoice has only exempt (`E`) or out-of-scope (`O`) lines;
 - a `480` invoice has a line that is not `E`, `Z` or `O` (Peppol IBR-122-AE);
-- the VAT recomputed from the payload differs from the ledger.
+- the VAT recomputed from the payload differs from the ledger (compared in the document's
+  currency).
 
 ### Fixed values
 

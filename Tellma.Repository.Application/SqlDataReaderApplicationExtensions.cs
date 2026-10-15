@@ -196,6 +196,7 @@ namespace Tellma.Repository.Application
                     BillingReferenceId = reader.String(i++),
                     BillingReferenceIssueDate = reader.DateTime(i++),
                     MarminAeDocumentId = reader.String(i++),
+                    TaxExchangeRate = reader.Decimal(i++),
                 };
             }
 

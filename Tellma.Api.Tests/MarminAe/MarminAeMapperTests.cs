@@ -198,6 +198,53 @@ namespace Tellma.Api.Tests.MarminAe
         }
 
         [Fact]
+        public void AnAedDocument_SendsNoTaxCurrency()
+        {
+            var request = MarminAeMapper.ToSalesInvoice(Invoice());
+
+            Assert.Null(request.TaxCurrencyCode);
+            Assert.Null(request.TaxExchangeRate);
+        }
+
+        [Theory]
+        [InlineData("SalesInvoice")]
+        [InlineData("SalesCreditNote")]
+        public void ADocumentNotInAed_ReportsItsTaxInAed(string type)
+        {
+            // Confirmed against the sandbox: without both, the vendor refuses a non-AED document
+            // ("Tax currency code is required ...", then "Tax exchange rate is required ...").
+            var invoice = Invoice(type);
+            invoice.DocumentCurrencyCode = "SAR";
+
+            // As SQL Server returns it: AmountInFunctional / AmountInCurrency, 19 decimal places.
+            invoice.TaxExchangeRate = 0.9786667000000000000m;
+
+            MarminAeSalesDocumentRequest request = type == "SalesInvoice"
+                ? MarminAeMapper.ToSalesInvoice(invoice)
+                : MarminAeMapper.ToSalesCreditNote(invoice);
+
+            Assert.Equal("SAR", request.DocumentCurrencyCode);
+            Assert.Equal("AED", request.TaxCurrencyCode);
+            Assert.Equal("SAR", request.TaxExchangeRate.SourceCurrencyCode);
+            Assert.Equal("AED", request.TaxExchangeRate.TargetCurrencyCode);
+            // Rounded to the 6 decimal places the vendor allows, and without the trailing zeros,
+            // which would otherwise be serialized as-is.
+            Assert.Equal("0.978667", request.TaxExchangeRate.CalculationRate.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ADocumentNotInAedWithoutARate_IsRejected()
+        {
+            // bll.Documents_Validate__Close refuses this at the close; the mapper's dry run is the backstop.
+            var invoice = Invoice();
+            invoice.DocumentCurrencyCode = "USD";
+            invoice.TaxExchangeRate = null;
+
+            var ex = Assert.Throws<ArgumentException>(() => MarminAeMapper.ToSalesInvoice(invoice));
+            Assert.Contains(nameof(MarminAeInvoice.TaxExchangeRate), ex.Message);
+        }
+
+        [Fact]
         public void AMissingPaymentMeansCode_IsRejected()
         {
             var invoice = Invoice();

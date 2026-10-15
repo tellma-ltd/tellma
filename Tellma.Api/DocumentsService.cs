@@ -1054,11 +1054,11 @@ namespace Tellma.Api
             else if (state is MarminAeState.SentAwaitingOutcome or MarminAeState.SubmitFailed)
             {
                 var existingId = await CallMarminAe(() => _marminAeService.FindExistingDocumentIdAsync(
-                    doc.Code, def.MarminAeDocumentType, settings, cancellation));
+                    MarminAeDocumentNumber(doc, def), def.MarminAeDocumentType, settings, cancellation));
 
                 if (existingId != null)
                 {
-                    await RecordExistingMarminAeDocument(id, existingId, doc.Code, def, settings, cancellation);
+                    await RecordExistingMarminAeDocument(id, existingId, MarminAeDocumentNumber(doc, def), def, settings, cancellation);
                 }
                 else if (state == MarminAeState.SentAwaitingOutcome)
                 {
@@ -1151,13 +1151,13 @@ namespace Tellma.Api
             else if (state != MarminAeState.Submitting) // 0 is certainly unsent; the rest may not be
             {
                 var existingId = await CallMarminAe(() => _marminAeService.FindExistingDocumentIdAsync(
-                    doc.Code, def.MarminAeDocumentType, settings, cancellation));
+                    MarminAeDocumentNumber(doc, def), def.MarminAeDocumentType, settings, cancellation));
 
                 if (existingId != null)
                 {
                     // It did land. Record it; if the vendor reports VALIDATION_FAILED, the next
                     // resubmit will find the id and send a PUT.
-                    return await RecordExistingMarminAeDocument(id, existingId, doc.Code, def, settings, cancellation);
+                    return await RecordExistingMarminAeDocument(id, existingId, MarminAeDocumentNumber(doc, def), def, settings, cancellation);
                 }
             }
 
@@ -1271,12 +1271,22 @@ namespace Tellma.Api
                     nameof(Document.Code),
                     nameof(Document.State),
                     nameof(Document.MarminAeState),
-                    nameof(Document.MarminAeDocumentId))
+                    nameof(Document.MarminAeDocumentId),
+                    $"{nameof(Document.NotedAgent)}.{nameof(Agent.Code)}")
             },
             cancellation);
 
             return result.Entity;
         }
+
+        /// <summary>
+        /// The number a document is sent to the vendor under, and so the one it is looked up by:
+        /// the sales invoice's serial for an invoice, the document's own serial for a credit note.
+        /// The same rule as the DocumentNumber column of dal.MarminAe__GetInvoices.
+        /// </summary>
+        /// <remarks>The document must have been loaded by <see cref="GetMarminAeDocument"/>.</remarks>
+        private static string MarminAeDocumentNumber(Document doc, DocumentDefinitionForClient def) =>
+            def.MarminAeDocumentType == nameof(MarminAeDocumentKind.SalesInvoice) ? doc.NotedAgent?.Code : doc.Code;
 
         /// <summary>
         /// Calls the vendor on behalf of a user action, turning a vendor or transport failure into
