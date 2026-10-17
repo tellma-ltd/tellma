@@ -294,6 +294,36 @@
                               *ngTemplateOutlet="errorsTemplate;context: { control: zatcaDocumentType, serverErrors: serverErrors(model, 'UserCardinality') }">
                             </ng-container>
                           </div>
+                          <!-- Marmin (UAE) Document Type -->
+                          <div class="form-group"
+                            [class.is-invalid]="invalid(marminAeDocumentType, serverErrors(model, 'MarminAeDocumentType'))">
+                            <label class="small"
+                            for="marminAeDocumentType">{{ 'DocumentDefinition_MarminAeDocumentType' | translate }}</label>
+                            <select class="form-control t-studio-input" id="marminAeDocumentType"
+                              [(ngModel)]="model.MarminAeDocumentType" (ngModelChange)="onDefinitionChange(model)"
+                              #marminAeDocumentType="ngModel">
+                              <option value=""></option>
+                              @for (c of marminAeDocumentTypeChoices; track c) {
+                                <option value="{{c.value}}">
+                                {{ c.name() }}</option>
+                              }
+                            </select>
+                            <ng-container
+                              *ngTemplateOutlet="errorsTemplate;context: { control: marminAeDocumentType, serverErrors: serverErrors(model, 'MarminAeDocumentType') }">
+                            </ng-container>
+                          </div>
+                          <!-- Marmin (UAE) Type Code: the literal code the authority expects -->
+                          <div class="form-group"
+                            [class.is-invalid]="invalid(marminAeTypeCode, serverErrors(model, 'MarminAeTypeCode'))">
+                            <label class="small"
+                            for="marminAeTypeCode">{{ 'DocumentDefinition_MarminAeTypeCode' | translate }}</label>
+                            <input class="form-control t-studio-input" id="marminAeTypeCode" type="text"
+                              [(ngModel)]="model.MarminAeTypeCode" (ngModelChange)="onDefinitionChange(model)"
+                              #marminAeTypeCode="ngModel" />
+                            <ng-container
+                              *ngTemplateOutlet="errorsTemplate;context: { control: marminAeTypeCode, serverErrors: serverErrors(model, 'MarminAeTypeCode') }">
+                            </ng-container>
+                          </div>
                           <!-- Attachments Visibility -->
                           <ng-container
                             *ngTemplateOutlet="unlabeledProp; context: { prop: 'Attachment', propLower: 'attachment', fieldName: 'Document_Attachments' }">

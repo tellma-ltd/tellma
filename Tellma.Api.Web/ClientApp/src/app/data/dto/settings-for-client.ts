@@ -38,6 +38,13 @@ export interface SettingsForClient {
 
     ZatcaEnvironment: 'Sandbox' | 'Simulation' | 'Production';
 
+    // Marmin (UAE). The two secrets are deliberately absent: they are [JsonIgnore] on the server
+    // and never reach the browser.
+    MarminAeEnvironment: 'Sandbox' | 'Production';
+    MarminAeClientId: string;
+    MarminAeBusinessProfileId: string;
+    MarminAeOrgId: string;
+
     // Banner
 
     BannerKey?: string;

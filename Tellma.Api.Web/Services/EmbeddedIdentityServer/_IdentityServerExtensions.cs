@@ -60,6 +60,16 @@ namespace Microsoft.Extensions.DependencyInjection
             // Get the identity server options
             var idOptions = idConfig.Get<EmbeddedIdentityServerOptions>();
 
+            // When the Angular client is served from a different origin than this server (the default in
+            // development: http://localhost:4200 against https://localhost:5001) the browser treats the two
+            // as separate sites - under "schemeful same-site" a differing scheme alone is enough, the port
+            // never mattered. OIDC session management and silent token refresh both work by pointing a hidden
+            // iframe at this server, and a SameSite=Lax cookie is withheld from those cross-site iframe
+            // requests. IdentityServer then sees an anonymous prompt=none request, answers 'login_required',
+            // and the client signs the user out a few seconds after sign-in. SameSite=None keeps the session
+            // cookies flowing in that case; the browser only honours it on Secure cookies, hence SecurePolicy.
+            var webClientIsCrossSite = !config.GetValue<bool>("EmbeddedClientApplicationEnabled");
+
             // Register the identity context
             var connString = config.GetConnectionString("AdminConnection");
             services.AddAdminRepository(connString);
@@ -152,6 +162,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.UserInteraction.ErrorUrl = "/server-error";
                 opt.KeyManagement.Enabled = false;
 
+                if (webClientIsCrossSite)
+                {
+                    opt.Authentication.CheckSessionCookieSameSiteMode = SameSiteMode.None;
+                }
+
                 if (!string.IsNullOrWhiteSpace(idOptions.Duende.LicenseKey))
                 {
                     opt.LicenseKey = idOptions.Duende.LicenseKey;
@@ -215,6 +230,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.LoginPath = $"/identity/sign-in";
                 opt.LogoutPath = $"/identity/sign-out";
                 opt.AccessDeniedPath = $"/identity/access-denied";
+
+                if (webClientIsCrossSite)
+                {
+                    opt.Cookie.SameSite = SameSiteMode.None;
+                    opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                }
             });
 
             // Add the Identity Server web pages (sign-in, change password, etc...)
@@ -243,12 +264,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Embedded IdentityServer middleware.
         /// </summary>
-        public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app, bool isDevelopment)
+        public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app, bool isDevelopment, bool webClientIsCrossSite)
         {
             if (isDevelopment)
             {
-                // This allows us to authenticate over HTTP in debug mode
-                app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+                // This allows us to authenticate over HTTP in debug mode. The minimum policy only ever raises
+                // a cookie's SameSite, so it would quietly promote the SameSite=None session cookies back to
+                // Lax and break silent refresh - leave them alone when the client app is on another site.
+                var minimumSameSite = webClientIsCrossSite ? SameSiteMode.Unspecified : SameSiteMode.Lax;
+                app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = minimumSameSite });
             }
 
             return app.UseIdentityServer();

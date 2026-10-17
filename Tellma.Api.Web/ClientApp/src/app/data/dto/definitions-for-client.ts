@@ -204,6 +204,8 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup2DefinitionId?: number;
 
     ZatcaDocumentType?: string;
+    MarminAeDocumentType?: string;
+    MarminAeTypeCode?: string;
 
     // Memo
     MemoVisibility?: Visibility;

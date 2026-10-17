@@ -128,6 +128,19 @@ namespace Tellma.Model.Application
         [StringLength(3)]
         public string ZatcaDocumentType { get; set; }
 
+        [Display(Name = "DocumentDefinition_MarminAeDocumentType")]
+        [ChoiceList(new object[] { "SalesInvoice", "SalesCreditNote" },
+            new string[] {
+               "DocumentDefinition_MarminAeDocumentType_SalesInvoice",
+               "DocumentDefinition_MarminAeDocumentType_SalesCreditNote"
+            })]
+        [StringLength(20)]
+        public string MarminAeDocumentType { get; set; }
+
+        [Display(Name = "DocumentDefinition_MarminAeTypeCode")]
+        [StringLength(10)]
+        public string MarminAeTypeCode { get; set; }
+
         [VisibilityDisplay(Name = "Document_Clearance"), VisibilityChoiceList]
         [Required, ValidateRequired]
         public string ClearanceVisibility { get; set; }

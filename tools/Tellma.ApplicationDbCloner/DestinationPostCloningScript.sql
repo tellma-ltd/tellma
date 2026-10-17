@@ -17,6 +17,16 @@ UPDATE [dbo].[Settings] SET
 	[ZatcaEncryptionKeyIndex] = 0,
 	[ZatcaEnvironment] = N'Sandbox';
 
+-- Reset Marmin (UAE) settings. Without this a clone keeps the source tenant's Marmin
+-- credentials and would transmit live invoices to the Peppol network on its behalf.
+-- The non-secret Marmin configuration lives in [CustomFieldsJson] and is left alone: it is
+-- inert without a client secret, and clearing it would take the company address with it.
+UPDATE [dbo].[Settings] SET
+	[MarminAeEncryptedClientSecret] = NULL,
+	[MarminAeEncryptedWebhookSecret] = NULL,
+	[MarminAeEncryptionKeyIndex] = 0,
+	[MarminAeEnvironment] = N'Sandbox';
+
 -- Change all Users to New, and update versions
 UPDATE [dbo].[Users] SET 
 	[ExternalId] = IIF([IsService] = 1, [ExternalId], NULL), 
@@ -47,6 +57,16 @@ UPDATE [dbo].[Documents] SET
 	[ZatcaSerialNumber] = NULL,
 	[ZatcaHash] = NULL,
 	[ZatcaUuid] = NULL;
+
+-- De-link all Marmin (UAE) invoices from the vendor's copies, so the clone neither claims
+-- them nor blocks reopening them (bll.Documents_Validate__Open keys off [MarminAeState]).
+UPDATE [dbo].[Documents] SET
+	[MarminAeState] = NULL,
+	[MarminAeDocumentId] = NULL,
+	[MarminAeDocumentNumber] = NULL,
+	[MarminAeResult] = NULL,
+	[MarminAeLastEventId] = NULL,
+	[MarminAeLastEventAt] = NULL;
 
 -- Disable all automatic notifications
 UPDATE [dbo].[EmailTemplates] SET [IsDeployed] = 0 WHERE [Trigger] = N'Automatic';

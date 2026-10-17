@@ -62,6 +62,15 @@
 	[ZatcaHash]						NVARCHAR (MAX),		-- The invoice hash, to be included in the next invoice
 	[ZatcaUuid]						UNIQUEIDENTIFIER,	-- The invoice UUID to link to the XML invoice file
 
+	-- Marmin (UAE). Unlike ZATCA there is no hash chain or serial to carry forward: the vendor
+	-- assigns its own identifiers, and the Peppol outcome arrives asynchronously after submission.
+	[MarminAeState]					INT,				-- 0=Submitting, 1=Submitted, 10=Delivered, -10=SubmitFailed, -20=PeppolRejected
+	[MarminAeDocumentId]			NVARCHAR (50),		-- The vendor's id for the document; the key both the webhook and the status poll look it up by
+	[MarminAeDocumentNumber]		NVARCHAR (50),		-- The document number as the vendor recorded it
+	[MarminAeResult]				NVARCHAR (MAX),		-- The last status/validation payload, as returned
+	[MarminAeLastEventId]			UNIQUEIDENTIFIER,	-- Dedup key: webhook delivery is at-least-once
+	[MarminAeLastEventAt]			DATETIMEOFFSET(7),	-- Ordering key: drops a stale redelivery that would undo a newer status
+
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]					INT	NOT NULL CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),
@@ -80,4 +89,9 @@ IF UPDATE([State])
 	FROM INSERTED I 
 	JOIN DELETED D ON I.[Id] = D.[Id]
 	WHERE D.[State] <> I.[State];
+GO
+
+-- The webhook and the status poll both arrive knowing only the vendor's document id.
+CREATE NONCLUSTERED INDEX [IX_Documents__MarminAeDocumentId]
+  ON [dbo].[Documents]([MarminAeDocumentId]) WHERE [MarminAeDocumentId] IS NOT NULL;
 GO

@@ -973,6 +973,14 @@
     <Build Include="dal\Stored Procedures\dal.Zatca__UpdateDocumentInfo.sql" />
     <Build Include="dal\Functions\dal.fn_Invoice__IssueDateTime.sql" />
     <Build Include="dal\Stored Procedures\dal.Zatca__SaveSecrets.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__GetInvoices.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__MarkSubmitting.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__UpdateDocumentInfo.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__SaveSecrets.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__ApplyWebhook.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__MarkSent.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__ReleaseUnsent.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarminAe__ResetOnOpen.sql" />
     <Build Include="dal\Functions\dal.fn_Item_Date__PriceListDiscount.sql" />
     <Build Include="bll\Functions\bll.fn_Employee_TerminationReason__EOS.sql" />
     <Build Include="dbo\User Defined Types\dbo.CodeWithMonetaryList.sql" />
@@ -1052,6 +1060,7 @@
     <Build Include="dal\Stored Procedures\dal.Students_AcademicAndPerformance__Update.sql" />
     <Build Include="dal\Stored Procedures\dal.PPE_Custodies__Update.sql" />
     <Build Include="bll\Functions\bll.ft_Employees_Period_EventFromModel_OffPaysheet__Generate.sql" />
+    <Build Include="dbo\Functions\dbo.fn_UnitCode__UneceRec20.sql" />
     <Build Include="dal\Stored Procedures\dal.Employees_PayGrade__Update.sql" />
     <Build Include="dbo\Functions\dbo.fn_ActiveDates__AccruedLeaveDays_SA_WM.sql" />
   </ItemGroup>

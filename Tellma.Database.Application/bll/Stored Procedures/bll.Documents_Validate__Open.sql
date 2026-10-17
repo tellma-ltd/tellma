@@ -44,6 +44,34 @@ BEGIN
 	JOIN map.Documents() D ON FE.[Id] = D.[Id]
 	WHERE D.[ZatcaState] = 10	
 
+	-- Cannot unpost it if it is, or may be, on the Marmin (UAE) Peppol network:
+	--    1  Submitted             the vendor accepted it; Peppol validation in progress
+	--    2  SentAwaitingOutcome   the request left and its outcome is unknown, so it may have landed
+	--   10  Delivered
+	--  -30  PeppolRejected        delivered and then rejected; the remedy is a credit note
+	--
+	-- Stricter than the ZATCA rule above, which only refuses once reported. These stay
+	-- reopenable, because none of them is on the network and each has a remedy that starts with
+	-- fixing the document: NULL (never submitted), 0 (claimed, never sent), -10 (refused by the
+	-- vendor) and -20 (failed Peppol validation; a re-close resubmits it).
+	--
+	-- This single guard also covers delete and cancel: bll.Documents_Validate__Delete refuses a
+	-- closed document, and bll.Documents_Validate__Cancel requires State = 0, so both already
+	-- require reopening first.
+	--
+	-- Sandbox is deliberately exempt so the integration can be exercised repeatedly. Instead,
+	-- DocumentsService calls dal.MarminAe__ResetOnOpen, which clears the Marmin columns of a
+	-- reopened sandbox document so that stale vendor state cannot outlive the content it described.
+	IF (SELECT [MarminAeEnvironment] FROM dbo.Settings) <> N'Sandbox'
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotOpenAMarminAeDocument',
+		D.[Code]
+	FROM @Ids FE
+	JOIN map.Documents() D ON FE.[Id] = D.[Id]
+	WHERE D.[MarminAeState] >= 1 OR D.[MarminAeState] = -30
+
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)

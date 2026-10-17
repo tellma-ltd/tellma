@@ -135,6 +135,36 @@ namespace Tellma.Model.Application
             public string BannerText2 { get; set; }
             public string BannerText3 { get; set; }
             public int BannerHeight { get; set; }
+
+            // Marmin (UAE e-invoicing over Peppol).
+            //
+            // These live in the CustomFields bag rather than as real Settings columns because the
+            // bag is already plumbed end to end (map.GeneralSettings, api/dal.GeneralSettings__Save
+            // all pass CustomFieldsJson as one NVARCHAR(MAX) parameter), so adding a field here
+            // costs no SQL change at all. Only the secrets need real columns, because they must be
+            // withheld from the browser.
+            //
+            // NOTE: GeneralSettingsService.SavePreprocess serializes whatever the client sent, so
+            // every one of these MUST be bound by the General Settings screen or a save will wipe
+            // the ones it left out.
+
+            /// <summary>The organisation client id Marmin issued, e.g. "org_...". Not a secret.</summary>
+            public string MarminAeClientId { get; set; }
+
+            /// <summary>The business profile documents are issued from, e.g. "MBP-...".</summary>
+            public string MarminAeBusinessProfileId { get; set; }
+
+            /// <summary>
+            /// The vendor org id, used only to sanity-check inbound webhooks: it catches one
+            /// tenant being handed the other tenant callback URL.
+            /// </summary>
+            public string MarminAeOrgId { get; set; }
+
+            // There are deliberately no settings for the Peppol endpoint scheme, the default
+            // profile_execution_id, the default payment means or the default payment term. Both
+            // tenants use the same values, so dal.MarminAe__GetInvoices fixes them (0235,
+            // 00000000, 30 and 30 days), and a blank setting could only ever have produced a
+            // document the vendor refused after it had closed.
         }
 
         #endregion

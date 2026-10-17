@@ -268,3 +268,4 @@ __pycache__/
 
 # Claude Code local settings
 .claude/
+.agents/

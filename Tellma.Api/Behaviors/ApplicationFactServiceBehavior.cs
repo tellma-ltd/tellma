@@ -68,7 +68,14 @@ namespace Tellma.Api.Behaviors
             _behaviorHelper = behaviorHelper;
             _localizer = localizer;
             _tenantLogger = tenantLogger;
+            _log = logger;
         }
+
+        /// <summary>
+        /// The base class keeps its logger private. Marmin alerts are also written here, so that
+        /// they are never lost when the tenant has no support emails configured.
+        /// </summary>
+        private readonly ILogger _log;
 
         public IQueryFactory QueryFactory<TEntity>() where TEntity : Entity
         {
@@ -927,6 +934,64 @@ namespace Tellma.Api.Behaviors
                     DocumentId = docId,
                     InvoiceXml = invoiceXml,
                     ZatcaResponseBody = zatcaResponseBody,
+                    UserEmail = user.Email,
+                    UserName = user.Name,
+                });
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Alerts the tenant's administrators that a document did not make it onto the Peppol
+        /// network, or made it with warnings. Mirrors <see cref="LogZatcaErrorOrWarning"/>.
+        /// </summary>
+        /// <remarks>
+        /// Swallows everything, deliberately: this runs after the close has already committed, and
+        /// a failure to send an alert must never turn into a failure of the operation that
+        /// triggered it.
+        /// </remarks>
+        public async Task LogMarminAeErrorOrWarning(
+            int docDefId,
+            string docDefName,
+            int docId,
+            string docNumber,
+            string responseBody,
+            TenantLogLevel level)
+        {
+            // Unconditionally, and before anything that can fail: the tenant email below is
+            // skipped entirely when the tenant has no support emails, and a submission failure that
+            // nobody hears about is the one outcome this integration must not have.
+            try
+            {
+                _log?.Log(
+                    level == TenantLogLevel.Error ? LogLevel.Error : LogLevel.Warning,
+                    "Marmin e-invoicing {Level} in tenant {TenantId}, document {DocumentId} ({DocumentNumber}): {Message}",
+                    level, TenantId, docId, docNumber, responseBody);
+            }
+            catch { }
+
+            try
+            {
+                using var _ = TransactionFactory.Suppress();
+                var settings = await Settings();
+                var user = await UserSettings();
+
+                var supportEmailsConcatenated = settings.SupportEmails ?? "";
+                var supportEmails = supportEmailsConcatenated
+                    .Split(";")
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => e.Trim());
+
+                _tenantLogger.Log(new MarminAeErrorLogEntry(level)
+                {
+                    TenantId = TenantId,
+                    TenantName = settings.ShortCompanyName,
+                    TenantSupportEmails = supportEmails,
+                    DocumentDefinitionId = docDefId,
+                    DefinitionName = docDefName,
+                    DocumentId = docId,
+                    DocumentNumber = docNumber,
+                    MarminAeResponseBody = responseBody,
                     UserEmail = user.Email,
                     UserName = user.Name,
                 });

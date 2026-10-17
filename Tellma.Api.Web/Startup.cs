@@ -78,6 +78,9 @@ namespace Tellma
                 // Add services to allow integration with ZATCA
                 services.AddZatca(_config);
 
+                // Add services to allow integration with Marmin (UAE e-invoicing over Peppol)
+                services.AddMarminAe(_config);
+
                 // Add optoinal services
                 if (_opt.EmailEnabled)
                 {
@@ -273,6 +276,15 @@ namespace Tellma
                     app.UseTwilioCallback(_config);
                 }
 
+                // Marmin (UAE) e-invoicing status webhook callback. Mapped here, BEFORE
+                // UseRouting/UseAuthentication below, so it sits outside the auth pipeline
+                // entirely, like the two callbacks around it. Off by default until it has been
+                // tested against the vendor: the endpoint is anonymous.
+                if (_config.GetValue<bool>("MarminAe:CallbacksEnabled"))
+                {
+                    app.UseMarminAeCallback();
+                }
+
                 // SendGrid event webhook callback
                 if (_opt.EmailEnabled)
                 {
@@ -322,7 +334,7 @@ namespace Tellma
                 if (_opt.EmbeddedIdentityServerEnabled)
                 {
                     // Note: this already includes a call to app.UseAuthentication()
-                    app.UseEmbeddedIdentityServer(_env.IsDevelopment());
+                    app.UseEmbeddedIdentityServer(_env.IsDevelopment(), !_opt.EmbeddedClientApplicationEnabled);
                 }
                 else
                 {
